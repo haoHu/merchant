@@ -1,0 +1,84 @@
+@icon-font-name : "hllicons";
+@font-face {
+	font-family: "@{icon-font-name}";
+	src : url("../font/@{icon-font-name}.eot");
+	src : url("../font/@{icon-font-name}.eot?#iefix") format("embeded-opentype"),
+		url("../font/@{icon-font-name}.woff") format("woff"),
+		url("../font/@{icon-font-name}.ttf") format("truetype"),
+		url("../font/@{icon-font-name}.svg#glyphicons-halflingsregular") format("svg");
+}
+.x-ficon{
+	font-family: "@{icon-font-name}";
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+[class^="pic-"], [class*=" pic-"], .x-pic {
+	display : inline-block;
+	background-image : url(../img/picmap.png);
+	background-repeat: no-repeat;
+}
+
+[class^="icon-"], [class*=" icon-"], .x-icon {
+	display : inline-block;
+	background-image : url(../img/ixicon.png);
+	background-repeat: no-repeat;
+}
+
+@import "picmap.less";
+@import "ixicon.less";
+@import "background.less";
+@import "font.less";
+	
+@x-bg-color:rgba(127,127,127, 0.5);
+
+body {width:100%; height:100%;}
+h3 {
+	height:20px; 
+	font-size:12px; 
+	font-weight:bold;
+	border-bottom:3px solid #966; 
+	margin:0 0 2px;
+}
+body>div {
+	float:left;display:block; 
+	min-width:260px;
+	max-width:850px;
+	margin:10px; padding:3px; 
+	border:3px solid @x-bg-color; 
+	background:@x-bg-color;
+	font-size:12px;
+}
+body>div>div {margin:10px 5px;float:left; width:200px;min-height:54px;}
+body>.picmap_area>div {float:left; width:410px;}
+div span{
+	display:inline-block;
+	height:1.2em; 
+	margin:1px 2px; 
+	vertical-align:top;
+}
+div .label {float:right;}
+.background_area>div>div {width:100%; height:16px;}
+
+.picon{.x-pic;}
+
+[data-l-ico]:before, [data-r-ico]:after, [class^="ficon-"]:before, [class*=" ficon-"]:before, .ficon:before{
+	.x-ficon;
+	color: #555;
+	font-size:16px;
+}
+[data-l-ico]:before{content: attr(data-l-ico);}
+[data-r-ico]:after{content: attr(data-r-ico); }
+
+.font_area .ficon{
+	width :1em; 
+	height:1em;
+	font-size:16px;
+}
+
+@import "demo0";
