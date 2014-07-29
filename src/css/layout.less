@@ -1,0 +1,49 @@
+@page-header-h : 80px;
+@page-header-bg : #fff;
+@page-header-line-bg : #f8f8f8;
+@page-footer-h : 100px;
+@page-footer-bg : #f5f5f5;
+@page-body-bg : #fff;
+
+body {
+
+}
+
+.ix-header {
+	.x-area-size(100%, @page-header-h); background-color : @page-header-bg; border-color : transparent;
+	.header-line {
+		background-color : @page-header-line-bg; .x-adjust-leading-to(2.5, 1rem); vertical-align : middle;
+		a {
+			.x-inlineblock(); margin-right : 2rem; color : #333;
+		}
+		.hello, .user {.x-inlineblock(); margin-right : .3rem; color : #777; font-weight: 700;}
+	}
+	.ix-group-brand {
+		float : left; font-size : 1.5rem; .x-adjust-leading-to(1.5, 1em); vertical-align: middle; padding : 15px 0;
+	}
+	.navbar-nav a{
+		padding : 10px 15px; margin-top : 10px; font-weight : 700;
+	}
+}
+@media (max-width: 767px) {
+	.navbar-header, .navbar-collapse {background-color : @page-header-bg;}
+	.ix-header .nav-pills li {
+		float : none;
+	}
+}
+.ix-body {
+	.x-area-size(100%, auto); background-color : @page-body-bg;
+	> .container { 
+		padding : @page-header-h 0 @page-footer-h; 
+	}
+}
+.ix-footer {
+	.x-area-size(100%, @page-footer-h); background-color : @page-footer-bg;
+	.links, .copyright {
+		padding : 20px 0 0; text-align : center; vertical-align: middle; .x-adjust-leading-to(1.5, 1em);
+		color : #777;
+		a {
+			.x-inlineblock(); margin-right : 2rem; color : #89552E;
+		}
+	}
+}

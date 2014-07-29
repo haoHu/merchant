@@ -1,0 +1,33 @@
+/*for font icons*/
+@font-face {
+	font-family: "@{x-icon-font-name}";
+	src : url("../font/@{x-icon-font-name}.eot");
+	src : url("../font/@{x-icon-font-name}.eot?#iefix") format("embeded-opentype"),
+		url("../font/@{x-icon-font-name}.woff") format("woff"),
+		url("../font/@{x-icon-font-name}.ttf") format("truetype"),
+		url("../font/@{x-icon-font-name}.svg#glyphicons-halflingsregular") format("svg");
+		
+	font-weight: normal;
+	font-style: normal;
+}
+
+[data-l-ico], [data-r-ico], [class^="ficon-"], [class*=" ficon-"], .ficon{
+	&:before, &:after {
+		.x-ficon;
+		.x-icon-size(1em);
+		overflow :hidden;
+		display : inline-block;
+	}
+}
+[data-l-ico]:before{content: attr(data-l-ico);}
+[data-r-ico]:after{content: attr(data-r-ico);}
+
+
+/*for pic elements*/
+[class^="pic-"], [class*=" pic-"], .pic {
+	.x-pic;
+}
+/*for icon elements*/
+[class^="icon-"], [class*=" icon-"], .icon {
+	.x-icon;
+}
