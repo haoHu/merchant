@@ -9,6 +9,24 @@ body {
 
 }
 
+/*登录页面布局*/
+body.login {
+	.ix-header {
+
+	}
+	.login-pic > img {
+		.x-block(); width : 100%; height : 100%;
+	}
+	.panel-login {
+		.auth-img {
+			.x-inlineblock(); height : 32px; width : 68px;
+		}
+		#login_sub {
+			width : 100%;
+		}
+	}
+}
+
 .ix-header {
 	.x-area-size(100%, @page-header-h); background-color : @page-header-bg; border-color : transparent;
 	.header-line {
@@ -25,6 +43,12 @@ body {
 		width : 60%;
 		a {
 			padding : 10px 15px; margin-top : 10px; font-weight : 700;
+		}
+	}
+	.links {
+		padding : 15px;
+		a {
+			.x-inlineblock(); margin-right : 2rem;
 		}
 	}
 }
