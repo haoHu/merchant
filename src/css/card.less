@@ -22,7 +22,7 @@
 @ix-card-color : #626262;
 
 .bank-card {
-	background-color : #fff; color : @ix-card-color; .x-area-size(100%, 175px); .x-font-size(14px);
+	background-color : #fff; color : @ix-card-color; .x-area-size(100%, 175px); .x-font-size(14px); cursor : pointer;
 	.ix-card-header > .panel-title {
 		.x-font-size(1rem); font-weight: 700; vertical-align: middle;
 		& > .label {margin-right : .5rem;}
@@ -51,4 +51,26 @@
 		padding : 25px 15px 0;
 		.btn-link {margin-right : -1rem;}
 	}
+}
+
+.shop-card {
+	.x-area-size(100%, auto); .x-font-size(12px);
+	.ix-card-header > .panel-title {
+		.x-font-size(16px);
+	}
+	img.media-object {.x-area-size(100px, 100px);}
+	.tags {
+		.x-adjust-leading-to(2.5, 1rem);
+		.label {vertical-align: middle; }
+	}
+	.tags, address, .phone {
+		.x-adjust-leading-to(1.5, 12px); margin-bottom : 1rem;
+	}
+	.btns {
+		.x-clearfix(); margin-bottom : 1rem;
+	}
+	.ix-card-footer {
+		border-top-color : #ddd; .x-adjust-leading-to(4, 12px, 10px);
+	}
+	
 }
