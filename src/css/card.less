@@ -1,4 +1,5 @@
 .ix-card {
+	margin : 10px 0;
 	.x-area-size(300px, 175px);
 	.ix-card-header {
 		position : relative;
@@ -15,21 +16,29 @@
 		border-top-color : transparent;
 	}
 }
+@ix-card-bg : #fff;
+@ix-card-title-color : #676767;
+@ix-card-cash-color : #262626;
+@ix-card-color : #626262;
 
 .bank-card {
-	background-color : #F0A53D;
-	.x-area-size(100%, 175px);
-	.ix-card-header > .panel-title, .withdraw, .cash, .bank, .shops {
-		color : #fff;
+	background-color : #fff; color : @ix-card-color; .x-area-size(100%, 175px); .x-font-size(14px);
+	.ix-card-header > .panel-title {
+		.x-font-size(1rem); font-weight: 700; vertical-align: middle;
+		& > .label {margin-right : .5rem;}
 	}
+	.ix-card-header > .panel-title, .bank, .shops {
+		color : @ix-card-title-color;
+	}
+	
 	.withdraw {
 		position : absolute; right : .5rem; top : .5rem; height : 2rem; .x-adjust-leading-to(1.5, 1rem); padding : 3px 1rem;
-		font-weight: 700; background-color : #9B7323; .x-border-radius(20px);
+		font-weight: 700; .x-border-radius(20px); color : #fff;
 	}
 	.cash {
-		.x-font-size(1rem); font-weight: 700; vertical-align: middle; .x-adjust-leading-to(1.5, 2rem);
-		& > strong {font-size : 3rem; .x-adjust-leading-to(1, 3rem);}
-		& > span {vertical-align : bottom;}
+		font-weight: 700; vertical-align: middle; .x-adjust-leading-to(1.5, 2rem);
+		& > strong {font-size : 2rem; .x-adjust-leading-to(1, 2rem); color : @ix-card-cash-color;}
+		& > span {vertical-align : bottom; }
 	}
 	.bank {
 		.x-font-size(14px); .x-adjust-leading-to(1.5, 14px);
