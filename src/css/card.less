@@ -1,0 +1,45 @@
+.ix-card {
+	.x-area-size(300px, 175px);
+	.ix-card-header {
+		position : relative;
+		background: transparent;
+		border-bottom-color : transparent;
+	}
+	.ix-card-body {
+		background: transparent; padding : 5px 15px;
+	}
+	.ix-card-footer {
+		.x-clearfix();
+		padding : 5px 15px;
+		background: transparent;
+		border-top-color : transparent;
+	}
+}
+
+.bank-card {
+	background-color : #F0A53D;
+	.x-area-size(100%, 175px);
+	.ix-card-header > .panel-title, .withdraw, .cash, .bank, .shops {
+		color : #fff;
+	}
+	.withdraw {
+		position : absolute; right : .5rem; top : .5rem; height : 2rem; .x-adjust-leading-to(1.5, 1rem); padding : 3px 1rem;
+		font-weight: 700; background-color : #9B7323; .x-border-radius(20px);
+	}
+	.cash {
+		.x-font-size(1rem); font-weight: 700; vertical-align: middle; .x-adjust-leading-to(1.5, 2rem);
+		& > strong {font-size : 3rem; .x-adjust-leading-to(1, 3rem);}
+		& > span {vertical-align : bottom;}
+	}
+	.bank {
+		.x-font-size(14px); .x-adjust-leading-to(1.5, 14px);
+		.name, .num {.x-inlineblock(); margin-right : 1rem; vertical-align: middle;}
+	}
+	.shops {
+		.x-font-size(14px);	 .x-adjust-leading-to(2, 14px, -6px)
+	}
+	.ix-card-footer {
+		padding : 25px 15px 0;
+		.btn-link {margin-right : -1rem;}
+	}
+}
