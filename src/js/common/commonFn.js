@@ -95,7 +95,7 @@
 	Hualala.Common.avatarFn = function (src, type, clz) {
 		if (IX.isEmpty(src)) {
 			if (!defaultPhotoImg) {
-				defaultPhotoImg = Lawyer.Global.getDefaultImage("photo");
+				defaultPhotoImg = Hualala.Global.getDefaultImage("photo");
 			}
 			src = defaultPhotoImg;
 		}
@@ -152,22 +152,6 @@
 					j = s3.replace(/[\x00-\xff]/g, "").length;
 				return j ? str.slice(0, k) + Hualala.Common.substrByte(s3, j) : str.slice(0, k);
 		}
-	};
-
-	// 格式化流水号，给出用于显示的流水号,流水号格式：[yyyy][MM][dd][0001]
-	Hualala.Common.mapOrderFlowNo = function (orderFlowNo) {
-		if (!orderFlowNo) {
-			return {
-				flowNo : '',
-				dispStr : ''
-			};
-		}
-		var flowNo = orderFlowNo, dispStr = '';
-		dispStr = (flowNo + '').slice(8);
-		return {
-			flowNo : flowNo,
-			dispStr : dispStr
-		};
 	};
 })(jQuery);
 
