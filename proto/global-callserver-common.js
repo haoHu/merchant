@@ -19,8 +19,10 @@
 			resultcode : 000,
 			resultmsg : '',
 			data : {
+				pcClient : Test.PCClient,
 				site : Test.SiteData,
 				user : Test.LoginUser,
+				userRight : Test.UserRight,
 				roles : Test.Roles
 			}
 		});

@@ -33,6 +33,8 @@
 		["user", "/user.htm"],
 		// order statement page
 		["order", "/order.htm"]
+
+		// ajax URL 维护一个表
 		
 	]);
 
