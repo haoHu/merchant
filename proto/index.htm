@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
   <head>
-    <meta charset="utf8" />
+    <meta charset="UTF-8">
     <!--IE=edge表示强制使用IE最新内核,
       chrome=1表示当遇到chrome浏览器安装了针对IE6,7,8等的插件，就使用chrome内核来进行渲染
     -->
@@ -24,6 +24,9 @@
   <!-- Include Site Stylesheet -->
   <link href="../src/css/core.less" rel="stylesheet/less" type="text/css" />
   <script src="../tool/less-1.4.2.min.js"></script>
+  <script>
+    window.IXDEBUG = true;
+  </script>
 
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -36,7 +39,53 @@
   </head>
   <body>
 
+    <div class="navbar navbar-default navbar-fixed-top ix-header" role="navigation">
+      <div class="header-line clearfix">
+        <div class="container">
+          <div class="hidden-xs pull-left">
+            <a href="#" >哗啦啦PC客户端</a>
+            <a href="#" >访问哗啦啦网站</a>
+          </div>
+          <div class="pull-right">
+            <span class="hello">Hi</span><span class="user">{{name}},</span>
+            <a class="">退出</a>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/">
+            <img alt="哗啦啦商户中心" src="" />
+          </a>
+          <h1 class="ix-group-brand">{{groupName}}</h1>
+        </div>
+      </div>
+    </div>
 
+    <div class="ix-body">
+      <div class="container">
+        <div class="jumbotron">
+          <h1>商户中心首页</h1>
+          <p>用户可以根据自己的权限点击各模块的入口按钮进入管理界面</p>
+        </div>
+        
+        
+      </div>
+    </div>
+
+    <div class="ix-footer navbar-fixed-bottom">
+      <div class="container">
+        <p class="links">
+          <a href="#">关于哗啦啦商户中心</a>
+          <a href="#">联系我们</a>
+        </p>
+        <p class="copyright">
+          <img alt="Gozap" src=""/>
+          <span class="">&nbsp;旗下网站&nbsp;&copy;&nbsp;2014&nbsp;hualala.com&nbsp;京IPC备14019284号-3</span>
+
+        </p>
+      </div>
+    </div>
 
 
 
@@ -73,5 +122,27 @@
     <!-- Include Constants Defined (datatype.js,typedef.js) -->
     <script src="../src/js/common/typedef.js"></script>
     <script src="../src/js/common/datatype.js"></script>
+
+    <!-- Include callServer and test data JS -->
+    <script type="text/javascript" src="test.js"></script>
+    <script type="text/javascript" src="global-const.js"></script>
+    <script type="text/javascript" src="global-url.js"></script>
+    <script type="text/javascript" src="global-callserver-common.js"></script>
+    
+    <!-- Include Template Lib js -->
+    <script src="../src/js/tpl/tpl.lib.js"></script>
+    <!-- Include IXUI js -->
+    <script src="../src/js/ui/ixui.js"></script>
+    <script src="../src/js/ui/pager.js"></script>
+    <script src="../src/js/ui/modal.js"></script>
+    <script src="../src/js/ui/switch.js"></script>
+
+    <script type="text/javascript">
+      Test.readyToTest(function(){
+        Hualala.Global.loadAppData({}, function (res) {
+          log(res);
+        });
+      });
+    </script>
   </body>
 </html>

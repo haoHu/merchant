@@ -470,7 +470,7 @@ window.IX = (function(){
 		
 		getTimeInMS : getTimeInMS,
 		
-		getComputedStyle : "getComputedStyle" in document.defaultView? function(el){
+		getComputedStyle : (document.defaultView && "getComputedStyle" in document.defaultView) ? function(el){
 			return document.defaultView.getComputedStyle(el);  
 		}:function(el){		
 			return el.currentStyle || el.style; 

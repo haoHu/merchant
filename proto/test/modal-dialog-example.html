@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf8" />
+		<!--IE=edge表示强制使用IE最新内核,
+			chrome=1表示当遇到chrome浏览器安装了针对IE6,7,8等的插件，就使用chrome内核来进行渲染
+		-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<!--针对360浏览器这种双核浏览器，我们通过meta标签设置，让浏览器强制以webkit内核进行渲染-->
+		<meta name="renderer" content="webkit">
+		<!--针对移动设备触摸屏设置-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>哗啦啦商户管理系统</title>
+
+		<!--bootstrap 样式主文件-->
+		<link href="../../src/js/dep/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+	<!-- Include DatePicker Stylesheet -->
+	<link href="../../src/js/datepicker/css/datetimepicker.css" rel="stylesheet">
+
+	<!-- Include Code Prettify  -->
+	<link href="http://getbootstrap.com/2.3.2/assets/js/google-code-prettify/prettify.css" rel="stylesheet" />
+
+	
+
+	<!-- Include Site Stylesheet -->
+	<link href="../../src/css/core.less" rel="stylesheet/less" type="text/css" />
+	<script src="../../tool/less-1.4.2.min.js"></script>
+
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="../../src/js/dep/Respond/respond.matchmedia.addListener.src.js"></script>
+		<![endif]-->
+
+	<style>
+		body {padding-top:40px;}
+		.text-center {text-align: center;}
+		.marketing h1 {font-size: 50px; font-weight: lighter; line-height: 1;}
+		.marketing p {font-size : 18px;}
+	</style>
+	</head>
+	<body>
+		<div class="page-container">
+			<div class="container" style="position : relative;">
+				<div class="marketing">
+					<h1>Bootstrap-Modal</h1>
+					<p class="muted">Responsive, Stackable, AJAX and more.</p>
+				</div>
+				<div class="row">
+					<div class="col-md-10">
+						<div class="responsive">
+							<h3>Responsive</h3>
+							<pre class="pre-scrollable prettyprint linenums" data-source="#responsive"></pre>
+							<div class="text-center">
+								<button class="demo btn btn-primary btn-lg" data-toggle="modal" href="#responsive">View Demo</button>
+							</div>
+						</div>
+
+						<div class="stackable">
+							<h3>Stackable</h3>
+							<pre class="pre-scrollable prettyprint linenums" data-source="#stack1, #stack2, #stack3"></pre>
+							<div class="text-center">
+								<button class="demo btn btn-primary btn-lg" data-toggle="modal" href="#stack1">View Demo</button>
+							</div>
+						</div>
+
+						<div class="ajax" style="position: relative; overflow: hidden">
+							<h3>AJAX (via jQuery.load)</h3>
+							<pre class="pre-scrollable prettyprint linenums" data-source="#ajax"></pre>
+							<div class="text-center">
+								<button class="demo btn btn-primary btn-lg" data-toggle="modal">View Demo</button>
+							</div>
+						</div>
+
+						<div class="static" style="position: relative; overflow: hidden">
+							<h3>Static Background with Animation</h3>
+							<pre class="pre-scrollable prettyprint linenums" data-source="#static"></pre>
+							<div class="text-center">
+								<button class="demo btn btn-primary btn-lg" data-toggle="modal" href="#static">View Demo</button>
+							</div>
+						</div>
+
+						<div class="full-width" style="position: relative; overflow: hidden">
+							<h3>Full Width</h3>
+							<pre class="pre-scrollable prettyprint linenums" data-source="#full-width"></pre>
+							<div class="text-center">
+								<button class="demo btn btn-primary btn-lg" data-toggle="modal" href="#full-width">View Demo</button>
+							</div>
+						</div>
+
+						<div class="long" style="position: relative; overflow: hidden">
+							<h3>Long Modals</h3>
+							<pre class="pre-scrollable prettyprint linenums" data-source="#long"></pre>
+							<div class="text-center">
+								<button class="demo btn btn-primary btn-lg" data-toggle="modal" href="#long">View Demo</button>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+
+<!-- Modal Definitions (tabbed over for <pre>) -->
+<div id="responsive" class="modal fade" tabindex="-1" data-width="760" style="display: none;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Responsive</h4>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-6">
+        <h4>Some Input</h4>
+        <p><input class="form-control" type="text" /></p>
+        <p><input class="form-control" type="text" /></p>
+        <p><input class="form-control" type="text" /></p>
+        <p><input class="form-control" type="text" /></p>
+        <p><input class="form-control" type="text" /></p>
+        <p><input class="form-control" type="text" /></p>
+        <p><input class="form-control" type="text" /></p>
+      </div>
+      <div class="col-md-6">
+        <h4>Some More Input</h4>
+        <p><input class="form-control" type="text" /></p>
+        <p><input class="form-control" type="text" /></p>
+        <p><input class="form-control" type="text" /></p>
+        <p><input class="form-control" type="text" /></p>
+        <p><input class="form-control" type="text" /></p>
+        <p><input class="form-control" type="text" /></p>
+        <p><input class="form-control" type="text" /></p>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+    <button type="button" class="btn btn-primary">Save changes</button>
+  </div>
+</div>
+
+<div id="full-width" class="modal container fade" tabindex="-1" style="display: none;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Full Width</h4>
+  </div>
+  <div class="modal-body">
+    <p>This modal will resize itself to the same dimensions as the container class.</p>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis sollicitudin ipsum ac ante fermentum suscipit. In ac augue non purus accumsan lobortis id sed nibh. Nunc egestas hendrerit ipsum, et porttitor augue volutpat non. Aliquam erat volutpat. Vestibulum scelerisque lobortis pulvinar. Aenean hendrerit risus neque, eget tincidunt leo. Vestibulum est tortor, commodo nec cursus nec, vestibulum vel nibh. Morbi elit magna, ornare placerat euismod semper, dignissim vel odio. Phasellus elementum quam eu ipsum euismod pretium.</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+    <button type="button" class="btn btn-primary">Save changes</button>
+  </div>
+</div>
+
+<div id="stack1" class="modal fade" tabindex="-1" data-focus-on="input:first" style="display: none;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Stack One</h4>
+  </div>
+  <div class="modal-body">
+    <p>One fine body…</p>
+    <p>One fine body…</p>
+    <p>One fine body…</p>
+    <input class="form-control" type="text" data-tabindex="1" />
+    <input class="form-control" type="text" data-tabindex="2" />
+    <button class="btn btn-default" data-toggle="modal" href="#stack2">Launch modal</button>
+  </div>
+  <div class="modal-footer">
+    <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+    <button type="button" class="btn btn-primary">Ok</button>
+  </div>
+</div>
+
+<div id="stack2" class="modal fade" tabindex="-1" data-focus-on="input:first" style="display: none;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Stack Two</h4>
+  </div>
+  <div class="modal-body">
+    <p>One fine body…</p>
+    <p>One fine body…</p>
+    <input class="form-control" type="text" data-tabindex="1" />
+    <input class="form-control" type="text" data-tabindex="2" />
+    <button class="btn btn-default" data-toggle="modal" href="#stack3">Launch modal</button>
+  </div>
+  <div class="modal-footer">
+    <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+    <button type="button" class="btn btn-primary">Ok</button>
+  </div>
+</div>
+
+<div id="stack3" class="modal fade" tabindex="-1" data-focus-on="input:first" style="display: none;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Stack Three</h4>
+  </div>
+  <div class="modal-body">
+    <p>One fine body…</p>
+    <input class="form-control" type="text" data-tabindex="1" />
+    <input class="form-control" type="text" data-tabindex="2" />
+  </div>
+  <div class="modal-footer">
+    <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+    <button type="button" class="btn btn-primary">Ok</button>
+  </div>
+</div>
+
+<div id="static" class="modal fade" tabindex="-1" data-backdrop="static" data-keyboard="false" style="display: none;">
+  <div class="modal-body">
+    <p>Would you like to continue with some arbitrary task?</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" data-dismiss="modal" class="btn btn-default">Cancel</button>
+    <button type="button" data-dismiss="modal" class="btn btn-primary">Continue Task</button>
+  </div>
+</div>
+
+<div id="long" class="modal fade" tabindex="-1" data-replace="true" style="display: none;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">A Fairly Long Modal</h4>
+  </div>
+  <div class="modal-body">
+    <button class="btn btn-default" data-toggle="modal" href="#notlong" style="position: absolute; top: 50%; right: 12px">Not So Long Modal</button>
+    <img style="height: 800px" src="http://i.imgur.com/KwPYo.jpg" />
+  </div>
+  <div class="modal-footer">
+    <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+  </div>
+</div>
+
+<div id="notlong" class="modal fade" tabindex="-1" data-replace="true" style="display: none;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Not That Long</h4>
+  </div>
+  <div class="modal-body">
+    <button class="btn btn-default" data-toggle="modal" href="#verylong" style="position: absolute; top: 50%; right: 12px">Very Long Modal</button>
+    <div style="height: 400px; overflow: hidden;">
+      <img style="height: 800px" src="http://i.imgur.com/KwPYo.jpg" />
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+  </div>
+</div>
+
+<div id="verylong" class="modal fade" tabindex="-1" data-replace="true" style="display: none;">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">A Very Long</h4>
+  </div>
+  <div class="modal-body">
+    <div style="height: 1000px; overflow: hidden;">
+      <img style="height: 800px" src="http://i.imgur.com/KwPYo.jpg" />
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+  </div>
+</div>
+
+<div id="ajax-modal" class="modal fade" tabindex="-1" style="display: none;"></div>
+
+
+
+
+
+
+
+
+
+
+		
+		<!--jQuery (necessary for Bootstrap's JavaScript plugins and merchant project)-->
+		<script src="../../src/js/dep/jquery/jquery-1.11.1.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="../../src/js/dep/bootstrap/js/bootstrap.js"></script>
+
+		<!-- Include underscore lib -->
+		<script src="../../src/js/dep/underscore/underscore.js"></script>
+		<!-- Include handlebars -->
+		<script src="../../src/js/dep/handlebars/handlebars-v1.3.0.js"></script>
+
+		<!-- Include DatePicker -->
+		<script src="../../src/js/datepicker/datetimepicker.js"></script>
+		<script src="../../src/js/datepicker/local/datetimepicker.zh-CN.js"></script>
+
+		<!-- Include Common Lib Files for Hualala Shop Site -->
+		<!-- Include Stapes.js -->
+		<script src="../../src/js/common/stapes.js"></script>
+		<!-- Include ixutils.js -->
+		<script src="../../src/js/common/ixutils.js"></script>
+		<!-- Include commonFn.js -->
+		<script src="../../src/js/common/commonFn.js"></script>
+		<!-- Include Constants Defined (datatype.js,typedef.js) -->
+		<script src="../../src/js/common/typedef.js"></script>
+		<script src="../../src/js/common/datatype.js"></script>
+
+		<!-- Include IXUI js -->
+		<script src="../../src/js/ui/ixui.js"></script>
+		<script src="../../src/js/ui/pager.js"></script>
+		<script src="../../src/js/ui/modal.js"></script>
+
+		<script type="text/javascript" src="http://getbootstrap.com/2.3.2/assets/js/google-code-prettify/prettify.js"></script>
+		<script>
+			$(function(){
+
+				$.fn.modal.defaults.spinner = $.fn.modalmanager.defaults.spinner = 
+					'<div class="loading-spinner" style="width: 200px; margin-left: -100px;">' +
+					'<div class="progress progress-striped active">' +
+					'<div class="progress-bar" style="width: 100%;"></div>' +
+					'</div>' +
+					'</div>';
+
+				$.fn.modalmanager.defaults.resize = true;
+
+				$('[data-source]').each(function(){
+					var $this = $(this),
+					$source = $($this.data('source'));
+
+					var text = [];
+					$source.each(function(){
+						var $s = $(this);
+						if ($s.attr('type') == 'text/javascript'){
+							text.push($s.html().replace(/(\n)*/, ''));
+						} else {
+							text.push($s.clone().wrap('<div>').parent().html());
+						}
+					});
+
+					$this.text(text.join('\n\n').replace(/\t/g, '    '));
+				});
+
+				prettyPrint();
+			});
+		</script>
+
+		<script id="dynamic" type="text/javascript">
+		$('.dynamic .demo').click(function(){
+			var tmpl = [
+				// tabindex is required for focus
+				'<div class="modal hide fade" tabindex="-1">',
+				'<div class="modal-header">',
+				'<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>',
+				'<h4 class="modal-title">Modal header</h4>', 
+				'</div>',
+				'<div class="modal-body">',
+				'<p>Test</p>',
+				'</div>',
+				'<div class="modal-footer">',
+				'<a href="#" data-dismiss="modal" class="btn btn-default">Close</a>',
+				'<a href="#" class="btn btn-primary">Save changes</a>',
+				'</div>',
+				'</div>'
+				].join('');
+
+			$(tmpl).modal();
+		});
+		</script>
+
+		<script id="ajax" type="text/javascript">
+
+			var $modal = $('#ajax-modal');
+
+			$('.ajax .demo').on('click', function(){
+				// create the backdrop and wait for next modal to be triggered
+				$('body').modalmanager('loading');
+
+				setTimeout(function(){
+					$modal.load('modal_ajax_test.html', '', function(){
+						$modal.modal();
+					});
+				}, 1000);
+			});
+
+			$modal.on('click', '.update', function(){
+				$modal.modal('loading');
+				setTimeout(function(){
+					$modal
+						.modal('loading')
+						.find('.modal-body')
+						.prepend('<div class="alert alert-info fade in">' +
+						'Updated!<button type="button" class="close" data-dismiss="alert">&times;</button>' +
+						'</div>');
+				}, 1000);
+			});
+
+		</script> 
+	</body>
+</html>
