@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
 	<head>
-		<meta charset="UTF-8">
+		<meta charset="utf8" />
 		<!--IE=edge表示强制使用IE最新内核,
 			chrome=1表示当遇到chrome浏览器安装了针对IE6,7,8等的插件，就使用chrome内核来进行渲染
 		-->
@@ -19,6 +19,9 @@
 	<!-- Include DatePicker Stylesheet -->
 	<link href="../../src/js/datepicker/css/datetimepicker.css" rel="stylesheet">
 
+	<!-- Include Code Prettify  -->
+	<link href="http://getbootstrap.com/2.3.2/assets/js/google-code-prettify/prettify.css" rel="stylesheet" />
+
 	
 
 	<!-- Include Site Stylesheet -->
@@ -32,71 +35,13 @@
 			<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
 			<script src="../../src/js/dep/Respond/respond.matchmedia.addListener.src.js"></script>
 		<![endif]-->
+
+	<style>
+		
+	</style>
 	</head>
 	<body>
-		<div class="navbar navbar-default navbar-fixed-top ix-header" role="navigation">
-			<div class="header-line clearfix">
-				<div class="container">
-					<div class="hidden-xs pull-left">
-						<a href="#" >哗啦啦PC客户端</a>
-						<a href="#" >访问哗啦啦网站</a>
-					</div>
-					<div class="pull-right">
-						<span class="hello">Hi</span><span class="user">{{name}},</span>
-						<a class="">退出</a>
-					</div>
-				</div>
-			</div>
-			<div class="container">
-				<div class="navbar-header">
-					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-						<span class="sr-only">Toggle navigation</span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-					<a class="navbar-brand" href="/">
-						<img alt="哗啦啦商户中心" src="" />
-					</a>
-					<h1 class="ix-group-brand">{{groupName}}</h1>
-				</div>
-				<div class="navbar-collapse collapse">
-					<ul class="nav nav-justified nav-pills navbar-right">
-						<li><a href="#">店铺管理</a></li>
-						<li><a href="#about">结算</a></li>
-						<li><a href="#contact">订单</a></li>
-						<li class="active"><a href="#contact">业务设置</a></li>
-						<li><a href="#contact">帐号管理</a></li>
-					</ul>
-				</div>
-			</div>
-		</div>
-
-		<div class="ix-body">
-			<div class="container">
-				
-				<p class="text-muted">This is Shop Setting Page.</p>
-				
-			</div>
-		</div>
-
-		<div class="ix-footer navbar-fixed-bottom">
-			<div class="container">
-				<p class="links">
-					<a href="#">关于哗啦啦商户中心</a>
-					<a href="#">联系我们</a>
-				</p>
-				<p class="copyright">
-					<img alt="Gozap" src=""/>
-					<span class="">&nbsp;旗下网站&nbsp;&copy;&nbsp;2014&nbsp;hualala.com&nbsp;京IPC备14019284号-3</span>
-
-				</p>
-			</div>
-		</div>
-
-
-
-
+		<input type="checkbox" name="my-checkbox-1" checked/>
 
 
 
@@ -131,17 +76,14 @@
 		<script src="../../src/js/common/typedef.js"></script>
 		<script src="../../src/js/common/datatype.js"></script>
 
-		<!-- Include callServer and test data JS -->
-		<script type="text/javascript" src="test.js"></script>
-		<script type="text/javascript" src="global-const.js"></script>
-		<script type="text/javascript" src="global-url.js"></script>
-		
-		<!-- Include Template Lib js -->
-		<script src="../src/js/tpl/tpl.lib.js"></script>
 		<!-- Include IXUI js -->
-		<script src="../src/js/ui/ixui.js"></script>
-		<script src="../src/js/ui/pager.js"></script>
-		<script src="../src/js/ui/modal.js"></script>
-		<script src="../src/js/ui/switch.js"></script>
+		<script src="../../src/js/ui/ixui.js"></script>
+		<script src="../../src/js/ui/pager.js"></script>
+		<script src="../../src/js/ui/modal.js"></script>
+		<script src="../../src/js/ui/switch.js"></script>
+		
+		<script>
+			$('[name=my-checkbox-1]').bootstrapSwitch();
+		</script>
 	</body>
 </html>
