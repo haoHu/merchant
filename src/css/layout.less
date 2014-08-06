@@ -52,6 +52,12 @@ body.login {
 		}
 	}
 }
+
+// bootstrap原生的icon-bar类与我们工程的icon图标冲突，这里做一个适配。
+.navbar-toggle .icon-bar {
+	background-image : none;
+}
+
 @media (max-width: 767px) {
 	.navbar-header, .navbar-collapse {background-color : @page-header-bg;}
 	.ix-header .nav-justified {width : 100%;}
