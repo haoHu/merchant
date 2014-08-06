@@ -1,0 +1,45 @@
+// 顶部提示框
+.site-toptip {
+	@site-toptip-width : 600px;
+	position : fixed; z-index : @x-max-zIndex; top : 0; left : 50%;
+	margin-left : (-1 * @site-toptip-width / 2);
+	.x-area-size(@site-toptip-width, auto);
+	p {text-align : center;}
+}
+// 跟随提示（气泡提示）
+.popover {
+	@danger-border-color : #D43F3A;
+	@warning-border-color : #EEA236;
+	@success-border-color : #398439;
+	@info-border-color : #269ABC;
+	@primary-border-color : #285E8E;
+	&.danger{ border-color : @danger-border-color; }
+	&.danger.left .arrow {border-left-color : @danger-border-color; }
+	&.danger.right .arrow {border-right-color : @danger-border-color; }
+	&.danger.top .arrow {border-top-color : @danger-border-color; }
+	&.danger.bottom .arrow {border-bottom-color : @danger-border-color; }
+
+	&.warning{ border-color : @warning-border-color; }
+	&.warning.left .arrow {border-left-color : @warning-border-color; }
+	&.warning.right .arrow {border-right-color : @warning-border-color; }
+	&.warning.top .arrow {border-top-color : @warning-border-color; }
+	&.warning.bottom .arrow {border-bottom-color : @warning-border-color; }
+
+	&.success{ border-color : @success-border-color; }
+	&.success.left .arrow {border-left-color : @success-border-color; }
+	&.success.right .arrow {border-right-color : @success-border-color; }
+	&.success.top .arrow {border-top-color : @success-border-color; }
+	&.success.bottom .arrow {border-bottom-color : @success-border-color; }
+
+	&.info{ border-color : @info-border-color; }
+	&.info.left .arrow {border-left-color : @info-border-color; }
+	&.info.right .arrow {border-right-color : @info-border-color; }
+	&.info.top .arrow {border-top-color : @info-border-color; }
+	&.info.bottom .arrow {border-bottom-color : @info-border-color; }
+
+	&.primary{ border-color : @primary-border-color; }
+	&.primary.left .arrow {border-left-color : @primary-border-color; }
+	&.primary.right .arrow {border-right-color : @primary-border-color; }
+	&.primary.top .arrow {border-top-color : @primary-border-color; }
+	&.primary.bottom .arrow {border-bottom-color : @primary-border-color; }
+}
