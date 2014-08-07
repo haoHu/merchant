@@ -3,6 +3,8 @@
 
 	Hualala.Global.HOME = "../proto";
 	Hualala.Global.CommonSite = "../proto";
+
+	Hualala.Global.HualalaWebSite = "http://www.hualala.com";
 	
 	Hualala.Global.IMAGE_ROOT = "../src/img";
 

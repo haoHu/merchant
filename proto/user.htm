@@ -36,7 +36,7 @@
 		<![endif]-->
 	</head>
 	<body>
-		<div class="navbar navbar-default navbar-fixed-top ix-header" role="navigation">
+		<!-- <div class="navbar navbar-default navbar-fixed-top ix-header" role="navigation">
 			<div class="header-line clearfix">
 				<div class="container">
 					<div class="hidden-xs pull-left">
@@ -94,7 +94,7 @@
 
 				</p>
 			</div>
-		</div>
+		</div> -->
 
 
 
@@ -142,6 +142,7 @@
 		<script type="text/javascript" src="test.js"></script>
 		<script type="text/javascript" src="global-const.js"></script>
 		<script type="text/javascript" src="global-url.js"></script>
+		<script type="text/javascript" src="global-callserver-common.js"></script>
 		
 		<!-- Include Template Lib js -->
 		<script src="../src/js/tpl/tpl.lib.js"></script>
@@ -151,5 +152,17 @@
 		<script src="../src/js/ui/modal.js"></script>
 		<script src="../src/js/ui/switch.js"></script>
 		<script src="../src/js/ui/chosen.jquery.js"></script>
+
+		<!-- Include Hualala init -->
+		<script src="../src/js/common/merchant.layout.js"></script>
+		<script src="../src/js/common/merchant.init.js"></script>
+
+		<script type="text/javascript">
+			Test.readyToTest(function(){
+				Hualala.init({
+					type : 'user'
+				});
+			});
+		</script>
 	</body>
 </html>

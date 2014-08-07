@@ -32,7 +32,13 @@
 		// user manage page
 		["user", "/user.htm"],
 		// order statement page
-		["order", "/order.htm"]
+		["order", "/order.htm"],
+		// pcClient download page
+		["pcclient", "/download.htm"],
+		// 关于商户中心
+		["about", "/about.htm"],
+		// 联系我们
+		["contact", "/contact.htm"]
 
 		// ajax URL 维护一个表
 		
@@ -52,6 +58,18 @@
 		return urlEngine.genUrl("login");
 	};
 
+	// get pcClient Download page url
+	Hualala.Global.getPCClientDownloadPageUrl = function () {
+		return urlEngine.genUrl("pcclient");
+	};
+
 	// get common default image url
 	Hualala.Global.getDefaultImage = function (type) {return urlEngine.genUrl("img_" + type); };
+
+	// check is current page
+	Hualala.Global.isCurrentPage = function (pageType, params) {
+		var curPath = document.location.pathname,
+			path = urlEngine.genUrl(pageType, params);
+		return curPath.indexOf(path) >= 0;
+	};
 })();
