@@ -56,68 +56,27 @@
 	};
 
 	
-
 	/**
 	 * 商户系统整体加载
 	 * @param  {Object} cfg {config:{}, type : "页面类型login|main|shop|setting|account|user..."}
 	 * @return {NULL}     
 	 */
 	var APPInitialized = false, currentType;
-	Hualala.init = function (cfg) {
-		var config = $XP(cfg, 'config', {});
-		if (APPInitialized) return;
-		APPInitialized = true;
-		currentType = $XP(cfg, 'type', 'main');
-
-		initRouteEngine();
-		switch(currentType) {
-			case "login":
-				// TODO login page
-				break;
-			case "main":
-				// TODO home page
-				initMainPage(function () {
-					Hualala.Common.initPageLayout(config, currentType);
+	
+	Hualala.init = function () {
+		if (!APPInitialized) {
+			initRouteEngine();
+			
+			initMainPage(function () {
+				Hualala.PageRoute.start(function (pageName) {
+					var hasNoNavPages = 'main,pcclient,about,contact';
+					Hualala.Common.initPageLayout({}, pageName);
+					if (hasNoNavPages.indexOf(pageName) < 0) {
+						Hualala.Common.initSiteNavBar(pageName);
+					}
 				});
-				break;
-			case "shop" :
-				// TODO shop page
-				initMainPage(function () {
-					Hualala.Common.initPageLayout(config, currentType);
-					Hualala.Common.initSiteNavBar(currentType);
-				});
-				break;
-			case "setting":
-				// TODO setting page
-				initMainPage(function () {
-					Hualala.Common.initPageLayout(config, currentType);
-					Hualala.Common.initSiteNavBar(currentType);
-				});
-				break;
-			case "account":
-				// TODO account page
-				initMainPage(function () {
-					Hualala.Common.initPageLayout(config, currentType);
-					Hualala.Common.initSiteNavBar(currentType);
-				});
-				break;
-			case "user" :
-				// TODO user manage page
-				initMainPage(function () {
-					Hualala.Common.initPageLayout(config, currentType);
-					Hualala.Common.initSiteNavBar(currentType);
-				});
-				break;
-			case "order":
-				// TODO order page
-				initMainPage(function () {
-					Hualala.Common.initPageLayout(config, currentType);
-					Hualala.Common.initSiteNavBar(currentType);
-				});
-				break;
-			default :
-				throw("What are u doing man!!");
-				break;
+			});
+			APPInitialized = true;
 		}
 	};
 

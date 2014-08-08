@@ -13,7 +13,8 @@
 				loginName : loginName,
 				merchantRoot : Hualala.Global.HOME,
 				groupName : groupName,
-				isLogin : !isLogin ? 'hidden' : ''
+				isLogin : !isLogin ? 'hidden' : '',
+				logoutPath : Hualala.Global.getLogoutJumpToUrl()
 			},
 			footer = {
 				aboutPath : Hualala.urlEngine.genUrl("about") || '#',
@@ -55,6 +56,19 @@
 
 	}
 
+	function initHomePage (pageType, params) {
+		var $body = $('#ix_wrapper > .ix-body > .container');
+		$body.html(
+			'<div class="jumbotron">'+
+				'<h1>这里是首页</h1>' +
+				'<p>提供各个功能模块的入口按钮</p>' +
+				
+			'</div>'
+			);
+		// TODO Home Page 
+	}
+
 	Hualala.Common.initPageLayout = initPageLayout;
 	Hualala.Common.initSiteNavBar = initSiteNavBar;
+	Hualala.Common.HomePageInit = initHomePage;
 })(jQuery, window);

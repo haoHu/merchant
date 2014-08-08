@@ -23,7 +23,7 @@
 						'</div>',
 						'<div class="pull-right {{header.isLogin}}">',
 							'<span class="hello">Hi</span><span class="user">{{header.loginName}},</span>',
-							'<a class="logout" href="javascript:void(0);">退出</a>',
+							'<a class="logout" href="{{header.logoutPath}}">退出</a>',
 						'</div>',
 					'</div>',
 				'</div>',
