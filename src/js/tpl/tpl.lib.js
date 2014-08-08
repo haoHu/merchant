@@ -29,7 +29,7 @@
 				'</div>',
 				'<div class="container">',
 					'<div class="navbar-header">',
-						'<a class="navbar-brand logo" href="header.merchantRoot" title="哗啦啦商户中心"><img alt="哗啦啦商户中心" src="" /></a>',
+						'<a class="navbar-brand logo" href="{{header.merchantRoot}}" title="哗啦啦商户中心"><img alt="哗啦啦商户中心" src="" /></a>',
 						'<h1 class="ix-group-brand">{{header.groupName}}</h1>',
 					'</div>',
 				'</div>',

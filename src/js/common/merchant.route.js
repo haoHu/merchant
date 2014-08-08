@@ -78,6 +78,25 @@
 		}
 	})();
 
+
+	function getPathByName (name, params) {
+		var cfg = PageConfigurations[name];
+		if (!cfg) 
+			return console.err("Can't find route : " + name);
+		var path = $XP(cfg, 'path'), reg = $XP(cfg, 'reg'),
+			match = path.match(reg);
+		if (!match || match.length < 1) {
+			return console.err("The Path of Route (" + name + ") is wrong!!");
+		} else if (match.length == 1) {
+			return path;
+		} else if (match.length > 1 && IX.isArray(params) && (match.length - 1) == params.length) {
+			match.shift();
+			_.each(match, function (v, i, m) {
+				path = path.replace(v, params[i]);
+			});
+			return path;
+		}
+	}
 	/**
 	 * pageConfig : {
 	 * 		name : "",
@@ -201,4 +220,6 @@
 		});
 		Router.listen().check();
 	};
+	Hualala.PageRoute.createPath = getPathByName;
+
 })(jQuery, window);
