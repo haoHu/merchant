@@ -155,6 +155,23 @@
 		}
 	};
 
+	/**
+	 * 获取浏览器品牌及版本号信息
+	 * @return {Object} {browserName:version}
+	 */
+	Hualala.Common.Browser = (function () {
+		var browser = {},
+			ua = navigator.userAgent.toLowerCase(),
+			match = null;
+		(match = ua.match(/rv:([\d.]+)\) like gecko/)) ? browser['ie'] = match[1] :
+		(match = ua.match(/msie ([\d.]+)/)) ? browser['ie'] = match[1] :
+		(match = ua.match(/chrome\/([\d.]+)/)) ? browser['chrome'] = match[1] : 
+		(match = ua.match(/firefox\/([\d.]+)/)) ? browser['firefox'] = match[1] :
+		(match = ua.match(/opera.([\d.]+)/)) ? browser['opera'] = match[1] : 
+		(match = ua.match(/version\/([\d.]+).*safari/)) ? browser['safari'] = match[1] : 0;
+		return browser;
+	})();
+
 
 })(jQuery);
 

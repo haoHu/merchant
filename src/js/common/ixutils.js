@@ -464,7 +464,7 @@ window.IX = (function(){
 		isOpera : checkUA("opera"),   //匹配Opera浏览器
 		isChrome: checkUA("chrome"),   //匹配Chrome浏览器
 		isFirefox: checkUA("firefox") && !checkUA("webkit"),   //匹配Firefox浏览器
-		isYunfisClient: checkUA("Yunfis") || !checkUA("yunfis"),   //匹配yunfis客户端
+		// isYunfisClient: checkUA("Yunfis") || !checkUA("yunfis"),   //匹配yunfis客户端
 		
 		isMSWin : checkUA("windows"),
 		
