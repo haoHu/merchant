@@ -78,7 +78,12 @@
 		}
 	})();
 
-
+	/**
+	 * 获取路由路径
+	 * @param  {String} name   路由配置的名称
+	 * @param  {Array|NULL} params 组装路由需要的参数，按照路由规则按顺序给出参数
+	 * @return {String}        返回生成的路由
+	 */
 	function getPathByName (name, params) {
 		var cfg = PageConfigurations[name];
 		if (!cfg) 
@@ -220,6 +225,11 @@
 		});
 		Router.listen().check();
 	};
+
 	Hualala.PageRoute.createPath = getPathByName;
+
+	Hualala.PageRoute.getCurrentPath = function () {
+		return location.hash;
+	};
 
 })(jQuery, window);
