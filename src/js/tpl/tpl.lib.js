@@ -86,6 +86,37 @@
 	].join('');
 	TemplateList.register('tpl_site_navbarToggle', tpl_site_navbarToggle);
 
+	// 嗅探到低版本IE浏览器后，给出高级浏览器的下载链接和相关友好提示
+	var tpl_site_browserSupport = [
+		'<div id="ix_wrapper">',
+			'<div class="container">',
+				'<div class="jumbotron support-box">',
+					'<h1>让管理店铺变得更加高大上</h1>',
+					'<p>{{{msg}}}</p>',
+					'<p>',
+						'<ul class="media-list">',
+						'{{#each items}}',
+							'<li class="media">',
+								'<a class="pull-left" href="{{href}}">',
+									'<img src="{{icon}}" alt="{{name}}" width="60" height="60" />',
+								'</a>',
+								'<div class="media-body">',
+									'<h4 class="media-heading">',
+										'<a href="{{href}}">{{name}}</a>',
+									'</h4>',
+									'<p>{{desc}}</p>',
+								'</div>',
+							'</li>',
+						'{{/each}}',
+						'</ul>',
+					'</p>',
+					'<p><a class="btn btn-primary btn-lg pull-right" role="button">跳过提示，继续访问</a></p>',
+				'</div>',
+			'</div>',
+		'</div>'
+	].join('');
+	TemplateList.register('tpl_site_browserSupport', tpl_site_browserSupport);
+
 	var TplLib = function () {
 		return {
 			register : function (key, tpl) {

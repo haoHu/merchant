@@ -1,5 +1,51 @@
 (function ($, window) {
 	IX.ns("Hualala.Common");
+	function isSupportedBrowser () {
+		var bd = Hualala.Common.Browser;
+		var isIE = !$XP(bd, 'ie', null) ? false : true,
+			version = parseInt($XP(bd, 'ie', 0));
+		var allowOldVersion = IX.Cookie.get('allowOldVersion') == 1 ? true : false;
+		if (!isIE || allowOldVersion) return true;
+		if (version > 8) return true;
+		var msg = version == 8 ? 
+			'您使用的IE浏览器版本过于陈旧，可能无法获得我们为您提供的良好的用户体验。<br/>我们建议您使用以下的浏览器或插件进行访问！' : 
+			'您使用的IE浏览器版本过于陈旧，无法使用我们为您提供的管理功能。<br/>请您使用以下提供的浏览器进行访问！';
+		var browserLib = [
+			{
+				href : '',
+				icon : '',
+				name : 'IE10',
+				desc : 'IE10浏览器是微软公司出品的现代浏览器，已经支持大部分HTML5，CSS3特性'
+			},
+			{
+				href : '',
+				icon : '',
+				name : 'IE11',
+				desc : 'IE11浏览器是微软公司出品的现代浏览器，已经支持绝大部分HTML5，CSS3特性'
+			},
+			{
+				href : '',
+				icon : '',
+				name : 'Chrome',
+				desc : 'Chrome浏览器是谷歌公司退出的现代浏览器，完全支持HTML5，CSS3标准的特性，具有更快的浏览网页速度。'
+			},
+			{
+				href : '',
+				icon : '',
+				name : 'Firefox',
+				desc : 'FireFox是Mozilla推出的现代浏览器，完全支持HTML5，CSS3标准的特性。'
+			}
+		];
+		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_browserSupport'));
+		var $jumbotron = $(tpl({msg : msg, items : browserLib}));
+		$('body > #ix_wrapper').remove();
+		$jumbotron.appendTo($('body'));
+		$jumbotron.find('.btn').click(function (e) {
+			IX.Cookie.set('allowOldVersion', 1);
+			Hualala.Router.check();
+		});
+		return false;
+	}
 	function initPageLayout (pageCfg, pageType) {
 		var session = Hualala.getSessionData(),
 			layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_layout'));
@@ -27,7 +73,9 @@
 		};
 		var $wrapper = $(layoutTpl(mapRanderData()));
 		$('body > #ix_wrapper').remove();
-		$wrapper.appendTo($('body'));
+		if (isSupportedBrowser()) {
+			$wrapper.appendTo($('body'));
+		}
 	}
 
 	function initSiteNavBar (pageType) {
