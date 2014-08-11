@@ -1,8 +1,9 @@
-@page-header-h : 80px;
+@page-header-h : 110px;
 @page-header-bg : #fff;
 @page-header-line-bg : #f8f8f8;
 @page-footer-h : 100px;
-@page-footer-bg : #f5f5f5;
+@page-footer-bg : #fff;
+@page-footer-boder-color : #fbf6e5;
 @page-body-bg : #fff;
 
 body {
@@ -29,15 +30,22 @@ body.login {
 
 .ix-header {
 	.x-area-size(100%, @page-header-h); background-color : @page-header-bg; border-color : transparent;
+	> .container {margin-top : 15px;}
 	.header-line {
 		background-color : @page-header-line-bg; .x-adjust-leading-to(2.5, 1rem); vertical-align : middle;
 		a {
-			.x-inlineblock(); margin-right : 2rem; color : #333;
+			.x-inlineblock(); margin-right : 2rem; color : @x-base-font-color;
 		}
-		.hello, .user {.x-inlineblock(); margin-right : .3rem; color : #777; font-weight: 700;}
+		.hello, .user {.x-inlineblock(); margin-right : .3rem; color : @x-font-color-midGray; font-weight: 700;}
 	}
 	.ix-group-brand {
 		float : left; font-size : 1.5rem; .x-adjust-leading-to(1.5, 1em); vertical-align: middle; padding : 15px 0;
+	}
+	.icon-pcclient {
+		vertical-align: middle;  .x-icon-16_zhaoshang(); .x-icon-size(16px); margin-right : 0.5rem;
+	}
+	.icon-jumpsite {
+		vertical-align: middle;  .x-icon-16_zhaoshang(); .x-icon-size(16px); margin-right : 0.5rem;
 	}
 	.nav-justified {
 		width : 60%;
@@ -72,12 +80,26 @@ body.login {
 	}
 }
 .ix-footer {
-	.x-area-size(100%, @page-footer-h); background-color : @page-footer-bg;
+	.x-area-size(100%, @page-footer-h); background-color : @page-footer-bg; border-top : 2px solid @page-footer-boder-color;
 	.links, .copyright {
-		padding : 20px 0 0; text-align : center; vertical-align: middle; .x-adjust-leading-to(1.5, 1em);
-		color : #777;
+		padding : 30px 0 0; text-align : center; vertical-align: middle; .x-adjust-leading-to(1.5, 1em);
+		color : @x-font-color-midGray;
 		a {
-			.x-inlineblock(); margin-right : 2rem; color : #89552E;
+			.x-inlineblock(); margin-right : 2.5rem; color : #89552E;
 		}
+	}
+	.copyright {
+		padding-top : 1.5rem;
+	}
+}
+
+// Login Style
+#ix_wrapper .ix-body .login-box {
+	padding : 35px 0px; background: transparent;
+	.login-pic > img {.x-area-size(100%, 100%);}
+	.btn[name="login_sub"] {height : 46px;}
+	.ix-authcode {
+		width : 100%; .x-block();
+		.auth-img {.x-area-size(68px, 32px); border : 0 none;}
 	}
 }

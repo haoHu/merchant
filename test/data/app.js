@@ -1,5 +1,9 @@
 (function () {
 	IX.ns("Test");
+	var getRandom = function (n, m) {
+		var c = m - n + 1;
+		return Math.floor(Math.random() * c + n);
+	};
 	Test.SiteData = {
 		groupName : "豆捞坊",
 		groupID : "5"
@@ -31,4 +35,5 @@
 		downloadClientAddress : '/pcclient/download/1.0.1-release.zip',
 		version : '1.0.1'
 	};
+	Test.getRandom = getRandom;
 })();

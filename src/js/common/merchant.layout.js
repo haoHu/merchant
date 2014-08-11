@@ -54,17 +54,20 @@
 			groupName = $XP(session, 'site.groupName', '');
 		var mapRanderData = function () {
 			var header = {
-				pcClientPath : Hualala.Global.getPCClientDownloadPageUrl(),
+				pcClientPath : Hualala.PageRoute.createPath('pcclient'),
 				hualalaUrl : Hualala.Global.HualalaWebSite,
 				loginName : loginName,
-				merchantRoot : Hualala.Global.HOME,
+				merchantRoot : Hualala.PageRoute.createPath('main'),
 				groupName : groupName,
-				isLogin : !isLogin ? 'hidden' : '',
-				logoutPath : Hualala.Global.getLogoutJumpToUrl()
+				// isLogin : !isLogin ? 'hidden' : '',
+				isLogin : isLogin,
+				logoutPath : Hualala.Global.getLogoutJumpToUrl(),
+				logo : Hualala.Global.getDefaultImage('logo'),
 			},
 			footer = {
-				aboutPath : Hualala.urlEngine.genUrl("about") || '#',
-				contactPath : Hualala.urlEngine.genUrl("contact") || '#'
+				aboutPath : Hualala.PageRoute.createPath("about") || '#',
+				contactPath : Hualala.PageRoute.createPath("contact") || '#',
+				gozapLogo : Hualala.Global.getDefaultImage('gozap')
 			};
 			return {
 				header : header,
@@ -75,6 +78,16 @@
 		$('body > #ix_wrapper').remove();
 		if (isSupportedBrowser()) {
 			$wrapper.appendTo($('body'));
+		}
+		if ($.fn.bootstrapValidator) {
+			$.fn.bootstrapValidator.DEFAULT_OPTIONS = $.extend({}, $.fn.bootstrapValidator.DEFAULT_OPTIONS, {
+				message: '您输入的数据有误，请核对后再次输入',
+				feedbackIcons : {
+					valid : 'glyphicon glyphicon-ok',
+					invalid : 'glyphicon glyphicon-remove',
+					validating : 'glyphicon glyphicon-refresh'
+				}
+			});
 		}
 	}
 
@@ -87,7 +100,7 @@
 				return {
 					active : !Hualala.Global.isCurrentPage(v.name) ? '' : 'active',
 					disabled : '',
-					path : Hualala.urlEngine.genUrl(v.name) || '#',
+					path : Hualala.PageRoute.createPath(v.name) || '#',
 					name : v.name,
 					label : v.label,
 				};
@@ -116,7 +129,20 @@
 		// TODO Home Page 
 	}
 
+	function initLoginPage (pageType, params) {
+		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_login'));
+		var $loginBox = $(tpl({
+			bannerImg : Hualala.Global.getDefaultImage('loginBanner')
+		}));
+		var $body = $('#ix_wrapper > .ix-body > .container');
+		$body.html($loginBox);
+		Hualala.Entry.initLogin($loginBox);
+	}
+
+
+	Hualala.Common.LoginInit = initLoginPage;
 	Hualala.Common.initPageLayout = initPageLayout;
 	Hualala.Common.initSiteNavBar = initSiteNavBar;
 	Hualala.Common.HomePageInit = initHomePage;
+	
 })(jQuery, window);

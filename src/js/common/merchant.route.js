@@ -90,16 +90,19 @@
 			return console.err("Can't find route : " + name);
 		var path = $XP(cfg, 'path'), reg = $XP(cfg, 'reg'),
 			match = path.match(reg);
+		var genPath = function (p) {
+			return Hualala.Global.HOME + p;
+		};
 		if (!match || match.length < 1) {
 			return console.err("The Path of Route (" + name + ") is wrong!!");
 		} else if (match.length == 1) {
-			return path;
+			return genPath(path);
 		} else if (match.length > 1 && IX.isArray(params) && (match.length - 1) == params.length) {
 			match.shift();
 			_.each(match, function (v, i, m) {
 				path = path.replace(v, params[i]);
 			});
-			return path;
+			return genPath(path);
 		}
 	}
 	/**
@@ -115,6 +118,11 @@
 	 */
 	var pageConfigs = [
 		// home page 主页
+		// 登录
+		{
+			name : "login", path : "/#login", reg : /login$/, bodyClz : "",
+			PageInitiator : "Hualala.Common.LoginInit"
+		},
 		// home page主页
 		{
 			name : "main", path : "/#home", reg : /home$/, bodyClz : "",
@@ -210,6 +218,7 @@
 	Hualala.PageRoute.start = function (cbFn) {
 		isInitialized = true;
 		Router.flush().config({mode : 'history', root : Hualala.Global.HOME});
+		// Router.flush().config({mode : 'history'});
 		_.each(PageConfigurations, function (route, name, l) {
 			var re = $XP(route, 'reg'), initFn = $XF(route, 'init'), handler = null;
 			
@@ -230,6 +239,26 @@
 
 	Hualala.PageRoute.getCurrentPath = function () {
 		return location.hash;
+	};
+
+	Hualala.PageRoute.getPageContextByPath = function (path) {
+		var fragment = path || Hualala.Router.getFragment();
+		var match = _.filter(PageConfigurations, function (el, k, l) {
+			return !!fragment.match(el.reg);
+		});
+		var params = null;
+		if (match.length == 0) return null;
+		if (match.length == 1) {
+			params = fragment.match(match[0]['reg']);
+			params.shift();
+			return IX.inherit({params : params}, match[0]);
+		}
+		match = _.filter(match, function (el, k, l) {
+			return el.name != 'index';
+		});
+		params = fragment.match(match[match.length - 1]['reg']);
+		params.shift();
+		return IX.inherit({params : params}, match[match.length - 1]);
 	};
 
 })(jQuery, window);

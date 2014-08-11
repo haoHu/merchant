@@ -91,6 +91,8 @@
 	urlEngine.mappingUrls(_.union([
 		// Common Image URL
 		["img_logo", "/logo.png", "img"],
+		["img_gozap", "/gozap.png", "img"],
+		["img_loginBanner", "/banner.jpg", "img"],
 		["img_photo", "/common_photo.png", "img"],
 		["img_blank", "/blank.png", "img"],
 		["img_thumb", "/thumbnails/unknown.png", "img"],
@@ -137,7 +139,7 @@
 		// 	path = urlEngine.genUrl(pageType, params);
 		// return curPath.indexOf(path) >= 0;
 		var curHref = document.location.href,
-			link = urlEngine.genUrl(pageType, params);
-		return curHref.indexOf(link) >= 0;
+			link = Hualala.PageRoute.createPath(pageType, params);
+		return curHref.indexOf(link.replace(Hualala.Global.HOME, '')) >= 0;
 	};
 })();

@@ -40,7 +40,7 @@
 				fragment = this.clearSlashes(decodeURI(location.pathname + location.search));
 				// history模式下，需要删除所有get参数
 				fragment = fragment.replace(/\?(.*)$/, '');
-
+				// add hash part by huhao
 				fragment = fragment + location.hash;
 
 				// history模式下，需要将root部分删除
@@ -57,7 +57,7 @@
 		/**
 		 * 添加路由
 		 * 如果只传递一个方法，我们把它当做一个默认路由处理器,并把路由当做一个空字符串
-		 * @param {String} re      路由匹配的规则（可以使实际的路由，也可以时正则字串）
+		 * @param {String} re      路由匹配的规则（可以是实际的路由，也可以是正则字串）
 		 * @param {Function} handler 路由的处理器
 		 * @return {Router} 单体自身，用于链式调用
 		 */

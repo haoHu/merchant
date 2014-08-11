@@ -67,9 +67,26 @@
 		if (!APPInitialized) {
 			initRouteEngine();
 			
-			initMainPage(function () {
-				Hualala.PageRoute.start(function (pageName) {
-					var hasNoNavPages = 'main,pcclient,about,contact';
+			// initMainPage(function () {
+			// 	Hualala.PageRoute.start(function (pageName) {
+			// 		var hasNoNavPages = 'main,pcclient,about,contact';
+			// 		Hualala.Common.initPageLayout({}, pageName);
+			// 		if (hasNoNavPages.indexOf(pageName) < 0) {
+			// 			Hualala.Common.initSiteNavBar(pageName);
+			// 		}
+			// 	});
+			// });
+			Hualala.PageRoute.start(function (pageName) {
+				var hasNoNavPages = 'main,pcclient,about,contact,login';
+				var commonPages = _.filter(hasNoNavPages.split(','), function (v) {return v != 'main'}).join(',');
+				if (commonPages.indexOf(pageName) >= 0) {
+					Hualala.Common.initPageLayout({}, pageName);
+					if (hasNoNavPages.indexOf(pageName) < 0) {
+						Hualala.Common.initSiteNavBar(pageName);
+					}
+					return ;
+				}
+				initMainPage(function () {
 					Hualala.Common.initPageLayout({}, pageName);
 					if (hasNoNavPages.indexOf(pageName) < 0) {
 						Hualala.Common.initSiteNavBar(pageName);

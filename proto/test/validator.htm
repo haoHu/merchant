@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf8" />
+		<!--IE=edge表示强制使用IE最新内核,
+			chrome=1表示当遇到chrome浏览器安装了针对IE6,7,8等的插件，就使用chrome内核来进行渲染
+		-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<!--针对360浏览器这种双核浏览器，我们通过meta标签设置，让浏览器强制以webkit内核进行渲染-->
+		<meta name="renderer" content="webkit">
+		<!--针对移动设备触摸屏设置-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>哗啦啦商户管理系统</title>
+
+		<!--bootstrap 样式主文件-->
+		<link href="../../src/js/dep/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+	<!-- Include DatePicker Stylesheet -->
+	<link href="../../src/js/datepicker/css/datetimepicker.css" rel="stylesheet">
+    
+    <!-- Include validator Stylesheet -->
+	<link href="../../src/js/validator/css/validator.css" rel="stylesheet">
+	
+
+	<!-- Include Site Stylesheet -->
+	<link href="../../src/css/core.less" rel="stylesheet/less" type="text/css" />
+	<script src="../../tool/less-1.4.2.min.js"></script>
+
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="../../src/js/dep/Respond/respond.matchmedia.addListener.src.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+		<div class="navbar navbar-default navbar-fixed-top ix-header" role="navigation">
+			<div class="header-line clearfix">
+				<div class="container">
+					<div class="pull-left">
+						<a href="#" >哗啦啦手机客户端</a>
+						<a href="#" >访问哗啦啦网站</a>
+					</div>
+					<div class="pull-right">
+						<span class="hello">Hi</span><span class="user">{{name}},</span>
+						<a class="">退出</a>
+					</div>
+				</div>
+			</div>
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">
+						<img alt="哗啦啦商户中心" src="" />
+					</a>
+					<h1 class="ix-group-brand">{{groupName}}</h1>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav nav-justified nav-pills navbar-right">
+						<li class="active"><a href="#">店铺管理</a></li>
+						<li><a href="#about">结算</a></li>
+						<li><a href="#contact">订单</a></li>
+						<li><a href="#contact">业务设置</a></li>
+						<li><a href="#contact">帐号管理</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+        <!-- 主内容 -->
+		<div class="ix-body">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                <div class="page-header">
+                    <h2>Sign up</h2>
+                </div>
+
+                <!--
+                Change the "action" attribute to your back-end URL
+                To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
+                -->
+                <form id="registrationForm" method="post" class="form-horizontal" action="..."
+                    data-bv-feedbackicons-valid="glyphicon glyphicon-ok"
+                    data-bv-feedbackicons-invalid="glyphicon glyphicon-remove"
+                    data-bv-feedbackicons-validating="glyphicon glyphicon-refresh">
+
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Username</label>
+                        <div class="col-lg-5">
+                            <input type="text" class="form-control" name="username"
+                                value="shenjiayang"
+                                data-bv-notempty="true"
+                                data-bv-notempty-message="The username is required and cannot be empty"
+
+                                data-bv-stringlength="true"
+                                data-bv-stringlength-min="6"
+                                data-bv-stringlength-max="30"
+                                data-bv-stringlength-message="The username must be more than 6 and less than 30 characters long"
+
+                                data-bv-regexp="true"
+                                data-bv-regexp-regexp="^[a-zA-Z0-9]+$"
+                                data-bv-regexp-message="The username can only consist of alphabetical and number"
+
+                                data-bv-different="true"
+                                data-bv-different-field="password"
+                                data-bv-different-message="The username and password cannot be the same as each other" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">手机号</label>
+                        <div class="col-lg-5">
+                            <input type="text" class="form-control" name="mobile"
+                                value="13718562140"
+                                data-bv-notempty="true"
+                                data-bv-notempty-message="手机号不能为空"
+                                data-bv-mobile-message="手机号不正确！"
+                                data-bv-mobile="true" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Email address</label>
+                        <div class="col-lg-5">
+                            <input autocomplete="off" type="text" class="form-control" name="email"
+                                value="s@1.cn"
+                                data-bv-notempty="true"
+                                data-bv-notempty-message="The email address is required and cannot be empty"
+
+                                data-bv-emailaddress="true"
+                                data-bv-emailaddress-message="The email address is not a valid" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Password</label>
+                        <div class="col-lg-5">
+                            <input type="password" class="form-control" name="password"
+                                value="123456789"
+                                data-bv-notempty="true"
+                                data-bv-notempty-message="The password is required and cannot be empty"
+
+                                data-bv-stringlength="true"
+                                data-bv-stringlength-min="8"
+                                data-bv-stringlength-message="The password must have at least 8 characters"
+
+                                data-bv-different="true"
+                                data-bv-different-field="username"
+                                data-bv-different-message="The password cannot be the same as username" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Gender</label>
+                        <div class="col-lg-5">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="gender" value="male"
+                                        checked
+                                        data-bv-notempty="true"
+                                        data-bv-notempty-message="The gender is required" /> Male
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="gender" value="female" /> Female
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="gender" value="other" /> Other
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Date of birth</label>
+                        <div class="col-lg-5">
+                            <input type="text" class="form-control" name="birthday" placeholder="YYYY-MM-DD hh:mm"
+                                value="2014-8-15 22:33"
+                                data-bv-notempty="true"
+                                data-bv-notempty-message="The date of birth is required"
+
+                                data-bv-date="true"
+                                data-bv-date-format="YYYY-MM-DD hh:mm"
+                                data-bv-date-message="The date of birth is not valid" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-lg-9 col-lg-offset-3">
+                            <!-- Do NOT use name="submit" or id="submit" for the Submit button -->
+                            <button id="submitForm" type="submit" class="btn btn-default">Sign up</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+		</div><!-- ix-body End-->
+
+
+        <!-- 页脚 -->
+		<div class="ix-footer navbar-fixed-bottom">
+			<div class="container">
+				<p class="links">
+					<a href="#">关于哗啦啦商户中心</a>
+					<a href="#">联系我们</a>
+				</p>
+				<p class="copyright">
+					<img alt="Gozap" src=""/>
+					<span class="">&nbsp;旗下网站&nbsp;&copy;&nbsp;2014&nbsp;hualala.com&nbsp;京IPC备14019284号-3</span>
+
+				</p>
+			</div>
+		</div>
+
+		
+		<!--jQuery (necessary for Bootstrap's JavaScript plugins and merchant project)-->
+		<script src="../../src/js/dep/jquery/jquery-1.11.1.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="../../src/js/dep/bootstrap/js/bootstrap.js"></script>
+
+	<!-- Include underscore lib -->
+	<script src="../../src/js/dep/underscore/underscore.js"></script>
+	<!-- Include handlebars -->
+	<script src="../../src/js/dep/handlebars/handlebars-v1.3.0.js"></script>
+    
+
+	<!-- Include DatePicker -->
+	<script src="../../src/js/datepicker/datetimepicker.js"></script>
+	<script src="../../src/js/datepicker/local/datetimepicker.zh-CN.js"></script>
+    
+    <!-- Include DatePicker -->
+	<script src="../../src/js/validator/validator.js"></script>
+	<script src="../../src/js/validator/local/validator.zh-CN.js"></script>
+
+	<!-- Include Common Lib Files for Hualala Shop Site -->
+	<!-- Include Stapes.js -->
+	<script src="../../src/js/common/stapes.js"></script>
+	<!-- Include ixutils.js -->
+	<script src="../../src/js/common/ixutils.js"></script>
+	<!-- Include commonFn.js -->
+	<script src="../../src/js/common/commonFn.js"></script>
+	<!-- Include Constants Defined (datatype.js,typedef.js) -->
+	<script src="../../src/js/common/typedef.js"></script>
+	<script src="../../src/js/common/datatype.js"></script>
+    
+    <script type="text/javascript">
+$(document).ready(function() {
+    $('#registrationForm').bootstrapValidator({
+        // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
+        feedbackIcons: {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        },
+        trigger: 'blur',
+        fields: {
+            username: {
+                message: '用户名无效',
+                validators: {
+                    notEmpty: {
+                        message: '用户名不能为空'
+                    },
+                    stringLength: {
+                        min: 6,
+                        max: 30,
+                        message: '用户名长度必须在6到20个字符之间'
+                    },
+                    regexp: {
+                        regexp: /^[a-zA-Z0-9]+$/,
+                        message: '用户名只能包括英文字母或数字'
+                    },
+                    different: {
+                        field: 'password',
+                        message: '用户名不能与密码相同'
+                    }
+                }
+            },
+            mobile: {
+                validators: {
+                    notEmpty: {
+                        message: 'The mobile number is required'
+                    },
+                    mobile: {
+                        message: '输入的手机号码无效！'
+                    }
+                }
+            },
+            email: {
+                validators: {
+                    notEmpty: {
+                        message: 'The email address is required and cannot be empty'
+                    },
+                    emailAddress: {
+                        message: 'The email address is not a valid'
+                    }
+                }
+            },
+            password: {
+                validators: {
+                    notEmpty: {
+                        message: 'The password is required and cannot be empty'
+                    },
+                    different: {
+                        field: 'username',
+                        message: 'The password cannot be the same as username'
+                    },
+                    stringLength: {
+                        min: 8,
+                        message: 'The password must have at least 8 characters'
+                    }
+                }
+            },
+            birthday: {
+                validators: {
+                    notEmpty: {
+                        message: 'The date of birth is required'
+                    },
+                    date: {
+                        format: 'YYYY/MM/DD',
+                        message: 'The date of birth is not valid'
+                    }
+                }
+            },
+            gender: {
+                validators: {
+                    notEmpty: {
+                        message: 'The gender is required'
+                    }
+                }
+            }
+        },
+        onSuccess: function(e) {
+            // Prevent form submission
+            e.preventDefault();
+
+            // Get the form instance
+            var $form = $(e.target);
+
+            // Get the BootstrapValidator instance
+            var bv = $form.data('bootstrapValidator');
+            alert('Form is valid!');
+            // Use Ajax to submit form data
+            //$.post($form.attr('action'), $form.serialize(), function(result) {
+                // ... Process the result ...
+            //}, 'json');
+        }
+    });
+    /*.on('success.form.bv', function(e) {
+        // Prevent form submission
+        e.preventDefault();
+
+        // Get the form instance
+        var $form = $(e.target);
+
+        // Get the BootstrapValidator instance
+        var bv = $form.data('bootstrapValidator');
+
+        // Use Ajax to submit form data
+        //$.post($form.attr('action'), $form.serialize(), function(result) {
+            // ... Process the result ...
+        //}, 'json');
+    });*/
+});
+/*$(document).ready(function() {
+    $('#registrationForm').bootstrapValidator({
+        trigger: 'blur'
+     });
+});*/
+    </script>
+	</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
