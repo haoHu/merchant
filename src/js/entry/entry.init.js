@@ -76,9 +76,15 @@
 	 */
 	var AuthCode = function (cfg) {
 		var container = $($XP(cfg, 'container')),
-			$img = container.find('.auth-img');
+			$img = container.find('.auth-img'),
+			$progress = container.find('.progress');
 		var callServer = Hualala.Global.genAuthCode;
+		var toggleProgress = function (isShow) {
+			$progress[isShow ? 'removeClass' : 'addClass']('hidden');
+			$img[isShow ? 'addClass' : 'removeClass']('hidden');
+		};
 		var getAuthCode = function (cbFn) {
+			toggleProgress(true);
 			callServer({}, function (res) {
 				var code = null;
 				if ($XP(res, 'resultcode') == "000") {
@@ -88,6 +94,8 @@
 						type : 'warning',
 						msg : "获取验证码失败"
 					});
+
+					toggleProgress();
 				}
 				cbFn(code);
 			});
@@ -100,6 +108,10 @@
 				return;
 			}
 			$img.attr('src', code);
+			// FOR TEST
+			setTimeout(function () {
+				toggleProgress();
+			}, 500);
 		};
 		var bindEvent = function () {
 			container.delegate('.auth-img', 'click', function (e) {
@@ -127,10 +139,15 @@
 		var callServer = Hualala.Global.loginCallServer;
 		var fvOpts = {},
 			$subBtn = $container.find('#login_sub'),
+			$progress = $subBtn.parent().find('.progress'),
 			$authCode = $container.find('.ix-authcode'),
 			authCode = new AuthCode({
 				container : $authCode
 			});
+		var toggleProgress = function (isShow) {
+			$progress[isShow ? 'removeClass' : 'addClass']('hidden');
+			$subBtn[isShow ? 'addClass' : 'removeClass']('hidden');
+		};
 		var initValidFieldOpts = function () {
 			var ret = {};
 			_.each(formFields, function (f, i, l) {
@@ -156,6 +173,7 @@
 			}).on('error.field.bv', function (e, data) {
 				var $form = $(e.target),
 					bv = $form.data('bootstrapValidator');
+				toggleProgress();
 			}).on('success.form.bv', function (e, data) {
 				e.preventDefault();
 				var $form = $(e.target),
@@ -164,19 +182,23 @@
 				// TODO AJAX Submit Login Form
 				console.info('login params : ');
 				console.info(params);
+				
 				callServer(params, function (res) {
 					if (res.resultcode == 000) {
-						document.location.href =Hualala.PageRoute.createPath('main'); 
+						document.location.href = Hualala.PageRoute.createPath('main'); 
 					} else {
 						Hualala.UI.TopTip({
 							type : 'danger',
 							msg : $XP(res, 'resultmsg')
 						});
 					}
+					toggleProgress();
 				});
 			});
 			$container.delegate('#login_sub', 'click', function (e) {
-				$container.trigger('success.form.bv');
+				toggleProgress(true);
+				var bv = $container.data('bootstrapValidator');
+				bv.validate();
 			});
 		};
 
