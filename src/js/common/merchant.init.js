@@ -29,6 +29,7 @@
 		Hualala.Global.loadAppData({}, function (appData) {
 			log("Load Merchant APP Data in (ms): " + (IX.getTimeInMS() - tick));
 			if ($XP(appData, 'resultcode') != 0) {
+				document.location.href = Hualala.PageRoute.createPath('login');
 				throw("Session Data Load Faild!! resultcode = " + $XP(appData, 'resultcode', '') + "; resultMsg = " + $XP(appData, 'resultmsg', ''));
 				return;	
 			}

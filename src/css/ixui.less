@@ -43,3 +43,32 @@
 	&.primary.top .arrow {border-top-color : @primary-border-color; }
 	&.primary.bottom .arrow {border-bottom-color : @primary-border-color; }
 }
+
+// 实现多行文本垂直居中样式
+.x-mul-vertical-middle {
+	position:static;
+	*position : relative;
+	*display : block!important;
+	display : table!important;
+	white-space : normal;
+	width : 100%;
+	height : 100%;
+	vertical-align: middle;
+
+	.x-v-m-out {
+		position : static;
+		*position : absolute;
+		display : table-cell;
+		*display : block;
+		vertical-align : middle;
+		top : 50%;
+		width : 100%;
+	}
+	.x-v-m-in {
+		position : relative;
+		top : -50%;
+		text-align : center;
+		width : 100%;
+		.x-adjust-leading-to(1.5);
+	}
+}

@@ -219,6 +219,7 @@
 		isInitialized = true;
 		Router.flush().config({mode : 'history', root : Hualala.Global.HOME});
 		// Router.flush().config({mode : 'history'});
+		// IE Browser can not support this method ??
 		_.each(PageConfigurations, function (route, name, l) {
 			var re = $XP(route, 'reg'), initFn = $XF(route, 'init'), handler = null;
 			

@@ -1,5 +1,13 @@
 (function ($, window) {
 	IX.ns("Hualala.Common");
+	var pageBrickConfigs = [
+		{name : 'account', title : '结算', label : '提现.账户设置.结算报表', brickClz : 'home-brick-md-2', itemClz : 'brick-item brick-item-2', icon : 'ficon-pay'},
+		{name : 'order', title : '订单', label : '报表.菜品排行', brickClz : 'home-brick-md-3', itemClz : 'brick-item', icon : 'ficon-order'},
+		{name : 'shop', title : '店铺管理', label : '开店.信息.菜谱', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'ficon-home'},
+		{name : 'pcclient', title : '下载哗啦啦', label : '', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'ficon-download'},
+		{name : 'user', title : '账号管理', label : '账号.权限', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'ficon-lock'},
+		{name : 'setting', title : '业务设置', label : '开通业务.业务参数', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'ficon-setting'}
+	];
 	function isSupportedBrowser () {
 		var bd = Hualala.Common.Browser;
 		var isIE = !$XP(bd, 'ie', null) ? false : true,
@@ -118,15 +126,43 @@
 	}
 
 	function initHomePage (pageType, params) {
+		var site = Hualala.getSessionSite(),
+			user = Hualala.getSessionUser(),
+			roles = Hualala.getSessionRoles(),
+			pcclient = Hualala.getSessionPCClient(),
+			rights = Hualala.getSessionUserRight();
 		var $body = $('#ix_wrapper > .ix-body > .container');
-		$body.html(
-			'<div class="jumbotron">'+
-				'<h1>这里是首页</h1>' +
-				'<p>提供各个功能模块的入口按钮</p>' +
-				
-			'</div>'
-			);
-		// TODO Home Page 
+		var mapRanderData = function () {
+			var ht = new IX.IListManager();
+			var ret = null;
+			IX.iterate(rights, function (el) {
+				ht.register(el.name, el);
+			});
+			ret = _.map(pageBrickConfigs, function (el, i, l) {
+				var name = $XP(el, 'name');
+				var hasRight = !ht.get(name) ? false : true;
+				return IX.inherit(el, {
+					itemClz : ($XP(el, 'itemClz', '') + ' ' + (!hasRight ? 'disabled' : ''))
+				});
+			});
+			return ret;
+		};
+		// Home Page 
+		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_homepage'));
+		var $bricks = $(tpl({bricks : mapRanderData()}));
+		$body.html($bricks);
+		$bricks.on('mouseenter mouseleave click', '.brick-item', function (e) {
+			var $this = $(this), pageName = $this.attr('data-pagename'),
+				eType = e.type;
+			if ($this.hasClass('disabled')) return false;
+			if (eType == 'click') {
+				// console.info($this.attr('data-pagename'));
+				document.location.href = Hualala.PageRoute.createPath(pageName);
+			} else {
+				$this.toggleClass('hover');
+			}
+			
+		});
 	}
 
 	function initLoginPage (pageType, params) {

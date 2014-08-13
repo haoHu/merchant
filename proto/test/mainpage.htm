@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf8" />
+		<!--IE=edge表示强制使用IE最新内核,
+			chrome=1表示当遇到chrome浏览器安装了针对IE6,7,8等的插件，就使用chrome内核来进行渲染
+		-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<!--针对360浏览器这种双核浏览器，我们通过meta标签设置，让浏览器强制以webkit内核进行渲染-->
+		<meta name="renderer" content="webkit">
+		<!--针对移动设备触摸屏设置-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>哗啦啦商户管理系统</title>
+
+		<!--bootstrap 样式主文件-->
+		<link href="../../src/js/dep/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+	<!-- Include DatePicker Stylesheet -->
+	<link href="../../src/js/datepicker/css/datetimepicker.css" rel="stylesheet">
+
+	
+
+	<!-- Include Site Stylesheet -->
+	<link href="../../src/css/core.less" rel="stylesheet/less" type="text/css" />
+	<script src="../../tool/less-1.4.2.min.js"></script>
+
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="../../src/js/dep/Respond/respond.matchmedia.addListener.src.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+		<div id="ix_wrapper">
+			<div class="navbar navbar-default navbar-fixed-top ix-header" role="navigation">
+				<!--
+				<div class="header-line clearfix">
+					<div class="container">
+						<div class="pull-left">
+							<a href="#" >哗啦啦手机客户端</a>
+							<a href="#" >访问哗啦啦网站</a>
+						</div>
+						<div class="pull-right">
+							<span class="hello">Hi</span><span class="user">{{name}},</span>
+							<a class="">退出</a>
+						</div>
+					</div>
+				</div>
+				-->
+				<div class="container">
+					<div class="navbar-header">
+						<!--
+						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+							<span class="sr-only">Toggle navigation</span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+							<span class="icon-bar"></span>
+						</button>
+						-->
+						<a class="navbar-brand" href="/">
+							<img alt="哗啦啦商户中心" src="" />
+						</a>
+						<!--<h1 class="ix-group-brand">{{groupName}}</h1>-->
+					</div>
+					<!--
+					<div class="navbar-collapse collapse hide">
+						<ul class="nav nav-justified nav-pills navbar-right">
+							<li class="active"><a href="#">店铺管理</a></li>
+							<li><a href="#about">结算</a></li>
+							<li><a href="#contact">订单</a></li>
+							<li><a href="#contact">业务设置</a></li>
+							<li><a href="#contact">帐号管理</a></li>
+						</ul>
+					</div>
+					-->
+					<div class="pull-right links">
+						<a href="#" >哗啦啦手机客户端</a>
+						<a href="#" >访问哗啦啦网站</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="ix-body">
+				<div class="container">
+					<div class="home-page home-brick">
+						<div class="home-brick-md-2">
+							<div class="brick-item brick-item-2 x-mul-vertical-middle">
+								<div class="item x-v-m-out">
+									<div class="x-v-m-in">
+										<span class="ficon-home"></span>
+										<h3>店铺管理</h3>
+										<p>home-brick-md-2</p>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+						<div class="home-brick-md-3">
+							<div class="brick-item">
+								<span class="ficon-home"></span>
+								<h3>店铺管理</h3>
+								<p>ix-brick-md-3</p>
+							</div>
+						</div>
+						<div class="home-brick-md-1">
+							<div class="brick-item">
+								<span class="ficon-home"></span>
+								<h3>店铺管理</h3>
+								<p>ix-brick-md-1</p>
+							</div>
+						</div>
+						<div class="home-brick-md-1">
+							<div class="brick-item">
+								<span class="ficon-home"></span>
+								<h3>店铺管理</h3>
+								<p>ix-brick-md-1</p>
+							</div>
+						</div>
+						<div class="home-brick-md-1">
+							<div class="brick-item">
+								<span class="ficon-home"></span>
+								<h3>店铺管理</h3>
+								<p>ix-brick-md-1</p>
+							</div>
+						</div>
+						<div class="home-brick-md-2">
+							<div class="brick-item">
+								<span class="ficon-home"></span>
+								<h3>店铺管理</h3>
+								<p>ix-brick-md-2</p>
+							</div>
+						</div>
+					</div>
+					
+				</div>
+			</div>
+
+			<div class="ix-footer navbar-fixed-bottom">
+				<div class="container">
+					<p class="links">
+						<a href="#">关于哗啦啦商户中心</a>
+						<a href="#">联系我们</a>
+					</p>
+					<p class="copyright">
+						<img alt="Gozap" src=""/>
+						<span class="">&nbsp;旗下网站&nbsp;&copy;&nbsp;2014&nbsp;hualala.com&nbsp;京IPC备14019284号-3</span>
+
+					</p>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+		
+		<!--jQuery (necessary for Bootstrap's JavaScript plugins and merchant project)-->
+		<script src="../../src/js/dep/jquery/jquery-1.11.1.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="../../src/js/dep/bootstrap/js/bootstrap.js"></script>
+
+	<!-- Include underscore lib -->
+	<script src="../../src/js/dep/underscore/underscore.js"></script>
+	<!-- Include handlebars -->
+	<script src="../../src/js/dep/handlebars/handlebars-v1.3.0.js"></script>
+
+	<!-- Include DatePicker -->
+	<script src="../../src/js/datepicker/datetimepicker.js"></script>
+	<script src="../../src/js/datepicker/local/datetimepicker.zh-CN.js"></script>
+
+	<!-- Include Common Lib Files for Hualala Shop Site -->
+	<!-- Include Stapes.js -->
+	<script src="../../src/js/common/stapes.js"></script>
+	<!-- Include ixutils.js -->
+	<script src="../../src/js/common/ixutils.js"></script>
+	<!-- Include commonFn.js -->
+	<script src="../../src/js/common/commonFn.js"></script>
+	<!-- Include Constants Defined (datatype.js,typedef.js) -->
+	<script src="../../src/js/common/typedef.js"></script>
+	<script src="../../src/js/common/datatype.js"></script>
+	</body>
+</html>

@@ -116,7 +116,7 @@
 						'{{/each}}',
 						'</ul>',
 					'</p>',
-					'<p><a class="btn btn-primary btn-lg pull-right" role="button">跳过提示，继续访问</a></p>',
+					'<p class="clearfix"><a class="btn btn-primary btn-lg pull-right" role="button">跳过提示，继续访问</a></p>',
 				'</div>',
 			'</div>',
 		'</div>'
@@ -158,10 +158,10 @@
 								'</div>',
 								'<!-- Auth code input-->',
 								'<div class="form-group">',
-									'<div class="col-md-offset-1 col-xs-5">',
+									'<div class="col-md-offset-1 col-xs-8 col-md-7 col-lg-7">',
 										'<input id="login_auth" name="login_auth" type="text" placeholder="请输入验证码" class="form-control input-md" required="">',
 									'</div>',
-									'<div class="col-xs-6">',
+									'<div class="col-xs-2 col-md-2 col-lg-2">',
 										'<div class="ix-authcode">',
 											'<img alt="动态验证码" class="auth-img hidden" src=""/>',
 											// '<input type="hidden" name="auth_code" id="auth_code" />',
@@ -192,6 +192,28 @@
 		'</div>'
 	].join('');
 	TemplateList.register('tpl_site_login', tpl_site_login);
+
+	// 首页
+	var tpl_site_homepage = [
+		'<div class="home-page home-brick">',
+			'{{#each bricks}}',
+				'<div class="{{brickClz}}">',
+					'<div class="{{itemClz}} x-mul-vertical-middle"  data-pagename="{{name}}">',
+						'<div class="item  x-v-m-out">',
+							'<div class="x-v-m-in">',
+								'<div class="format">',
+									'<span class="{{icon}}"></span>',
+									'<h3>{{title}}</h3>',
+									'<p class="hidden-xs">{{label}}</p>',
+								'</div>',
+							'</div>',
+						'</div>',
+					'</div>',
+				'</div>',
+			'{{/each}}',
+		'</div>'
+	].join('');
+	TemplateList.register('tpl_site_homepage', tpl_site_homepage);
 
 	var TplLib = function () {
 		return {

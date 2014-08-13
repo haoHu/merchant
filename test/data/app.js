@@ -27,9 +27,14 @@
 		{id : 5, name : "系统管理员", sortIndex : 1, roleType : 'all'}
 	];
 	Test.UserRight = [
-		{name : '', url : '/shop'},
-		{name : '', url : '/shop/create'},
-		{name : '', url : '/shop/delete'}
+		{name : 'shop', url : '/#shop'},
+		{name : 'setting', url : '/#setting'},
+		{name : 'account', url : '/#account'},
+		{name : 'user', url : '/#user'},
+		{name : 'order', url : '/#order'},
+		{name : 'pcclient', url : '/#download'},
+		{name : 'about', url : '/#about'},
+		{name : 'contact', url : '/#contact'}
 	];
 	Test.PCClient = {
 		downloadClientAddress : '/pcclient/download/1.0.1-release.zip',

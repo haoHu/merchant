@@ -221,3 +221,21 @@
 	border-width : @size;
 	border-left-color : @color;
 }
+
+// 解决inline-block元素的空白间距
+// 对行间块元素的父容器，使用这个mixin
+// 利用设置父元素font-size为0，解决大部分浏览器中的
+// 行间块元素间距，再利用letter-spacing:-Npx兼容safari
+// 注意：使用这个mixin后，父容器的font-size为0.父容器下所有子元素都要重新设置font-size
+// 慎用，可能safari上会有问题
+.x-fix-inlin-block-blank-spacing () {
+	// letter-spacing : -4px;
+	// word-spacing : -4px;
+	font-size : 0;
+	& > * {font-size : 1rem; letter-spacing : normal; word-spacing: normal;}
+	/* Safari only override */
+	::i-block-chrome,& {
+		letter-spacing : -4px;
+		word-spacing : -4px;
+	}
+}
