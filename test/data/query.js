@@ -101,7 +101,7 @@
 		var totalSize = _shops.length,
 			pageCount = Math.ceil(totalSize / pageSize);
 		_shops = _.filter(_shops, function (s, i, l) {
-			return i >= pageNo * pageSize;
+			return (i >= (pageNo - 1) * pageSize) && (i < pageNo * pageSize);
 		});
 		_shops = _.map(_shops, function (s, i, l) {
 			return IX.inherit(shopResultTpl, {

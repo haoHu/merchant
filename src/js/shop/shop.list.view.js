@@ -39,7 +39,7 @@
 			var baseCfg = {
 				total : 0,
 				page : 1,
-				maxVisible : 20,
+				maxVisible : 10,
 				leaps : true
 			};
 			this.$pager.IXPager(IX.inherit(baseCfg, params));
@@ -107,7 +107,7 @@
 			self.$list.empty();
 			self.$list.html(html);
 			self.initPager({
-				total : model.get('totalSize'),
+				total : model.get('pageCount'),
 				page : model.get('pageNo'),
 				href : 'javascript:void(0);'
 			});

@@ -198,7 +198,7 @@
 			'<div class="row shop-list-body">',
 			'</div>',
 			'<div class="shop-list-footer">',
-				'<div class="page-selection"></div>',
+				'<div class="page-selection pull-right"></div>',
 			'</div>',
 		'</div>'
 	].join('');

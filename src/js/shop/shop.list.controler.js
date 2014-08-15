@@ -55,13 +55,13 @@
 					};
 					self.model.load(params, cbFn);
 				},
-				"update:totalSize" : function (v) {
-					var self = this;
-					self.view.initPager({
-						total : self.get('totalSize'),
-						page : self.get('pageNo')
-					});
-				}
+				// "update:totalSize" : function (v) {
+				// 	var self = this;
+				// 	self.view.initPager({
+				// 		total : self.get('totalSize'),
+				// 		page : self.get('pageNo')
+				// 	});
+				// }
 			}, this);
 			this.view.on({
 				render : function () {

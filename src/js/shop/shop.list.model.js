@@ -72,7 +72,7 @@
 		load : function (params, cbFn) {
 			var self = this;
 			self.updatePagerParams(params);
-			self.callServer(self.getPagerParams, function (res) {
+			self.callServer(self.getPagerParams(), function (res) {
 				if (res.resultcode == '000') {
 					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.pageNo'));
 					self.updatePagerParams($XP(res, 'data', {}));
