@@ -13,7 +13,8 @@
 	// 页面整体Layout模板
 	var tpl_site_layout = [
 		'<div id="ix_wrapper">',
-			// Header
+			// Header 
+            // @NOTE: 
 			'<div class="navbar navbar-default navbar-fixed-top ix-header" role="navigation">',
 				'<div class="header-line clearfix">',
 					'<div class="container">',
@@ -46,6 +47,7 @@
 				'</div>',
 			'</div>',
 			// Footer
+             // @NOTE: 
 			'<div class="ix-footer navbar-fixed-bottom">',
 				'<div class="container">',
 					'<p class="links">',
@@ -142,25 +144,25 @@
 								'<!-- Text input-->',
 								'<div class="form-group">',
 									'<div class="col-md-offset-1 col-md-10">',
-										'<input id="group_name" name="group_name" type="text" placeholder="请输入集团主账号" class="form-control input-md" required="">',
+										'<input id="group_name" name="group_name" type="text" placeholder="请输入集团主账号" class="form-control input-md" >',
 									'</div>',
 								'</div>',
 								'<!-- Text input-->',
 								'<div class="form-group">',
 									'<div class="col-md-offset-1 col-md-10">',
-										'<input id="group_subname" name="group_subname" type="text" placeholder="请输入集团子账号" class="form-control input-md" required="">',
+										'<input id="group_subname" name="group_subname" type="text" placeholder="请输入集团子账号" class="form-control input-md" >',
 									'</div>',
 								'</div>',
 								'<!-- Password input-->',
 								'<div class="form-group">',
 									'<div class="col-md-offset-1 col-md-10">',
-										'<input id="login_pwd" name="login_pwd" type="password" placeholder="请输入登陆密码" class="form-control input-md" required="">',
+										'<input id="login_pwd" name="login_pwd" type="password" placeholder="请输入登录密码" class="form-control input-md" >',
 									'</div>',
 								'</div>',
 								'<!-- Auth code input-->',
 								'<div class="form-group">',
 									'<div class="col-md-offset-1 col-xs-8 col-md-7 col-lg-7">',
-										'<input id="login_auth" name="login_auth" type="text" placeholder="请输入验证码" class="form-control input-md" required="">',
+										'<input id="login_auth" name="login_auth" type="text" placeholder="请输入验证码" class="form-control input-md" >',
 									'</div>',
 									'<div class="col-xs-2 col-md-2 col-lg-2">',
 										'<div class="ix-authcode">',

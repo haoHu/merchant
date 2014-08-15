@@ -29,9 +29,9 @@
 	Test.UserRight = [
 		{name : 'shop', url : '/#shop'},
 		{name : 'setting', url : '/#setting'},
-		{name : 'account', url : '/#account'},
+		// {name : 'account', url : '/#account'},
 		{name : 'user', url : '/#user'},
-		{name : 'order', url : '/#order'},
+		// {name : 'order', url : '/#order'},
 		{name : 'pcclient', url : '/#download'},
 		{name : 'about', url : '/#about'},
 		{name : 'contact', url : '/#contact'}

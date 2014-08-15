@@ -12,17 +12,17 @@
 				}
 			}
 		},
-		{
-			name : 'group_subname', type : 'text', palceholder : '请输入集团子账号', clz : 'form-control input-md',
-			key : 'childName',
-			field : {
-				validators : {
-					notEmpty : {
-						message : "集团子账号不能为空"
-					}
-				}
-			}
-		},
+		// {
+		// 	name : 'group_subname', type : 'text', palceholder : '请输入集团子账号', clz : 'form-control input-md',
+		// 	key : 'childName',
+		// 	field : {
+		// 		validators : {
+		// 			notEmpty : {
+		// 				message : "集团子账号不能为空"
+		// 			}
+		// 		}
+		// 	}
+		// },
 		{
 			name : 'login_pwd', type : 'passowrd', palceholder : '请输入登陆密码', clz : 'form-control input-md',
 			key : 'password',
