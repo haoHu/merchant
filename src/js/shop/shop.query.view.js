@@ -183,6 +183,10 @@
 				$btn.addClass('disabled');
 				self.emit('filter', self.getFilterParams());
 			});
+			this.$query.on('click', '.create-shop', function (e) {
+				var $btn = $(this);
+				document.location.href = Hualala.PageRoute.createPath('shopCreate');
+			});
 		},
 		destroy : function () {
 			this.isReady = false;

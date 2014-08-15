@@ -45,7 +45,12 @@
 			this.$pager.IXPager(IX.inherit(baseCfg, params));
 		},
 		bindEvent : function () {
-
+			var self = this;
+			self.$list.on('click', '.btn[data-href]', function (e) {
+				var $btn = $(this),
+					path = $btn.attr('data-href');
+				document.location.href = path;
+			});
 		},
 		// 加载View层所需模板
 		loadTemplates : function () {
