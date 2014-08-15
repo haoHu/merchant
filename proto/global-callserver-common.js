@@ -106,4 +106,26 @@
 		}));
 	};
 
+	/**
+	 * 搜索店铺
+	 * @param  {Object} params 搜索参数{cityID, areaID, keywordLst, Page : {pageSize, pageNo}}
+	 * @param  {Function} cbFn   response cbFn回调参数{resultcode, resultmsg, data : {pageCount, pageNo, pageSize, records : $$ShopList, totalSize}}
+	 *             @param {Int} data.pageCount 页码总数
+	 *             @param {Int} data.pageNo 当前页码
+	 *             @param {Int} data.pageSize 每页结果数量
+	 *             @param {Int} totalSize 结果总数
+	 *             @param {Array} records 结果数据
+	 * @return {NULL}        
+	 */
+	Hualala.Global.queryShop = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var random = Test.getRandom(1, 10);
+		var res = {resultcode : 000, resultmsg : ''};
+		var results = Test.queryResult(params);
+		fn(IX.inherit(res, {
+			data : results
+		}));
+	}
+
+
 })();

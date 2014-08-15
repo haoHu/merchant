@@ -4,7 +4,12 @@
 		var $body = $('#ix_wrapper > .ix-body > .container');
 		var queryPanel = new Hualala.Shop.QueryController({
 			needShopCreate : true,
-			container : $body
+			container : $body,
+			resultController : new Hualala.Shop.ShopListController({
+				container : $body,
+				model : new Hualala.Shop.CardListModel({callServer : Hualala.Global.queryShop}),
+				view : new Hualala.Shop.CardListView()
+			})
 		});
 		// TODO 店铺管理首页，店铺查询及列表展示页面
 	};

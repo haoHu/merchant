@@ -23,6 +23,24 @@
 			cityName : '城市',
 			areaID : 101010000,
 			areaName : '区域'
+		},
+		shopResultTpl = {
+			cityID : '',
+			cityName : '',
+			menuShopID : '11111',
+			menuShopName : '豆捞坊（西直门店）',
+			operationMode : 0,
+			promotShopID : 0,
+			promotShopName : '',
+			promotionInfo : '',
+			settleID : '6',
+			settleName : '豆捞坊北京公司',
+			shopID : '',
+			shopName : '',
+			status : 1,
+			tel : '010-67172156',
+			timeShopID : '77867',
+			timeShopName : ''
 		};
 	var cityIDs = [1010,1021,1031,1041],
 		areaIDs = [10000,20000,30000,40000],
@@ -61,9 +79,49 @@
 		});
 	};
 	mapData();
+
+	// params : {Page : {pageNo, pageSize}, cityID, areaID, keywordLst}
+	var getQueryShopData = function (params) {
+		var pageNo = $XP(params, 'Page.pageNo', 1),
+			pageSize = $XP(params, 'Page.pageSize', 10),
+			cityID = $XP(params, 'cityID', null),
+			areaID = $XP(params, 'areaID', null);
+		var _shops = _.filter(shops, function (s, i, l) {
+			if (!cityID && !areaID) {
+				return s;
+			}
+			if (!areaID) {
+				return $XP(s, 'areaID') == areaID;
+			}
+			return ($XP(s, 'cityID') == cityID && $XP(s, 'areaID') == areaID);
+		});
+		var totalSize = _shops.length,
+			pageCount = Math.ceil(totalSize / pageSize);
+		_shops = _.filter(_shops, function (s, i, l) {
+			return i >= pageNo * pageSize;
+		});
+		_shops = _.map(_shops, function (s, i, l) {
+			return IX.inherit(shopResultTpl, {
+				cityID : s.cityID,
+				cityName : s.cityName,
+				shopID : s.shopID,
+				shopName : s.shopName
+			});
+		});
+		return {
+			pageCount : pageCount,
+			pageNo : pageNo,
+			pageSize : pageSize,
+			records : _shops,
+			totalSize : totalSize
+		};
+	};
+
+
 	Test.querySchema = {
 		cities : cities,
 		areas : areas,
 		shops : shops
 	};
+	Test.queryResult = getQueryShopData;
 })();

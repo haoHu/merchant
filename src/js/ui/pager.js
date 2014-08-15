@@ -51,13 +51,13 @@
 			pg = page - 1 < 1 ? 1 
 				: (settings.leaps && page - 1 >= settings.maxVisible) 
 				? (Math.floor((page - 1) / maxV) * maxV) : (page - 1);
-			$pages.first().toogleClass('disabled', page === 1)
+			$pages.first().toggleClass('disabled', page === 1)
 				.attr('data-pg', pg).find('a').attr('href', genHref(pg));
 
 			pg = (page + 1) > settings.total ? settings.total : 
 				(settings.leaps && page + 1 < settings.total - settings.maxVisible) ?
 				(vis + settings.maxVisible + step) : (page + 1);
-			$pages.last().toogleClass('disabled', page === settings.total).attr('data-pg', pg)
+			$pages.last().toggleClass('disabled', page === settings.total).attr('data-pg', pg)
 				.find('a').attr('href', genHref(pg));
 
 			var $curPage = $pages.filter('[data-pg=' + page + ']');
@@ -101,7 +101,7 @@
 				renderPager($IXPager, page);
 				$self.trigger('page', page)
 			});
-			renderPager($IXPager, page);
+			renderPager($IXPager, settings.page);
 		});
 	};
 })(jQuery, window);

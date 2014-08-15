@@ -150,7 +150,7 @@
 	TplLib.register('tpl_shop_tags', tpl_shop_tags);
 
 	var tpl_shop_card = [
-		'<div class="panel panel-default ix-card shop-card {{clz}}">',
+		'<div class="panel panel-default ix-card shop-card {{clz}}" >',
 			'<div class="panel-heading ix-card-header">',
 				'<h4 class="panel-title">{{name}}</h4>',
 			'</div>',
@@ -162,13 +162,13 @@
 					'<div class="media-body">',
 						'{{> shopTag}}',
 						'<address>{{address}}</address>',
-						'<div class="phone">{{phone}}</div>',
+						'<div class="phone">{{tel}}</div>',
 					'</div>',
 					'<div class="btns pull-right">',
-						'<a href="javascript:void(0);" class="btn btn-default shop-info">',
+						'<a href="javascript:void(0);" class="btn btn-default shop-info" data-href="{{infoHref}}">',
 							'修改店铺信息',
 						'</a>',
-						'<a href="javascript:void(0);" class="btn btn-default shop-menu">',
+						'<a href="javascript:void(0);" class="btn btn-default shop-menu" data-href="{{menuHref}}">',
 							'菜谱管理',
 						'</a>',
 					'</div>',
@@ -183,18 +183,24 @@
 	TplLib.register('tpl_shop_card', tpl_shop_card);
 
 	var tpl_shop_list = [
+		'{{#with shopCard}}',
+			'{{#each list}}',
+			'<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">',
+				'{{> shopCard}}',
+			'</div>',
+			'{{/each}}',
+		'{{/with}}',
+	].join('');
+	TplLib.register('tpl_shop_list', tpl_shop_list);
+
+	var tpl_shop_list_layout = [
 		'<div class="shop-list">',
 			'<div class="row shop-list-body">',
-				'{{#each list}}',
-					'<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">',
-						'{{> shopCard}}',
-					'</div>',
-				'{{/each}}',
 			'</div>',
 			'<div class="shop-list-footer">',
 				'<div class="page-selection"></div>',
 			'</div>',
 		'</div>'
 	].join('');
-	TplLib.register('tpl_shop_list', tpl_shop_list);
+	TplLib.register('tpl_shop_list_layout', tpl_shop_list_layout);
 })(jQuery, window);
