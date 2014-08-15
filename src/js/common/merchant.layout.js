@@ -116,7 +116,7 @@
 			return {items : navs};
 		};
 		var $navbar = $(navTpl(mapRanderData())),
-			$navToggle = $(navToggleTpl()),
+			$navToggle = $(navToggleTpl({target : '#site_navbar'})),
 			$header = $('#ix_wrapper .ix-header');
 		$header.find('> .container .navbar-collapse').remove();
 		$header.find('> .container').append($navbar);

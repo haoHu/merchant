@@ -1,0 +1,218 @@
+(function ($, window) {
+	IX.ns("Hualala.Shop");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+	var QueryView = Stapes.subclass({
+		constructor : function () {
+			// View层是否初始化完毕
+			this.isReady = false;
+			// 是否开放创建店铺功能
+			this.needShopCreate = false;
+			// View层容器
+			this.$container = null;
+			this.$queryBox = null;
+			// 过滤部分容器
+			this.$filter = null;
+			// 搜索部分容器
+			this.$query = null;
+			this.loadTemplates();
+		}
+	});
+	QueryView.proto({
+		// 初始化View层
+		init : function (cfg) {
+			this.model = $XP(cfg, 'model', null);
+			this.needShopCreate = $XP(cfg, 'needShopCreate', false);
+			this.$container = $XP(cfg, 'container', null);
+			if (!this.model || !this.$container || this.$container.length == 0) {
+				throw("Init Query View Failed!!");
+				return;
+			}
+			this.renderLayout();
+			this.bindEvent();
+			this.isReady = true;
+			this.emit('filter', this.getFilterParams());
+
+		},
+		// 判断是否View初始化完毕
+		hasReady : function () {return this.isReady;},
+		// 加载View层需要的模板
+		loadTemplates : function () {
+			var queryTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_query')),
+				filterTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_filter'));
+			// 注册子模板
+			Handlebars.registerPartial("shopCity", Hualala.TplLib.get('tpl_shop_filter'));
+			Handlebars.registerPartial("toggle", Hualala.TplLib.get('tpl_site_navbarToggle'));
+			// Handlebars.registerPartial("shopArea", Hualala.TplLib.get('tpl_shop_filter'));
+			this.set({
+				queryTpl : queryTpl,
+				filterTpl : filterTpl
+			});
+		},
+		// 生成搜索栏店铺选择框组件的渲染数据
+		mapChosenShopData : function () {
+			var self = this;
+			var cities = this.model.getCities();
+			var ret = [];
+			_.each(cities, function (city, i, l) {
+				var cityName = $XP(city, 'cityName', ''),
+					cityID = $XP(city, 'cityID', ''),
+					shopLst = $XP(city, 'shopLst');
+				var shops = self.model.getShops(shopLst);
+				ret.push({
+					name : cityName,
+					items : _.map(shops, function (shop, j, l) {
+						return {
+							code : $XP(shop, 'shopID'),
+							name : $XP(shop, 'shopName')
+						};
+					})
+				});
+			});
+			return ret;
+		},
+		// 生成渲染数据
+		mapRenderLayoutData : function () {
+			var cities = this.model.getCities(),
+				shops = this.model.getShops();
+			var filterCities = this.mapFilterData({
+					type : 'city',
+					name : '城市：',
+					focus : 0,
+					data : cities
+				}),
+				queryChosenShops = this.mapChosenShopData();
+			return {
+				clz : '',
+				shopCity : filterCities,
+				toggle : {target : '#shop_query'},
+				needShopCreate : this.needShopCreate,
+				optGrp : queryChosenShops
+			};
+		},
+		// 渲染整体query 框架
+		renderLayout : function () {
+			var self = this,
+				queryTpl = self.get('queryTpl'),
+				model = self.model;
+			var renderData = self.mapRenderLayoutData();
+			var html = queryTpl(renderData);
+			this.$queryBox = $(html);
+			this.$container.prepend(this.$queryBox);
+			this.$filter = this.$queryBox.find('.filter');
+			this.$query = this.$queryBox.find('.query');
+
+		},
+		// 生成渲染地区的渲染数据
+		mapFilterData : function (cfg) {
+			var data = $XP(cfg, 'data', []),
+				type = $XP(cfg, 'type'),
+				name = $XP(cfg, 'name'),
+				focus = $XP(cfg, 'focus', 0),
+				ret = {
+					type : type,
+					name : name,
+					items : []
+				},
+				count = 0;
+			var btn_all = {
+				focusClz : '',
+				type : type,
+				code : -1,
+				name : '全部',
+				count : 0
+			};
+			ret.items = _.map(data, function (o, i, l) {
+				var key = type + 'Count';
+				var c = parseInt($XP(o, key, 0));
+				count += c;
+				return {
+					focusClz : '',
+					type : type,
+					code : $XP(o, (type + 'ID'), ''),
+					name : $XP(o, (type + 'Name'), ''),
+					count : c
+				}
+			});
+			btn_all = IX.inherit(btn_all, {
+				count : count,
+				focusClz : ''
+			});
+			ret.items.unshift(btn_all);
+			ret.items[focus]['focusClz'] = 'disabled';
+			return ret;
+		},
+		// 渲染filter
+		renderAreaFilter : function (data) {
+			var self = this,
+				filterTpl = self.get('filterTpl'),
+				model = self.model;
+			var renderData = self.mapFilterData({
+				type : 'area',
+				name : '区域：',
+				focus : 0,
+				data : data
+			});
+			var html = filterTpl(renderData);
+			this.$filter.find('.area').remove();
+			this.$filter.append(html);
+		},
+		// 绑定View层操作
+		bindEvent : function () {
+			var self = this;
+			this.$filter.on('click', '.btn-link[data-city]', function (e) {
+				var $btn = $(this);
+				var cityID = $btn.attr('data-city');
+				var data = null;
+				if (cityID != -1) {
+					data = self.model.getCities(cityID);
+					data = $XP(data[0], 'areaLst', null);
+					data = self.model.getAreas(data);
+					self.renderAreaFilter(data);
+				} else {
+					self.$filter.find('.area').remove();
+				}
+				self.$filter.find('.btn-link[data-city]').removeClass('disabled');
+				$btn.addClass('disabled');
+				self.emit('filter', self.getFilterParams());
+			});
+			this.$filter.on('click', '.btn-link[data-area]', function (e) {
+				var $btn = $(this);
+				var areaID = $btn.attr('data-area');
+				self.$filter.find('.btn-link[data-area]').removeClass('disabled');
+				$btn.addClass('disabled');
+				self.emit('filter', self.getFilterParams());
+			});
+		},
+		destroy : function () {
+			this.isReady = false;
+			this.needShopCreate = false;
+			this.$container.find('.shop-query').remove();
+			this.$queryBox = null;
+			this.$filter = null;
+			this.$query = null;
+		},
+		// 获取过滤参数
+		getFilterParams : function () {
+			// TODO
+			var self = this;
+			var focusedBtn = self.$filter.find('.btn-link.disabled');
+			var cityID = focusedBtn.filter('[data-city]').attr('data-city'),
+				areaID = focusedBtn.filter('[data-area]').attr('data-area');
+			cityID = (!cityID || cityID == -1) ? '' : cityID;
+			areaID = (!areaID || areaID == -1) ? '' : areaID;
+			return {
+				cityID : cityID,
+				areaID : areaID,
+				keywordLst : ''
+			};
+		},
+		// 获取搜索参数
+		getQueryParams : function () {
+			// TODO
+			return {}
+		}
+
+	});
+	Hualala.Shop.QueryView = QueryView;
+})(jQuery, window);

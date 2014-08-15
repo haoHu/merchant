@@ -72,4 +72,38 @@
 			fn(res);
 		}
 	};
+
+	/**
+	 * 获取店铺搜索过滤的概要数据
+	 * @param  {Object} params 请求参数
+	 * @param  {Function} cbFn Response数据回调
+	 *            @param {Object} response cbFn回调参数 {resultcode, resultmsg, data}
+	 *            @param {String} resultcode Response结果码
+	 *            @param {String} resultmsg Response结果描述
+	 *            @param {Object} data Response数据
+	 *            @param {Array} data.cities 城市概要数据
+	 *            @param {Array} data.areas 区域概要数据
+	 *            @param {Array} data.shops 店铺概要数据
+	 * @return {NULL}        
+	 */
+	Hualala.Global.getShopQuerySchema = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var random = Test.getRandom(1, 10);
+		var res = {resultcode : 000, resultmsg : ''};
+		var testData = Test.querySchema;
+		// if (random < 5) {
+		// 	fn(IX.inherit(res, {
+		// 		resultcode : random * 1000,
+		// 		resultmsg : '系统错误'
+		// 	}));
+		// } else {
+		// 	fn(IX.inherit(res, {
+		// 		data : testData
+		// 	}));
+		// }
+		fn(IX.inherit(res, {
+			data : testData
+		}));
+	};
+
 })();

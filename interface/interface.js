@@ -40,4 +40,19 @@ Hualala.Global.genAuthCode = function (params, cbFn) {}
  */
 Hualala.Global.loginCallServer = function (params, cbFn) {}
 
+/**
+ * 获取店铺搜索过滤的概要数据
+ * @param  {Object} params 请求参数
+ * @param  {Function} cbFn Response数据回调
+ *            @param {Object} response cbFn回调参数 {resultcode, resultmsg, data}
+ *            @param {String} resultcode Response结果码
+ *            @param {String} resultmsg Response结果描述
+ *            @param {Object} data Response数据
+ *            @param {Array} data.cities 城市概要数据
+ *            @param {Array} data.areas 区域概要数据
+ *            @param {Array} data.shops 店铺概要数据
+ * @return {NULL}        
+ */
+Hualala.Global.getShopQuerySchema = function (params, cbFn) {}
+
 

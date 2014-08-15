@@ -64,7 +64,7 @@
 
 	// 站点导航栏
 	var tpl_site_navbar = [
-		'<div class="navbar-collapse collapse">',
+		'<div class="navbar-collapse collapse" id="site_navbar">',
 			'<ul class="nav nav-justified nav-pills navbar-right">',
 				'{{#each items}}',
 				'<li class="{{active}} {{disabled}}">',
@@ -83,7 +83,8 @@
 
 	// 小屏幕下，站点导航栏的触发按钮
 	var tpl_site_navbarToggle = [
-		'<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">',
+		// '<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">',
+		'<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="{{target}}">',
 			'<span class="sr-only">Toggle navigation</span>',
 			'<span class="icon-bar"></span>',
 			'<span class="icon-bar"></span>',

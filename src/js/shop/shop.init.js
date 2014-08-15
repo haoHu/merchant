@@ -2,13 +2,10 @@
 	IX.ns("Hualala.Shop");
 	var initShopList = function (pageType, params) {
 		var $body = $('#ix_wrapper > .ix-body > .container');
-		$body.html(
-			'<div class="jumbotron">'+
-				'<h1>这里是店铺管理首页</h1>' +
-				'<p>提供查询框和查询结果的展示</p>' +
-				
-			'</div>'
-			);
+		var queryPanel = new Hualala.Shop.QueryController({
+			needShopCreate : true,
+			container : $body
+		});
 		// TODO 店铺管理首页，店铺查询及列表展示页面
 	};
 	Hualala.Shop.HomePageInit = initShopList;
