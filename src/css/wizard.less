@@ -1,0 +1,166 @@
+﻿@step-nav-bg: #efefef;
+@step-nav-active-bg: #f90;
+.step-nav 
+{
+    display: inline-block;
+    margin: 0; padding: 0;
+    background: #fff;
+
+    li 
+    {
+        display: inline-block; 
+        position: relative;
+        margin-right: 5px;
+        padding: 12px 17px 10px 30px;
+        *display: inline;
+        *padding-left: 17px;
+        background: @step-nav-bg;
+        line-height: 18px;
+        list-style: none;
+        zoom: 1; 
+    }
+
+    li:first-child 
+    {
+        padding-left: 12px;
+        -moz-border-radius: 4px 0 0 4px;
+        -webkit-border-radius: 4px 0 0 4px;
+        border-radius: 4px 0 0 4px; 
+    }
+
+    li:first-child:before 
+    {
+        border: none 
+    }
+
+    li:last-child 
+    {
+        margin-right: 0;
+        -moz-border-radius: 0 4px 4px 0;
+        -webkit-border-radius: 0 4px 4px 0;
+        border-radius: 0 4px 4px 0; 
+    }
+
+    li:last-child:after 
+    {
+        border: none 
+    }
+
+    li:before 
+    {
+        position: absolute;
+        left: 0; top: 0;
+        height: 0; width: 0;
+        border-bottom: 20px inset transparent;
+        border-left: 20px solid #fff;
+        border-top: 20px inset transparent;
+        content: "" 
+    }
+
+    li:after 
+    {
+        position: absolute;
+        right: -20px; top: 0;
+        height: 0; width: 0;
+        border-bottom: 20px inset transparent;
+        border-left: 20px solid @step-nav-bg;
+        border-top: 20px inset transparent;
+        content: "";
+        z-index: 2; 
+    }
+
+    a 
+    { 
+        cursor: default;
+        color: #787878
+    }
+    a:hover 
+    {
+        text-decoration: none 
+    }
+    .label 
+    {
+        position: relative;
+        top: -1px; color: #787878;
+        margin: 0 5px 0 0; padding: 1px 5px 2px 
+    }
+
+    .active 
+    {
+        color: #fff;
+        background: @step-nav-active-bg;
+
+        a 
+        {
+            color: #fff;
+            cursor: default 
+        }
+        .label 
+        { 
+            color: #fff;
+            background-color: #894727;
+        }
+    }
+
+    .active:after 
+    {
+        border-left-color: @step-nav-active-bg;
+    }
+    
+}
+
+
+
+
+.step-action 
+{ 
+    text-align: right; 
+    background: #f5f5f5;
+    padding: 10px 14px 10px 10px;
+    .btn 
+    { 
+        margin-right: 10px;
+        padding: 6px 24px;
+    }
+}
+
+
+    
+/*.step-nav.clickable li:not(.active) 
+{
+    cursor: pointer 
+}
+.step-nav.clickable li:hover:not(.active) 
+{
+    background: #ccc 
+}
+.step-nav.clickable li:hover:not(.active):after 
+{
+    border-left-color: #ccc 
+}
+.step-nav.clickable li:hover:not(.active) a 
+{
+    color: #08c 
+}*/
+/*@media (max-width: 480px) 
+{ 
+    badges only on small screens
+    .step-nav li:after,
+    .step-nav li:before 
+    {
+        border: none 
+    }
+    .step-nav li,
+    .step-nav li.active,
+    .step-nav li:first-child,
+    .step-nav li:last-child 
+    {
+        margin-right: 0;
+        padding: 0;
+        background-color: transparent 
+    }
+    .step-nav .active a
+    {
+        color: #333;
+    }
+}*/

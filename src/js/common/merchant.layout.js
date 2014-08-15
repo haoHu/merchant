@@ -90,6 +90,7 @@
 		if ($.fn.bootstrapValidator) {
 			$.fn.bootstrapValidator.DEFAULT_OPTIONS = $.extend({}, $.fn.bootstrapValidator.DEFAULT_OPTIONS, {
 				message: '您输入的数据有误，请核对后再次输入',
+                trigger: 'blur',
 				feedbackIcons : {
 					valid : 'glyphicon glyphicon-ok',
 					invalid : 'glyphicon glyphicon-remove',
