@@ -70,7 +70,7 @@
 			var getTags = function (tags) {
 				return _.map(tags, function (t, i, l) {
 					return {
-						clz : '',
+						clz : 'label-info',
 						tag : t
 					};
 				});
@@ -82,7 +82,7 @@
 					name : $XP(shop, 'shopName', ''),
 					img : '',
 					tags : getTags($XP(shop, 'tags', [])),
-					address : $XP(shop, 'shopAddress', ''),
+					address : $XP(shop, 'address', ''),
 					tel : $XP(shop, 'tel', ''),
 					infoHref : Hualala.PageRoute.createPath('shopInfo', [$XP(shop, 'shopID', '')]),
 					menuHref : Hualala.PageRoute.createPath('shopMenu', [$XP(shop, 'shopID', '')])
@@ -111,6 +111,7 @@
 				page : model.get('pageNo'),
 				href : 'javascript:void(0);'
 			});
+			self.$list.find(':checkbox[name*=switcher_]').bootstrapSwitch();
 		}
 	});
 

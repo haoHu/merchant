@@ -38,9 +38,12 @@
 			shopID : '',
 			shopName : '',
 			status : 1,
+			tags : ['日本料理', '自助餐', '白石桥'],
+			address : '黄浦区南京东路819号百联世茂8楼',
 			tel : '010-67172156',
 			timeShopID : '77867',
 			timeShopName : ''
+
 		};
 	var cityIDs = [1010,1021,1031,1041],
 		areaIDs = [10000,20000,30000,40000],
