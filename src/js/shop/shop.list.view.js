@@ -51,6 +51,14 @@
 					path = $btn.attr('data-href');
 				document.location.href = path;
 			});
+			self.$pager.on('page', function (e, pageNo) {
+				var params = self.model.getPagerParams();
+				params['Page']['pageNo'] = pageNo;
+				self.model.emit('load', IX.inherit(params, {
+					pageNo : $XP(params, 'Page.pageNo', 1),
+					pageSize : $XP(params, 'Page.pageSize', 15)
+				}));
+			});
 		},
 		// 加载View层所需模板
 		loadTemplates : function () {

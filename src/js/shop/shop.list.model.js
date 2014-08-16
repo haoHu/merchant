@@ -23,7 +23,7 @@
 				pageCount : 0,
 				totalSize : 0,
 				pageNo : $XP(params, 'Page.pageNo', 1),
-				pageSize : $XP(params, 'Page.pgeSize', 15),
+				pageSize : $XP(params, 'Page.pageSize', 15),
 				cityID : $XP(params, 'cityID', ''),
 				areaID : $XP(params, 'areaID', ''),
 				keywordLst : $XP(params, 'keywordLst', ''),
@@ -33,7 +33,24 @@
 		},
 		updatePagerParams : function (params) {
 			var self = this;
-			var pagerParamkeys = 'pageCount,totalSize,pageNo,pageSize,cityID,areaID,keywordLst,';
+			var pagerParamkeys = 'pageCount,totalSize,pageNo,pageSize,cityID,areaID,keywordLst';
+			// _.each(pagerParamkeys.split(','), function (k, i, l) {
+			// 	switch(k) {
+			// 		case 'pageCount': 
+			// 		case 'totalSize' :
+			// 			self.set(k, $XP(params, k, 0));
+			// 			break;
+			// 		case 'pageNo' : 
+			// 			self.set(k, $XP(params, k, 1));
+			// 			break;
+			// 		case 'pageSize' :
+			// 			self.set(k, $XP(params, k, 15));
+			// 			break;
+			// 		default:
+			// 			self.set(k, $XP(params, k, ''));
+			// 			break;
+			// 	}
+			// });
 			_.each(params, function (v, k, l) {
 				if (pagerParamkeys.indexOf(k) > -1) {
 					self.set(k, v);

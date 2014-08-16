@@ -74,7 +74,7 @@
 						py : shopTpl.py + sidx,
 						cityID : cid,
 						cityName : shopTpl.cityName + cidx,
-						areaID : aid,
+						areaID : '' + cid + aid,
 						areaName : shopTpl.areaName + aidx
 					}));
 				});
@@ -94,7 +94,7 @@
 				return s;
 			}
 			if (!areaID) {
-				return $XP(s, 'areaID') == areaID;
+				return $XP(s, 'cityID') == cityID;
 			}
 			return ($XP(s, 'cityID') == cityID && $XP(s, 'areaID') == areaID);
 		});

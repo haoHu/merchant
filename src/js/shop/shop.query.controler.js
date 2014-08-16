@@ -53,7 +53,10 @@
 					var self = this;
 					console.info('query params:');
 					console.info(params);
-					self.resultController && self.resultController.emit('load', params);
+					self.resultController && self.resultController.emit('load', IX.inherit(params, {
+						pageNo : 1,
+						pageSize : 15
+					}));
 				}
 			}, this);
 			// 模型的事件绑定
