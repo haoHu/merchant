@@ -5,6 +5,8 @@
 @page-footer-bg : #fff;
 @page-footer-boder-color : #fbf6e5;
 @page-body-bg : #fff;
+@site-nav-bg : #BF8F68;
+@site-nav-color : #89552E;
 
 body {
 
@@ -45,7 +47,7 @@ body.login {
 		.hello, .user {.x-inlineblock(); margin-right : .3rem; color : @x-font-color-midGray; font-weight: 700;}
 	}
 	.ix-group-brand {
-		float : left; font-size : 1.5rem; .x-adjust-leading-to(1.5, 1em); vertical-align: middle; padding : 15px 0;
+		float : left; font-size : 1.5rem; font-weight: bold; .x-adjust-leading-to(1.5, 1em); vertical-align: middle; padding : 15px 0;
 	}
 	.icon-pcclient {
 		vertical-align: middle;  .x-icon-16_mobile(); .x-icon-size(16px); margin-right : 0.5rem;
@@ -53,10 +55,20 @@ body.login {
 	.icon-jumpsite {
 		vertical-align: middle;  .x-icon-16_go(); .x-icon-size(16px); margin-right : 0.5rem;
 	}
+	.logo {
+		padding-top : 10px;
+	}
 	.nav-justified {
 		width : 60%;
 		a {
 			padding : 10px 15px; margin-top : 10px; font-weight : 700;
+		}
+	}
+	#site_navbar .nav-pills {
+		> li > a {color : @site-nav-color; .x-font-size(16px);}
+		> li.active > a, > li.active > a:hover, > li.active > a:focus {
+			color : #fff;
+			background-color : @site-nav-bg;
 		}
 	}
 	.links {
@@ -164,7 +176,8 @@ body.login {
 		.ficon-lock:before {.x-ficon-permissions();}
 		.ficon-setting:before {.x-ficon-setting();}
 		&.disabled {
-			.x-filter(.5); cursor : not-allowed;
+			background-color : #eee!important; cursor : not-allowed;
+			// .x-filter(.5);
 		}
 		&[data-pagename=shop] {
 			background : @shop-bg;

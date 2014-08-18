@@ -5,6 +5,9 @@
 		position : relative;
 		background: transparent;
 		border-bottom-color : transparent;
+		.panel-title {
+			font-weight: bold; color : @x-base-font-color;
+		}
 	}
 	.ix-card-body {
 		background: transparent; padding : 5px 15px;
@@ -54,25 +57,36 @@
 }
 
 .shop-card {
-	.x-area-size(100%, auto); .x-font-size(12px);
+	@text-width : 228px;
+	.x-area-size(100%, 265px); .x-font-size(12px);
 	.ix-card-header > .panel-title {
-		.x-font-size(16px);
+		.x-font-size(14px);
 	}
 	img.media-object {.x-area-size(100px, 100px);}
-	.tags {
-		.x-adjust-leading-to(2.5, 1rem);
-		.label {vertical-align: middle; margin-right : .5rem; }
-	}
+	
 	.tags, address, .phone {
-		.x-adjust-leading-to(1.5, 12px); margin-bottom : 1rem;
+		.x-adjust-leading-to(1.5, 12px); margin-bottom : .5rem; width : @text-width;
+		color : @x-font-color-midGray;
+	}
+
+	address {
+		height : 3rem; 
+	}
+
+	.tags {
+		.x-adjust-leading-to(2.5, 1rem); .x-text-ellipsis(@text-width); color : #fff;
+		.label {vertical-align: middle; margin-right : .5rem; color : #fff;}
 	}
 	.btns {
-		.x-clearfix(); margin-bottom : 1rem;
-		.btn { margin-right : .5rem;}
+		.x-clearfix(); margin-bottom : 1.1rem; margin-top : 1rem;
+		.btn {margin-right : .5rem; color : @x-base-font-color; font-weight: bold;}
 	}
+	
 	.ix-card-footer {
 		border-top-color : #ddd; .x-adjust-leading-to(4, 12px, 10px);
 		.bootstrap-switch {.x-float(right);}
+		label {color : @x-base-font-color;}
+		.bootstrap-switch {margin-top : .5rem;}
 	}
 	
 }

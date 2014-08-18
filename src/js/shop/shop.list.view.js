@@ -46,6 +46,9 @@
 		},
 		bindEvent : function () {
 			var self = this;
+			self.$list.tooltip({
+				selector : '[title]'
+			});
 			self.$list.on('click', '.btn[data-href]', function (e) {
 				var $btn = $(this),
 					path = $btn.attr('data-href');
@@ -59,6 +62,7 @@
 					pageSize : $XP(params, 'Page.pageSize', 15)
 				}));
 			});
+			
 		},
 		// 加载View层所需模板
 		loadTemplates : function () {
@@ -89,16 +93,26 @@
 				});
 			};
 			var ret = _.map(data, function (shop, i, l) {
+				var address = $XP(shop, 'address', ''),
+					byteLen = Hualala.Common.strByteLength(address),
+					slugAddr = '';
+				slugAddr = byteLen < 72 ? address : (Hualala.Common.substrByte(address, 70) + '...');
 				return {
 					clz : '',
 					id : $XP(shop, 'shopID', ''),
 					name : $XP(shop, 'shopName', ''),
-					img : '',
+					img : Hualala.Common.getSourceImage($XP(shop, 'imagePath', ''), {
+						width : 100,
+						height : 100,
+						quality : 50
+					}),
 					tags : getTags($XP(shop, 'tags', [])),
-					address : $XP(shop, 'address', ''),
+					address : address,
+					slugAddr : slugAddr,
 					tel : $XP(shop, 'tel', ''),
 					infoHref : Hualala.PageRoute.createPath('shopInfo', [$XP(shop, 'shopID', '')]),
-					menuHref : Hualala.PageRoute.createPath('shopMenu', [$XP(shop, 'shopID', '')])
+					menuHref : Hualala.PageRoute.createPath('shopMenu', [$XP(shop, 'shopID', '')]),
+					checked : $XP(shop, 'status') == 1 ? 'checked' : ''
 				};
 			});
 			return {
@@ -106,6 +120,28 @@
 					list : ret
 				}
 			};
+		},
+		// 渲染开关
+		initSwitcher : function (selector) {
+			var self = this;
+			self.$list.find(selector).bootstrapSwitch({
+				// baseClass : 'ix-bs-switch',
+				// wrapperClass : 'ix-bs-switch-wrapper',
+				size : 'normal',
+				onColor : 'success',
+				offColor : 'default',
+				onText : '已开通',
+				offText : '未开通'
+			});
+			// 绑定开关事件
+			self.$list.find(selector).on('switchChange.bootstrapSwitch', function (e, state) {
+				var $chkbox = $(this),
+					shopID = $chkbox.attr('data-shop'),
+					state = !state ? 0 : 1;
+				self.model.updateShopStatus(shopID, state, function (_shopID) {
+					self.$list.find(selector).filter('[data-shop=' + _shopID + ']').bootstrapSwitch('toggleState', true);
+				});
+			});
 		},
 		// 渲染view
 		render : function () {
@@ -124,7 +160,8 @@
 				page : model.get('pageNo'),
 				href : 'javascript:void(0);'
 			});
-			self.$list.find(':checkbox[name*=switcher_]').bootstrapSwitch();
+			// self.$list.find(':checkbox[name*=switcher_]').bootstrapSwitch();
+			self.initSwitcher(':checkbox[name=switcher]');
 		}
 	});
 

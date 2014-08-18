@@ -37,9 +37,10 @@
 			settleName : '豆捞坊北京公司',
 			shopID : '',
 			shopName : '',
+			imagePath : 'group1/M00/00/F7/wKgCIVPu-kWbqysWAAEvq1pYSJc436.jpg',
 			status : 1,
-			tags : ['日本料理', '自助餐', '白石桥'],
-			address : '黄浦区南京东路819号百联世茂8楼',
+			tags : ['日本料理', '自助餐', '白石桥', '白石桥', '白石桥', '白石桥'],
+			address : '黄浦区南京东路819号百联世茂8楼黄浦区南京东路819号百联世茂8楼黄浦区南京东路819号百联世茂8楼',
 			tel : '010-67172156',
 			timeShopID : '77867',
 			timeShopName : ''

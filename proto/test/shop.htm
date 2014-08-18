@@ -262,7 +262,7 @@
 					</div>
 				</div>
 
-				<div class="row">
+				<div class="row hidden">
 					<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4">
 						<div class="panel panel-default ix-card shop-card">
 							<div class="panel-heading ix-card-header">
@@ -410,6 +410,71 @@
 				</div>
 				
 				
+				<div class="shop-list">
+					<div class="row shop-list-body">
+						<div class="col-xs-12 shop-list-item">
+							<div class="row shop-base-info">
+								<div class="col-xs-6 col-sm-3 col-md-2">
+									<h4>豆捞坊（海淀黄庄）</h4>
+								</div>
+								<div class="hidden-xs col-sm-4 col-md-7 ">
+									<div class="account">
+										<label class="account-label">结算账户：</label>
+										<span class="account-name">北京豆捞坊餐饮有限公司</span>
+									</div>
+								</div>
+								<div class="col-xs-6 col-sm-5 col-md-3">
+									<div class="switcher-wrapper pull-right">
+										<label class="">店铺当前状态：</label>
+										<input type="checkbox" name="switcher_status" />
+									</div>
+								</div>
+							</div>
+							<div class="row shop-business">
+								<div class="col-xs-6 col-sm-3 col-md-2">
+									<h4>
+										<span class="pic-shanchi"></span>
+										闪吃
+									</h4>
+								</div>
+								<div class="col-xs-6 col-sm-2 col-md-2">
+									<div class="switcher-wrapper">
+										<input type="checkbox" name="switcher_shanchi" />
+									</div>
+								</div>
+								<div class="col-xs-12 col-sm-6 col-md-7">
+									<p>需提前30分钟预订，最低消费50元,留位时间10分钟,11:30-14:30,需提前2小时预订,节假日不开放,支持网上付及到店付</p>
+								</div>
+								<div class="col-xs-12 col-sm-1 col-md-1">
+									<button type="button" class="btn btn-default pull-right">修改</button>
+								</div>
+							</div>
+							<div class="row shop-business">
+								<div class="col-xs-6 col-sm-3 col-md-2">
+									<h4>
+										<span class="pic-zizhu"></span>
+										店内自助
+									</h4>
+								</div>
+								<div class="col-xs-6 col-sm-2 col-md-2">
+									<div class="switcher-wrapper">
+										<input type="checkbox" name="switcher_zizhu" />
+									</div>
+								</div>
+								<div class="col-xs-12 col-sm-6 col-md-7">
+									<p>支持下单到餐饮软件，餐前结账</p>
+								</div>
+								<div class="col-xs-12 col-sm-1 col-md-1">
+									<button type="button" class="btn btn-default pull-right">修改</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="shop-list-footer">
+						<div class="page-selection pull-right"></div>
+					</div>
+				</div>
+
 			</div>
 		</div>
 
@@ -463,5 +528,25 @@
 	<!-- Include Constants Defined (datatype.js,typedef.js) -->
 	<script src="../../src/js/common/typedef.js"></script>
 	<script src="../../src/js/common/datatype.js"></script>
+
+	<!-- Include IXUI js -->
+    <script src="../../src/js/ui/ixui.js"></script>
+    <script src="../../src/js/ui/pager.js"></script>
+    <script src="../../src/js/ui/modal.js"></script>
+    <script src="../../src/js/ui/switch.js"></script>
+    <script src="../../src/js/ui/chosen.jquery.js"></script>
+	<script>
+	$(document).ready(function () {
+		$(':checkbox').bootstrapSwitch({
+			// baseClass : 'ix-bs-switch',
+			// wrapperClass : 'ix-bs-switch-wrapper',
+			size : 'normal',
+			onColor : 'success',
+			offColor : 'default',
+			onText : '已开通',
+			offText : '未开通'
+		});
+	});
+	</script>
 	</body>
 </html>

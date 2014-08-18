@@ -73,8 +73,12 @@
 				shopHT = self.get('ds_shop'),
 				pageHT = self.get('ds_page');
 			var shopIDs = _.map(data, function (shop, i, l) {
-				var shopID = $XP(shop, 'shopID');
-				shopHT.register(shopID, shop);
+				// var shopID = $XP(shop, 'shopID');
+				// shopHT.register(shopID, shop);
+				// return shopID;
+				var shopID = $XP(shop, 'shopID'),
+					mShop = new BaseShopModel(shop);
+				shopHT.register(shopID, mShop);
 				return shopID;
 			});
 			pageHT.register(pageNo, shopIDs);
@@ -106,10 +110,72 @@
 			var self = this,
 				shopHT = self.get('ds_shop'),
 				pageHT = self.get('ds_page');
-			return shopHT.getByKeys(pageHT.get(pageNo));
+			var ret = _.map(shopHT.getByKeys(pageHT.get(pageNo)), function (mShop, i, l) {
+				return mShop.getAll();
+			});
+			console.info("pageData:");
+			console.info(ret);
+			return ret;
+		},
+		updateShopStatus : function (shopID, status, failFn) {
+			var self = this,
+				shopHT = self.get('ds_shop');
+			var shop = shopHT.get(shopID);
+			// shop = IX.inherit(shop, {
+			// 	status : status
+			// });
+			// shopHT.register(shopID, shop);
+			// shop.set('status', status);
+			shop.emit('switchStatus', {
+				status : status,
+				failFn : failFn
+			});
 		}
 	});
 
 
 	Hualala.Shop.CardListModel = CardListModel;
+
+	var BaseShopModel = Stapes.subclass({
+		constructor : function (shop) {
+			this.switchStatusCallServer = Hualala.Global.switchShopStatus;
+			this.set(shop);
+			this.bindEvent();
+		}
+	});
+	BaseShopModel.proto({
+		switchStatus : function (status, failFn) {
+			var self = this,
+				shopID = self.get('shopID');
+			self.set('status', status);
+			console.info("Switch Shop [" + self.get('shopID') + "] status " + status);
+			this.switchStatusCallServer({
+				shopID : shopID,
+				status : status
+			}, function (res) {
+				if (res.resultcode == '000') {
+					
+				} else {
+					toptip({
+						msg : $XP(res, 'resultmsg', ''),
+						type : 'danger'
+					});
+					self.set('status', !status ? 1 : 0);
+					failFn(shopID);
+				}
+			});
+		},
+		bindEvent : function () {
+			this.on({
+				// "update:status" :  function (status) {
+				// 	this.switchStatus(status);
+				// },
+				"switchStatus" : function (params) {
+					var status = $XP(params, 'status'),
+						failFn = $XF(params, 'failFn');
+					this.switchStatus(status, failFn);
+				}
+			});
+		}
+	});
 })(jQuery, window);

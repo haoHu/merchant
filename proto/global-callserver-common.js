@@ -125,7 +125,23 @@
 		fn(IX.inherit(res, {
 			data : results
 		}));
-	}
+	};
+
+	/**
+	 * 切换店铺状态
+	 * @param  {Object} params 参数{shopID, status}
+	 * @param  {Function} cbFn   回调参数{resultcode, resultmsg}
+	 * @return {NULL}        
+	 */
+	Hualala.Global.switchShopStatus = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var random = Test.getRandom(1, 10);
+		var res = {resultcode : 000, resultmsg : ''};
+		fn(IX.inherit(res, {
+			resultcode : random > 5 ? random*100 : 000,
+			resultmsg : "状态切换失败"
+		}));
+	};
 
 
 })();

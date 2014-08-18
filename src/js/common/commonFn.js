@@ -78,6 +78,138 @@
 	};
 })();
 
+// CommonFn
+(function ($) {
+	IX.ns("Hualala.Common");
+	/**
+	 * 根据图片服务器上的原始资源图片,按照配置信息，返回缩放、剪裁、水印等效果的图片链接
+	 * 图片地址：
+	 * [protocol] [domain] [path] [fileName] [extension]
+	 * [http://] [res.hualala.com] [/group1/M00/1E/3B/][wKgBZE5Izt6pUY8WAAD2HTq6pjo419][.jpg]
+	 * @param {String} path 图片资源的路径(必须)
+	 * @param {Object} cfg 对于图片的配置信息
+	 *         cfg : {
+	 *         		//控制是否加水印
+	 *         		watermark : true|false 	(是否需要打水印,默认为false)
+	 *         		//控制缩放规则
+	 *         		scale : 	'percent'(百分比缩放) | 
+	 *         				'lockMin'(锁定比例按照最小值缩放)(默认) | 'lockMax'(锁定比例按照最大值缩放) | 'unlock'(取消锁定比例) |
+	 *         				'lockMinZoomOut'(锁定比例，按照固定尺寸取小值缩小*只允许缩小*) | 
+	 *         				'lockMinZoomIn'(锁定比例，按照固定尺寸取小值放大*只允许放大*) |
+	 *         				'lockMaxZoomOut'(锁定比例，按照固定尺寸取大值缩小*只允许缩小*) |
+	 *         				'lockMaxZoomIn'(锁定比例，按照固定尺寸取大值放大*只允许放大*) | 
+	 *         				'unlockZoomOut'(取消锁定比例，按照固定尺寸缩小*只允许缩小*) | 
+	 *         				'unlockZoomIn'(取消锁定比例，按照固定尺寸放大*只允许放大*) 
+	 *         		width : 300,
+	 *         		height : 200,
+	 *         		//控制截取规则 
+	 *         		//NOTE：一旦cut不为空，缩放规则自动取消
+	 *         		cut : 	null(不截取) | 'normal'(正常截取图片) | 'max'(最大化截取图片矩形区域)
+	 *         		offsetX : 0,
+	 *         		offsetY : 0,
+	 *         		//控制图片旋转
+	 *         		rotate :  degree(顺时针0~360) | null
+	 *         		//控制图片的质量
+	 *         		quality : (图片质量百分数1-100) | null
+	 *         }
+	 * @return {String} 返回图片地址
+	 */
+	Hualala.Common.getSourceImage = function (path, cfg) {
+		var settings = IX.inherit({
+			watermark : false,
+			scale : 'lockMin',
+			width : null,
+			height : null,
+			cut : null,
+			offsetX : null,
+			offsetY : null,
+			rotate : null,
+			quality : null
+		}, cfg);
+		var imgDomain = !$XP(settings, 'watermark', false) ? 
+			Hualala.Global.IMAGE_RESOURCE_DOMAIN : Hualala.Global.IMAGE_RESOURCE_WATERMARK_DOMAIN;
+		if (!path || IX.isObject(path)) return '';
+		var lastSlash = path.lastIndexOf('/');
+			fileName = path.slice(lastSlash + 1),
+			suffix = '',
+			path = path.slice(0, lastSlash);
+		suffix = fileName.replace(/^(.*)\.(jpg|jpeg|png|gif|ico)/i, '$2').toLowerCase();
+		fileName = fileName.replace(/^(.*)\.(jpg|jpeg|png|gif|ico)/i, '$1');
+
+		var w = $XP(settings, 'width', null), h = $XP(settings, 'height', null),
+			x = $XP(settings, 'offsetX', null), y = $XP(settings, 'offsetY', null);
+
+		var scale = $XP(settings, 'scale'), scaleE = '';
+		var cut = $XP(settings, 'cut', null), cutE = '';
+		var rotate = $XP(settings, 'rotate', null), quality = $XP(settings, 'quality', null),
+			paramE = [];
+		var scaleRule = {
+			// 协议类型< width- >x< height- >
+			'percent' : '-',
+			// 协议类型< width >x< height >
+			'lockMin' : '',
+			// 协议类型< width >x< height>_ 例如：300x200_
+			'lockMax' : '_',
+			// 协议类型 < width >x< height>! 例如：300x200!
+			'unlock' : '!',
+			// 协议类型 < width >x< height>) 例如：600x200)
+			'lockMinZoomOut' : ')',
+			// 协议类型 < width >x< height>( 例如：600x200(
+			'lockMinZoomIn' : '(',
+			// 协议类型 < width >x< height>)_ 例如：600x200)_
+			'lockMaxZoomOut' : ')_',
+			// 协议类型 < width >x< height>(_ 例如：600x200(_
+			'lockMaxZoomIn' : '(_',
+			// 协议类型 < width >x< height>)! 例如：600x200)!
+			'unlockZoomOut' : ')!',
+			// 协议类型 < width >x< height>(! 例如：600x200(!
+			'unlockZoomIn' : '(!',
+		};
+		var cutRule = {
+			// 协议类型 c< width >x< height>+< offset_x>+< offset_y>
+			'normal' : 'c',
+			'max' : 'C'
+		};
+		// 获取scale表达式
+		if (IX.isEmpty(w) && IX.isEmpty(h)) {
+			scaleE = '';
+		} else if (IX.isEmpty(w) || IX.isEmpty(h)) {
+			scaleE = scale == 'percent' ? 
+				('=' + (IX.isEmpty(w) ? h : w) + scaleRule[scale]) : '';
+		} else {
+			scaleE = '=' + w + (scale == 'percent' ? scaleRule[scale] : '') + 'x' + h + scaleRule[scale];
+		}
+
+		// 获取截取参数
+		// NOTE:一旦截取图片功能开启，缩放功能无效
+		if (!IX.isEmpty(cut)) {
+			scaleE = '';
+			if (IX.isEmpty(w) || IX.isEmpty(h)) {
+				cutE = '';
+			} else {
+				cutE = cutRule[cut] + w + 'x' + h + '+' + (x || 0) + '+' + (y || 0);
+			}
+		} else {
+			cutE = '';
+		}
+
+		// 获取旋转图片参数
+		if (!IX.isEmpty(rotate) && rotate > 0) {
+			paramE.push('rotate=' + rotate);
+		}
+		// 获取图片的质量参数
+		if (!IX.isEmpty(quality) &&  quality > 0) {
+			paramE.push('quality=' + quality);
+		}
+		paramE = paramE.join('&');
+		var ret = imgDomain + '/' 
+			+ path + '/' 
+			+ fileName + scaleE + cutE + '.' + suffix 
+			+ (paramE.length > 0 ? ('?' + paramE) : '');
+		return ret;
+	};
+})(jQuery);
+
 
 // CommonFn
 (function ($) {

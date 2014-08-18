@@ -16,6 +16,45 @@
 		.create-shop {max-width : 130px; margin-left : 1.5rem; margin: 8px 0;}
 	}
 }
+
+// 店铺列表项
+.shop-list-item {
+	@shop-border : 1px solid #E7E7E7;
+	@shop-name-size : 14px;
+	border-bottom: @shop-border; .x-font-size(@x-base-font-size); color : @x-font-color-midGray;
+	.shop-base-info {
+		margin-bottom : 1.2rem;
+		h4 {
+			.x-font-size(@shop-name-size); color : @x-base-font-color; font-weight: bold; .x-adjust-leading-to(2.5, 12px);
+		}
+		.account {
+			.x-adjust-leading-to(2.5, 12px);
+			.account-label {
+				color : @x-base-font-color; font-weight: bold; vertical-align: middle;
+			}
+			.account-name {vertical-align: middle;}
+		}
+		
+
+	}
+	.switcher-wrapper {
+		> lable {font-weight: bold; color : @x-font-color-midGray;}
+	}
+	.shop-business {
+		margin-bottom : 1.8rem;
+		h4 {
+			.x-font-size(@x-base-font-size); color : @x-base-font-color; .x-adjust-leading-to(2, 12px);
+			text-align: center; font-weight: bold;
+		}
+		.btn {font-weight: bold;}
+		p {
+			 .x-adjust-leading-to(2, 12px);
+		}
+	}
+	.pic-shanchi {.x-inlineblock(); .x-pic-face-401(); .x-area-size(48px, 24px); vertical-align: middle; margin-right : 1.5rem;}
+	.pic-zizhu {.x-inlineblock(); .x-pic-face-404(); .x-area-size(48px, 24px); vertical-align: middle; margin-right : 1.5rem;}
+}
+
 // 店铺列表
 .shop-list {
 	.shop-list-body {

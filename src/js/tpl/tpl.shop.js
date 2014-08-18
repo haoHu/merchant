@@ -143,11 +143,55 @@
 	var tpl_shop_tags = [
 		'<div class="tags">',
 			'{{#each tags}}',
-				'<span class="label {{clz}}">{{tag}}</span>',
+				'<span class="label {{clz}}" title="{{tag}}">{{tag}}</span>',
 			'{{/each}}',
 		'</div>'
 	].join('');
 	TplLib.register('tpl_shop_tags', tpl_shop_tags);
+
+	var tpl_shop_list_item = [
+		'<div class="shop-list-item col-xs-12 {{clz}} ">',
+			'<div class="row shop-base-info">',
+				'<div class="col-xs-6 col-sm-3 col-md-2">',
+					'<h4>{{shopName}}</h4>',
+				'</div>',
+				'<div class="hidden-xs col-sm-4 col-md-7 ">',
+					'<div class="account">',
+						'<label class="account-label">结算账户：</label>',
+						'<span class="account-name">{{accountName}}</span>',
+					'</div>',
+				'</div>',
+				'<div class="col-xs-6 col-sm-5 col-md-3">',
+					'<div class="switcher-wrapper pull-right">',
+						'<label class="">店铺当前状态：</label>',
+						'<input type="checkbox" name="{{switcherName}}" data-shop="{{shopID}}" {{shopOpen}} />',
+					'</div>',
+				'</div>',
+			'</div>',
+			'{{#each business}}',
+			'<div class="row shop-business">',
+				'<div class="col-xs-6 col-sm-3 col-md-2">',
+					'<h4>',
+						'<span class="{{icon}}"></span>',
+						'{{name}}',
+					'</h4>',
+				'</div>',
+				'<div class="col-xs-6 col-sm-2 col-md-2">',
+					'<div class="switcher-wrapper">',
+						'<input type="checkbox" name="{{switcherName}}" data-shop="{{shopID}}" data-business="{{type}}" {{open}} />',
+					'</div>',
+				'</div>',
+				'<div class="col-xs-12 col-sm-6 col-md-7">',
+					'<p>{{desc}}</p>',
+				'</div>',
+				'<div class="col-xs-12 col-sm-1 col-md-1">',
+					'<button type="button" class="btn btn-default pull-right" data-shop="{{shopID}}" data-business="{{type}}">修改</button>',
+				'</div>',
+			'</div>',
+			'{{/each}}',
+		'</div>'
+	].join('');
+	TplLib.register('tpl_shop_list_item', tpl_shop_list_item);
 
 	var tpl_shop_card = [
 		'<div class="panel panel-default ix-card shop-card {{clz}}" >',
@@ -161,7 +205,7 @@
 					'</a>',
 					'<div class="media-body">',
 						'{{> shopTag}}',
-						'<address>{{address}}</address>',
+						'<address title="{{address}}">{{slugAddr}}</address>',
 						'<div class="phone">{{tel}}</div>',
 					'</div>',
 					'<div class="btns pull-right">',
@@ -176,7 +220,7 @@
 			'</div>',
 			'<div class="panel-footer ix-card-footer">',
 				'<label>店铺当前状态：</label>',
-				'<input type="checkbox" name="switcher_{{id}}" class="shop-switch" />',
+				'<input type="checkbox" name="switcher" data-shop="{{id}}" class="shop-switch" {{checked}} />',
 			'</div>',
 		'</div>'
 	].join('');
