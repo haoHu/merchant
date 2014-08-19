@@ -43,8 +43,19 @@
 			address : '黄浦区南京东路819号百联世茂8楼黄浦区南京东路819号百联世茂8楼黄浦区南京东路819号百联世茂8楼',
 			tel : '010-67172156',
 			timeShopID : '77867',
-			timeShopName : ''
-
+			timeShopName : '',
+			"serviceFeatures": "commonreserve_order,takeaway_order,takeout_order,spot_order,justeat_order",
+			"revParamJson" : {"10":{"advanceTime":"30","minAmount":"0","noticeTime":"30","reserveTableDesc":"342424242423","reserveTableTime":"15"},"11":{"advanceTime":"30","holidayFlag":"0","minAmount":"","noticeTime":"30","reserveTableDesc":"","reserveTableTime":"15","servicePeriods":"1100,1400"},"41":{"fetchFoodMode":"","payBeforeCommit":"1","payMethodAtShop":"0","supportCommitToSoftware":"1"}},
+			"shopPromotionInfo": "",
+			"shopPromotionType": "1",
+			"shopServiceOptions": "234214321431",
+			"takeawayNotice": "",
+			"takeawayParamJson" : {"20":{"advanceTime":"20","freeServiceAmount":"0","holidayFlag":"1","minAmount":"50","noticeTime":"45","payMethod":"","serviceAmount":"0","servicePeriods":"1000,2300","takeawayDeliveryAgent":"3","takeawayDeliveryTime":"20","takeawayScope":"4","takeawayScopeDesc":"仅限"},"21":{"advanceTime":"30","freeServiceAmount":"0","holidayFlag":"0","minAmount":"60","noticeTime":"30","serviceAmount":"0","servicePeriods":"0300,1230"}},
+			"cancelRevBeforTime": "0",
+			"isCancelRevReturnVoucher": "0",
+			"discountNote": "asdfsadf",
+			"description": "",
+			"reserveTableInfo": ""
 		};
 	var cityIDs = [1010,1021,1031,1041],
 		areaIDs = [10000,20000,30000,40000],

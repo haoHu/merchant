@@ -68,4 +68,19 @@ Hualala.Global.getShopQuerySchema = function (params, cbFn) {}
  */
 Hualala.Global.queryShop = function (params, cbFn) {}
 
+/**
+ * 切换店铺状态
+ * @param  {Object} params 参数{shopID, status}
+ * @param  {Function} cbFn   回调参数{resultcode, resultmsg}
+ * @return {NULL}        
+ */
+Hualala.Global.switchShopStatus = function (params, cbFn) {}
+
+/**
+ * 切换店铺业务状态
+ * @param  {Object} params 参数{shopID, operation, serviceFeature}
+ * @param  {Function} cbFn   回调函数
+ * @return {NULL}        
+ */
+Hualala.Global.switchShopServiceFeatureStatus = function (params, cbFn) {}
 

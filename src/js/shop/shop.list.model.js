@@ -117,6 +117,7 @@
 			console.info(ret);
 			return ret;
 		},
+		// 更新店铺状态
 		updateShopStatus : function (shopID, status, failFn) {
 			var self = this,
 				shopHT = self.get('ds_shop');
@@ -126,10 +127,24 @@
 			// });
 			// shopHT.register(shopID, shop);
 			// shop.set('status', status);
-			shop.emit('switchStatus', {
+			shop.emit('switchShopStatus', {
 				status : status,
 				failFn : failFn
 			});
+		},
+		// 更新店铺业务状态
+		updateShopBusinessStatus : function (params, failFn) {
+			var self = this,
+				shopHT = self.get('ds_shop'),
+				shopID = $XP(params, 'shopID'),
+				shop = shopHT.get(shopID);
+			shop.emit('switchBusinessStatus', {
+				name : $XP(params, 'name'),
+				id : $XP(params, 'id'),
+				status : $XP(params, 'state'),
+				failFn : failFn
+			});
+
 		}
 	});
 
@@ -138,42 +153,82 @@
 
 	var BaseShopModel = Stapes.subclass({
 		constructor : function (shop) {
-			this.switchStatusCallServer = Hualala.Global.switchShopStatus;
+			this.switchShopStatusCallServer = Hualala.Global.switchShopStatus;
+			this.switchShopBusinessStatusCallServer = Hualala.Global.switchShopServiceFeatureStatus;
 			this.set(shop);
 			this.bindEvent();
 		}
 	});
 	BaseShopModel.proto({
-		switchStatus : function (status, failFn) {
+		switchShopStatus : function (status, failFn) {
 			var self = this,
 				shopID = self.get('shopID');
 			self.set('status', status);
 			console.info("Switch Shop [" + self.get('shopID') + "] status " + status);
-			this.switchStatusCallServer({
+			this.switchShopStatusCallServer({
 				shopID : shopID,
 				status : status
 			}, function (res) {
-				if (res.resultcode == '000') {
+				if (res.resultcode !== '000') {
 					
-				} else {
 					toptip({
 						msg : $XP(res, 'resultmsg', ''),
 						type : 'danger'
 					});
 					self.set('status', !status ? 1 : 0);
 					failFn(shopID);
+					
+				}
+			});
+		},
+		switchShopBusinessStatus : function (params) {
+			var self = this,
+				shopID = self.get('shopID');
+			var failFn = $XF(params, 'failFn'),
+				name = $XP(params, 'name'),
+				id = $XP(params, 'id'),
+				status = $XP(params, 'status');
+			var setServiceFeature = function (sName, s) {
+				var serviceFeatures = self.get('serviceFeatures').split(',');
+				// 更新serviceFeature
+				if (s == 1) {
+					serviceFeatures.push(sName);
+				} else {
+					serviceFeatures = _.filter(serviceFeatures, function (el) {
+						return el !== sName;
+					});
+				}
+				self.set('serviceFeatures', serviceFeatures.join(','));
+			};
+			setServiceFeature(name, status);
+			console.info("Switch Shop [" + self.get('shopID') + "] ServiceFeature: " + self.get('serviceFeatures'));
+			this.switchShopBusinessStatusCallServer({
+				shopID : shopID,
+				serviceFeature : name,
+				operation : status
+			}, function (res) {
+				if (res.resultcode !== '000') {
+					toptip({
+						msg : $XP(res, 'resultmsg', ''),
+						type : 'danger'
+					});
+					setServiceFeature(name, !status ? 1 : 0);
+					failFn({
+						shopID : shopID,
+						id : id
+					});
 				}
 			});
 		},
 		bindEvent : function () {
 			this.on({
-				// "update:status" :  function (status) {
-				// 	this.switchStatus(status);
-				// },
-				"switchStatus" : function (params) {
+				"switchShopStatus" : function (params) {
 					var status = $XP(params, 'status'),
 						failFn = $XF(params, 'failFn');
-					this.switchStatus(status, failFn);
+					this.switchShopStatus(status, failFn);
+				},
+				"switchBusinessStatus" : function (params) {
+					this.switchShopBusinessStatus(params);
 				}
 			});
 		}

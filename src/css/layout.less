@@ -7,16 +7,34 @@
 @page-body-bg : #fff;
 @site-nav-bg : #BF8F68;
 @site-nav-color : #89552E;
+@x-gutter-size: 15px;
 
 body {
 
 }
 
-//======== Bootstrap override - Start =========
-.control-label { color: @x-font-color-midGray }
+/*通用布局样式*/
+.m-t { margin-top: @x-gutter-size }  //考虑到边框和文字
+.mt-12 { margin-top: 12px }          //所以定义了这4个 
+.mt-13 { margin-top: 13px }          //margin-top
+.mt-14 { margin-top: 14px }          //来定义元素的垂直间距
+.d-b { .x-block() }
+.d-i { display: inline }
+.d-ib { .x-inlineblock() }
+.t-l { .x-tl() }
+.t-c { .x-tc() }
+.t-r { .x-tr() }
+.v-t { .x-vt() }
+.v-m { .x-vm() }
+.v-b { .x-vb() }
+.ib-vt { .x-ib-vt() }
+.ib-vm { .x-ib-vm() }
+.ib-vb { .x-ib-vb() }
+.t-label { .x-inlineblock(); margin-right: @x-gutter-size }
+
+/*======== Bootstrap override - Start =========*/
 .form-horizontal .control-label { padding-right: 0 }
-.form-control { color: @x-base-font-color }
-//======== Bootstrap override - End =========
+/*======== Bootstrap override - End =========*/
 
 /*登录页面布局*/
 body.login {
@@ -50,10 +68,10 @@ body.login {
 		float : left; font-size : 1.5rem; font-weight: bold; .x-adjust-leading-to(1.5, 1em); vertical-align: middle; padding : 15px 0;
 	}
 	.icon-pcclient {
-		vertical-align: middle;  .x-icon-16_mobile(); .x-icon-size(16px); margin-right : 0.5rem;
+		.x-icon-16_mobile(); .x-icon-size(18px); margin-right : 0.5rem; vertical-align: -4px;
 	}
 	.icon-jumpsite {
-		vertical-align: middle;  .x-icon-16_go(); .x-icon-size(16px); margin-right : 0.5rem;
+		.x-icon-16_go(); .x-icon-size(16px); margin-right : 0.5rem; vertical-align: -4px;
 	}
 	.logo {
 		padding-top : 10px;

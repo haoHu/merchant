@@ -8,7 +8,7 @@
 			resultController : new Hualala.Shop.ShopListController({
 				container : $body,
 				model : new Hualala.Shop.CardListModel({callServer : Hualala.Global.queryShop}),
-				view : new Hualala.Shop.CardListView()
+				view : new Hualala.Shop.ShopListView()
 			})
 		});
 	};

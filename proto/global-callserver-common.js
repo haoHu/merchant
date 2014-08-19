@@ -138,10 +138,26 @@
 		var random = Test.getRandom(1, 10);
 		var res = {resultcode : 000, resultmsg : ''};
 		fn(IX.inherit(res, {
-			resultcode : random > 5 ? random*100 : 000,
+			resultcode : random > 5 ? random*100 : '000',
 			resultmsg : "状态切换失败"
 		}));
 	};
+
+	/**
+	 * 切换店铺业务状态
+	 * @param  {Object} params 参数{shopID, operation, serviceFeature}
+	 * @param  {Function} cbFn   回调函数
+	 * @return {NULL}        
+	 */
+	 Hualala.Global.switchShopServiceFeatureStatus = function (params, cbFn) {
+	 	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+	 	var random = Test.getRandom(1, 10);
+	 	var res = {resultcode : 000, resultmsg : ''};
+	 	fn(IX.inherit(res, {
+	 		resultcode : random > 5 ? random * 100 : '000',
+	 		resultmsg : "状态切换失败"
+	 	}));
+	 };
 
 
 })();

@@ -47,6 +47,16 @@
 .x-noscroll() {overflow:hidden;}
 .x-float(@side) {float : @side;}
 
+.x-tl() { text-align: left }
+.x-tc() { text-align: center }
+.x-tr() { text-align: right }
+.x-vt() { vertical-align: top }
+.x-vm() { vertical-align: middle }
+.x-vb() { vertical-align: bottom }
+.x-ib-vt() { .x-inlineblock(); .x-vt() }
+.x-ib-vm() { .x-inlineblock(); .x-vm() }
+.x-ib-vb() { .x-inlineblock(); .x-vb() }
+
 .x-area-size(@w, @h){
 	width:@w; 
 	height:@h;

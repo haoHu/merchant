@@ -139,4 +139,58 @@
 		{value : 32, label : "帐户提现.银行转账"},
 		{value : 33, label : "帐户提现.刷银行卡"}
 	];
+
+	/**
+	 * 店铺业务类型
+	 * 10：常规预订，11：闪吃，20：外送，21：到店自提，41：店内点菜，42：店内买单
+	 * 业务表单参数：
+	 * advanceTime:提前预订时间 int 分钟 0：无需提前
+	 * noticeTime:POS提前通知时间 int 分钟 0|null 立即通知
+	 * minAmount:最低消费金额 int 0
+	 * serviceAmount:服务费 int 0
+	 * freeServiceAmount:免服务费菜品金额
+	 * holidayFlag:节假日开放 0:包含节假日（默认），1:只能在节假日，2:不包含节假日
+	 * openDays: 开放服务天数 int
+	 * servicePeriods: 开放时段 string hhmm,hhmm; 支持结束日期小于终止日期，时段最小间隔不应小于2个小时
+	 * reserveTableTime: 留位时间 int 分钟
+	 * reserveTableDesc: 留位说明40字
+	 * takeawayDeliveryAgent: 配送单位，默认"自助配送"
+	 * takeawayDeliveryTime: 送达时间 int 分钟
+	 * takeawayScope: floor 公里
+	 * takeawayScopeDesc: 外卖送餐范围说明200字
+	 * submitSMSTemplateID: 下单后短信模板ID
+	 * checkSMSTemplateID: 验单后短信模板ID
+	 * payMethod: 支付方式 int 0：仅支持在线支付（默认）；1：仅支持线下支付；2：都支持
+	 * needInputTableName: 下单时需要输入桌号 int 0：不需要；1：需要
+	 * supportInvoice: 提供发票 int 0：不需要;1:需要（默认）
+	 * supportCommitToSoftware: 支持下单到餐饮软件 0：不支持（默认）；1：支持
+	 * payMethodAtShop: 店内支付方式 int 0：均不支持（默认）；1：直接输入金额付款；2：扫码付款；3：均支持
+	 * payBeforeCommit: 支付完成后才能下单 int 0：不支持（不支持）；1：支持
+	 * fetchFoodMode : 取餐模式 int 0：流水号模式（默认）；1：牌号模式；2：收银台直接取餐
+	 * 
+	 */
+	Hualala.TypeDef.ShopBusiness = [
+		{
+			id : 10, label : "常规预订", name : "commonreserve_order", 
+			businessIsSupported : false,
+			formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,openDays,servicePeriods,reserveTableTime,reserveTableDesc,submitSMSTemplateID,checkSMSTemplateID,payMethod,supportInvoice'
+		},
+		{id : 11, label : "闪吃", name : "justeat_order", 
+			businessIsSupported : true,
+			formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,openDays,servicePeriods,reserveTableTime,reserveTableDesc,submitSMSTemplateID,checkSMSTemplateID,payMethod,supportInvoice'
+		},
+		{id : 20, label : "外送", name : "takeaway_order", 
+			businessIsSupported : false,
+			formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,openDays,servicePeriods,takeawayDeliveryAgent,takeawayDeliveryTime,takeawayScope,takeawayScopeDesc,submitSMSTemplateID,checkSMSTemplateID,payMethod,supportInvoice'
+		},
+		{id : 21, label : "到店自提", name : "takeout_order", 
+			businessIsSupported : false,
+			formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,openDays,servicePeriods,submitSMSTemplateID,checkSMSTemplateID,payMethod,supportInvoice'
+		},
+		{id : 41, label : "店内自助", name : "spot_order", 
+			businessIsSupported : true,
+			formKeys : 'needInputTableName,supportInvoice,supportCommitToSoftware,payBeforeCommit,fetchFoodMode'
+		}
+		// {id : 42, label : "店内买单", name : "spot_pay"}
+	];
 })(jQuery);
