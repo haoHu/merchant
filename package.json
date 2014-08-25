@@ -12,7 +12,8 @@
 		"jsPath" : "./src/js",
 		"cssPath" : "./src/css",
 		"fontPath" : "./src/font",
-		"imgPath" : "./src/img"
+		"imgPath" : "./src/img",
+		"swfPath" : "./src/swf"
 	},
 	"destPath" : {
 		"path" : "./distrib",
@@ -20,14 +21,17 @@
 		"cssPath" : "./distrib/css",
 		"fontPath" : "./distrib/font",
 		"imgPath" : "./distrib/img",
+		"swfPath" : "./distrib/swf",
 		"protoPath" : "./distrib/proto"
 	},
 	"distribPath" : {
-		"path" : "",
-		"jsPath" : "",
-		"cssPath" : "",
-		"fontPath" : "",
-		"imgPath" : ""
+		"path" : "../WebRoot/asset",
+		"jsPath" : "../WebRoot/asset/js",
+		"cssPath" : "../WebRoot/asset/css",
+		"fontPath" : "../WebRoot/asset/font",
+		"imgPath" : "../WebRoot/asset/img",
+		"swfPath" : "../WebRoot/asset/swf",
+		"pagePath" : "../WebRoot/page"
 	},
 	"devDependencies" : {
 		"grunt-cli" : "*",

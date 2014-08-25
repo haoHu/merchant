@@ -1,0 +1,180 @@
+
+;(function($) 
+{
+	var defaults = {
+            data : {
+                isSearchMap: false,
+                keyWord: '',
+                shopName: '',
+                tel: '',
+                address: '',
+                city: '',
+                area: '',
+                lng: '',
+                lat: ''
+            },
+            //mapContainer: '#shopMap',
+            mapCanvasId: 'mapCanvas',
+            load: function() { },
+            serach: function() { }
+        };
+	function ShopMap(options)
+    {
+        this.cfg = {};
+        //this.$shopMap = $(mapContainer);
+        this.sContent = '';
+        this.map = '';
+        this.searchArea = true;
+        this.mapPoint = {};
+        $.extend(this.cfg, defaults, options);
+    }
+	ShopMap.prototype = 
+    {
+        init: function()
+        {
+            var self = this,
+                markerTrick = false,
+                mapParams = self.cfg.data;
+            self.map = new BMap.Map(self.cfg.mapCanvasId);
+            //添加默认缩放平移控件
+            self.map.addControl(new BMap.NavigationControl());
+            self.map.enableScrollWheelZoom();
+            self.sContent = [
+                '<dl class="map-shop-info">',
+                    '<dt>' + mapParams.shopName + '</dt>',
+                    '<dd>',
+                        '<p><span>电话：</span>' + mapParams.tel + '</p>',
+                        '<p><span>地址：</span>' + mapParams.address + '</p>',
+                    '</dd>',
+                '</dl>'
+            ].join('');
+            
+            self[(mapParams.isSearchMap || mapParams.lng == 0 || mapParams.lat == 0 ? 'search' : 'load') + 'Map'](mapParams);
+            
+            return this;
+        },
+        loadMap: function(data)
+        {
+            var self = this;
+            data = data || self.self.cfg.data;
+            self.map.centerAndZoom(new BMap.Point(data.lng, data.lat), 14);
+            self.map.enableScrollWheelZoom();
+
+            var marker = new BMap.Marker(new BMap.Point(data.lng, data.lat), 
+                {
+                    enableMassClear: true,
+                    raiseOnDrag: true
+                });
+            marker.enableDragging();
+            self.map.addOverlay(marker);
+            marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
+           /* map.addEventListener("click", function(e){
+                if(!(e.overlay)){
+                    map.clearOverlays();
+                    marker.show();
+                    map.addOverlay(marker);
+                    marker.setPosition(e.point);
+                    setResult(e.point.lng, e.point.lat);
+                }
+            });*/
+            marker.addEventListener("click", function(e)
+            {
+                 marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
+            });
+            marker.addEventListener("dragend", function(e)
+            {
+                self.setResult(e.point.lng, e.point.lat);
+            });
+            self.setResult(data.lng, data.lat);
+        },
+        searchMap : function (data)
+        {
+            var self = this;
+            data = data || self.self.cfg.data;
+            //self.map.centerAndZoom(new BMap.Point(116.404, 39.915), 14);
+            //self.map.enableScrollWheelZoom();
+                
+            var local = new BMap.LocalSearch(self.map, {
+                renderOptions: {map: self.map},
+                pageCapacity: 1,
+                onInfoHtmlSet : function (poi) {
+                    poi.marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
+                    //target.openInfoWindow(infoWindow);
+                },
+                onMarkersSet : function (poi) {
+                    //console.info(poi.marker.infoWindow);
+                }
+            });
+            local.search(data.keyWord || data.address || data.area || data.city);
+
+            local.setSearchCompleteCallback(function(results)
+            {
+                if(local.getStatus() !== BMAP_STATUS_SUCCESS)
+                {
+                    if(self.searchArea)
+                    {
+                        local.search(data.area);
+                        self.searchArea = false;
+                    } else
+                    {
+                        local.search(data.city);
+                    }
+                } else 
+                {
+                    //marker.hide();
+                }
+            });
+            local.setMarkersSetCallback(function(pois)
+            {
+                for(var i = pois.length; i--;)
+                {
+                    var marker = pois[i].marker;
+                    marker.enableDragging();
+                    self.setResult(marker.point.lng, marker.point.lat);
+                    //var mapParams = {
+                    //  width : 250,     // 信息窗口宽度
+                    //  height: 100,     // 信息窗口高度
+                    //  title : "Hello"  // 信息窗口标题
+                    //}
+                    //var infoWindow = new BMap.InfoWindow("World", mapParams);  // 创建信息窗口对象
+                    //map.openInfoWindow(infoWindow,point); //开启信息窗口
+                    marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
+                    marker.addEventListener("click", function(e)
+                    {
+                       // markerTrick = true;
+                        var pos = this.getPosition();
+                        self.setResult(pos.lng, pos.lat);
+                    });
+                    marker.addEventListener("dragend", function(e)
+                    {
+                        self.setResult(e.point.lng, e.point.lat);
+                    });
+                }
+            });
+            
+        },
+         /*
+         * setResult : 定义得到标注经纬度后的操作
+         * 请修改此函数以满足您的需求
+         * lng: 标注的经度
+         * lat: 标注的纬度
+         */
+        setResult: function (lng, lat)
+        {
+            var self = this;
+            self.mapPoint = { lng: lng, lat: lat };
+            document.getElementById("mapResult").innerHTML = "您店铺的经度：" + lng + "    纬度： " + lat;
+        }
+	}
+    IX.ns("Hualala.Shop");
+    Hualala.Shop.map = function(options) 
+    { 
+        return new ShopMap(options).init(); 
+    };
+}(jQuery));
+
+
+
+
+
+
