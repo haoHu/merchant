@@ -62,7 +62,6 @@
 					pageSize : $XP(params, 'Page.pageSize', 15)
 				}));
 			});
-			
 		},
 		// 加载View层所需模板
 		loadTemplates : function () {
@@ -193,6 +192,14 @@
 					pageNo : $XP(params, 'Page.pageNo', 1),
 					pageSize : $XP(params, 'Page.pageSize', 15)
 				}));
+			});
+			// 弹出修改业务窗口
+			self.$list.on('click', '.btn[data-business]', function (e) {
+				var $btn = $(this),
+					shopID = $btn.attr('data-shop'),
+					businessName = $btn.attr('data-business'),
+					businessID = $btn.attr('data-business-id');
+				self.initBusinessModal($btn, shopID, businessName, businessID);
 			});
 		},
 		// 加载View层所需模板
@@ -347,6 +354,16 @@
 			// self.$list.find(':checkbox[name*=switcher_]').bootstrapSwitch();
 			self.initSwitcher(':checkbox[name=switcher_business]');
 			self.initSwitcher(':checkbox[name=switcher_status]');
+		},
+		// 生成业务编辑窗口
+		initBusinessModal : function (trigger, shopID, name, id) {
+			var self = this;
+			var editView = new Hualala.Setting.editServiceView({
+				triggerEl : trigger,
+				serviceID : id,
+				serviceName : name,
+				model : self.model.getShopModelByShopID(shopID)
+			});
 		}
 	});
 	Hualala.Shop.ShopListView = ShopListView;

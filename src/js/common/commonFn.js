@@ -304,6 +304,40 @@
 		return browser;
 	})();
 
+	/**
+	 * 获取事件间隔选项数据
+	 * @param  {Object} cfg {startLabel, start, end}
+	 *          cfg : {
+	 *          	startLabel : value为0的选项的label，
+	 *          	start : 开始获取的分钟，
+	 *          	end : 结束的分钟
+	 *          }
+	 * @return {[type]}     [description]
+	 */
+	Hualala.Common.getMinuteIntervalOptions = function (cfg) {
+		var startLabel = $XP(cfg, 'startLabel', '不限'),
+			start = $XP(cfg, 'start', 0),
+			end = $XP(cfg, 'end', (Hualala.Constants.SecondsOfDay / 60));
+		
+	};
+    /**
+	 * 将表单里内容转换为 plainObject
+	 * @param  {DOM | jQuery Objuect | selector string} form
+	 * @return {Object | null}    { formFiledName1: value1, formFiledName2: value2, ... }
+	 */
+    Hualala.Common.parseForm = function (form) {
+		var $form = $(form);
+        if(!$form[0]) return null;
+        
+        var fields = $form.serializeArray();
+        if(!fields.length) return null;
+        
+        var result = {};
+        $.each(fields, function (i, o) { result[o.name] = o.value; });
+        
+        return result;
+		
+	};
 
 })(jQuery);
 

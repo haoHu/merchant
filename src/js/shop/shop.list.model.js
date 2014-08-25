@@ -117,6 +117,11 @@
 			console.info(ret);
 			return ret;
 		},
+		getShopModelByShopID : function (shopID) {
+			var self = this,
+				shopHT = self.get('ds_shop');
+			return shopHT.get(shopID);
+		},
 		// 更新店铺状态
 		updateShopStatus : function (shopID, status, failFn) {
 			var self = this,
@@ -178,6 +183,11 @@
 					self.set('status', !status ? 1 : 0);
 					failFn(shopID);
 					
+				} else {
+					toptip({
+						msg : '切换成功!',
+						type : 'success'
+					});
 				}
 			});
 		},
@@ -217,10 +227,16 @@
 						shopID : shopID,
 						id : id
 					});
+				} else {
+					toptip({
+						msg : '切换成功!',
+						type : 'success'
+					});
 				}
 			});
 		},
 		bindEvent : function () {
+			var self = this;
 			this.on({
 				"switchShopStatus" : function (params) {
 					var status = $XP(params, 'status'),
@@ -229,6 +245,35 @@
 				},
 				"switchBusinessStatus" : function (params) {
 					this.switchShopBusinessStatus(params);
+				},
+				"setServiceParams" : function (cfg) {
+					var callServer = $XF(cfg, 'callServer'),
+						params = $XP(cfg, 'params', {}),
+						serviceID = $XP(cfg, 'serviceID'),
+						shopID = self.get('shopID'),
+						failFn = $XF(cfg, 'failFn'),
+						successFn = $XF(cfg, 'successFn');
+					callServer(IX.inherit(params, {
+						shopID : shopID,
+						strType : serviceID
+					}), function (res) {
+						if (res.resultcode !== '000') {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+							failFn();
+						} else {
+							var newData = {};
+							newData[serviceID] = params;
+							self.set('revParamJson', IX.inherit(self.get('revParamJson'), newData));
+							successFn();
+							toptip({
+								msg : '配置成功!',
+								type : 'success'
+							});
+						}
+					});
 				}
 			});
 		}

@@ -10,6 +10,23 @@
 	].join('');
 	TemplateList.register('tpl_site_toptip', tpl_site_toptip);
 
+	// 模态窗口模板
+	var tpl_modal_dialog = [
+		'<div class="modal fade {{clz}}" id="{{id}}">',
+			'<div class="modal-dialog">',
+				'<div class="modal-content">',
+					'<div class="modal-header">',
+						'<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>',
+						'<h4 class="modal-title">{{title}}</h4>',
+					'</div>',
+					'<div class="modal-body"></div>',
+					'<div class="modal-footer"></div>',
+				'</div>',
+			'</div>',
+		'</div>'
+	].join('');
+	TemplateList.register('tpl_modal_dialog', tpl_modal_dialog);
+
 	// 页面整体Layout模板
 	var tpl_site_layout = [
 		'<div id="ix_wrapper">',

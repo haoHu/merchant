@@ -21,10 +21,10 @@ var bootstrapWizardCreate = function(element, options) {
 	var baseItemSelector = 'li:has([data-toggle="tab"])';
 
 	// Merge options with defaults
-	var $settings = $.extend({}, $.fn.bootstrapWizard.defaults, options);
-	var $activeTab = null;
-	var $navigation = null;
-    var $stepAction = null;
+	var $settings = $.extend({}, $.fn.bootstrapWizard.defaults, options),
+	    $activeTab = null,
+        $navigation = null,
+        $stepAction = null;
 	
 	this.rebindClick = function(selector, fn)
 	{
@@ -57,10 +57,11 @@ var bootstrapWizardCreate = function(element, options) {
 		obj.rebindClick($($settings.previousSelector, element), obj.previous);
 		obj.rebindClick($($settings.lastSelector, element), obj.last);
 		obj.rebindClick($($settings.firstSelector, element), obj.first);
-
-		if($settings.onTabShow && typeof $settings.onTabShow === 'function' && $settings.onTabShow($activeTab, $navigation, obj.currentIndex())===false){
+        
+        //@NOTE: 这个事件有 BUG, 注释掉，请用 onTabChange 事件
+		/*if($settings.onTabShow && typeof $settings.onTabShow === 'function' && $settings.onTabShow(obj.activePane(), $activeTab, $navigation, obj.currentIndex())===false){
 			return false;
-		}
+		}*/
 	};
 
 	this.next = function(e) {
@@ -70,7 +71,7 @@ var bootstrapWizardCreate = function(element, options) {
 			return false;
 		}
 
-		if($settings.onNext && typeof $settings.onNext === 'function' && $settings.onNext($activeTab, $navigation, obj.nextIndex())===false){
+		if($settings.onNext && typeof $settings.onNext === 'function' && $settings.onNext(obj.activePane(), $activeTab, $navigation, obj.nextIndex())===false){
 			return false;
 		}
 
@@ -80,6 +81,7 @@ var bootstrapWizardCreate = function(element, options) {
 		} else {
 			$navigation.find(baseItemSelector + ':eq('+$index+') a').tab('show');
 		}
+        return this;
 	};
 
 	this.previous = function(e) {
@@ -89,7 +91,7 @@ var bootstrapWizardCreate = function(element, options) {
 			return false;
 		}
 
-		if($settings.onPrevious && typeof $settings.onPrevious === 'function' && $settings.onPrevious($activeTab, $navigation, obj.previousIndex())===false){
+		if($settings.onPrevious && typeof $settings.onPrevious === 'function' && $settings.onPrevious(obj.activePane(), $activeTab, $navigation, obj.previousIndex())===false){
 			return false;
 		}
 
@@ -98,10 +100,11 @@ var bootstrapWizardCreate = function(element, options) {
 		} else {
 			$navigation.find(baseItemSelector + ':eq('+$index+') a').tab('show');
 		}
+        return this;
 	};
 
 	this.first = function(e) {
-		if($settings.onFirst && typeof $settings.onFirst === 'function' && $settings.onFirst($activeTab, $navigation, obj.firstIndex())===false){
+		if($settings.onFirst && typeof $settings.onFirst === 'function' && $settings.onFirst(obj.activePane(), $activeTab, $navigation, obj.firstIndex())===false){
 			return false;
 		}
 
@@ -110,10 +113,10 @@ var bootstrapWizardCreate = function(element, options) {
 			return false;
 		}
 		$navigation.find(baseItemSelector + ':eq(0) a').tab('show');
-
+        return this;
 	};
 	this.last = function(e) {
-		if($settings.onLast && typeof $settings.onLast === 'function' && $settings.onLast($activeTab, $navigation, obj.lastIndex())===false){
+		if($settings.onLast && typeof $settings.onLast === 'function' && $settings.onLast(obj.activePane(), $activeTab, $navigation, obj.lastIndex())===false){
 			return false;
 		}
 
@@ -122,7 +125,7 @@ var bootstrapWizardCreate = function(element, options) {
 			return false;
 		}
 		$navigation.find(baseItemSelector + ':eq('+obj.navigationLength()+') a').tab('show');
-        
+        return this;
 	};
 	this.currentIndex = function() {
 		return $navigation.find(baseItemSelector).index($activeTab);
@@ -148,6 +151,10 @@ var bootstrapWizardCreate = function(element, options) {
 	this.activeTab = function() {
 		return $activeTab;
 	};
+    this.activePane = function ()
+    {
+        return element.find('.tab-pane.active');
+    };
 	this.nextTab = function() {
 		return $navigation.find(baseItemSelector + ':eq('+(obj.currentIndex()+1)+')').length ? $navigation.find(baseItemSelector + ':eq('+(obj.currentIndex()+1)+')') : null;
 	};
@@ -195,12 +202,14 @@ var bootstrapWizardCreate = function(element, options) {
 	var innerTabClick = function (e) {
 		// Get the index of the clicked tab
 		var clickedIndex = $navigation.find(baseItemSelector).index($(e.currentTarget).parent(baseItemSelector));
-		if($settings.onTabClick && typeof $settings.onTabClick === 'function' && $settings.onTabClick($activeTab, $navigation, obj.currentIndex(), clickedIndex)===false){
+		if($settings.onTabClick && typeof $settings.onTabClick === 'function' && $settings.onTabClick(obj.activePane(), $activeTab, $navigation, obj.currentIndex(), clickedIndex)===false){
 			return false;
 		}
 	};
 	
-	var innerTabShown = function (e) {  // use shown instead of show to help prevent double firing
+	var innerTabShown = function (e) {  
+        // use shown instead of show to help prevent double firing
+        // @NOTE: double firing 发生在 onTabShow事件上，已经注释掉
 		$element = $(e.target).parent();
 		var nextTab = $navigation.find(baseItemSelector).index($element);
 
@@ -208,9 +217,12 @@ var bootstrapWizardCreate = function(element, options) {
 		if($element.hasClass('disabled')) {
 			return false;
 		}
-
-		if($settings.onTabChange && typeof $settings.onTabChange === 'function' && $settings.onTabChange($activeTab, $navigation, obj.currentIndex(), nextTab)===false){
-				return false;
+        var $panes = element.find('.tab-pane'),
+            curIdx = obj.currentIndex(),
+            $currentPane = curIdx == -1 ? null : $panes.eq(curIdx),
+            $nextPane = $panes.eq(nextTab)
+		if($settings.onTabChange && typeof $settings.onTabChange === 'function' && $settings.onTabChange($currentPane, $nextPane, curIdx, nextTab, $activeTab, $navigation)===false){
+			return false;
 		}
 
 		$activeTab = $element; // activated tab
@@ -221,7 +233,8 @@ var bootstrapWizardCreate = function(element, options) {
 		
 		// remove the existing handlers
 		$('a[data-toggle="tab"]', $navigation).off('click', innerTabClick);
-		$('a[data-toggle="tab"]', $navigation).off('shown shown.bs.tab', innerTabShown);
+        //@NOTE: 这里 shown 事件改为 show 事件
+		$('a[data-toggle="tab"]', $navigation).off('show show.bs.tab', innerTabShown);
 		
 		// reset elements based on current state of the DOM
 		$navigation = element.find('ul:first', element);
@@ -229,7 +242,8 @@ var bootstrapWizardCreate = function(element, options) {
 		
 		// re-add handlers
 		$('a[data-toggle="tab"]', $navigation).on('click', innerTabClick);
-		$('a[data-toggle="tab"]', $navigation).on('shown shown.bs.tab', innerTabShown);
+        //@NOTE: 这里 shown 事件改为 show 事件
+		$('a[data-toggle="tab"]', $navigation).on('show show.bs.tab', innerTabShown);
 		
 		obj.fixNavigationButtons();
 	};
@@ -241,21 +255,22 @@ var bootstrapWizardCreate = function(element, options) {
 	if(!$navigation.hasClass($settings.tabClass)) {
 		$navigation.addClass($settings.tabClass);
 	}
-
+    var $firstPane = element.find('.tab-pane').eq(0);
 	// Load onInit
 	if($settings.onInit && typeof $settings.onInit === 'function'){
-		$settings.onInit($activeTab, $navigation, 0);
+		$settings.onInit($firstPane, $activeTab, $navigation, 0);
 	}
 
 	// Load onShow
 	if($settings.onShow && typeof $settings.onShow === 'function'){
-		$settings.onShow($activeTab, $navigation, obj.nextIndex());
+		$settings.onShow($firstPane, $activeTab, $navigation, obj.nextIndex());
 	}
 
 	$('a[data-toggle="tab"]', $navigation).on('click', innerTabClick);
 
 	// attach to both shown and shown.bs.tab to support Bootstrap versions 2.3.2 and 3.0.0
-	$('a[data-toggle="tab"]', $navigation).on('shown shown.bs.tab', innerTabShown);
+    //@NOTE: 这里 shown 事件改为 show 事件
+	$('a[data-toggle="tab"]', $navigation).on('show show.bs.tab', innerTabShown);
 };
 $.fn.bootstrapWizard = function(options) {
 	//expose methods
@@ -300,8 +315,8 @@ $.fn.bootstrapWizard.defaults = {
 	onLast:           null,
 	onFirst:          null,
 	onTabChange:      null, 
+    //onTabShow:      null, // @NOTE: 此事件有 BUG，注释掉
 	onTabClick:       function () { return false; },
-	onTabShow:        null
 };
 
 })(jQuery);

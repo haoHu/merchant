@@ -171,26 +171,94 @@
 	 */
 	Hualala.TypeDef.ShopBusiness = [
 		{
-			id : 10, label : "常规预订", name : "commonreserve_order", 
-			businessIsSupported : false,
-			formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,openDays,servicePeriods,reserveTableTime,reserveTableDesc,submitSMSTemplateID,checkSMSTemplateID,payMethod,supportInvoice'
+			id : 10, label : "常规预订", name : "commonreserve_order", businessIsSupported : false, 
+			callServer : null,
+			formKeys : 'advanceTime,noticeTime,minAmount,holidayFlag,servicePeriods,reserveTableTime,reserveTableDesc,payMethod'
 		},
-		{id : 11, label : "闪吃", name : "justeat_order", 
-			businessIsSupported : true,
-			formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,openDays,servicePeriods,reserveTableTime,reserveTableDesc,submitSMSTemplateID,checkSMSTemplateID,payMethod,supportInvoice'
+		{id : 11, label : "闪吃", name : "justeat_order", businessIsSupported : true,
+			callServer : 'Hualala.Global.setJustEatParams',
+			formKeys : 'advanceTime,noticeTime,minAmount,holidayFlag,servicePeriods,reserveTableTime,reserveTableDesc,payMethod'
 		},
-		{id : 20, label : "外送", name : "takeaway_order", 
-			businessIsSupported : false,
-			formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,openDays,servicePeriods,takeawayDeliveryAgent,takeawayDeliveryTime,takeawayScope,takeawayScopeDesc,submitSMSTemplateID,checkSMSTemplateID,payMethod,supportInvoice'
+		{id : 20, label : "外送", name : "takeaway_order", businessIsSupported : false,
+			callServer : null,
+			formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,servicePeriods,takeawayDeliveryAgent,takeawayDeliveryTime,takeawayScope,takeawayScopeDesc,payMethod'
 		},
-		{id : 21, label : "到店自提", name : "takeout_order", 
-			businessIsSupported : false,
-			formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,openDays,servicePeriods,submitSMSTemplateID,checkSMSTemplateID,payMethod,supportInvoice'
+		{id : 21, label : "到店自提", name : "takeout_order", businessIsSupported : false,
+			callServer : null,
+			formKeys : 'advanceTime,freeServiceAmount,holidayFlag,minAmount,serviceAmount,servicePeriods,noticeTime,payMethod'
 		},
-		{id : 41, label : "店内自助", name : "spot_order", 
-			businessIsSupported : true,
-			formKeys : 'needInputTableName,supportInvoice,supportCommitToSoftware,payBeforeCommit,fetchFoodMode'
+		{id : 41, label : "店内自助", name : "spot_order", businessIsSupported : true,
+			callServer : 'Hualala.Global.setSpotOrderParams',
+			formKeys : 'fetchFoodMode,payMethodAtShop,payBeforeCommit,supportCommitToSoftware'
 		}
 		// {id : 42, label : "店内买单", name : "spot_pay"}
 	];
+
+	Hualala.TypeDef.PayMethodOptions = [
+		{value : 0, label : "仅支持在线支付"},
+		{value : 1, label : "仅支持线下支付"},
+		{value : 2, label : "均支持"},
+	];
+
+	Hualala.TypeDef.PayMethodAtShopOptions = [
+		{value : 0, label : "均不支持"},
+		{value : 1, label : "直接输入金额付款"},
+		{value : 2, label : "扫码付款"},
+		{value : 3, label : "均支持"}
+	];
+
+	Hualala.TypeDef.FetchFoodModeOptions = [
+		{value : 0, label : "流水号模式"},
+		{value : 1, label : "牌号模式"},
+		{value : 2, label : "收银台直接取餐"}
+	];
+
+	Hualala.TypeDef.HolidayFlagOptions = [
+		{value : 0, label : "包含节假日"},
+		{value : 1, label : "只能在节假日"},
+		{value : 2, label : "不包含节假日"}
+	];
+
+	/**
+	 * 获取一天(默认)的时间间隔选项数据
+	 * 1小时内，时间间隔15分钟
+	 * 1-3小时内，时间间隔30分钟
+	 * 3-12小时内，时间间隔3小时
+	 * 24小时以上，时间间隔24小时
+	 * @param {NULL | int} endMin 结束的分钟数
+	 * @return {Array} 时间间隔选项数据[{value : minutes, label : 'time format string'}]
+	 */
+	Hualala.TypeDef.MinuteIntervalOptions = function (endMin) {
+		var start = 0, end = endMin || Hualala.Constants.SecondsOfDay / 60, gap = 15, i = 1;
+		var list = [], cur = 0, minsOfHour = Hualala.Constants.SecondsOfHour / 60,
+			minsOfDay = minsOfHour * 24;
+		var formatTime = function (m) {
+			if (m == 0) return '不限';
+			var day = m % minsOfDay == 0 ? m / minsOfDay : 0;
+				hour = (m < minsOfHour || m % minsOfDay == 0) ? 0 : (m == minsOfHour) ? 1 : parseInt(m / minsOfHour),
+				min = m % minsOfHour;
+			return (day == 0 ? '' : day + '天') + (hour == 0 ? '' : hour + '小时') + (min == 0 ? '' : (min + '分钟'));
+		};
+		while(cur <= end) {
+			list.push({
+				value : cur,
+				label : formatTime(cur)
+			});
+			if (cur < minsOfHour) {
+				cur += gap * i;
+			} else if (cur < minsOfHour * 3) {
+				i = 2;
+				cur += gap * i;
+			} else if (cur < minsOfHour * 12) {
+				i = 4 * 3;
+				cur += gap * i;
+			} else if (cur <= minsOfHour * 24) {
+				i = 4 * 12;
+				cur += gap * i;
+			}
+		}
+		return list;
+	};
+
+
 })(jQuery);

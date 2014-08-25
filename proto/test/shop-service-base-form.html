@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf8" />
+		<!--IE=edge表示强制使用IE最新内核,
+			chrome=1表示当遇到chrome浏览器安装了针对IE6,7,8等的插件，就使用chrome内核来进行渲染
+		-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<!--针对360浏览器这种双核浏览器，我们通过meta标签设置，让浏览器强制以webkit内核进行渲染-->
+		<meta name="renderer" content="webkit">
+		<!--针对移动设备触摸屏设置-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>哗啦啦商户管理系统</title>
+
+		<!--bootstrap 样式主文件-->
+		<link href="../../src/js/dep/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+	<!-- Include DatePicker Stylesheet -->
+	<link href="../../src/js/datepicker/css/datetimepicker.css" rel="stylesheet">
+
+	
+
+	<!-- Include Site Stylesheet -->
+	<link href="../../src/css/core.less" rel="stylesheet/less" type="text/css" />
+	<script src="../../tool/less-1.4.2.min.js"></script>
+
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="../../src/js/dep/Respond/respond.matchmedia.addListener.src.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+		<div class="navbar navbar-default navbar-fixed-top ix-header" role="navigation">
+			<div class="header-line clearfix">
+				<div class="container">
+					<div class="pull-left">
+						<a href="#" >哗啦啦手机客户端</a>
+						<a href="#" >访问哗啦啦网站</a>
+					</div>
+					<div class="pull-right">
+						<span class="hello">Hi</span><span class="user">{{name}},</span>
+						<a class="">退出</a>
+					</div>
+				</div>
+			</div>
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">
+						<img alt="哗啦啦商户中心" src="" />
+					</a>
+					<h1 class="ix-group-brand">{{groupName}}</h1>
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav nav-justified nav-pills navbar-right">
+						<li class=""><a href="#">店铺管理</a></li>
+						<li class="active"><a href="#about">结算</a></li>
+						<li><a href="#contact">订单</a></li>
+						<li><a href="#contact">业务设置</a></li>
+						<li><a href="#contact">帐号管理</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="ix-body">
+			<div class="container">
+				<div class="shop-query">
+					<div class="filter">
+						<div class="city">
+							<span class="label">城市：</span>
+							<a class="btn btn-link disabled">全部</a>
+							<a class="btn btn-link ">北京<i class="num">(10)</i></a>
+							<a class="btn btn-link">上海</a>
+							<a class="btn btn-link">广州</a>
+							<a class="btn btn-link">重庆</a>
+							<a class="btn btn-link">深圳</a>
+							<a class="btn btn-link">柳州</a>
+							<a class="btn btn-link">天津</a>
+							<a class="btn btn-link ">北京<i class="num">(10)</i></a>
+							<a class="btn btn-link">上海</a>
+							<a class="btn btn-link">广州</a>
+							<a class="btn btn-link">重庆</a>
+							<a class="btn btn-link">深圳</a>
+							<a class="btn btn-link">柳州</a>
+							<a class="btn btn-link">天津</a>
+							<a class="btn btn-link ">北京<i class="num">(10)</i></a>
+							<a class="btn btn-link">上海</a>
+							<a class="btn btn-link">广州</a>
+							<a class="btn btn-link">重庆</a>
+							<a class="btn btn-link">深圳</a>
+							<a class="btn btn-link">柳州</a>
+							<a class="btn btn-link">天津</a>
+							<a class="btn btn-link ">北京<i class="num">(10)</i></a>
+							<a class="btn btn-link">上海</a>
+							<a class="btn btn-link">广州</a>
+							<a class="btn btn-link">重庆</a>
+							<a class="btn btn-link">深圳</a>
+							<a class="btn btn-link">柳州</a>
+							<a class="btn btn-link">天津</a>
+							<a class="btn btn-link ">北京<i class="num">(10)</i></a>
+							<a class="btn btn-link">上海</a>
+							<a class="btn btn-link">广州</a>
+							<a class="btn btn-link">重庆</a>
+							<a class="btn btn-link">深圳</a>
+							<a class="btn btn-link">柳州</a>
+							<a class="btn btn-link">天津</a>
+						</div>
+						<div class="area">
+							<span class="label">区域：</span>
+							<a class="btn btn-link disabled">全部</a>
+							<a class="btn btn-link">海淀</a>
+							<a class="btn btn-link">朝阳</a>
+							<a class="btn btn-link">大兴</a>
+							<a class="btn btn-link">回龙观</a>
+							<a class="btn btn-link">昌平</a>
+							<a class="btn btn-link">龙泽</a>
+							<a class="btn btn-link">顺义</a>
+						</div>
+					</div>
+					<nav class="navbar navbar-default query" role="navigation">
+						<div class="container-fluid">
+							<div class="navbar-header">
+								<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#shop_query">
+									<span class="sr-only">Toggle navigation</span>
+									<span class="icon-bar"></span>
+									<span class="icon-bar"></span>
+									<span class="icon-bar"></span>
+								</button>
+								<a class="navbar-brand" href="javascript:void(0);">查询店铺</a>
+							</div>
+							<div class="collapse navbar-collapse" id="shop_query">
+								<div class="navbar-form navbar-left" role="search">
+									<div class="input-group">
+										<input type="text" class="form-control" autocomplete="off" />
+										<span class="input-group-btn">
+											<button class="btn btn-default">查询</button>
+										</span>
+									</div>
+								</div>
+								<button class="btn btn-warning create-shop pull-right" style="margin-top:8px;">创建店铺</button>
+							</div>
+						</div>
+					</nav>
+				</div>
+				
+				
+				<div class="shop-list">
+					<div class="row shop-list-body">
+						<div class="col-xs-12 shop-list-item">
+							<div class="row shop-base-info">
+								<div class="col-xs-6 col-sm-3 col-md-2">
+									<h4>豆捞坊（海淀黄庄）</h4>
+								</div>
+								<div class="hidden-xs col-sm-4 col-md-7 ">
+									<div class="account">
+										<label class="account-label">结算账户：</label>
+										<span class="account-name">北京豆捞坊餐饮有限公司</span>
+									</div>
+								</div>
+								<div class="col-xs-6 col-sm-5 col-md-3">
+									<div class="switcher-wrapper pull-right">
+										<label class="">店铺当前状态：</label>
+										<input type="checkbox" name="switcher_status" />
+									</div>
+								</div>
+							</div>
+							<div class="row shop-business">
+								<div class="col-xs-6 col-sm-3 col-md-2">
+									<h4>
+										<span class="pic-shanchi"></span>
+										闪吃
+									</h4>
+								</div>
+								<div class="col-xs-6 col-sm-2 col-md-2">
+									<div class="switcher-wrapper">
+										<input type="checkbox" name="switcher_shanchi" />
+									</div>
+								</div>
+								<div class="col-xs-12 col-sm-6 col-md-7">
+									<p>需提前30分钟预订，最低消费50元,留位时间10分钟,11:30-14:30,需提前2小时预订,节假日不开放,支持网上付及到店付</p>
+								</div>
+								<div class="col-xs-12 col-sm-1 col-md-1">
+									<button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#myModal">修改</button>
+								</div>
+							</div>
+							<div class="row shop-business">
+								<div class="col-xs-6 col-sm-3 col-md-2">
+									<h4>
+										<span class="pic-zizhu"></span>
+										店内自助
+									</h4>
+								</div>
+								<div class="col-xs-6 col-sm-2 col-md-2">
+									<div class="switcher-wrapper">
+										<input type="checkbox" name="switcher_zizhu" />
+									</div>
+								</div>
+								<div class="col-xs-12 col-sm-6 col-md-7">
+									<p>支持下单到餐饮软件，餐前结账</p>
+								</div>
+								<div class="col-xs-12 col-sm-1 col-md-1">
+									<button type="button" class="btn btn-default pull-right">修改</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="shop-list-footer">
+						<div class="page-selection pull-right"></div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="ix-footer navbar-fixed-bottom">
+			<div class="container">
+				<p class="links">
+					<a href="#">关于哗啦啦商户中心</a>
+					<a href="#">联系我们</a>
+				</p>
+				<p class="copyright">
+					<img alt="Gozap" src=""/>
+					<span class="">&nbsp;旗下网站&nbsp;&copy;&nbsp;2014&nbsp;hualala.com&nbsp;京IPC备14019284号-3</span>
+
+				</p>
+			</div>
+		</div>
+
+		<div class="modal fade" id="myModal" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">闪吃配置</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-horizontal shop-service-form" role="form">
+							<div class="form-group">
+								<label for="" class="col-sm-offset-2 col-sm-3 control-label">用户提前预订时间</label>
+								<div class="col-sm-5">
+									<select class="form-control">
+										<option value="0">立即预订</option>
+										<option value="15">15分钟</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="inputEmail3" class="col-sm-offset-2 col-sm-3 control-label">订单提前通知时间</label>
+								<div class="col-sm-5">
+									<select class="form-control">
+										<option value="0">立即通知</option>
+										<option value="15">15分钟</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="col-sm-offset-2 col-sm-3 control-label">节假日是否开放</label>
+								<div class="col-sm-5">
+									<select class="form-control">
+										<option value="0">不限制</option>
+										<option value="1">仅节假日</option>
+										<option value="2">不含节假日</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="col-sm-offset-2 col-sm-3 control-label">开放时段</label>
+								<div class="col-sm-3">
+									<div class="input-group">
+										<input type="text" class="form-control" placeholder="Text input">
+										<span class="input-group-addon">
+											<span class="glyphicon glyphicon-time"></span>
+										</span>
+									</div>
+								</div>
+								<div class="col-sm-3">
+									<span style="vertical-align:middle; line-height:38px; position:absolute; margin-left:-15px;">到</span>
+									<div class="input-group">
+										<input type="text" class="form-control" placeholder="Text input">
+										<span class="input-group-addon">
+											<span class="glyphicon glyphicon-time"></span>
+										</span>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label for="" class="col-sm-offset-2 col-sm-3 control-label">留位时间</label>
+								<div class="col-sm-5">
+									<select class="form-control">
+										<option value="0">立即预订</option>
+										<option value="15">15分钟</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="col-sm-offset-2 col-sm-3 control-label">留位特别说明</label>
+								<div class="col-sm-5">
+									<input type="text" class="form-control" placeholder="Text input">
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="col-sm-offset-2 col-sm-3 control-label">可选支付方式</label>
+								<div class="col-sm-5">
+									<select class="form-control">
+										<option value="0">仅支持在线支付</option>
+										<option value="1">仅支持线下支付</option>
+										<option value="2">均支持</option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="col-sm-offset-2 col-sm-3 control-label">起送金额</label>
+								<div class="col-sm-5">
+									<div class="input-group">
+										<span class="input-group-addon">￥</span>
+										<input type="text" class="form-control" placeholder="Text input">
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="col-sm-offset-2 col-sm-3 control-label">送餐费</label>
+								<div class="col-sm-5">
+									<div class="input-group">
+										<span class="input-group-addon">￥</span>
+										<input type="text" class="form-control" placeholder="Text input">
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="" class="col-sm-offset-2 col-sm-3 control-label">送餐范围</label>
+								<div class="col-sm-5">
+									<div class="input-group">
+										<input type="text" class="form-control" placeholder="Text input">
+										<span class="input-group-addon">公里</span>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+
+					</div>
+					<div class="modal-footer"></div>
+				</div>
+			</div>
+		</div>'
+
+
+
+
+
+
+
+
+
+
+		
+		<!--jQuery (necessary for Bootstrap's JavaScript plugins and merchant project)-->
+		<script src="../../src/js/dep/jquery/jquery-1.11.1.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="../../src/js/dep/bootstrap/js/bootstrap.js"></script>
+
+	<!-- Include underscore lib -->
+	<script src="../../src/js/dep/underscore/underscore.js"></script>
+	<!-- Include handlebars -->
+	<script src="../../src/js/dep/handlebars/handlebars-v1.3.0.js"></script>
+
+	<!-- Include DatePicker -->
+	<script src="../../src/js/datepicker/datetimepicker.js"></script>
+	<script src="../../src/js/datepicker/local/datetimepicker.zh-CN.js"></script>
+
+	<!-- Include Common Lib Files for Hualala Shop Site -->
+	<!-- Include Stapes.js -->
+	<script src="../../src/js/common/stapes.js"></script>
+	<!-- Include ixutils.js -->
+	<script src="../../src/js/common/ixutils.js"></script>
+	<!-- Include commonFn.js -->
+	<script src="../../src/js/common/commonFn.js"></script>
+	<!-- Include Constants Defined (datatype.js,typedef.js) -->
+	<script src="../../src/js/common/typedef.js"></script>
+	<script src="../../src/js/common/datatype.js"></script>
+
+	<!-- Include IXUI js -->
+	<script src="../../src/js/ui/ixui.js"></script>
+	<script src="../../src/js/ui/pager.js"></script>
+	<script src="../../src/js/ui/modal.js"></script>
+	<script src="../../src/js/ui/switch.js"></script>
+	<script src="../../src/js/ui/chosen.jquery.js"></script>
+	<script>
+	$(document).ready(function () {
+		
+	});
+	</script>
+	</body>
+</html>

@@ -84,3 +84,18 @@ Hualala.Global.switchShopStatus = function (params, cbFn) {}
  */
 Hualala.Global.switchShopServiceFeatureStatus = function (params, cbFn) {}
 
+/**
+ * 设置闪吃业务配置参数
+ * @param {Object} params 参数 {shopID, orderType, strType, advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,openDays,servicePeriods,reserveTableTime,reserveTableDesc,submitSMSTemplateID,checkSMSTemplateID,payMethod,supportInvoice}
+ * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+ * @return {NULL}
+ */
+ Hualala.Global.setJustEatParams = function (params, cbFn) {}
+ /**
+  * 设置店内自助业务配置参数
+  * @param {Object} params 参数{needInputTableName,supportInvoice,supportCommitToSoftware,payBeforeCommit,fetchFoodMode}
+  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+  * @return {NULL} 
+  */
+ Hualala.Global.setSpotOrderParams = function (params, cbFn) {}
+

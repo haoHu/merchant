@@ -65,12 +65,29 @@
 	}
 }
 
+// 店铺服务配置表单样式
+.shop-service-form {
+	.input-group-addon {.x-adjust-leading-to(2, 12px, 2px);}
+	.section {
+		// .max-input {padding-left : 30px;}
+		.to-label {position : absolute; left : 0; top : 0; margin-left : -7px; vertical-align: middle; .x-adjust-leading-to(3, 12px);}
+
+		// .input-group {padding-right : 22px;}
+		.has-feedback .form-control {padding-right : 0;}
+	}
+
+	.has-feedback .form-control-feedback {
+		right: -17px;
+	}
+}
+
 //创建店铺
 #shopCreateWizard 
 { 
-    .step-nav { margin: 0 15px }
+    .step-nav, .step-action { margin: 0 15px }
     #tab1 { margin: 50px 0 }
 }
+#swfUploadImgDialog .modal-dialog { width: 485px }
 
 
 

@@ -261,6 +261,15 @@
             more: '请输入大于 %s 个字',
             between: '请输入介于 %s 至 %s 个字'
         },
+        tel: {
+            'default': '请输入有效的固定电话号码'
+        },
+        telOrMobile: {
+            'default': '请输入有效的固定电话号码或者手机号码'
+        },
+        time: {
+            'default': '请输入有效的时间'
+        },
         uri: {
             'default': '请输入一个有效的链接'
         },

@@ -1,3 +1,44 @@
 {
-	
+	"name" : "Hualala-Merchant-Management",
+	"version" : "0.1.0",
+	"author" : "HuHao",
+	"description" : "Hualala Merchant Management System. ",
+	"protoPath" : {
+		"path" : "./proto",
+		"distribPath" : "./proto/distrib"
+	},
+	"srcPath" : {
+		"path" : "./src",
+		"jsPath" : "./src/js",
+		"cssPath" : "./src/css",
+		"fontPath" : "./src/font",
+		"imgPath" : "./src/img"
+	},
+	"destPath" : {
+		"path" : "./distrib",
+		"jsPath" : "./distrib/js",
+		"cssPath" : "./distrib/css",
+		"fontPath" : "./distrib/font",
+		"imgPath" : "./distrib/img",
+		"protoPath" : "./distrib/proto"
+	},
+	"distribPath" : {
+		"path" : "",
+		"jsPath" : "",
+		"cssPath" : "",
+		"fontPath" : "",
+		"imgPath" : ""
+	},
+	"devDependencies" : {
+		"grunt-cli" : "*",
+		"grunt" : "^0.4.5",
+		"grunt-contrib-copy" : "*",
+		"grunt-contrib-concat" : "*",
+		"grunt-contrib-cssmin" : "*",
+		"grunt-contrib-jshint" : "~0.6.3",
+		"grunt-contrib_less" : "*",
+		"grunt-contrib-nodeunit" : "~0.2.0",
+		"grunt-contrib-uglify" : "~0.4.0",
+		"grunt-contrib-watch" : "*"
+	}
 }

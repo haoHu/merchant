@@ -5428,7 +5428,7 @@
                 sum = [8, 7, 6, 5, 4, 3, 2, 1, 0, 9, 10][sum - 1];
                 return (sum + '' === value.substr(8, 1));
             } else if (value.length === 9 || value.length === 10) {
-                // Validate Czech birth number (Rodné číslo), which is also national identifier
+                // Validate Czech birth number (Rodn茅 膷铆slo), which is also national identifier
                 var year  = 1900 + parseInt(value.substr(0, 2), 10),
                     month = parseInt(value.substr(2, 2), 10) % 50 % 20,
                     day   = parseInt(value.substr(4, 2), 10);
@@ -5530,11 +5530,11 @@
         },
 
         /**
-         * Validate Spanish VAT number (NIF - Número de Identificación Fiscal)
+         * Validate Spanish VAT number (NIF - N煤mero de Identificaci贸n Fiscal)
          * Can be:
          * i) DNI (Documento nacional de identidad), for Spaniards
-         * ii) NIE (Número de Identificación de Extranjeros), for foreigners
-         * iii) CIF (Certificado de Identificación Fiscal), for legal entities and others
+         * ii) NIE (N煤mero de Identificaci贸n de Extranjeros), for foreigners
+         * iii) CIF (Certificado de Identificaci贸n Fiscal), for legal entities and others
          *
          * Examples:
          * - Valid: i) ES54362315K; ii) ESX2482300W, ESX5253868R; iii) ESM1234567L, ESJ99216582, ESB58378431, ESB64717838
@@ -5624,7 +5624,7 @@
         },
 
         /**
-         * Validate French VAT number (TVA - taxe sur la valeur ajoutée)
+         * Validate French VAT number (TVA - taxe sur la valeur ajout茅e)
          * It's constructed by a SIREN number, prefixed by two characters.
          *
          * Examples:
@@ -6477,36 +6477,108 @@
     };
 }(window.jQuery));
 
-//=============�Զ�����֤��====================
+//=============自定义验证器====================
+//手机号
 (function($) {
     $.fn.bootstrapValidator.i18n.mobile = $.extend($.fn.bootstrapValidator.i18n.mobile || {}, {
-        //��Ҫ�� validator.zh-CN.js �����Ӧ��Ĭ�ϴ�����Ϣ
+        //需要在 validator.zh-CN.js 加入对应的默认错误信息
         'default': 'Please enter a valid mobile number'
     });
 
     $.fn.bootstrapValidator.validators.mobile = {
-        enableByHtml5: function($field) {
-            return ('mobile' === $field.attr('type'));
-        },
+        
+        validate: function(validator, $field, options) {
+            var value = $field.val();
+            if (value === '') {
+                return true;
+            }
+            var mobileRegExp = /^1[3458]\d{9}$/;
+            return mobileRegExp.test(value);
+        }
+    };
+}(window.jQuery));
+//固定电话
+(function($) {
+    $.fn.bootstrapValidator.i18n.tel = $.extend($.fn.bootstrapValidator.i18n.tel || {}, {
+        //需要在 validator.zh-CN.js 加入对应的默认错误信息
+        'default': 'Please enter a valid telephone number'
+    });
 
-        /**
-         * Return true if and only if the input value is a valid mobile number
-         *
-         * @param {BootstrapValidator} validator Validate plugin instance
-         * @param {jQuery} $field Field element
-         * @param {Object} [options]
-         * @returns {Boolean}
-         */
+    $.fn.bootstrapValidator.validators.tel = {
         validate: function(validator, $field, options) {
             var value = $field.val();
             if (value === '') {
                 return true;
             }
 
-            // Mobile number regular expression
-            
-            var mobileRegExp = /^1[3458]\d{9}$/;
-            return mobileRegExp.test(value);
+            var telRegExp = /^(0[0-9]{2,3}\-)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$/;
+            return telRegExp.test(value);
         }
     };
 }(window.jQuery));
+//固定电话或者手机号
+(function($) {
+    $.fn.bootstrapValidator.i18n.telOrMobile = $.extend($.fn.bootstrapValidator.i18n.telOrMobile || {}, {
+        //需要在 validator.zh-CN.js 加入对应的默认错误信息
+        'default': 'Please enter a valid telephone or mobile number'
+    });
+
+    $.fn.bootstrapValidator.validators.telOrMobile = {
+       
+        validate: function(validator, $field, options) {
+            var value = $field.val();
+            if (value === '') {
+                return true;
+            }
+            
+            if (/^1[3458]\d{9}$/.test(value)) {
+                return true;
+            }
+            
+            return /^(0[0-9]{2,3}\-)?([2-9][0-9]{6,7})+(\-[0-9]{1,4})?$/.test(value);
+        }
+    };
+}(window.jQuery));
+//只包括小时和分钟的输入验证器
+(function($) {
+    $.fn.bootstrapValidator.i18n.time = $.extend($.fn.bootstrapValidator.i18n.time || {}, {
+        //需要在 validator.zh-CN.js 加入对应的默认错误信息
+        'default': 'Please enter a valid time'
+    });
+
+    $.fn.bootstrapValidator.validators.time = {
+        
+        validate: function(validator, $field, options) {
+            var value = $field.val();
+            if (value === '') {
+                return true;
+            }
+            //\uff1a 为中文冒号的unicode码
+            var rst = /^((0?\d)|1\d|2[0-3])\s*[\uff1a\:]\s*([0-5]\d)$/.test(value);
+            
+            if(!rst) return false;
+            
+            var times = value.replace('\uff1a', ':').split(':');
+            times[0] = $.trim(times[0]);  // hours
+            times[1] = $.trim(times[1]);  // minutes
+            $field.val(times.join(':'));
+            
+            if(!options.startTimeField) return true;
+            
+            var $startTimeField = validator.$form
+                .find('[name=' + options.startTimeField + ']');
+            if(!$startTimeField[0])
+                throw 'startTimeField can not be found!';
+            if(!validator.isValidField($startTimeField))
+                return { valid: false, message: '请先输入有效的开始时间' };
+            var startTime = $startTimeField.val().split(':'),
+                startVal = parseInt(startTime[0], 10) * 60 + parseInt(startTime[1], 10),
+                endVal = parseInt(times[0], 10) * 60 + parseInt(times[1], 10);
+            if(endVal <= startVal)
+                return { valid: false, message: '结束时间不能小于或等于开始时间' };
+            return true;
+            
+        }
+    };
+}(window.jQuery));
+

@@ -82,6 +82,146 @@
 		}, $XP(cfg, 'interval', 1500));
 	};
 
+	/**
+	 * cfg :{
+	 * 		container : DOM|jQuery Obj //default $('body') 
+	 * 		id : '',	//default IX.id()
+	 * 		zIndex : null,	//default null
+	 * 		dragHandler : null,	//拖动手柄 default null
+	 * 		containment : null,	//拖动范围容器 default null
+	 * 		overFlow : false,	//default false
+	 * 		movable : false	,	//default false
+	 * 		showTitle : true ,	//default true
+	 * 		showFooter : true,	//default true
+	 * 		hideCloseBtn : true,	//default true 默认屏蔽窗口的关闭按钮
+	 * 		title : '',			//title string
+	 * 		hideWithRemove : true,	//隐藏时是否删除
+	 * 		clz : '',			//dialog className
+	 * 		afterRemove : function () {},
+	 * 		afterHide : function () {},
+	 * 		onBeforeDrag : function () {},
+	 * 		onDragging : function () {},
+	 * 		onAfterDrag : function () {}
+	 * }
+	 */
+	var ModalDialog = function (cfg) {
+		var config = IX.inherit({
+			container : null,
+			id : null,
+			html : '',
+			ifDrag : false,
+			dragHandler : null,
+			containment : null,
+			overFlow : false,
+			zIndex : null,
+			showTitle : true,
+			showFooter : true,
+			hideCloseBtn : true,
+			title : '',
+			hideWithRemove : true,
+			clz : '',
+			afterRemove : IX.emptyFn,
+			afterHide : IX.emptyFn,
+			aftetShow : IX.emptyFn,
+			onBeforeDrag : IX.emptyFn,
+			onDragging : IX.emptyFn,
+			onAfterDrag : IX.emptyFn
+		}, cfg);
+
+		var $self = null, $con = null, $modal = null, isFirst = true;
+		var $dialogHead = null, $dialogBody = null, $dialogFoot = null, $closeBtn = null;
+		var dialogId = $XP(config, 'id', 'modal_dialog_' + IX.id());
+		var dialogTpl = Handlebars.compile(Hualala.TplLib.get('tpl_modal_dialog'));
+		var dialogCfg = {
+			clz : $XP(config, 'clz', ''),
+			id : dialogId,
+			title : $XP(config, 'title', '')
+		};
+
+		var initStyle = function () {
+			var _overflow = $XP(config, 'overFlow', false),
+				_zIndex = $XP(config, 'zIndex', null);
+			// $dialogBody.css({
+			// 	"overflow" : !_overflow : 'hidden' : 'auto'
+			// });
+			if (_zIndex && !isNaN(_zIndex)) {
+				$self.css({
+					'z-index' : _zIndex
+				});
+			}
+			if (!$XP(config, 'showTitle', false)) {
+				$dialogHead.hide();
+			}
+			if (!$XP(config, 'showFooter', false)) {
+				$dialogFoot.hide();
+			}
+			if (!!$XP(config, 'hideCloseBtn', false)) {
+				$closeBtn.hide();
+			}
+		};
+
+		var bindEvent = function () {
+			$self.on('hidden.bs.modal', function (e) {
+				$XF(config, 'afterHide')(e);
+				if ($XP(config, 'hideWithRemove', false)) {
+					$self.remove();
+				}
+			});
+			if (!config.ifDrag || (!config.showTitle && !config.dragHandler)) return;
+			var $handler = $(dragHandler, $self);
+			if ($handler.length == 0) return;
+			if (!self.draggable) return;
+			$self.draggable({
+				cursor : 'move',
+				containment : config.containment || 'document',
+				handle : config.showTitle ? dialogHead : $handler,
+				start : config.onBeforeDrag,
+				drag : config.onDragging,
+				stop : config.onAfterDrag
+			});	
+		};
+
+		var init = function () {
+			$con = $XP(cfg, 'container', null);
+			$con = !$con ? $('body') : $($con);
+			$self = $(dialogTpl(dialogCfg));
+			$self.appendTo($con);
+			$dialogHead = $self.find('.modal-header');
+			$closeBtn = $dialogHead.find('.close');
+			$dialogBody = $self.find('.modal-body');
+			$dialogFoot = $self.find('.modal-footer');
+			_model._ = {
+				container : $con,
+				dialog : $self,
+				header : $dialogHead,
+				body : $dialogBody,
+				footer : $dialogFoot
+			};
+			initStyle();
+			bindEvent();
+		};
+
+		var _hide = function () {
+			_model._.dialog.modal('hide');
+		};
+
+		var _show = function () {
+			_model._.dialog.modal('show');
+		};
+
+		var _model = {
+			_ : {},
+			show : _show,
+			hide : _hide,
+			setTitle : function (title) {
+				$dialogHead.find('.modal-title').html(title);
+			}
+		};
+		init();
+		return _model;
+	};
+
 	Hualala.UI.PopoverMsgTip = PopoverMsgTip;
 	Hualala.UI.TopTip = TopTip;
+	Hualala.UI.ModalDialog = ModalDialog;
 })(jQuery, window);

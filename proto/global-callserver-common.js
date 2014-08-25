@@ -16,7 +16,7 @@
 	Hualala.Global.loadAppData = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		fn({
-			resultcode : 000,
+			resultcode : '000',
 			resultmsg : '',
 			data : {
 				pcClient : Test.PCClient,
@@ -42,7 +42,7 @@
 	Hualala.Global.genAuthCode = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		fn({
-			resultcode : 000,
+			resultcode : '000',
 			resultmsg : '',
 			data : {
 				code : 'http://mu.shop.hualala.com/randomImage.jsp?Rand=' + (Math.random() * 10000)
@@ -62,7 +62,7 @@
 	Hualala.Global.loginCallServer = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		var random = Test.getRandom(1, 10);
-		var res = {resultcode : 000, resultmsg : ''};
+		var res = {resultcode : '000', resultmsg : ''};
 		if (random < 5) {
 			fn(IX.inherit(res, {
 				resultcode : random * 1000,
@@ -89,7 +89,7 @@
 	Hualala.Global.getShopQuerySchema = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		var random = Test.getRandom(1, 10);
-		var res = {resultcode : 000, resultmsg : ''};
+		var res = {resultcode : '000', resultmsg : ''};
 		var testData = Test.querySchema;
 		// if (random < 5) {
 		// 	fn(IX.inherit(res, {
@@ -120,7 +120,7 @@
 	Hualala.Global.queryShop = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		var random = Test.getRandom(1, 10);
-		var res = {resultcode : 000, resultmsg : ''};
+		var res = {resultcode : '000', resultmsg : ''};
 		var results = Test.queryResult(params);
 		fn(IX.inherit(res, {
 			data : results
@@ -136,9 +136,9 @@
 	Hualala.Global.switchShopStatus = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		var random = Test.getRandom(1, 10);
-		var res = {resultcode : 000, resultmsg : ''};
+		var res = {resultcode : '000', resultmsg : ''};
 		fn(IX.inherit(res, {
-			resultcode : random > 5 ? random*100 : '000',
+			// resultcode : random > 5 ? random*100 : '000',
 			resultmsg : "状态切换失败"
 		}));
 	};
@@ -149,15 +149,43 @@
 	 * @param  {Function} cbFn   回调函数
 	 * @return {NULL}        
 	 */
-	 Hualala.Global.switchShopServiceFeatureStatus = function (params, cbFn) {
+	Hualala.Global.switchShopServiceFeatureStatus = function (params, cbFn) {
 	 	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
-	 	var random = Test.getRandom(1, 10);
-	 	var res = {resultcode : 000, resultmsg : ''};
-	 	fn(IX.inherit(res, {
-	 		resultcode : random > 5 ? random * 100 : '000',
-	 		resultmsg : "状态切换失败"
-	 	}));
-	 };
-
-
+		var random = Test.getRandom(1, 10);
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(IX.inherit(res, {
+			// resultcode : random > 5 ? random * 100 : '000',
+			resultmsg : "状态切换失败"
+		}));	
+	};
+	/**
+	 * 设置闪吃业务配置参数
+	 * @param {Object} params 参数 {shopID, orderType, strType, advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,openDays,servicePeriods,reserveTableTime,reserveTableDesc,submitSMSTemplateID,checkSMSTemplateID,payMethod,supportInvoice}
+	 * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 */
+	Hualala.Global.setJustEatParams = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var random = Test.getRandom(1, 10);
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(IX.inherit(res, {
+			// resultcode : random > 5 ? random * 100 : '000',
+			resultmsg : "参数配置失败"
+		}));
+	};
+	 /**
+	  * 设置店内自助业务配置参数
+	  * @param {Object} params 参数{needInputTableName,supportInvoice,supportCommitToSoftware,payBeforeCommit,fetchFoodMode}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL} 
+	  */
+	Hualala.Global.setSpotOrderParams = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var random = Test.getRandom(1, 10);
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(IX.inherit(res, {
+			// resultcode : random > 5 ? random * 100 : '000',
+			resultmsg : "参数配置失败"
+		}));
+	};
 })();
