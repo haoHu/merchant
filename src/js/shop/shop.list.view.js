@@ -246,7 +246,7 @@
 				data = self.getShopBusiness(shop);
 			return _.map(data, function (el) {
 				var name = $XP(el, 'name'),
-					icon = 'pic-' + name,
+					icon = 'icon-' + name,
 					switcherName = 'switcher_business',
 					open = $XP(el, 'switcherStatus') == 1 ? 'checked' : '';
 				return {
