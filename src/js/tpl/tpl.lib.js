@@ -234,6 +234,30 @@
 		'</div>'
 	].join('');
 	TemplateList.register('tpl_site_homepage', tpl_site_homepage);
+    // 上传图片对话框模板
+    var tpl_site_uploadimg = [
+        '<div class="modal fade" id="swfUploadImgDialog" tabindex="-1">',
+        '<div class="modal-dialog">',
+        '<div class="modal-content">',
+            '<div class="modal-header">',
+                '<button type="button" class="close" data-dismiss="modal">&times;</button>',
+                '<h4 class="modal-title">上传图片</h4>',
+            '</div>',
+            '<div class="modal-body">',
+                '<object type="application/x-shockwave-flash" ',
+                    'id="hualalaImageUpload" name="hualalaImageUpload" ',
+                    'data="/src/swf/hualalaImageUpload.swf" ',
+                    'width="500" height="375">',
+                    '<param name="quality" value="high">',
+                    '<param name="allowscriptaccess" value="always">',
+                    '<param name="wmode" value="transparent">',
+                    '<param name="flashvars" value="swfId=txsc&amp;uploadDataFieldName=upload&amp;uploadSvrURL=http://file.hualala.com/upload&amp;iconsURL=/src/swf/icons&amp;avaQuality=70&amp;minImgFRule=100&amp;saveImgRule=600">',
+                '</object>',
+            '</div>',
+        '</div>',
+        '</div>',
+        '</div>'].join('');
+    TemplateList.register('tpl_site_uploadimg', tpl_site_uploadimg);
 
 	var TplLib = function () {
 		return {

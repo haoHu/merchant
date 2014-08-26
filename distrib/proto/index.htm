@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="renderer" content="webkit">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>哗啦啦商户中心</title>
+
+		<link href="../css/bootstrap.min.css" rel="stylesheet" />
+		<!-- datetimepicker.css, timepicker.css, validator.css -->
+		<link href="../css/deplib.min.css" rel="stylesheet" />
+		
+		<link href="../css/core.min.css" rel="stylesheet" />
+		<!--[if lt IE 9]>
+			<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="../js/dep/respond.matchmedia.addListener.min.js"></script>
+		<![endif]-->
+		<script>
+		window.IXDEBUG = true;
+		</script>
+	</head>
+	<body>
+		<script src="../js/dep/jquery.min.js"></script>
+		<script src="../js/dep/bootstrap.min.js"></script>
+
+		<!--Include dependance file :underscore.js, handlebars.js datetimepicker.js, datetimepicker.zh-Cn.js, timepicker.js, validator.js, validator.zh-CN.js -->
+		<script src="../js/dep/deplib.js"></script>
+		<!-- Include Common Lib Files for Hualala Shop Site -->
+		<script src="../js/common.js"></script>
+		<!-- Include Global Const and call server api -->
+		<!--<script src="../js/api.js"></script>-->
+		<script type="text/javascript" src="test.js"></script>
+		<script src="global-const.js"></script>
+		<script src="global-url.js"></script>
+		<script src="global-callserver-common.js"></script>
+		<!-- Include Template File -->
+		<script src="../js/tpl.js"></script>
+		<!-- Include UI Lib -->
+		<script src="../js/ui.js"></script>
+		<!-- Include Page : entry.init.js, shop.query.model.js, shop.query.view.js, shop.query.controler.js, shop.list.model.js, shop.list.view.js, shop.list.controler.js, shop.init.js, setting.mgr.js, setting.init.js, merchant.layout.js, merchant.init.js, merchant.route.js -->
+		<script src="../js/pages.js"></script>
+		<script type="text/javascript">
+			Test.readyToTest(function(){
+				Hualala.init();
+			});
+		</script>
+	</body>
+</html>

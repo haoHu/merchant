@@ -86,8 +86,60 @@
 { 
     .step-nav, .step-action { margin: 0 15px }
     #tab1 { margin: 50px 0 }
+    #tab3 
+    {
+        margin: 50px 15px; 
+        > div { padding-left: 72px; }
+        h4 { color: @color-success; font-size: 20px; font-weight: bold }
+        .x-ico-suc { margin: 0 8px 0 -64px; top: 6px }
+        ul 
+        { border-left: 4px solid #ccc; 
+          position: relative; top: 30px; 
+        }
+        li { position: relative; left: 25px; top: -15px; margin-bottom: 15px; }
+        li:last-child { top: 0 }
+        li:before 
+        { content: '';
+          position: absolute; left: -36px; top: 8px;
+          width: 18px; height: 18px; 
+          border: 6px solid @color-success;
+          border-radius: 50%; background: #fff;
+        }
+        li:last-child:before { top: 0 }
+        li a { width: 120px }
+        li a:first-child { margin-right: 6px }
+    }
+    
+}
+.map-wrap
+{
+    box-sizing: border-box; margin: 15px; border: 1px solid #d4d4d4;
+    .x-box-shadow-base (0, 1px, 4px, rgba(0,0,0, 0.065));
+    
+    .input-group-addon { top: 0 }
+    .map-search { background: #fafafa; padding: 6px; margin: 0; }
+    .map-search > div { padding-left: 0 }
+    .glyphicon-search:active { background: #fff }
+    .map-help { padding-top: 8px }
+    .map_canvas { height: 400px; border-top: 1px solid #d4d4d4; }
+    .map-shop-info
+    {
+        dt, dd { line-height: 32px; }
+        dt { font-weight: bold }
+        dd { margin-left: 12px }
+    }
+    #mapResult { margin: 10px; }
 }
 #swfUploadImgDialog .modal-dialog { width: 485px }
+.x-ico-suc
+{   @size: 50px;
+    .x-tc();
+    font-size: @size / 2; color: @color-success;
+    border-radius: @size / 2; border: 6px solid @color-success;
+    width: @size; height: @size; line-height: @size * 0.8;
+    &:before { position: relative; top: -2px; left: -2px }
+}
+
 
 
 

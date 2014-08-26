@@ -220,8 +220,51 @@
 		init();
 		return _model;
 	};
+    /*
+    options = {
+        onSuccess: function () {},
+        onTooLarge: function () {},
+        onConcel: function () {},
+        onStart: function () {}
+    }*/
+    var uploadImg = function uploadImg(options)
+    {
+        var tpl = Hualala.TplLib.get('tpl_site_uploadimg');
+        var $dialog = $(tpl).appendTo('body')
+            .modal({backdrop : 'static', keyboard: false});
+        
+        var defaults = {
+            onSuccess: function () {},
+            onTooLarge: function () {},
+            onConcel: function () { $dialog.modal('hide'); },
+            onStart: function () {}
+        };
+        var opts = $.extend(defaults, options);
+        
+        var topTip = Hualala.UI.TopTip;
+        window.Head_Pic_Rece_URL = function (imgPath, swfId) 
+        {
+            if ("IOError" === imgPath)
+            {
+                topTip({msg: '图片上传失败，请稍候再试'});
+                return;
+            }
+            
+            topTip({type: 'success', msg: '图片上传成功！'});
+            opts.onSuccess(imgPath, $dialog);
+        };
+        window.imageTooLarge = function (swfId) 
+        {
+            topTip({msg: '您上传的图片过大，请换一张'});
+            opts.onTooLarge();
+        };
+        window.Head_Pic_Cancel = function(swfId) { opts.onConcel($dialog); };
+        window.uploadStart = function(swfId) { opts.onStart(); };
+        
+    }
 
 	Hualala.UI.PopoverMsgTip = PopoverMsgTip;
 	Hualala.UI.TopTip = TopTip;
 	Hualala.UI.ModalDialog = ModalDialog;
+    Hualala.UI.uploadImg = uploadImg;
 })(jQuery, window);

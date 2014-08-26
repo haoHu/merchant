@@ -42,15 +42,14 @@
 	Hualala.Shop.FoodMenuMgrInit = initFoodMenuMgr;
 
 	var initCreateShop = function (pageType, params) {
-		var $body = $('#ix_wrapper > .ix-body > .container');
-		$body.html(
-			'<div class="jumbotron">'+
-				'<h1>这里是创建店铺页面</h1>' +
-				'<p>创建店铺向导功能在这个入口实现</p>' +
-				
-			'</div>'
-			);
-		// TODO 创建店铺向导功
+		var $body = $('#ix_wrapper > .ix-body > .container'),
+            tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_create')),
+            $shopCreateWizard = $(tpl({
+                pcClientPath: Hualala.PageRoute.createPath('pcclient')
+            }));
+		$body.append($shopCreateWizard);
+        Hualala.Shop.initCreate($shopCreateWizard);
+		
 	};
 	Hualala.Shop.CreateShopInit = initCreateShop;
 

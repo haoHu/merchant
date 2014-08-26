@@ -61,20 +61,25 @@ module.exports = function (grunt) {
 					+ " * -------------------------------------------------\n"
 					+ " */ \n\n"
 			},
+			respond : {
+				src : ["<%= pkg.srcPath.jsPath %>/dep/Respond/respond.matchmedia.addListener.src.js"],
+				dest : "<%= pkg.destPath.jsPath %>/dep/respond.matchmedia.addListener.js",
+				nonull : true
+			},
 			jquery : {
 				src : ["<%= pkg.srcPath.jsPath %>/dep/jquery/jquery-1.11.1.js"],
 				dest : "<%= pkg.destPath.jsPath %>/dep/jquery.js",
 				nonull : true
 			},
 			bootstrap : {
-				src : ["<%= pkg.srcPath.jsPath %>/dep/bootstarp/js/bootstrap.js"],
+				src : ["<%= pkg.srcPath.jsPath %>/dep/bootstrap/js/bootstrap.js"],
 				dest : "<%= pkg.destPath.jsPath %>/dep/bootstrap.js",
 				nonull : true
 			},
 			deplib : {
 				src : [
 					"<%= pkg.srcPath.jsPath %>/dep/underscore/underscore.js",
-					"<%= pkg.srcPath.jsPath %>/dep/handlebars/handlebars.js",
+					"<%= pkg.srcPath.jsPath %>/dep/handlebars/handlebars-v1.3.0.js",
 					"<%= pkg.srcPath.jsPath %>/datepicker/datetimepicker.js",
 					"<%= pkg.srcPath.jsPath %>/datepicker/local/datetimepicker.zh-CN.js",
 					"<%= pkg.srcPath.jsPath %>/timepicker/timepicker.js",
@@ -109,8 +114,8 @@ module.exports = function (grunt) {
 			},
 			tpl : {
 				src : [
-					"<%= pkg.destPath.jsPath %>/tpl/tpl.lib.js",
-					"<%= pkg.destPath.jsPath %>/tpl/tpl.shop.js"
+					"<%= pkg.srcPath.jsPath %>/tpl/tpl.lib.js",
+					"<%= pkg.srcPath.jsPath %>/tpl/tpl.shop.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/tpl.js",
 				nonull : true
@@ -124,7 +129,7 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/ui/wizard.js",
 					"<%= pkg.srcPath.jsPath %>/ui/chosen.jquery.js",
 				],
-				dest : "<%= pkg.destPath.jsPath %>/ui.min.js",
+				dest : "<%= pkg.destPath.jsPath %>/ui.js",
 				nonull : true
 			},
 			pages : {
@@ -164,9 +169,9 @@ module.exports = function (grunt) {
 					sourceMapIncludeSources : true
 				},
 				files : {
-					"<%= pkg.destPath.jsPath %>/dep/html5shiv.min.js" : [
-						"<%= pkg.destPath.jsPath %>/dep/html5shiv.js"
-					],
+					// "<%= pkg.destPath.jsPath %>/dep/html5shiv.min.js" : [
+					// 	"<%= pkg.destPath.jsPath %>/dep/html5shiv.js"
+					// ],
 					"<%= pkg.destPath.jsPath %>/dep/respond.matchmedia.addListener.min.js" : [
 						"<%= pkg.destPath.jsPath %>/dep/respond.matchmedia.addListener.js"
 					],
@@ -204,9 +209,9 @@ module.exports = function (grunt) {
 					}
 				},
 				files : {
-					"<%= pkg.destPath.jsPath %>/dep/html5shiv.min.js" : [
-						"<%= pkg.destPath.jsPath %>/dep/html5shiv.js"
-					],
+					// "<%= pkg.destPath.jsPath %>/dep/html5shiv.min.js" : [
+					// 	"<%= pkg.srcPath.jsPath %>/dep/html5shiv.js"
+					// ],
 					"<%= pkg.destPath.jsPath %>/dep/respond.matchmedia.addListener.min.js" : [
 						"<%= pkg.destPath.jsPath %>/dep/respond.matchmedia.addListener.js"
 					],
@@ -258,11 +263,18 @@ module.exports = function (grunt) {
 					},
 					{
 						expand : true,
-						cwd : "<%= pkg.protoPath.distribPath %>/",
-						src : ['*.*'],
-						dest : "<%= pkg.destPath.protoPath %>/",
-						filter : 'isFile'
+						cwd : "<%= pkg.srcPath.jsPath %>/dep/bootstrap/fonts/",
+						src : ["*.*"],
+						dest : "<%= pkg.destPath.path %>/fonts/",
+						filter : "isFile"
 					},
+					// {
+					// 	expand : true,
+					// 	cwd : "<%= pkg.protoPath.distribPath %>/",
+					// 	src : ['*.*'],
+					// 	dest : "<%= pkg.destPath.protoPath %>/",
+					// 	filter : 'isFile'
+					// },
 					{
 						expand : true,
 						cwd : "<%= pkg.srcPath.swfPath %>/",
@@ -291,16 +303,16 @@ module.exports = function (grunt) {
 					},
 					{
 						expand : true,
-						cwd : "<%= pkg.srcPath.fontsPath %>/",
+						cwd : "<%= pkg.srcPath.fontPath %>/",
 						src : ["*.*"],
-						dest : "<%= pkg.distribPath.fontsPath %>/",
+						dest : "<%= pkg.distribPath.fontPath %>/",
 						filter : "isFile"
 					},
 					{
 						expand : true,
-						cwd : "<%= pkg.srcPath.jsPath %>/dep/bootstrap/fonts",
+						cwd : "<%= pkg.srcPath.jsPath %>/dep/bootstrap/fonts/",
 						src : ["*.*"],
-						dest : "<%= pkg.distribPath.fontsPath %>/",
+						dest : "<%= pkg.distribPath.path %>/fonts/",
 						filter : "isFile"
 					},
 					{
@@ -315,6 +327,13 @@ module.exports = function (grunt) {
 						cwd : "<%= pkg.srcPath.imgPath %>/",
 						src : ["**"],
 						dest : "<%= pkg.distribPath.imgPath %>/",
+						filter : 'isFile'
+					},
+					{
+						expand : true,
+						cwd : "<%= pkg.protoPath.distribPath %>",
+						src : ["*.htm"],
+						dest : "<%= pkg.distribPath.pagePath %>/",
 						filter : 'isFile'
 					}
 				]
@@ -345,9 +364,9 @@ module.exports = function (grunt) {
 					},
 					{
 						expand : true,
-						cwd : "<%= pkg.srcPath.jsPath %>/dep/bootstrap/fonts",
+						cwd : "<%= pkg.srcPath.jsPath %>/dep/bootstrap/fonts/",
 						src : ["*.*"],
-						dest : "<%= pkg.distribPath.fontsPath %>/",
+						dest : "<%= pkg.distribPath.path %>/fonts/",
 						filter : "isFile"
 					},
 					{
