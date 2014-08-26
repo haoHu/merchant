@@ -127,7 +127,7 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/ui/pager.js",
 					"<%= pkg.srcPath.jsPath %>/ui/switch.js",
 					"<%= pkg.srcPath.jsPath %>/ui/wizard.js",
-					"<%= pkg.srcPath.jsPath %>/ui/chosen.jquery.js",
+					"<%= pkg.srcPath.jsPath %>/ui/chosen.jquery.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/ui.js",
 				nonull : true
@@ -143,6 +143,8 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/shop/shop.list.model.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.list.view.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.list.controler.js",
+
+					"<%= pkg.srcPath.jsPath %>/shop/shop.create.js",
 
 					"<%= pkg.srcPath.jsPath %>/shop/shop.init.js",
 
