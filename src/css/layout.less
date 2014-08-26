@@ -186,13 +186,20 @@ body.login {
 		color : @font-color; cursor : pointer;
 		h3 {.x-font-size(18px); font-weight: bolder; .x-line-and-height(2, 1rem);}
 		label {.x-font-size(14px); font-weight: bolder; .x-line-and-height(2, 1rem);}
-		[class*=ficon] {.x-font-size(@ficon-size);}
-		.ficon-home:before {.x-ficon-home();}
-		.ficon-pay:before {.x-ficon-pay();}
-		.ficon-order:before {.x-ficon-order();}
-		.ficon-download:before {.x-ficon-download();}
-		.ficon-lock:before {.x-ficon-permissions();}
-		.ficon-setting:before {.x-ficon-setting();}
+		// [class*=ficon] {.x-font-size(@ficon-size);}
+		// .ficon-home:before {.x-ficon-home();}
+		// .ficon-pay:before {.x-ficon-pay();}
+		// .ficon-order:before {.x-ficon-order();}
+		// .ficon-download:before {.x-ficon-download();}
+		// .ficon-lock:before {.x-ficon-permissions();}
+		// .ficon-setting:before {.x-ficon-setting();}
+		[class*= icon] {.x-icon-size(60px);}
+		.icon-home {.x-icon-60_home();}
+		.icon-pay {.x-icon-60_pay();}
+		.icon-order {.x-icon-60_order();}
+		.icon-download {.x-icon-60_download();}
+		.icon-lock {.x-icon-60_permissions();}
+		.icon-setting {.x-icon-60_setting();}
 		&.disabled {
 			background-color : #eee!important; cursor : not-allowed;
 			// .x-filter(.5);
@@ -237,19 +244,22 @@ body.login {
 
 	.format {
 		.x-inlineblock(); margin : 0 auto; position: relative; margin-left : (-1 * @ficon-size); height : @ficon-size; width : 100%; padding-left : 50%; text-align: left;
-		span[class*=ficon] {.x-inlineblock(); position : absolute; left : 50%; top : 0; margin-left : (-1 * @ficon-size);}
+		// span[class*=ficon] {.x-inlineblock(); position : absolute; left : 50%; top : 0; margin-left : (-1 * @ficon-size);}
+		span[class*=icon] {.x-inlineblock(); position : absolute; left : 50%; top : 0; margin-left : (-1 * @ficon-size);}
 		h3, p {position : relative; .x-block(); margin-left : 1rem;}
 		h3 {margin-top : 1rem;}
 	}
 	.home-brick-md-1 .format {
 		.x-block(); margin : 0 auto; padding : 0; height : 100%; text-align : center; vertical-align: middle;
-		span[class*=ficon] {position : relative; left : 0; top : 0; margin : 0;}
+		// span[class*=ficon] {position : relative; left : 0; top : 0; margin : 0;}
+		span[class*=icon] {position : relative; left : 0; top : 0; margin : 0;}
 		h3, p {margin : 0;}
 	}
 	@media (max-width: 767px) {
 		.format {
 			.x-block(); margin : 0 auto; padding : 0;height : 100%;  text-align : center; vertical-align: middle;
-			span[class*=ficon] {position : relative; left : 0; top : 0; margin : 0;}
+			// span[class*=ficon] {position : relative; left : 0; top : 0; margin : 0;}
+			span[class*=icon] {position : relative; left : 0; top : 0; margin : 0;}
 			h3, p {margin : 0;}
 		}
 	}
