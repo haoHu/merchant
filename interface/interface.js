@@ -90,12 +90,21 @@ Hualala.Global.switchShopServiceFeatureStatus = function (params, cbFn) {}
  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
  * @return {NULL}
  */
- Hualala.Global.setJustEatParams = function (params, cbFn) {}
+Hualala.Global.setJustEatParams = function (params, cbFn) {}
  /**
   * 设置店内自助业务配置参数
   * @param {Object} params 参数{needInputTableName,supportInvoice,supportCommitToSoftware,payBeforeCommit,fetchFoodMode}
   * @param {Function} cbFn   回调函数{resultcode, resultmsg}
   * @return {NULL} 
   */
- Hualala.Global.setSpotOrderParams = function (params, cbFn) {}
+Hualala.Global.setSpotOrderParams = function (params, cbFn) {}
+
+/**
+ * 获取结算账户信息
+ * @param  {Object} params 参数{}
+ * @param  {Function} cbFn   回调函数{resultcode, resultmsg, data}
+ *               data : {pageCount, pageNo, pageSize, totalSize, records: $$AccountList}
+ * @return {NULL}
+ */
+Hualala.Global.queryAccount = function (params, cbFn) {}
 

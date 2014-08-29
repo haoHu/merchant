@@ -72,3 +72,11 @@
 		.x-adjust-leading-to(1.5);
 	}
 }
+
+// 面包线样式封装
+.x-bread-crumb {
+	background: transparent; margin-bottom : 0px;
+	&.breadcrumb > li + li:before {content : ">";}
+	li, a {.x-font-size(14px); font-weight: 700;}
+	> li.active {color : @x-base-font-color; }
+}

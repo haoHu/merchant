@@ -17,6 +17,7 @@
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		fn({
 			resultcode : '000',
+			// resultcode : '111',
 			resultmsg : '',
 			data : {
 				pcClient : Test.PCClient,
@@ -173,7 +174,7 @@
 			resultmsg : "参数配置失败"
 		}));
 	};
-	 /**
+	/**
 	  * 设置店内自助业务配置参数
 	  * @param {Object} params 参数{needInputTableName,supportInvoice,supportCommitToSoftware,payBeforeCommit,fetchFoodMode}
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
@@ -188,4 +189,191 @@
 			resultmsg : "参数配置失败"
 		}));
 	};
+
+	/**
+	 * 获取结算账户信息
+	 * @param  {Object} params 参数{transCreateBeginTime,transCreateEndTime,settleUnitID,transStatus,transType,groupID,minTransAmount,maxTransAmount}
+	 * @param  {Function} cbFn   回调函数{resultcode, resultmsg, data}
+	 *               data : {pageCount, pageNo, pageSize, totalSize, records: $$AccountList}
+	 * @return {NULL}
+	 */
+	Hualala.Global.queryAccount = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		var accountList = Test.AccountList;
+		fn(IX.inherit(res, {
+			data : {
+				pageCount : 1,
+				pageNo : 1,
+				pageSize : accountList.length,
+				totalSize : accountList.length,
+				records : accountList
+			}
+		}));
+	};
+
+	/**
+	 * 提现操作
+	 * @param  {Object} params 参数{}
+	 * @param  {Function} cbFn   回调函数{resultcode, resultmsg, data}
+	 * @return {NULL}
+	 */
+	Hualala.Global.withdrawCash = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(res);
+	};
+
+     /**
+	  * 获取已启用城市
+	  * @param {Object} params 参数{isActive: 1}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {records: [
+        {cityID , cityName}, ...]}}
+	  * @return {NULL} 
+	  */
+	Hualala.Global.getCities = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: '',
+                data: {
+                    records: [
+                        {cityID: '1010', cityName: '北京'}, 
+                        {cityID: '1021', cityName: '上海'}
+                    ]
+                }
+            };
+		fn(rsp);
+	};
+     /**
+	  * 获取给定城市地标信息
+	  * @param {Object} params 参数{cityID: 1010}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {records: [
+        {areaID , areaName}, ...]}}
+	  * @return {NULL} 
+	  */
+	Hualala.Global.getAreas = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: '',
+                data: {
+                    records: [
+                        {areaID: '1010030000', areaName: '朝阳区'}, 
+                        {areaID: '1010030300', areaName: '--国贸'}
+                    ]
+                }
+            };
+		fn(rsp);
+	};
+     /**
+	  * 获取给定城市菜系信息
+	  * @param {Object} params 参数{cityID: 1010}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {records: [
+        {cuisineID , cuisineName}, ...]}}
+	  * @return {NULL} 
+	  */
+	Hualala.Global.getCuisines = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: '',
+                data: {
+                    records: [
+                        {cuisineID: '10100300', cuisineName: '北京菜'}, 
+                        {cuisineID: '10100303', cuisineName: '---家常菜'}
+                    ]
+                }
+            };
+		fn(rsp);
+	};
+    
+     /**
+	  * 提交创建店铺基本信息
+	  * @param {Object} params 参数{imagePath, shopName, operationMode, cityID, openingHoursStart, openingHoursEnd, PCCL, tel, address, areaID, areaName, cuisineID1, cuisineID2, cuisineName1, cuisineName2, keywordLst, openingHours}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {records: [
+        {shopID , shopName, ...}]}}
+	  * @return {NULL} 
+	  */
+	Hualala.Global.createShop = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: '',
+                data: {
+                    records: [{
+                        shopID: '83830',
+                        shopName: params.shopName,
+                        groupID: '5',
+                        groupName: '豆捞坊'
+                    }]
+                }
+            };
+		fn(rsp);
+	};
+    
+    /**
+	  * 修改店铺基本信息
+	  * @param {Object} params 参数{shopID, imagePath, shopName, operationMode, cityID, openingHoursStart, openingHoursEnd, PCCL, tel, address, areaID, areaName, cuisineID1, cuisineID2, cuisineName1, cuisineName2, keywordLst, openingHours}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL} 
+	  */
+	Hualala.Global.updateShopBaseInfo = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {resultcode: '000', resultmsg: ''};
+		fn(rsp);
+	};
+    
+     /**
+	  * 标注店铺地图信息
+	  * @param {Object} params 参数{shopID, mapLongitudeValue, mapLatitudeValue, mapLongitudeValueBaiDu, mapLatitudeValueBaiDu}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL} 
+	  */
+	Hualala.Global.setShopMap = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {resultcode: '000', resultmsg: ''};
+		fn(rsp);
+	};
+    
+    /**
+	  * 获取店铺详情信息
+      * @param {Object} params 参数{shopID: 83830}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {records: [
+        {imagePath, shopName, operationMode, cityID, PCCL, tel, address, areaID, areaName, cuisineID1, cuisineID2, cuisineName1, cuisineName2, keywordLst, openingHours}]}}
+	  * @return {NULL} 
+	  */
+	Hualala.Global.getShopInfo = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: '',
+                data: {
+                    records: [{
+                        PCCL: "80",
+                        address: "西城区 西单北大街131号大悦城7F-02",
+                        areaID: "1010030300",
+                        areaName: "国贸",
+                        cityID: "1010",
+                        cityName: "北京",
+                        cuisineID1: "10100300",
+                        cuisineID2: "10100303",
+                        cuisineName1: "北京菜",
+                        cuisineName2: "家常菜",
+                        imagePath: "group1/M00/00/F7/wKgCIVPu-kWbqysWAAEvq1pYSJc436.jpg",
+                        mapLatitudeValueBaiDu: "39.917527",
+                        mapLongitudeValueBaiDu: "116.378948",
+                        openingHours: "08:30-21:30",
+                        operationMode: "0",
+                        shopID: "83830",
+                        shopName: "豆捞坊(西单店)2",
+                        status: "6",
+                        tel: "010-59716881"
+                    }]
+                }
+            };
+		fn(rsp);
+	};
+
+
 })();

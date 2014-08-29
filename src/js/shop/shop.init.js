@@ -1,7 +1,7 @@
 (function ($, window) {
 	IX.ns("Hualala.Shop");
 	var initShopList = function (pageType, params) {
-		var $body = $('#ix_wrapper > .ix-body > .container');
+        var $body = $('#ix_wrapper > .ix-body > .container');
 		var queryPanel = new Hualala.Shop.QueryController({
 			needShopCreate : true,
 			container : $body,
@@ -16,15 +16,8 @@
 	Hualala.Shop.HomePageInit = initShopList;
 
 	var initShopBaseInfoMgr = function (pageType, params) {
-		var $body = $('#ix_wrapper > .ix-body > .container');
-		$body.html(
-			'<div class="jumbotron">'+
-				'<h1>这里是店铺详情管理页面</h1>' +
-				'<p>提供查看店铺信息，编辑店铺信息</p>' +
-				
-			'</div>'
-			);
-		// TODO 店铺详情页面，编辑店铺基本信息
+        var $body = $('#ix_wrapper > .ix-body > .container');
+		Hualala.Shop.initInfo($body, pageType, params);
 	};
 	Hualala.Shop.BaseInfoMgrInit = initShopBaseInfoMgr;
 

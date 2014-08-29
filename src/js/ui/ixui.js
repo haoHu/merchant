@@ -220,6 +220,55 @@
 		init();
 		return _model;
 	};
+
+	/**
+	 * 面包屑控件
+	 * 根据当前页面生成页面层级面包屑
+	 * @param {Object} cfg {container,hideRoot,nodes, clz, clickFn, mapRenderData}
+	 *         @param {jQueryObj} container	容器
+	 *         @param {Boolean} hideRoot 是否隐藏根节点
+	 *         @param {Array} nodes 节点数据[{name,label,path},...]
+	 *         @param {String} clz 面包屑样式类
+	 *         @param {Function} clickFn 点击事件处理,
+	 *         @param {Function} mapRenderData 处理渲染数据方法
+	 * @return {Object} BreadCrumb
+	 */
+	var BreadCrumb = function (cfg) {
+		var settings = {
+			container : null,
+			hideRoot : false,
+			nodes : [],
+			clz : '',
+			clickFn : function () {
+				var $this = $(this);
+				document.location.href = $this.attr('data-href');
+			},
+			mapRenderData : function (data) {
+				return {
+					clz : $XP(settings, 'clz', ''),
+					items : data
+				};
+			}
+		};
+		settings = IX.inherit(settings, cfg);
+		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_breadcrumb'));
+		var mapFn = $XF(settings, 'mapRenderData');
+		var $breadCrumb = tpl(mapFn($XP(settings, 'nodes')));
+		$container.append($breadCrumb);
+		$breadCrumb.on('click', 'a', function (e) {
+			$XF(settings, 'clickFn')(e);
+		});
+		return {
+			breadCrumb : $breadCrumb,
+			show : function () {$breadCrumb.show();}
+			hide : function () {$breadCrumb.hide();}
+		};
+	};
+
+
+
+
+
     /*
     options = {
         onSuccess: function () {},
@@ -266,5 +315,7 @@
 	Hualala.UI.PopoverMsgTip = PopoverMsgTip;
 	Hualala.UI.TopTip = TopTip;
 	Hualala.UI.ModalDialog = ModalDialog;
+	Hualala.UI.BreadCrumb = BreadCrumb;
+
     Hualala.UI.uploadImg = uploadImg;
 })(jQuery, window);

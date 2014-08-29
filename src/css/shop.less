@@ -67,7 +67,7 @@
 
 // 店铺服务配置表单样式
 .shop-service-form {
-	.input-group-addon {.x-adjust-leading-to(2, 12px, 2px);}
+	.input-group-addon {/*.x-adjust-leading-to(2, 12px, 2px);*/}
 	.section {
 		// .max-input {padding-left : 30px;}
 		.to-label {position : absolute; left : 0; top : 0; margin-left : -7px; vertical-align: middle; .x-adjust-leading-to(3, 12px);}
@@ -91,10 +91,10 @@
         margin: 50px 15px; 
         > div { padding-left: 72px; }
         h4 { color: @color-success; font-size: 20px; font-weight: bold }
-        .x-ico-suc { margin: 0 8px 0 -64px; top: 6px }
+        .x-ico-suc { margin: 0 12px 15px -64px; top: 6px }
         ul 
         { border-left: 4px solid #ccc; 
-          position: relative; top: 30px; 
+          position: relative; top: 30px; left: 4px;
         }
         li { position: relative; left: 25px; top: -15px; margin-bottom: 15px; }
         li:last-child { top: 0 }
@@ -107,7 +107,7 @@
         }
         li:last-child:before { top: 0 }
         li a { width: 120px }
-        li a:first-child { margin-right: 6px }
+        li a:first-child { margin-right: 12px }
     }
     
 }
@@ -122,13 +122,13 @@
     .glyphicon-search:active { background: #fff }
     .map-help { padding-top: 8px }
     .map_canvas { height: 400px; border-top: 1px solid #d4d4d4; }
-    .map-shop-info
-    {
-        dt, dd { line-height: 32px; }
-        dt { font-weight: bold }
-        dd { margin-left: 12px }
-    }
-    #mapResult { margin: 10px; }
+    .map-result { margin: 10px; }
+}
+.map-shop-info
+{
+    dt, dd { line-height: 32px; }
+    dt { font-weight: bold }
+    dd { margin-left: 12px }
 }
 #swfUploadImgDialog .modal-dialog { width: 485px }
 .x-ico-suc
@@ -138,6 +138,37 @@
     border-radius: @size / 2; border: 6px solid @color-success;
     width: @size; height: @size; line-height: @size * 0.8;
     &:before { position: relative; top: -2px; left: -2px }
+}
+//修改店铺信息
+.mr25 { margin-right: 25px }
+form.read-mode, .form.read-mode
+{
+    .form-control, .star-required { display: none }
+    .control-label:after { content: '：'; }
+}
+form.edit-mode, .form.edit-mode
+{
+    .form-control-static { display: none }
+    .control-label:before { content: '* '; }
+    .control-label.no-require:before { display: none }
+}
+.feed-back-out
+{
+    .has-feedback .form-control { padding-right: 12px }
+    .form-horizontal .has-feedback .form-control-feedback { right: -20px }
+    
+}
+@media (max-width: 768px)
+{
+    .feed-back-out { margin: 0 20px }
+}
+.shop-info 
+{
+    .form-control.d-ib { width: 70px; }
+    .step-action { clear: left }
+    &.read-mode #saveBtn { display: none }
+    &.edit-mode #editBtn { display: none }
+    
 }
 
 

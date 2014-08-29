@@ -37,6 +37,9 @@
 				log("Merchant Sys INIT DONE in (ms): " + (IX.getTimeInMS() - tick));
 				cbFn();
 			});
+		}, function () {
+			document.location.href = Hualala.PageRoute.createPath('login');
+			return ;
 		});
 	}
 

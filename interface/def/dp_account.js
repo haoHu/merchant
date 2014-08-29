@@ -1,0 +1,37 @@
+/*结算账户数据定义*/
+var $$Account = {
+	defaultAccount : "是否默认结算账户0:否;1:是",
+	settleUnitID : "结算主体ID",
+	settleUnitName : "结算主体名称",
+	groupID : "集团ID",
+	shopCount : "关联结算账户的店铺数量",
+	settleIncomTotal : "收入累计",
+	settleBalance : "结算金额（账户余额）",
+	settleSpendingTotal : "支出累计",
+	feeRatio : "佣金比例",
+	isActiveAutoTransfer : "是否自动结现（提现）",
+	autoTransferDays : "自动结现天数",
+	timeAmountRship : "结算周期和金额的关系 0：或者 1：并且",
+	autoTransferMinAmount : " 自动结算需满足最小金额",
+	isRemindAmount : "是否金额提醒 0：不提醒 1：提醒",
+	remindAmount : "提醒金额",
+	poundageMinAmount : "COMMENT 多少结算金额以下收取手续费",
+	poundageAmount : "手续费额度",
+	startDate : "开始结算时间",
+	lastTransferTime : "最后结现时间（YYYYMMDDHHnnSS)",
+	bankCode : "银行代码",
+	bankAccount : "转账帐号",
+	bankName : "转账行名称",
+	receiverType : "收款方类型(1、个人，2、企业)",
+	receiverName : "受款方名称(单位名或姓名)",
+	receiverLinkman : "收款方联系人",
+	receiverPhone : "收款方联系电话",
+	receiverMobile : " 受款方手机号码",
+	receiverEmail : "受款方邮箱",
+	remark : "结算主体备注信息",
+	action : "记录状态",
+	actionTime : "记录修改时间",
+	createTime : " 记录创建时间"
+};
+
+var $$AccountList = [$$Account, $$Account,...];

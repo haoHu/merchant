@@ -251,3 +251,14 @@
 		word-spacing : -4px;
 	}
 }
+
+// 利用div+css制作加号图标
+.x-cross-icon(@size : 50px, @borderWidth : 10px, @color : #333) {
+	display : inline-block; position : relative; border : 0 none; .x-icon-size(@size);
+	border-right : @borderWidth solid @color; border-bottom : @borderWidth solid @color;
+	& > .x-cross-inner {
+		display : block; position : absolute; border : 0 none; .x-icon-size(@size);
+		border-top : @borderWidth solid @color; border-left : @borderWidth solid @color;
+		left : @size - @borderWidth; top : @size - @borderWidth;
+	}
+}

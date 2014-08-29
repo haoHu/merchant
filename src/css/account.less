@@ -1,0 +1,21 @@
+.account-schema {
+	margin-bottom : 3rem;
+	.bank-card {width : 288px;}
+	.account-btns {
+		.x-area-size(100%, 60px); margin-top : 90px; border-bottom : 3px solid #eee;
+		.nav > li > a.btn-success:hover, .nav > li > a.btn-success:focus {background-color : #449D44;}
+	}
+}
+
+@media (max-width: 767px) {
+	.account-schema .bank-card {width : 100%;}
+}
+
+.account-detail {
+	> h4 { margin-bottom : 1.5rem; .x-font-size(16px); color : @x-font-color-midGray; font-weight: 700;}
+	.query-form {
+		padding-top : 1.5rem; margin-bottom:10px;
+		// .form-group {margin-bottom : 5px}
+	}
+	.query-result {}
+}

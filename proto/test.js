@@ -8,7 +8,8 @@
 
 	var TestFiles = [
 		Test.TestRoot + "/app.js",
-		Test.TestRoot + "/query.js"
+		Test.TestRoot + "/query.js",
+		Test.TestRoot + "/account.js"
 	];
 
 	Test.readyToTest = function (pageFn) {

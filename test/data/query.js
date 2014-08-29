@@ -29,7 +29,7 @@
 			cityName : '',
 			menuShopID : '11111',
 			menuShopName : '豆捞坊（西直门店）',
-			operationMode : 0,
+			operationMode : Test.getRandom(0, 1),
 			promotShopID : 0,
 			promotShopName : '',
 			promotionInfo : '',
@@ -117,6 +117,7 @@
 		});
 		_shops = _.map(_shops, function (s, i, l) {
 			return IX.inherit(shopResultTpl, {
+				operationMode : Test.getRandom(0, 1),
 				cityID : s.cityID,
 				cityName : s.cityName,
 				shopID : s.shopID,

@@ -121,80 +121,85 @@
 		// 登录
 		{
 			name : "login", path : "/#login", reg : /login$/, bodyClz : "",
-			PageInitiator : "Hualala.Common.LoginInit"
+			PageInitiator : "Hualala.Common.LoginInit", label : "登录"
 		},
 		// home page主页
 		{
 			name : "main", path : "/#home", reg : /home$/, bodyClz : "",
-			PageInitiator : "Hualala.Common.HomePageInit"
+			PageInitiator : "Hualala.Common.HomePageInit", label : "首页"
 		},
 
 		// 店铺管理主页		
 		{
 			name : "shop", path : "/#shop", reg : /shop$/, bodyClz : "",
-			PageInitiator : "Hualala.Shop.HomePageInit"
+			PageInitiator : "Hualala.Shop.HomePageInit", parentName : "main", label : "店铺管理"
 		},
 		// 创建店铺
 		{
 			name : "shopCreate", path : "/#shop/create", reg : /shop\/create$/, bodyClz : "",
-			PageInitiator : "Hualala.Shop.CreateShopInit"
+			PageInitiator : "Hualala.Shop.CreateShopInit", parentName : "shop", label : "创建店铺"
 		},
 		// 店铺信息管理
 		{
 			name : "shopInfo", path : "/#shop/{id}/info", reg : /shop\/(.*)\/info$/, bodyClz : "",
-			PageInitiator : "Hualala.Shop.BaseInfoMgrInit"
+			PageInitiator : "Hualala.Shop.BaseInfoMgrInit", parentName : "shop", label : "店铺信息"
 		},
 		// 店铺菜单管理
 		{
 			name : "shopMenu", path : "/#shop/{id}/menu", reg : /shop\/(.*)\/menu$/, bodyClz : "",
-			PageInitiator : "Hualala.Shop.FoodMenuMgrInit"
+			PageInitiator : "Hualala.Shop.FoodMenuMgrInit", parentName : "shop", label : "菜单管理"
 		},
 
 		// 店铺功能设置页面
 		{
 			name : "setting", path : "/#setting", reg : /setting$/, bodyClz : "",
-			PageInitiator : "Hualala.Setting.ShopMgrInit"
+			PageInitiator : "Hualala.Setting.ShopMgrInit", parentName : "main", label : "业务设置"
 		},
 
 		// 结算账户页面
 		{
 			name : "account", path : "/#account", reg : /account$/, bodyClz : "",
-			PageInitiator : "Hualala.Account.AccountListInit"
+			PageInitiator : "Hualala.Account.AccountListInit", parentName : "main", label : "结算"
 		},
 		// 结算账户详情设置页面
 		{
 			name : "accountDetail", path : "/#account/{id}/detail", reg : /account\/(.*)\/detail$/, bodyClz : "",
-			PageInitiator : "Hualala.Account.AccountMgrInit"
+			PageInitiator : "Hualala.Account.AccountMgrInit", parentName : "account", label : "账户明细"
 		},
 
 		// 账号管理页面
 		{
 			name : "user", path : "/#user", reg : /user$/, bodyClz : "",
-			PageInitiator : "Hualala.User.UserListInit"
+			PageInitiator : "Hualala.User.UserListInit", parentName : "main", label : "账号管理"
 		},
 
 		// 订单报表页面
 		{
 			name : "order", path : "/#order", reg : /order$/, bodyClz : "",
-			PageInitiator : "Hualala.Order.OrderChartInit"
+			PageInitiator : "Hualala.Order.OrderChartInit", parentName : "main", label : "订单"
 		},
 
 		// PC客户端下载页面
 		{
 			name : "pcclient", path : "/#download", reg : /download$/, bodyClz : "",
-			PageInitiator : "Hualala.Common.PCClientDownloadInit"
+			PageInitiator : "Hualala.Common.PCClientDownloadInit", parentName : "main", label : "客户端下载"
 		},
 
 		// 关于商户中心
 		{
 			name : "about", path : "/#about", reg : /about$/, bodyClz : "",
-			PageInitiator : "Hualala.Common.AboutInit"
+			PageInitiator : "Hualala.Common.AboutInit", parentName : "main", label : "关于"
 		},
 
 		// 联系我们
 		{
 			name : "contact", path : "/#contact", reg : /contact$/, bodyClz : "",
-			PageInitiator : "Hualala.Common.ContactInit"
+			PageInitiator : "Hualala.Common.ContactInit", parentName : "main", label : "联系我们"
+		},
+		// 上面的path都匹配不到，需要自动跳转home
+		{
+			name : "index", path : "", reg : /(.*)$/, bodyClz : "",
+			PageInitiator : "Hualala.Common.IndexInit"
 		}
 	];
 	IX.iterate(pageConfigs, function (cfg) {
@@ -205,7 +210,8 @@
 		var _name = $XP(cfg, 'name'), _path = $XP(cfg, 'path'), _reg = $XP(cfg, 'reg');
 		mappingRoute(_path, _name, _reg);
 		PageConfigurations[_name] = {
-			name : _name, bodyClz : $XP(_cfg, 'bodyClz', ''), path : _path, reg : $XP(_cfg, 'reg', null)
+			name : _name, bodyClz : $XP(_cfg, 'bodyClz', ''), path : _path, reg : $XP(_cfg, 'reg', null),
+			parentName : $XP(cfg, 'parentName', null), label : $XP(cfg, 'label', '')
 		};
 		var _pageInit = "PageInitiator" in _cfg ? _cfg.PageInitiator : null;
 		if (!IX.isString(_pageInit) && !IX.isFn(_pageInit))
@@ -260,6 +266,22 @@
 		params = fragment.match(match[match.length - 1]['reg']);
 		params.shift();
 		return IX.inherit({params : params}, match[match.length - 1]);
+	};
+
+	Hualala.PageRoute.getParentNamesByPath = function (path) {
+		var curContext = Hualala.PageRoute.getPageContextByPath(path);
+		var curName = $XP(curContext, 'name', null);
+		var ret = [];
+		while(!IX.isEmpty(curName)) {
+			ret.unshift({
+				name : curName,
+				label : $XP(curContext, 'label', '')
+			});
+			var parentName = $XP(curContext, 'parentName', null);
+			curContext = IX.isEmpty(parentName) ? null : $XP(PageConfigurations, parentName, null);
+			curName = $XP(curContext, 'name', null);
+		}
+		return ret;
 	};
 
 })(jQuery, window);

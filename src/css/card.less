@@ -1,5 +1,6 @@
+@ix-card-bg : #fff;
 .ix-card {
-	margin : 10px 0;
+	margin : 10px 0; background-color : @ix-card-bg;
 	.x-area-size(300px, 175px);
 	.ix-card-header {
 		position : relative;
@@ -19,19 +20,17 @@
 		border-top-color : transparent;
 	}
 }
-@ix-card-bg : #fff;
-@ix-card-title-color : #676767;
-@ix-card-cash-color : #262626;
-@ix-card-color : #626262;
 
 .bank-card {
-	background-color : #fff; color : @ix-card-color; .x-area-size(100%, 175px); .x-font-size(14px); cursor : pointer;
+	color : @x-font-color-midGray; .x-area-size(100%, 175px); .x-font-size(12px);
+	.x-border-radius(10px);
 	.ix-card-header > .panel-title {
-		.x-font-size(1rem); font-weight: 700; vertical-align: middle;
+		.x-font-size(12px); 
 		& > .label {margin-right : .5rem;}
+		.account-name {.x-font-size(14px); font-weight: 700; vertical-align: middle;}
 	}
 	.ix-card-header > .panel-title, .bank, .shops {
-		color : @ix-card-title-color;
+		color : @x-font-color-midGray;
 	}
 	
 	.withdraw {
@@ -39,20 +38,37 @@
 		font-weight: 700; .x-border-radius(20px); color : #fff;
 	}
 	.cash {
-		font-weight: 700; vertical-align: middle; .x-adjust-leading-to(1.5, 2rem);
-		& > strong {font-size : 2rem; .x-adjust-leading-to(1, 2rem); color : @ix-card-cash-color;}
-		& > span {vertical-align : bottom; }
+		padding-top:1rem; font-weight: 700; vertical-align: middle; .x-adjust-leading-to(1.5, 2rem);
+		& > strong, & > span {
+			.x-inlineblock(); margin-right:1rem; .x-adjust-leading-to(2, 14px); vertical-align: middle; .x-font-size(28px);
+		}
+		& > strong { color : @x-base-font-color;}
+		& > span {.x-font-size(16px);vertical-align : bottom;}
 	}
 	.bank {
-		.x-font-size(14px); .x-adjust-leading-to(1.5, 14px);
-		.name, .num {.x-inlineblock(); margin-right : 1rem; vertical-align: middle;}
+		padding-top:1.5rem; .x-font-size(12px); .x-adjust-leading-to(1.5, 12px);
+		.name, .num {.x-inlineblock(); vertical-align: middle;.x-font-size(12px);}
+		.name {margin:0 .5rem;}
+		.num > span {vertical-align: middle;}
 	}
 	.shops {
-		.x-font-size(14px);	 .x-adjust-leading-to(2, 14px, -6px)
+		.x-font-size(12px);	 .x-adjust-leading-to(2, 14px, -6px); font-weight: bold;
 	}
 	.ix-card-footer {
-		padding : 25px 15px 0;
-		.btn-link {margin-right : -1rem;}
+		padding : 0px 15px 0;
+		.btn-link {margin-right : -1rem; .x-font-size(12px);}
+	}
+
+	// 添加账户的卡片样式
+	&.create-account {
+		cursor : pointer;
+		.ix-card-body {
+			.x-area-size(100%, 80%);
+		}
+		.ix-cross {
+			margin-left : -35px;
+			.x-cross-icon(35px, 5px, #B8DBF5);
+		}
 	}
 }
 

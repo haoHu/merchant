@@ -3,12 +3,10 @@ IX.ns('Hualala.Shop');
 var G = Hualala.Global,
     U = Hualala.UI,
     topTip = U.TopTip; 
-// 初始化创建店铺页面
-Hualala.Shop.initCreate = function ($wizard)
+// 初始化店铺店铺详情页面
+Hualala.Shop.initInfo = function ($container, pageType, params)
 {
-    //初始化向导控件
-    $wizard.bootstrapWizard();
-    var bsWizard = $wizard.data('bootstrapWizard'),
+    /*var bsWizard = $wizard.data('bootstrapWizard'),
         $step1 = $wizard.find('#tab1'),
         $step2 = $wizard.find('#tab2'),
         $step3 = $wizard.find('#tab3'),
@@ -198,7 +196,7 @@ Hualala.Shop.initCreate = function ($wizard)
             });
         }
         bsWizard.next();
-    });
+    });*/
     
 }
 // 初始化菜系下拉列表

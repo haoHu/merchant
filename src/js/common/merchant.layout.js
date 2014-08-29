@@ -97,6 +97,30 @@
 					validating : 'glyphicon glyphicon-refresh'
 				}
 			});
+			$.fn.bootstrapValidator.validators.accuracy = {
+				validate : function (validator, $field, options) {
+					var accuracy = $XP(options, 'accuracy', null),
+						message = $XP(options, 'message', '');
+					accuracy = isNaN(accuracy) ? null : accuracy;
+					var value = $field.val();
+					var regxStr = (IX.isEmpty(accuracy) || accuracy == 0) ? "^\\d+$" : "^\\d+(\\.\\d{1," + accuracy + "})?$",
+						regX = null;
+					regX = new RegExp(regxStr);
+					if (isNaN(value)) {
+						return {
+							valid : false,
+							message : "只能是数字"
+						}
+					}
+					if (!regX.test(value)) {
+						return {
+							valid : false,
+							message : message
+						}
+					}
+					return true;
+				}
+			};
 		}
 	}
 
@@ -181,5 +205,9 @@
 	Hualala.Common.initPageLayout = initPageLayout;
 	Hualala.Common.initSiteNavBar = initSiteNavBar;
 	Hualala.Common.HomePageInit = initHomePage;
+
+	Hualala.Common.IndexInit = function () {
+		document.location.href = Hualala.PageRoute.createPath("main");
+	}
 	
 })(jQuery, window);

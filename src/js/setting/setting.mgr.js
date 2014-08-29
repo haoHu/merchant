@@ -279,11 +279,8 @@
 			offLabel : '不需要',
 			validCfg : {
 				validators : {
-					notEmpty : {
-						message : "下单时输入桌号不能为空"
-					}
+					
 				}
-				
 			}
 		},
 		supportInvoice : {
@@ -294,9 +291,6 @@
 			offLabel : '不需要',
 			validCfg : {
 				validators : {
-					notEmpty : {
-						message : "提供发票不能为空"
-					}
 				}
 			}
 			
@@ -309,9 +303,6 @@
 			offLabel : '不支持',
 			validCfg : {
 				validators : {
-					notEmpty : {
-						message : "下单到餐饮软件不能为空"
-					}
 				}
 			}
 		},
@@ -336,9 +327,6 @@
 			offLabel : '不支持',
 			validCfg : {
 				validators : {
-					notEmpty : {
-						message : "支付完成后能下单不能为空"
-					}
 				}
 			}
 			
@@ -476,7 +464,15 @@
 			});
 		},
 		getServiceInfo : function (key, val) {
-			return _.find(this.serviceList, function (v) {return v[key] == val});
+			var self = this;
+			var operationMode = self.model.get('operationMode');
+			var servData = IX.inherit({}, _.find(this.serviceList, function (v) {return v[key] == val}));
+			if (!IX.isEmpty($XP(servData, 'operationMode'))) {
+				servData = IX.inherit(servData, {
+					formKeys : $XP(servData, 'operationMode.' + operationMode)
+				});
+			}
+			return servData;
 		},
 		getModalTitle : function () {
 			return $XP(this.serviceInfo, 'label') + '配置';

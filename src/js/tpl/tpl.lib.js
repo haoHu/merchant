@@ -234,6 +234,25 @@
 		'</div>'
 	].join('');
 	TemplateList.register('tpl_site_homepage', tpl_site_homepage);
+
+	// 面包屑
+	var tpl_site_breadcrumb = [
+		'<ol class="breadcrumb x-bread-crumb {{clz}}">',
+			'{{#each items}}',
+				'{{#if isLastNode}}',
+					'<li class="{{clz}} active">',
+						'{{{label}}}',
+					'</li>',
+				'{{else}}',
+					'<li class="{{clz}}">',
+						'<a href="javascript:void(0);" data-name="{{name}}" data-href="{{path}}">{{label}}</a>',
+					'</li>',
+				'{{/if}}',
+			'{{/each}}',
+		'</ol>'
+	].join('');
+	TemplateList.register('tpl_site_breadcrumb', tpl_site_breadcrumb);
+
     // 上传图片对话框模板
     var tpl_site_uploadimg = [
         '<div class="modal fade" id="swfUploadImgDialog" tabindex="-1">',

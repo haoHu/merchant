@@ -6558,10 +6558,11 @@
             
             if(!rst) return false;
             
-            var times = value.replace('\uff1a', ':').split(':');
-            times[0] = $.trim(times[0]);  // hours
-            times[1] = $.trim(times[1]);  // minutes
-            $field.val(times.join(':'));
+            var times = value.replace('\uff1a', ':').split(':'),
+                h = parseInt($.trim(times[0]), 10),  // hours
+                m = $.trim(times[1]);  // minutes
+            h = h < 10 ? 0 + '' + h : h;
+            $field.val(h + ':' + m);
             
             if(!options.startTimeField) return true;
             

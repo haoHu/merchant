@@ -339,6 +339,50 @@
 		
 	};
 
+	/**
+	 * 号码遮罩
+	 * @param  {String} code  需要进行遮罩的字符串
+	 * @param  {Int} start 开始遮盖的字符串位置
+	 * @param  {Int} end   遮盖结束位置
+	 * @return {Object}		返回遮盖操作后的字符串和原始字符串{orig, val}       
+	 */
+	Hualala.Common.codeMask = function (code, start, end) {
+		code = !code ? '' : code.toString();
+		var len = code.length,
+			str = '';
+		start = IX.isEmpty(start) ? 0 : parseInt(start);
+		end = IX.isEmpty(end) ? len : parseInt(end);
+		str = code.slice(0, start) + code.slice(start, end).replace(/[\w]/g, '*') + code.slice(end);
+		return {
+			orig : code,
+			val : str
+		};
+	};
+
+	/**
+	 * 根据银行代码获取银行基本信息
+	 * @param  {String} bankCode 银行代码
+	 * @return {Object}          银行信息{code, name, icon_16, icon_32, icon_48, icon_64}
+	 */
+	Hualala.Common.mapBankInfo = function (bankCode) {
+		var banks = Hualala.TypeDef.BankOptions,
+			bankHT = new IX.IListManager(),
+			iconSizes = [16, 32, 48, 64];
+		_.each(banks, function (el) {
+			var c = $XP(el, 'value'),
+				n = $XP(el, 'label');
+			var icons = {};
+			_.each(iconSizes, function (el) {
+				icons['icon_' + el] = 'icon-' + c + '-' + el;
+			});
+			bankHT.register(c, IX.inherit({
+				code : c,
+				name : n
+			}, icons));
+		});
+		return bankHT.get(bankCode);
+	};
+
 })(jQuery);
 
 

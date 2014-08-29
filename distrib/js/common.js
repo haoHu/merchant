@@ -3511,6 +3511,50 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		
 	};
 
+	/**
+	 * 号码遮罩
+	 * @param  {String} code  需要进行遮罩的字符串
+	 * @param  {Int} start 开始遮盖的字符串位置
+	 * @param  {Int} end   遮盖结束位置
+	 * @return {Object}		返回遮盖操作后的字符串和原始字符串{orig, val}       
+	 */
+	Hualala.Common.codeMask = function (code, start, end) {
+		code = !code ? '' : code.toString();
+		var len = code.length,
+			str = '';
+		start = IX.isEmpty(start) ? 0 : parseInt(start);
+		end = IX.isEmpty(end) ? len : parseInt(end);
+		str = code.slice(0, start) + code.slice(start, end).replace(/[\w]/g, '*') + code.slice(end);
+		return {
+			orig : code,
+			val : str
+		};
+	};
+
+	/**
+	 * 根据银行代码获取银行基本信息
+	 * @param  {String} bankCode 银行代码
+	 * @return {Object}          银行信息{code, name, icon_16, icon_32, icon_48, icon_64}
+	 */
+	Hualala.Common.mapBankInfo = function (bankCode) {
+		var banks = Hualala.TypeDef.BankOptions,
+			bankHT = new IX.IListManager(),
+			iconSizes = [16, 32, 48, 64];
+		_.each(banks, function (el) {
+			var c = $XP(el, 'value'),
+				n = $XP(el, 'label');
+			var icons = {};
+			_.each(iconSizes, function (el) {
+				icons['icon_' + el] = 'icon-' + c + '-' + el;
+			});
+			bankHT.register(c, IX.inherit({
+				code : c,
+				name : n
+			}, icons));
+		});
+		return bankHT.get(bankCode);
+	};
+
 })(jQuery);
 
 
@@ -3827,6 +3871,74 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		}
 		return list;
 	};
+
+	/*银行代码列表*/
+	Hualala.TypeDef.BankOptions = [
+		{
+			value: "CBC",
+			label: "中国建设银行"
+		},
+		{
+			value: "BC",
+			label: "中国银行"
+		},
+		{
+			value: "ABC",
+			label: "中国农业银行"
+		},
+		{
+			value: "ICBC",
+			label: "中国工商银行"
+		},
+		{
+			value: "PSBC",
+			label: "中国邮政储蓄"
+		},
+		{
+			value: "CEBB",
+			label: "中国光大银行"
+		},
+		{
+			value: "CGB",
+			label: "广发银行"
+		},
+		{
+			value: "CMB",
+			label: "招商银行"
+		},
+		{
+			value: "CMBC",
+			label: "民生银行"
+		},
+		{
+			value: "CDB",
+			label: "国家开发银行"
+		},
+		{
+			value: "CIB",
+			label: "兴业银行"
+		},
+		{
+			value: "BCM",
+			label: "交通银行"
+		},
+		{
+			value: "HXB",
+			label: "华夏银行"
+		},
+		{
+			value: "SPDB",
+			label: "浦发银行"
+		},
+		{
+			value: "HSBC",
+			label: "汇丰银行"
+		},
+		{
+			value: "Other",
+			label: "其他"
+		}
+	];
 
 
 })(jQuery);;(function ($) {

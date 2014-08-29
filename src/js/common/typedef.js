@@ -189,7 +189,13 @@
 		},
 		{id : 41, label : "店内自助", name : "spot_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setSpotOrderParams',
-			formKeys : 'fetchFoodMode,payMethodAtShop,payBeforeCommit,supportCommitToSoftware'
+			formKeys : 'fetchFoodMode,payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
+			operationMode : {
+				// 正餐
+				0 : 'fetchFoodMode,supportCommitToSoftware',
+				// 快餐
+				1 : 'payMethodAtShop,payBeforeCommit,supportCommitToSoftware'
+			}
 		}
 		// {id : 42, label : "店内买单", name : "spot_pay"}
 	];
@@ -259,6 +265,74 @@
 		}
 		return list;
 	};
+
+	/*银行代码列表*/
+	Hualala.TypeDef.BankOptions = [
+		{
+			value: "CBC",
+			label: "中国建设银行"
+		},
+		{
+			value: "BC",
+			label: "中国银行"
+		},
+		{
+			value: "ABC",
+			label: "中国农业银行"
+		},
+		{
+			value: "ICBC",
+			label: "中国工商银行"
+		},
+		{
+			value: "PSBC",
+			label: "中国邮政储蓄"
+		},
+		{
+			value: "CEBB",
+			label: "中国光大银行"
+		},
+		{
+			value: "CGB",
+			label: "广发银行"
+		},
+		{
+			value: "CMB",
+			label: "招商银行"
+		},
+		{
+			value: "CMBC",
+			label: "民生银行"
+		},
+		{
+			value: "CDB",
+			label: "国家开发银行"
+		},
+		{
+			value: "CIB",
+			label: "兴业银行"
+		},
+		{
+			value: "BCM",
+			label: "交通银行"
+		},
+		{
+			value: "HXB",
+			label: "华夏银行"
+		},
+		{
+			value: "SPDB",
+			label: "浦发银行"
+		},
+		{
+			value: "HSBC",
+			label: "汇丰银行"
+		},
+		{
+			value: "Other",
+			label: "其他"
+		}
+	];
 
 
 })(jQuery);

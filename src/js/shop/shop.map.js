@@ -4,7 +4,7 @@
 	var defaults = {
             data : {
                 isSearchMap: false,
-                keyWord: '',
+                keyword: '',
                 shopName: '',
                 tel: '',
                 address: '',
@@ -13,6 +13,8 @@
                 lng: '',
                 lat: ''
             },
+            searchBox: '.map-search-box',
+            mapResult: '.map-result',
             //mapContainer: '#shopMap',
             mapCanvasId: 'mapCanvas',
             load: function() { },
@@ -20,13 +22,15 @@
         };
 	function ShopMap(options)
     {
-        this.cfg = {};
+        this.cfg = $.extend({}, defaults, options);
         //this.$shopMap = $(mapContainer);
         this.sContent = '';
+        this.$searchBox = $(this.cfg.searchBox);
+        this.$mapResult = $(this.cfg.mapResult);
         this.map = '';
         this.searchArea = true;
         this.mapPoint = {};
-        $.extend(this.cfg, defaults, options);
+        
     }
 	ShopMap.prototype = 
     {
@@ -49,7 +53,20 @@
                 '</dl>'
             ].join('');
             
-            self[(mapParams.isSearchMap || mapParams.lng == 0 || mapParams.lat == 0 ? 'search' : 'load') + 'Map'](mapParams);
+            self[(mapParams.isSearchMap || !mapParams.lng || !mapParams.lat ? 'search' : 'load') + 'Map'](mapParams);
+            
+            if(self.$searchBox[0])
+            {
+                var $keyword = self.$searchBox.find('.map-keyword'),
+                    $searchBtn = self.$searchBox.find('.map-search-btn'),
+                    searchParams = $.extend({}, self.cfg.data);
+                $searchBtn.on('click', function ()
+                {
+                    searchParams.keyword = $keyword.val();
+                    self.searchMap(searchParams);
+                });
+            }
+            
             
             return this;
         },
@@ -105,7 +122,7 @@
                     //console.info(poi.marker.infoWindow);
                 }
             });
-            local.search(data.keyWord || data.address || data.area || data.city);
+            local.search(data.keyword || data.address || data.area || data.city);
 
             local.setSearchCompleteCallback(function(results)
             {
@@ -163,7 +180,7 @@
         {
             var self = this;
             self.mapPoint = { lng: lng, lat: lat };
-            document.getElementById("mapResult").innerHTML = "您店铺的经度：" + lng + "    纬度： " + lat;
+            self.$mapResult[0] && self.$mapResult.html('您店铺的经度：' + lng + '    纬度： ' + lat);
         }
 	}
     IX.ns("Hualala.Shop");

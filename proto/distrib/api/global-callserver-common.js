@@ -13,9 +13,15 @@
 		["setSpotOrderParams", "/shop/spotParam.ajax", "", "POST"]
 	]);
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([
-		"genAuthCode", "loginCallServer", "loadAppData", "getShopQuerySchema", 
+		"genAuthCode", "loginCallServer", "getShopQuerySchema", 
 		"queryShop", "switchShopStatus", "switchShopServiceFeatureStatus", 
-		"setJustEatParams", "setSpotOrderParams"
+		"setJustEatParams", "setSpotOrderParams", 
+		{
+			name : "loadAppData", 
+			onfail : function (data, cbFn, params) {
+				cbFn();
+			}
+		}
 	]);
 
 	Hualala.Global.genAuthCode = function (params, cbFn) {
