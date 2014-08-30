@@ -260,7 +260,7 @@
 		});
 		return {
 			breadCrumb : $breadCrumb,
-			show : function () {$breadCrumb.show();}
+			show : function () {$breadCrumb.show();},
 			hide : function () {$breadCrumb.hide();}
 		};
 	};
