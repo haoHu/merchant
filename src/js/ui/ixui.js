@@ -253,8 +253,8 @@
 		settings = IX.inherit(settings, cfg);
 		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_breadcrumb'));
 		var mapFn = $XF(settings, 'mapRenderData');
-		var $breadCrumb = tpl(mapFn($XP(settings, 'nodes')));
-		$container.append($breadCrumb);
+		var $breadCrumb = $(tpl(mapFn($XP(settings, 'nodes'))));
+		settings.container.append($breadCrumb);
 		$breadCrumb.on('click', 'a', function (e) {
 			$XF(settings, 'clickFn')(e);
 		});
