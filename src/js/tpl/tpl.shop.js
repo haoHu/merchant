@@ -174,7 +174,7 @@
                 '<label class="col-sm-3 control-label" for="PCCL">人均消费</label>',
                 '<div class="col-sm-9">',
                     '<p class="form-control-static">{{PCCL}}</p>',
-                    '<input type="text" id="PCCL" name="PCCL" class="form-control" value="PCCL" />',
+                    '<input type="text" id="PCCL" name="PCCL" class="form-control" value="{{PCCL}}" />',
                 '</div>',
             '</div>',
         '</div>',

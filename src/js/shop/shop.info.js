@@ -6,123 +6,162 @@ var G = Hualala.Global,
 // 初始化店铺店铺详情页面
 Hualala.Shop.initInfo = function ($container, pageType, params)
 {
-    /*var bsWizard = $wizard.data('bootstrapWizard'),
-        $step1 = $wizard.find('#tab1'),
-        $step2 = $wizard.find('#tab2'),
-        $step3 = $wizard.find('#tab3'),
-        $city = $step1.find('#cityID'),
-        $area = $step1.find('#areaID'),
-        $cuisine1 = $step1.find('#cuisineID1'),
-        $cuisine2 = $step1.find('#cuisineID2');
-    // 初始化城市列表下拉框
-    initCities($city);
-    // 根据所选择的城市设置地标、菜系下拉列表
-    $city.on('change', function ()
+    if(!params) return;
+    
+    var shopID = params,
+        shopInfo = null,
+        $form = null,
+        $city = null,
+        $area = null,
+        $cuisine1 = null,
+        $cuisine2 = null;
+    
+    G.getShopInfo({shopID : shopID}, function (rsp)
     {
-        var cityID = $(this).val();
-        if(!cityID) return;
+        if(rsp.resultcode != '000')
+        {
+            rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+            return;
+        }
+        shopInfo = rsp.data.records[0];
+        var openTime = shopInfo.openingHours.split('-');
+        shopInfo.openingHoursStart = openTime[0];
+        shopInfo.openingHoursEnd = openTime[1];
+        shopInfo.operationModeName = shopInfo.operationMode == '1' ? '快餐' : '正餐';
         
-        initAreas($area, cityID);
-        initCuisines($cuisine1, $cuisine2, cityID);
+        var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_info'));
+        $form = $(tpl(shopInfo)).appendTo($container);
+        $city = $form.find('#cityID'),
+        $area = $form.find('#areaID'),
+        $cuisine1 = $form.find('#cuisineID1'),
+        $cuisine2 = $form.find('#cuisineID2');
         
-    });
-    // 初始化timepicker
-    $step1.find('#openingHoursStart, #openingHoursEnd').timepicker({
-        minuteStep: 1,
-        showMeridian: false,
-        disableFocus : true,
-        showInputs : false
-    });
-    // 初始化表单验证
-    $step1.bootstrapValidator({
-        fields: {
-            shopName: {
-                message: '店铺名无效',
-                validators: {
-                    notEmpty: {
-                        message: '店铺名不能为空'
-                    },
-                    stringLength: {
-                        min: 2,
-                        max: 100,
-                        message: '店铺名长度必须在2到100个字符之间'
+        // 初始化城市列表下拉框
+        $city.on('change', function (e, areaID, cuisineID1, cuisineID2)
+        {
+            var cityID = $(this).val();
+            if(!cityID) return;
+            
+            initAreas($area, cityID, areaID);
+            initCuisines($cuisine1, $cuisine2, cityID, cuisineID1, cuisineID2);
+            
+        });
+        initCities($city, shopInfo);
+        // 根据所选择的城市设置地标、菜系下拉列表
+        
+        // 初始化timepicker
+        $form.find('#openingHoursStart, #openingHoursEnd').timepicker({
+            minuteStep: 1,
+            showMeridian: false,
+            //disableFocus : true,
+            showInputs : false
+        });
+        // 初始化表单验证
+        $form.bootstrapValidator({
+            fields: {
+                shopName: {
+                    message: '店铺名无效',
+                    validators: {
+                        notEmpty: {
+                            message: '店铺名不能为空'
+                        },
+                        stringLength: {
+                            min: 2,
+                            max: 100,
+                            message: '店铺名长度必须在2到100个字符之间'
+                        }
                     }
-                }
-            },
-            cityID: {
-                validators: { notEmpty: { message: '请选择店铺所在城市' } }
-            },
-            tel: {
-                validators: {
-                    notEmpty: { message: '店铺电话不能为空' },
-                    telOrMobile: { message: '' }
-                }
-            },
-            address: {
-                validators: {
-                    notEmpty: { message: '店铺地址不能为空' },
-                    stringLength: {
-                        min: 6,
-                        max: 100,
-                        message: '地址长度必须在6到100个字符之间'
+                },
+                cityID: {
+                    validators: { notEmpty: { message: '请选择店铺所在城市' } }
+                },
+                tel: {
+                    validators: {
+                        notEmpty: { message: '店铺电话不能为空' },
+                        telOrMobile: { message: '' }
                     }
-                }
-            },
-            PCCL: {
-                validators: {
-                    notEmpty: { message: '人均消费不能为空' },
-                    numeric: { message: '人均消费必须是金额数字' }
-                }
-            },
-            operationMode: {
-                validators: {
-                    notEmpty: { message: '请选择店铺运营模式' }
-                }
-            },
-            openingHoursStart: {
-                validators: {
-                    notEmpty: { message: '每天营业开始时间不能空' },
-                    time: { message: '' }
-                }
-            },
-            openingHoursEnd: {
-                validators: {
-                    notEmpty: { message: '每天营业结束时间不能空' },
-                    time: {
-                        message: '',
-                        startTimeField: 'openingHoursStart'
+                },
+                address: {
+                    validators: {
+                        notEmpty: { message: '店铺地址不能为空' },
+                        stringLength: {
+                            min: 6,
+                            max: 100,
+                            message: '地址长度必须在6到100个字符之间'
+                        }
                     }
-                }
-            },
-            areaID: {
-                validators: {
-                    notEmpty: { message: '请选择店铺所在地标' }
-                }
-            },
-            cuisineID1: {
-                validators: {
-                    notEmpty: { message: '请选择菜系1' }
+                },
+                PCCL: {
+                    validators: {
+                        notEmpty: { message: '人均消费不能为空' },
+                        numeric: { message: '人均消费必须是金额数字' }
+                    }
+                },
+                operationMode: {
+                    validators: {
+                        notEmpty: { message: '请选择店铺运营模式' }
+                    }
+                },
+                openingHoursStart: {
+                    validators: {
+                        notEmpty: { message: '每天营业开始时间不能空' },
+                        time: { message: '' }
+                    }
+                },
+                openingHoursEnd: {
+                    validators: {
+                        notEmpty: { message: '每天营业结束时间不能空' },
+                        time: {
+                            message: '',
+                            startTimeField: 'openingHoursStart'
+                        }
+                    }
+                },
+                areaID: {
+                    validators: {
+                        notEmpty: { message: '请选择店铺所在地标' }
+                    }
+                },
+                cuisineID1: {
+                    validators: {
+                        notEmpty: { message: '请选择菜系1' }
+                    }
                 }
             }
+        });
+        
+        var $uploadImg = $form.find('#uploadImg'),
+            imagePath = ''; // 门头图图片路径
+        // 上传门头图
+        $uploadImg.find('button, img').on('click', function()
+        {
+            U.uploadImg({
+                onSuccess: function (imgPath, $dlg)
+                {
+                    var src = 'http://res.hualala.com/' + imgPath;
+                    imagePath = imgPath;
+                    $uploadImg.find('img').attr('src', src);
+                    $dlg.modal('hide');
+                }
+            });
+        });
+    });
+        
+    $container.on('click', function(e)
+    {
+        var $target = $(e.target);
+        if($target.is('#editBtn'))
+        {
+            $form.removeClass('read-mode').addClass('edit-mode');
+        }
+        
+        if($target.is('#saveBtn'))
+        {
+            $form.removeClass('edit-mode').addClass('read-mode');
         }
     });
     
-    var $uploadImg = $step1.find('#uploadImg'),
-        imagePath = ''; // 门头图图片路径
-    // 上传门头图
-    $uploadImg.find('button, img').on('click', function()
-    {
-        U.uploadImg({
-            onSuccess: function (imgPath, $dlg)
-            {
-                var src = 'http://res.hualala.com/' + imgPath;
-                imagePath = imgPath;
-                $uploadImg.find('img').attr('src', src);
-                $dlg.modal('hide');
-            }
-        });
-    });
-    //bsWizard.show(1);
+    /*  
     var dataStep1 = null, // 第一步店铺基本信息数据
         map = null, // 地图组件实例
         shopID = '',
@@ -200,7 +239,7 @@ Hualala.Shop.initInfo = function ($container, pageType, params)
     
 }
 // 初始化菜系下拉列表
-function initCuisines($cuisine1, $cuisine2, cityID)
+function initCuisines($cuisine1, $cuisine2, cityID, cuisineID1, cuisineID2)
 {
     var callServer = G.getCuisines;
     callServer({cityID: cityID}, function(rsp)
@@ -213,11 +252,13 @@ function initCuisines($cuisine1, $cuisine2, cityID)
         
         fillSelectBox($cuisine1, rsp.data.records, 'cuisineID', 'cuisineName');
         fillSelectBox($cuisine2, rsp.data.records, 'cuisineID', 'cuisineName', '--不限--');
+        cuisineID1 && $cuisine1.val(cuisineID1);
+        cuisineID2 && $cuisine2.val(cuisineID2);
     });
     
 }
 // 初始化地标下拉列表
-function initAreas($selectBox, cityID)
+function initAreas($area, cityID, areaID)
 {
     var callServer = G.getAreas;
     callServer({cityID: cityID}, function(rsp)
@@ -228,12 +269,13 @@ function initAreas($selectBox, cityID)
             return;
         }
         
-        fillSelectBox($selectBox, rsp.data.records, 'areaID', 'areaName');
+        fillSelectBox($area, rsp.data.records, 'areaID', 'areaName');
+        areaID && $area.val(areaID);
     });
     
 }
 // 初始化城市下拉列表
-function initCities($selectBox)
+function initCities($city, shopInfo)
 {
     var callServer = G.getCities;
     callServer({isActive: 1}, function(rsp)
@@ -244,7 +286,8 @@ function initCities($selectBox)
             return;
         }
         
-        fillSelectBox($selectBox, rsp.data.records, 'cityID', 'cityName');
+        fillSelectBox($city, rsp.data.records, 'cityID', 'cityName');
+        $city.val(shopInfo.cityID).trigger('change', [shopInfo.areaID, shopInfo.cuisineID1, shopInfo.cuisineID2]);
     });
     
 }

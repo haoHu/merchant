@@ -143,7 +143,9 @@
 .mr25 { margin-right: 25px }
 form.read-mode, .form.read-mode
 {
-    .form-control, .star-required { display: none }
+    .form-control, .star-required, 
+    .form-control-feedback, .help-block
+    { display: none!important; }
     .control-label:after { content: '：'; }
 }
 form.edit-mode, .form.edit-mode

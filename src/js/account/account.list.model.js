@@ -116,7 +116,9 @@
 		bindEvent : function () {
 			var self = this;
 			self.on({
-				"load" : function (settleUnitID) {
+				"load" : function (params) {
+					var settleUnitID = $XP(params, 'settleUnitID'),
+						cbFn = $XF(params, 'cbFn');
 					var callServer = Hualala.Global.queryAccount,
 						groupID = $XP(Hualala.getSessionSite(), 'groupID', '');
 					callServer({
@@ -128,7 +130,8 @@
 							throw("get Account Data (" + settleUnitID + ") Failed!");
 							return ;
 						}
-						this.set(records[0]);
+						self.set(records[0]);
+						cbFn();
 					});
 				},
 				"withdrawCash" : function (cfg) {

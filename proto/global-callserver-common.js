@@ -198,16 +198,26 @@
 	 * @return {NULL}
 	 */
 	Hualala.Global.queryAccount = function (params, cbFn) {
+		var settleUnitID = $XP(params, 'settleUnitID', null);
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		var res = {resultcode : '000', resultmsg : ''};
 		var accountList = Test.AccountList;
+		var match = null;
+		if (!IX.isEmpty(settleUnitID)) {
+			match = _.filter(accountList, function (el) {
+				return $XP(el, 'settleUnitID') == settleUnitID;
+			});
+			match = match.length == 0 ? IX.inherit(accountList[0], {settleUnitID : settleUnitID}) : match;
+		} else {
+			match = accountList;
+		}
 		fn(IX.inherit(res, {
 			data : {
 				pageCount : 1,
 				pageNo : 1,
 				pageSize : accountList.length,
 				totalSize : accountList.length,
-				records : accountList
+				records : match
 			}
 		}));
 	};
@@ -253,16 +263,20 @@
 	  * @return {NULL} 
 	  */
 	Hualala.Global.getAreas = function (params, cbFn) {
-		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
-        var rsp = {
+		var cityID = params.cityID,
+            fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn(),
+            records1 = [
+                {areaID: '1010030000', areaName: '--国贸'}, 
+                {areaID: '1010030300', areaName: '--西直门'}
+            ],
+            records2 = [
+                {areaID: '1021030000', areaName: '--同济'}, 
+                {areaID: '1021030300', areaName: '--复旦'}
+            ],
+            rsp = {
                 resultcode: '000', 
                 resultmsg: '',
-                data: {
-                    records: [
-                        {areaID: '1010030000', areaName: '朝阳区'}, 
-                        {areaID: '1010030300', areaName: '--国贸'}
-                    ]
-                }
+                data: { records: cityID == '1010' ? records1: records2 }
             };
 		fn(rsp);
 	};
@@ -353,7 +367,7 @@
                         PCCL: "80",
                         address: "西城区 西单北大街131号大悦城7F-02",
                         areaID: "1010030300",
-                        areaName: "国贸",
+                        areaName: "西直门",
                         cityID: "1010",
                         cityName: "北京",
                         cuisineID1: "10100300",
