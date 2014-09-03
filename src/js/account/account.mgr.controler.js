@@ -32,7 +32,11 @@
 			self.model.emit('load', {
 				settleUnitID : self.settleUnitID,
 				cbFn : function () {
-					self.view.emit('init');
+					self.view.emit('init', {
+						model : self.model,
+						container : self.container
+					});
+					self.view.emit('render');
 				}
 			});
 		},
@@ -42,6 +46,17 @@
 				// 触发交易明细控制器进行查询
 				query : function () {
 
+				}
+			}, this);
+			
+			this.view.on({
+				init : function (params) {
+					var self = this;
+					self.view.init(params);
+				},
+				render : function () {
+					var self = this;
+					self.view.render();
 				}
 			}, this);
 		}

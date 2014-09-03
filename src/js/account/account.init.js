@@ -25,7 +25,7 @@
 			mgrView : new Hualala.Account.AccountMgrView(),
 			transaDetailCtrl : new Hualala.Account.TransactionDetailController()
 		});
-		$body.html("<h1>结算账户管理页面</h1>");
+		// $body.html("<h1>结算账户管理页面</h1>");
 	};
 
 	Hualala.Account.AccountMgrInit = initAccountMgrPage;
