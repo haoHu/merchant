@@ -258,7 +258,6 @@
 		settings.container.html($breadCrumb);
 		$breadCrumb.on('click', 'a', function (e) {
 			$XF(settings, 'clickFn').apply(this, e);
-			// $XF(settings, 'clickFn')(e);
 		});
 		return {
 			breadCrumb : $breadCrumb,
