@@ -108,3 +108,20 @@ Hualala.Global.setSpotOrderParams = function (params, cbFn) {}
  */
 Hualala.Global.queryAccount = function (params, cbFn) {}
 
+/**
+ * 提现操作
+ * @param  {Object} params 参数{}
+ * @param  {Function} cbFn   回调函数{resultcode, resultmsg, data}
+ * @return {NULL}
+ */
+Hualala.Global.withdrawCash = function (params, cbFn) {};
+
+/**
+ * 结算账户交易明细查询
+ * @param  {Object} params {transCreateBeginTime, transCreateEndTime, settleUnitID, 
+ * 			transStatus, transType, groupID, minTransAmount, maxTransAmount}
+ * @param  {Function} cbFn
+ * @return {NULL}
+ */
+Hualala.Global.queryAccountTransDetail = function (params, cbFn) {};
+

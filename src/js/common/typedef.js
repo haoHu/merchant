@@ -98,16 +98,22 @@
 	 * 101：网上订餐消费（卖出）+ 102：账户充值+ 199：账户资金调加+ 201：订餐消费后退款（退款）- 202：平台预付款- 203：提现- 204：支付平台服务费- 205：支付平台广告费- 206：支付平台信息费- 299：账户资金调减-
 	 */
 	Hualala.TypeDef.FSMTransType = [
-		{value : 101, label : "网上订餐消费（卖出）"},
+		{value : '', label : "全部"},
+		{value : 101, label : "网上订餐消费"},
 		{value : 102, label : "账户充值"},
+		{value : 103, label : "网上订餐用券"},
+		{value : 104, label : "到店消费验券"},
+		{value : 105, label : "会员卡充值"},
 		{value : 199, label : "账户资金调加"},
 		{value : 201, label : "订餐消费后退款（退款）"},
 		{value : 202, label : "平台预付款"},
 		{value : 203, label : "提现"},
-		{value : 204, label : "支付平台服务费"},
-		{value : 205, label : "支付平台广告费"},
-		{value : 206, label : "支付平台信息费"},
-		{value : 299, label : "账户资金调减"}
+		// {value : 204, label : "支付平台服务费"},
+		// {value : 205, label : "支付平台广告费"},
+		// {value : 206, label : "支付平台信息费"},
+		{value : 207, label : "订餐消费后退券"},
+		{value : 299, label : "账户资金调减"},
+		{value : 410, label : "店内自助"}
 	];
 	/**
 	 * 交易状态
@@ -115,6 +121,7 @@
 	 * 
 	 */
 	Hualala.TypeDef.FSMTransStatus = [
+		{value : '', label : "全部"},
 		{value : 0, label : "等待交易完成"},
 		{value : 1, label : "交易成功"},
 		{value : 2, label : "交易关闭"}

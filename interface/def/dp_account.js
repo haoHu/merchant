@@ -34,4 +34,88 @@ var $$Account = {
 	createTime : " 记录创建时间"
 };
 
-var $$AccountList = [$$Account, $$Account,...];
+var $$AccountList = {
+	inAmount : '收入总计',
+	inCount : '收入交易笔数',
+	outAmount : '支出总计',
+	outCount : '支出交易笔数',
+	transAmount : '交易总金额',
+	transCount : '交易总笔数',
+	pageCount : '总页数',
+	pageNo : '页码',
+	pageSize : '每页条目数',
+	totalSize : '总条目数',
+	records : [$$Account, $$Account,...]
+}
+
+/*结算账户交易明细数据定义*/
+var $$AccountTransList = [$$AccountTransDetail, $$AccountTransDetail,....];
+var $$AccountTransDetail = {
+	SUATransItemID : "结算主题账户交易记录ID",
+	action : "记录状态",
+	actionTime : "记录修改时间",
+	cardID : "会员卡ID",
+	createTime : "记录创建时间",
+	createType : "记录创建类型 10：自动 20：手动",
+	empInfo : "平台操作人员信息（登录名|姓名）",
+	empRemark : "操作人员备注",
+	giftDetailItemID : "订单中使用了具体的代金券ItemID",
+	groupID : "集团ID",
+	groupName : "集团名称",
+	orderID : "订单ID",
+	orderKey : "关联订单Key （当网上订餐消费时此值为订单Key）",
+	saveMoneySetID : "充值套餐ID",
+	settleUnitID : "结算主体ID",
+	settleUnitName : "结算主体名称",
+	shopID : "店铺ID",
+	shopName : "店铺名称",
+	shopOpratorInfo : "商户操作人员信息（登录名|姓名）",
+	transAfterBalance : "交易后结算主体账户余额",
+	transAmount : "交易金额",
+	transCloseTime : "交易关闭时间(yyyyMMddhhmmss)",
+	transCreateTime : "交易创建时间(yyyyMMddhhmmss)",
+	transPoundage : "交易手续费",
+	transPoundageRemark : "交易手续费说明",
+	transSalesCommission : "交易佣金",
+	transSalesCommissionRemark : "交易佣金说明",
+	transStatus : "交易状态 0：等待交易完成 1：交易成功 2：交易关闭(Hualala.TypeDef.FSMTransStatus)",
+	transSuccessTime : "交易成功时间(yyyyMMddhhmmss)",
+	transType : "交易类型(Hualala.TypeDef.FSMTransType)"
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

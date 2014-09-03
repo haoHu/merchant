@@ -1224,6 +1224,10 @@ IX.Date = (function(){
             } catch (ex) {
                 return _dateStr;
             }
+        },
+        getTimeTickInSec : function (_dateStr) {
+        	var _str = IX.Date.getDateByFormat(_dateStr, 'yyyy/MM/dd HH:mm:ss');
+        	return parseInt((new Date(_str)).getTime() / 1000);
         }
 	};
 })();

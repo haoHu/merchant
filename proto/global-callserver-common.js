@@ -234,6 +234,22 @@
 		fn(res);
 	};
 
+	/**
+	 * 结算账户交易明细查询
+	 * @param  {Object} params {transCreateBeginTime, transCreateEndTime, settleUnitID, 
+	 * 			transStatus, transType, groupID, minTransAmount, maxTransAmount}
+	 * @param  {Function} cbFn
+	 * @return {NULL}
+	 */
+	Hualala.Global.queryAccountTransDetail = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		var accountTransList = Test.queryAccountTransDetail(params);
+		fn(IX.inherit(res, {
+			data : accountTransList
+		}));
+	};
+
      /**
 	  * 获取已启用城市
 	  * @param {Object} params 参数{isActive: 1}
