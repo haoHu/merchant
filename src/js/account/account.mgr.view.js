@@ -102,7 +102,52 @@
 			});
 		},
 		bindEvent : function () {
-
+			var self = this;
+			self.$schema.on('click', '.btn.withdraw', function (e) {
+				self.withdraw($(this));
+			});
+			self.$schema.on('click', '[data-act]', function (e) {
+				var act = $(this).attr('data-act');
+				switch(act) {
+					case 'edit':
+						self.editAccount();
+						break;
+					case 'queryShops':
+						self.queryShops();
+						break;
+					case 'delete':
+						self.deleteAccount();
+						break;
+				}
+			});
+			
+			self.on({
+				'updateSettleBalance' : function (mAccount) {
+					var settleUnitID = mAccount.get('settleUnitID'),
+						settleBalance = mAccount.get('settleBalance');
+					self.$container.find('[data-id=' + settleUnitID + '] .cash > strong').html(settleBalance);
+				}
+			});
+		},
+		editAccount : function () {
+			console.info('editAccount');
+		},
+		withdraw : function ($trigger) {
+			var self = this;
+			console.info('withdraw');
+			// 提现操作
+			var modal = new Hualala.Account.WithdrawCashView({
+				triggerEl : $trigger,
+				settleUnitID : self.model.get('settleUnitID'),
+				model : self.model,
+				parentView : self
+			});
+		},
+		queryShops : function () {
+			console.info('queryShops');
+		},
+		deleteAccount : function () {
+			console.info('deleteAccount');
 		},
 		mapRenderData : function () {
 			var self = this,

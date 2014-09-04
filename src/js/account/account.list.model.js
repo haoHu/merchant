@@ -152,7 +152,7 @@
 						} else {
 							var transAmount = $XP(params, 'transAmount', 0),
 								settleBalance = self.get('settleBalance') || 0,
-								newSettleBalance = window.numeric.sub(settleBalance - transAmount);
+								newSettleBalance = window.numeric.sub(settleBalance, transAmount);
 							self.set('settleBalance', newSettleBalance);
 							// TODO update View
 							successFn();
