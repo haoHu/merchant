@@ -171,7 +171,7 @@
 			var s = transCreateBeginTime.replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
 			s = IX.Date.getTimeTickInSec(s);
 			result = _.filter(accountTransList, function (el) {
-				var s1 = $XP(el, 'transCreateBeginTime').replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
+				var s1 = $XP(el, 'transCreateTime').replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
 				s1 = IX.Date.getTimeTickInSec(s1);
 				return s1 >= s;
 			});
@@ -180,7 +180,7 @@
 			var s = transCreateEndTime.replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
 			s = IX.Date.getTimeTickInSec(s);
 			result = _.filter(result, function (el) {
-				var s1 = $XP(el, 'transCreateEndTime').replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
+				var s1 = $XP(el, 'transCreateTime').replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
 				s1 = IX.Date.getTimeTickInSec(s1);
 				return s1 <= s;
 			});

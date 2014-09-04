@@ -529,14 +529,41 @@
 			});
 			self.$queryForm.on('click', '.btn', function (e) {
 				// TODO Update modal params and render query result
+				var params = self.getQueryFormParams();
+				self.model.emit('load', params);
 			});
+		},
+		getQueryFormParams : function () {
+			var self = this;
+			// var formKeys = ['transCreateBeginTime', 'transCreateEndTime', 'minTransAmount', 'maxTransAmount', 'transType', 'transStatus'];
+			var params = self.$queryForm.find('>form').serializeArray();
+			var ret = {};
+			_.each(params, function (el, i) {
+				var k = $XP(el, 'name'), v = $XP(el, 'value', '');
+				switch(k) {
+					case 'transCreateBeginTime':
+					case 'transCreateEndTime':
+						if (IX.isEmpty(v)) {
+							v = '';
+						} else {
+							v = IX.Date.getDateByFormat(v, 'yyyyMMddHHmmss');
+						}
+						break;
+					default :
+						v = IX.isEmpty(v) ? '' : v;
+						break;
+				}
+				ret[k] = v;
+			});
+			console.info(ret);
+			return ret;
 		},
 		mapTimeData : function (s) {
 			var r = {value : '', text : ''};
 			var s1 = '';
 			if (IX.isString(s) && s.length > 0) {
 				s1 = s.replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
-				s1 = IX.Date.getDateByFormat(s1, 'yyyy/mm/dd HH:MM');
+				s1 = IX.Date.getDateByFormat(s1, 'yyyy/MM/dd HH:mm');
 				r = IX.inherit({value : s, text : s1});
 			}
 			return r;
