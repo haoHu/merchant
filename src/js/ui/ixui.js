@@ -120,6 +120,7 @@
 			title : '',
 			hideWithRemove : true,
 			clz : '',
+            sizeCls: '',
 			afterRemove : IX.emptyFn,
 			afterHide : IX.emptyFn,
 			aftetShow : IX.emptyFn,
@@ -190,6 +191,8 @@
 			$closeBtn = $dialogHead.find('.close');
 			$dialogBody = $self.find('.modal-body');
 			$dialogFoot = $self.find('.modal-footer');
+            config.html && $dialogBody.html(config.html);
+            config.sizeCls && $self.find('.modal-dialog').addClass(config.sizeCls);
 			_model._ = {
 				container : $con,
 				dialog : $self,
@@ -207,6 +210,7 @@
 
 		var _show = function () {
 			_model._.dialog.modal('show');
+            return _model;
 		};
 
 		var _model = {

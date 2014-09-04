@@ -11,7 +11,7 @@ S.initInfo = function ($container, pageType, params)
 {
     if(!params) return;
     // 渲染店铺功能导航
-    S.createShopFuncNav(pageType, params).appendTo($container);
+    var $shopFuncNav = S.createShopFuncNav(pageType, params, $container);
     
     var shopID = params, shopInfo = null,
         $form = null, $city = null, $area = null, 
@@ -30,10 +30,10 @@ S.initInfo = function ($container, pageType, params)
         shopInfo = rsp.data.records[0];
         
         // 渲染店铺详情头部
-        S.createShopInfoHead(function($shopInfoHead)
+        S.createShopInfoHead(shopInfo, $container, function($shopInfoHead)
         {
-            $shopInfoHead.prependTo($container);
-        }, shopInfo);
+            $shopFuncNav.before($shopInfoHead);
+        });
         
         var openTime = shopInfo.openingHours.split('-');
         shopInfo.openingHoursStart = openTime[0];

@@ -1,9 +1,32 @@
 (function ($, window) {
 	IX.ns("Hualala");
 	var TplLib = Hualala.TplLib;
+    
+    var tpl_set_shop_client_pwd = [
+    '<form class="form-horizontal">',
+        '<div class="form-group">',
+            '<label class="col-sm-3 control-label">店铺账号:</label>',
+            '<div class="col-sm-9">',
+                '<p class="form-control-static">{{shopID}}</p>',
+            '</div>',
+        '</div>',
+        '<div class="form-group">',
+            '<label class="col-sm-3 control-label">登录密码:</label>',
+            '<div class="col-sm-9">',
+                '<input type="password" id="shopClinetPwd" name="shopClinetPwd"  class="form-control" />',
+            '</div>',
+        '</div>',
+        '<div class="checkbox col-sm-offset-3">',
+            '<label for="showPwd" class="control-label">',
+                '<input type="checkbox" id="showPwd" name="shopClinetPwd" />',
+                '显示明文',
+            '</label>',
+        '</div>',
+    '</form>'].join('');
+    TplLib.register('tpl_set_shop_client_pwd', tpl_set_shop_client_pwd);
 
     var tpl_shop_info_head = [
-    '<div class="bs-callout shop-info-head">',
+    /*'<div class="bs-callout shop-info-head">',*/
         '<div class="fl">',
             '<span class="shop-name">{{shopName}}</span>',
             '<a href="{{shopUrl}}" target="_blank">查看网上店铺</a>',
@@ -14,7 +37,7 @@
             '<label class="t-label">店铺当前状态：</label>',
             '<input type="checkbox" {{checked}} />',
         '</div>',
-    '</div>'].join('');
+    /*'</div>'*/].join('');
     TplLib.register('tpl_shop_info_head', tpl_shop_info_head);
 
 	var tpl_shop_create = [

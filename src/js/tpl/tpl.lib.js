@@ -20,7 +20,10 @@
 						'<h4 class="modal-title">{{title}}</h4>',
 					'</div>',
 					'<div class="modal-body"></div>',
-					'<div class="modal-footer"></div>',
+					'<div class="modal-footer">',
+                        '<button class="btn btn-default btn-close" data-dismiss="modal">取消</button>',
+                        '<button class="btn btn-warning btn-ok">保存</button>',
+                    '</div>',
 				'</div>',
 			'</div>',
 		'</div>'
