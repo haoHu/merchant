@@ -80,12 +80,52 @@
 		right: -17px;
 	}
 }
-
+// shop 公用样式
+.mr25 { margin-right: 25px }
+.mb50 { margin-bottom: 50px }
+.fl { float: left; }
+// callout组件，默认黄色 warning
+.bs-callout 
+{
+    border: 1px solid #eee;
+    border-left: 5px solid @color-warning;
+    border-radius: 3px;
+    &.shop-info-head 
+    { 
+        margin: 20px 0 10px 0; padding: 10px 20px;
+        text-align: right; 
+        .fl { margin-top: 2px; }
+        .shop-name { color: @color-warning; font-size: 16px }
+        .shop-name, a { margin-right: 25px; display: inline-block; }
+        
+    }
+}
+// 表单的只读模式/编辑模式
+form.read-mode, .form.read-mode
+{
+    .form-control, .star-required { display: none; }
+    .form-control-feedback, .help-block
+    { display: none!important; }
+    .control-label:after { content: '：'; }
+}
+form.edit-mode, .form.edit-mode
+{
+    .form-control-static { display: none }
+    .control-label:before { content: '* '; }
+    .control-label.no-require:before { display: none }
+}
+// 表单验证反馈图标显示在表单外部
+.feed-back-out
+{
+    .has-feedback .form-control { padding-right: 12px }
+    .form-horizontal .has-feedback .form-control-feedback { right: -20px }
+}
 //创建店铺
 #shopCreateWizard 
 { 
     .step-nav, .step-action { margin: 0 15px }
-    #tab1 { margin: 50px 0 }
+    .form-control.d-ib { width: 70px; }
+    #tab1 { margin-top: 50px; margin-bottom: 50px }
     #tab3 
     {
         margin: 50px 15px; 
@@ -111,25 +151,7 @@
     }
     
 }
-.map-wrap
-{
-    box-sizing: border-box; margin: 15px; border: 1px solid #d4d4d4;
-    .x-box-shadow-base (0, 1px, 4px, rgba(0,0,0, 0.065));
-    
-    .input-group-addon { top: 0 }
-    .map-search { background: #fafafa; padding: 6px; margin: 0; }
-    .map-search > div { padding-left: 0 }
-    .glyphicon-search:active { background: #fff }
-    .map-help { padding-top: 8px }
-    .map_canvas { height: 400px; border-top: 1px solid #d4d4d4; }
-    .map-result { margin: 10px; }
-}
-.map-shop-info
-{
-    dt, dd { line-height: 32px; }
-    dt { font-weight: bold }
-    dd { margin-left: 12px }
-}
+
 #swfUploadImgDialog .modal-dialog { width: 485px }
 .x-ico-suc
 {   @size: 50px;
@@ -140,41 +162,29 @@
     &:before { position: relative; top: -2px; left: -2px }
 }
 //修改店铺信息
-.mr25 { margin-right: 25px }
-form.read-mode, .form.read-mode
-{
-    .form-control, .star-required, 
-    .form-control-feedback, .help-block
-    { display: none!important; }
-    .control-label:after { content: '：'; }
-}
-form.edit-mode, .form.edit-mode
-{
-    .form-control-static { display: none }
-    .control-label:before { content: '* '; }
-    .control-label.no-require:before { display: none }
-}
-.feed-back-out
-{
-    .has-feedback .form-control { padding-right: 12px }
-    .form-horizontal .has-feedback .form-control-feedback { right: -20px }
-    
-}
+
 @media (max-width: 768px)
 {
     .feed-back-out { margin: 0 20px }
+    #uploadImg { text-align: left }
 }
 .shop-info 
 {
     .form-control.d-ib { width: 70px; }
-    .step-action { clear: left }
-    &.read-mode #saveBtn { display: none }
+    .step-action { clear: left; margin-top: 40px }
+    &.read-mode 
+    {
+        #saveBtn { display: none }
+        .map-keyword { display: block }
+    }
     &.edit-mode #editBtn { display: none }
-    
+    .map_canvas { height: 250px }
 }
-
-
-
+// 店铺详情页功能导航
+.shop-func-nav
+{
+    .active a { cursor: default; }
+}
 
 
 

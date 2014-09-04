@@ -107,7 +107,7 @@
         searchMap : function (data)
         {
             var self = this;
-            data = data || self.self.cfg.data;
+            data = data || self.cfg.data;
             //self.map.centerAndZoom(new BMap.Point(116.404, 39.915), 14);
             //self.map.enableScrollWheelZoom();
                 

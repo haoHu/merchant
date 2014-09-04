@@ -2,28 +2,39 @@
 IX.ns('Hualala.Shop');
 var G = Hualala.Global,
     U = Hualala.UI,
-    topTip = U.TopTip; 
+    S = Hualala.Shop,
+    topTip = U.TopTip,
+    parseForm = Hualala.Common.parseForm,
+    initMap = Hualala.Shop.map;
 // 初始化店铺店铺详情页面
-Hualala.Shop.initInfo = function ($container, pageType, params)
+S.initInfo = function ($container, pageType, params)
 {
     if(!params) return;
+    // 渲染店铺功能导航
+    S.createShopFuncNav(pageType, params).appendTo($container);
     
-    var shopID = params,
-        shopInfo = null,
-        $form = null,
-        $city = null,
-        $area = null,
-        $cuisine1 = null,
-        $cuisine2 = null;
+    var shopID = params, shopInfo = null,
+        $form = null, $city = null, $area = null, 
+        $cuisine1 = null, $cuisine2 = null,
+        imagePath = '', $img = null,
+        imgHost = G.IMAGE_RESOURCE_DOMAIN + '/',
+        bv = null, map = null;
     
     G.getShopInfo({shopID : shopID}, function (rsp)
     {
         if(rsp.resultcode != '000')
         {
-            rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
         shopInfo = rsp.data.records[0];
+        
+        // 渲染店铺详情头部
+        S.createShopInfoHead(function($shopInfoHead)
+        {
+            $shopInfoHead.prependTo($container);
+        }, shopInfo);
+        
         var openTime = shopInfo.openingHours.split('-');
         shopInfo.openingHoursStart = openTime[0];
         shopInfo.openingHoursEnd = openTime[1];
@@ -129,113 +140,119 @@ Hualala.Shop.initInfo = function ($container, pageType, params)
                 }
             }
         });
+        bv = $form.data('bootstrapValidator');
         
-        var $uploadImg = $form.find('#uploadImg'),
-            imagePath = ''; // 门头图图片路径
-        // 上传门头图
-        $uploadImg.find('button, img').on('click', function()
+        var $uploadImg = $form.find('#uploadImg');
+        $img = $uploadImg.find('img');
+        imagePath = shopInfo.imagePath;
+        imagePath && $img.attr('src', imgHost + imagePath);
+        
+        map = initMap({data: {
+            isSearchMap: false,
+            shopName: shopInfo.shopName,
+            tel: shopInfo.tel,
+            address: shopInfo.address,
+            lng: shopInfo.mapLongitudeValueBaiDu,
+            lat: shopInfo.mapLatitudeValueBaiDu
+        }});
+        
+    });
+    // click 事件 delegate
+    $container.on('click', function(e)
+    {
+        var $target = $(e.target);
+        // 修改门头图
+        if($target.is('#uploadImg img, #uploadImg a'))
         {
             U.uploadImg({
                 onSuccess: function (imgPath, $dlg)
                 {
-                    var src = 'http://res.hualala.com/' + imgPath;
                     imagePath = imgPath;
-                    $uploadImg.find('img').attr('src', src);
+                    $img.attr('src', imgHost + imgPath);
                     $dlg.modal('hide');
                 }
             });
-        });
-    });
-        
-    $container.on('click', function(e)
-    {
-        var $target = $(e.target);
+        }
+        // 重新标记地图
+        if($target.is('#remarkMap'))
+        {
+            if(bv.isValidField('shopName') && bv.isValidField('tel') && bv.isValidField('address'))
+            {
+                var coords = map.mapPoint,
+                    formData = parseForm($form);
+                map = initMap({data: {
+                    isSearchMap: false,
+                    shopName: formData.shopName,
+                    tel: formData.tel,
+                    address: formData.address,
+                    lng: coords.lng,
+                    lat: coords.lat
+                }});
+                
+                var mapInfo = {
+                        shopID: shopID,
+                        mapLongitudeValue: coords.lng,
+                        mapLatitudeValue: coords.lat,
+                        mapLongitudeValueBaiDu: coords.lng,
+                        mapLatitudeValueBaiDu: coords.lat
+                    };
+                // 标注店铺地图callServer调用
+                G.setShopMap(mapInfo, function(rsp)
+                {
+                    if(rsp.resultcode != '000')
+                    {
+                        rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    else
+                    {
+                        topTip({msg: '重新标记地图成功！', type: 'success'});
+                    }
+                });
+                
+            }
+            else
+            {
+                topTip({msg: '店铺相关信息填写有误！', type: 'danger'});
+            }
+            
+        }
+        // 修改店铺基本信息
         if($target.is('#editBtn'))
         {
             $form.removeClass('read-mode').addClass('edit-mode');
         }
-        
+        // 保存店铺基本信息修改
         if($target.is('#saveBtn'))
         {
-            $form.removeClass('edit-mode').addClass('read-mode');
+            if(!bv.validate().isValid()) return;
+            // 数据提交前预处理
+            var shopData = parseForm($form);
+            shopData.shopID = shopID;
+            shopData.shopName = shopData.shopName.replace('（', '(').replace('）', ')');
+            shopData.areaName = getSelectText($area);
+            shopData.cuisineName1 = getSelectText($cuisine1);
+            shopData.cuisineName2 = shopData.cuisineID2 ? getSelectText($cuisine2) : '';
+            shopData.imagePath = imagePath;
+            shopData.openingHours = shopData.openingHoursStart + '-' + shopData.openingHoursEnd;
+            var keywords = [shopData.shopName, shopData.address, shopData.cuisineName1];
+            shopData.cuisineName2 && keywords.push(shopData.cuisineName2);
+            keywords.push(shopData.areaName);
+            shopData.keywordLst = keywords.join(' | ');
+            // 保存店铺基本信息callServer调用
+            G.updateShopBaseInfo(shopData, function(rsp)
+            {
+                if(rsp.resultcode != '000')
+                {
+                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                
+                $form.removeClass('edit-mode').addClass('read-mode');
+                topTip({msg: '保存成功！', type: 'success'});
+            });
         }
     });
-    
-    /*  
-    var dataStep1 = null, // 第一步店铺基本信息数据
-        map = null, // 地图组件实例
-        shopID = '',
-        $searchBox = $step2.find('.map-search-box'),
-        $shopSettingLink = $step3.find('#shopSettingLink');
-    // 向导组件的下一步行为控制
-    $wizard.find('#nextStep').on('click', function()
-    {
-        var $curStep = bsWizard.activePane();
-        // 第一步
-        if($curStep.is('#tab1'))
-        {
-            if(!$step1.data('bootstrapValidator').validate().isValid()) return;
-            // 数据提交前预处理
-            dataStep1 = Hualala.Common.parseForm($step1);
-            dataStep1.shopID = shopID;
-            dataStep1.shopName = dataStep1.shopName.replace('（', '(').replace('）', ')');
-            dataStep1.areaName = getSelectText($area);
-            dataStep1.cuisineName1 = getSelectText($cuisine1);
-            dataStep1.cuisineName2 = dataStep1.cuisineID2 ? getSelectText($cuisine2) : '';
-            dataStep1.imagePath = imagePath;
-            dataStep1.openingHours = dataStep1.openingHoursStart + '-' + dataStep1.openingHoursEnd;
-            var keywords = [dataStep1.shopName, dataStep1.address, dataStep1.cuisineName1];
-            dataStep1.cuisineName2 && keywords.push(dataStep1.cuisineName2);
-            keywords.push(dataStep1.areaName);
-            dataStep1.keywordLst = keywords.join(' | ');
-            // 根据店铺是否已经产生调用不同的服务
-            var callServer = shopID ? G.updateShopBaseInfo : G.createShop;
-            callServer(dataStep1, function(rsp)
-            {
-                if(rsp.resultcode != '000')
-                {
-                    rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
-                    return;
-                }
-                shopID = shopID || rsp.data.records[0].shopID;
-                $shopSettingLink.attr('href', Hualala.PageRoute.createPath('setting'));
-                // 进入第二步标注地图
-                bsWizard.next();
-                // 地图对象必须在第二步面板显示出来后初始化
-                map = Hualala.Shop.map({data: {
-                    isSearchMap: true,
-                    shopName: dataStep1.shopName,
-                    tel: dataStep1.tel,
-                    address: dataStep1.address
-                }, searchBox: $searchBox});
-                
-            });
-            
-            return;
-        }
-        // 第二步
-        if($curStep.is('#tab2'))
-        {
-            var lng = map.mapPoint.lng, lat = map.mapPoint.lat,
-                mapInfo = {
-                    shopID: shopID,
-                    mapLongitudeValue: lng,
-                    mapLatitudeValue: lat,
-                    mapLongitudeValueBaiDu: lng,
-                    mapLatitudeValueBaiDu: lat
-                };
-            var callServer = G.setShopMap;
-            callServer(mapInfo, function(rsp)
-            {
-                if(rsp.resultcode != '000')
-                {
-                    rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
-                    return;
-                }
-            });
-        }
-        bsWizard.next();
-    });*/
     
 }
 // 初始化菜系下拉列表
@@ -246,7 +263,7 @@ function initCuisines($cuisine1, $cuisine2, cityID, cuisineID1, cuisineID2)
     {
         if(rsp.resultcode != '000')
         {
-            rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
         
@@ -265,7 +282,7 @@ function initAreas($area, cityID, areaID)
     {
         if(rsp.resultcode != '000')
         {
-            rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
         
@@ -282,7 +299,7 @@ function initCities($city, shopInfo)
     {
         if(rsp.resultcode != '000')
         {
-            rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
         

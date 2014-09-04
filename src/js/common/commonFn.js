@@ -382,6 +382,15 @@
 		});
 		return bankHT.get(bankCode);
 	};
+    /**
+	 * 根据shopID获得店铺在哗啦啦www上的店铺URL
+	 * @param  {String} shopID 店铺ID
+	 * @return {String}    店铺URL
+	 */
+    Hualala.Common.getShopUrl = function(shopID)
+    {
+        return Hualala.Global.HualalaWebSite + '/shop_' + shopID;
+    };
 
 })(jQuery);
 

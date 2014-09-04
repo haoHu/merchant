@@ -283,5 +283,13 @@
 		}
 		return ret;
 	};
+    
+    Hualala.PageRoute.getPageLabelByName = function (name) {
+        if(!name) return null;
+        var cfg = PageConfigurations[name];
+        if(!cfg) return null;
+        return cfg.label;
+    };
+    
 
 })(jQuery, window);

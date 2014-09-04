@@ -117,7 +117,7 @@ Hualala.Shop.initCreate = function ($wizard)
         U.uploadImg({
             onSuccess: function (imgPath, $dlg)
             {
-                var src = 'http://res.hualala.com/' + imgPath;
+                var src = G.IMAGE_RESOURCE_DOMAIN + '/' + imgPath;
                 imagePath = imgPath;
                 $uploadImg.find('img').attr('src', src);
                 $dlg.modal('hide');
@@ -157,7 +157,7 @@ Hualala.Shop.initCreate = function ($wizard)
             {
                 if(rsp.resultcode != '000')
                 {
-                    rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
                     return;
                 }
                 shopID = shopID || rsp.data.records[0].shopID;
@@ -192,7 +192,7 @@ Hualala.Shop.initCreate = function ($wizard)
             {
                 if(rsp.resultcode != '000')
                 {
-                    rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
                     return;
                 }
             });
@@ -209,7 +209,7 @@ function initCuisines($cuisine1, $cuisine2, cityID)
     {
         if(rsp.resultcode != '000')
         {
-            rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
         
@@ -226,7 +226,7 @@ function initAreas($selectBox, cityID)
     {
         if(rsp.resultcode != '000')
         {
-            rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
         
@@ -242,7 +242,7 @@ function initCities($selectBox)
     {
         if(rsp.resultcode != '000')
         {
-            rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
         
