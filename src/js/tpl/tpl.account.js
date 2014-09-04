@@ -214,7 +214,7 @@
 									'{{#with max}}',
 										// '<div class="col-sm-1 hidden-xs hidden-sm"><span class="to-label">到</span></div>',
 										'<div class="max-input {{clz}}">',
-											'<span class="to-label hidden-xs hidden-sm">到</span>',
+											'<span class="to-label">到</span>',
 											'<div class="input-group">',
 												'{{#if prefix}}',
 													'<span class="input-group-addon">',

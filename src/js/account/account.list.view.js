@@ -475,12 +475,32 @@
 			this.$pager = this.$container.find('.page-selection');
 			this.render();
 			this.initPager();
+			this.initQueryEls();
 			this.bindEvent();
 			this.bindQueryEvent();
 		},
+		initQueryEls : function () {
+			var self = this;
+			self.$queryForm.find('[data-type=datetimepicker]').datetimepicker({
+				format : 'yyyy/mm/dd',
+				startDate : '2010/01/01',
+				autoclose : true,
+				minView : 'month',
+				todayBtn : true,
+				todayHighlight : true,
+				language : 'zh-CN'
+			});
+			self.$queryForm.on('click', '.input-group-addon', function (e) {
+				var $this = $(this),
+					$picker = $this.prev(':text[data-type=datetimepicker]');
+				if ($picker.length > 0) {
+					$picker.datetimepicker('show');
+				}
+			});
+		},
 		bindEvent : function () {
 			var self = this;
-			self.$resultBox .tooltip({
+			self.$resultBox.tooltip({
 				selector : '[title]'
 			});
 			self.$resultBox.on('click', '.btn[data-href]', function (e) {
@@ -498,7 +518,18 @@
 			});
 		},
 		bindQueryEvent : function () {
+			var self = this;
+			self.$resultBox.on('click', 'a[data-orderkey]', function (e) {
+				var $btn = $(this),
+					orderKey = $btn.attr('data-orderkey'),
+					transType = $btn.attr('data-type'),
+					transID = $btn.attr('data-id');
+				// TODO show transaction detail modal
 
+			});
+			self.$queryForm.on('click', '.btn', function (e) {
+				// TODO Update modal params and render query result
+			});
 		},
 		mapTimeData : function (s) {
 			var r = {value : '', text : ''};
