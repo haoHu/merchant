@@ -105,7 +105,7 @@
 		{value : 104, label : "到店消费验券"},
 		{value : 105, label : "会员卡充值"},
 		{value : 199, label : "账户资金调加"},
-		{value : 201, label : "订餐消费后退款（退款）"},
+		{value : 201, label : "订餐消费后退款"},
 		{value : 202, label : "平台预付款"},
 		{value : 203, label : "提现"},
 		// {value : 204, label : "支付平台服务费"},

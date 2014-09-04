@@ -280,4 +280,345 @@
 	});
 
 	Hualala.Account.WithdrawCashView = WithdrawCashView;
+
+	var QueryTransFormElsCfg = {
+		transCreateTime : {
+			type : 'section',
+			label : '日期',
+			min : {
+				type : 'datetimepicker',
+				surfix : '<span class="glyphicon glyphicon-calendar"></span>',
+				defaultVal : '',
+				validCfg : {
+					group : '.min-input',
+					validators : {}
+				}
+			},
+			max : {
+				type : 'datetimepicker',
+				surfix : '<span class="glyphicon glyphicon-calendar"></span>',
+				defaultVal : '',
+				validCfg : {
+					group : '.max-input',
+					validators : {}
+				}
+			}
+		},
+		transAmount : {
+			type : 'section',
+			label : '金额',
+			min : {
+				type : 'text',
+				prefix : '￥',
+				surfix : '元',
+				defaultVal : '',
+				validCfg : {
+					validators : {
+						numeric : {
+							message: "金额必须为数字"
+						},
+						greaterThan : {
+							inclusive : true,
+							value : 0,
+							message : "金额必须大于或等于0"
+						}
+					}
+				}
+			},
+			max : {
+				type : 'text',
+				prefix : '￥',
+				surfix : '元',
+				defaultVal : '',
+				validCfg : {
+					validators : {
+						numeric : {
+							message: "金额必须为数字"
+						},
+						greaterThan : {
+							inclusive : true,
+							value : 0,
+							message : "金额必须大于或等于0"
+						}
+					}
+				}
+			}
+		},
+		transStatus : {
+			type : 'combo',
+			label : '状态',
+			defaultVal : '',
+			options : Hualala.TypeDef.FSMTransStatus,
+			validCfg : {
+				validators : {
+					
+				}
+			}
+		},
+		transType : {
+			type : 'combo',
+			label : '类型',
+			defaultVal : '',
+			options : Hualala.TypeDef.FSMTransType,
+			validCfg : {
+				validators : {
+					
+				}
+			}
+		},
+		button : {
+			type : 'button',
+			clz : 'btn btn-block btn-warning',
+			label : '查询'
+		}
+	};
+	var QueryTransFormElsHT = new IX.IListManager();
+	_.each(QueryTransFormElsCfg, function (el, k) {
+		var type = $XP(el, 'type');
+		var labelClz = 'col-xs-2 col-sm-2 col-md-2 control-label';
+		if (type == 'section') {
+			var id = minID = k + '_min_' + IX.id(), maxID = k + '_max_' + IX.id(),
+				minName = k == 'transCreateTime' ? 'transCreateBeginTime' : 'minTransAmount',
+				maxName = k == 'transCreateTime' ? 'transCreateEndTime' : 'maxTransAmount',
+				min = IX.inherit($XP(el, 'min', {}), {
+					id : minID, name : minName, clz : 'col-xs-5 col-sm-5 col-md-5',
+				}), max = IX.inherit($XP(el, 'max', {}), {
+					id : maxID, name : maxName, clz : 'col-xs-5 col-sm-5 col-md-5',
+				});
+			QueryTransFormElsHT.register(k, IX.inherit(el, {
+				id : id,
+				labelClz : labelClz,
+				min : min,
+				max : max
+			}));
+		} else {
+			QueryTransFormElsHT.register(k, IX.inherit(el, {
+				id : k + '_' + IX.id(),
+				name : k,
+				labelClz : labelClz,
+			}, $XP(el, 'type') !== 'button' ? {clz : 'col-xs-5 col-sm-8 col-md-5'} : null));
+		}
+	});
+	var TransResultCols = [
+		{clz : '', label : '时间'},
+		{clz : '', label : '流水号'},
+		{clz : '', label : '交易状态'},
+		{clz : '', label : '交易类型'},
+		{clz : '', label : '交易金额'},
+		{clz : '', label : '佣金'},
+		{clz : '', label : '手续费'},
+		{clz : '', label : '余额变动'},
+		{clz : '', label : '交易后余额'},
+		{clz : '', label : '操作'}
+	];
+
+	var AccountTransListView = CardListView.subclass({
+		constructor : function () {
+			// View层容器
+			this.$container = null;
+			// 查询表单
+			this.$queryForm = null;
+			// 结果容器
+			this.$resultBox = null;
+			// 分页容器
+			this.$pager = null;
+			this.loadTemplates();
+		}
+	});
+	AccountTransListView.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_detail')),
+				tableTpl = Handlebars.compile(Hualala.TplLib.get('tpl_transaQuery_result'));
+			Handlebars.registerPartial("transaQueryForm", Hualala.TplLib.get('tpl_transaQuery_form'));
+			Handlebars.registerPartial("transaQueryResult", Hualala.TplLib.get('tpl_transaQuery_result'));
+			Handlebars.registerHelper('checkFormElementType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			Handlebars.registerHelper('chkColType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			this.set({
+				layoutTpl : layoutTpl,
+				tableTpl : tableTpl
+			});
+		},
+		initLayout : function () {
+			var layoutTpl = this.get('layoutTpl');
+			var result = [],
+				tblClz = 'table-striped table-hover',
+				tblHeaders = TransResultCols,
+				query = {cols : [
+					{
+						colClz : 'col-sm-6',
+						items : QueryTransFormElsHT.getByKeys(['transCreateTime', 'transAmount'])
+					},
+					{
+						colClz : 'col-sm-4',
+						items : QueryTransFormElsHT.getByKeys(['transType', 'transStatus'])
+					},
+					{
+						colClz : 'col-sm-2',
+						items : QueryTransFormElsHT.getByKeys(['button'])
+					}
+				]};
+			var htm = layoutTpl({
+				query : query,
+				result : {
+					clz : tblClz,
+					thead : tblHeaders,
+					rows : result
+				}
+			});
+			this.$container.html(htm);
+			this.$queryForm = this.$container.find('.query-form');
+			this.$resultBox = this.$container.find('.query-result');
+			this.$pager = this.$container.find('.page-selection');
+			this.render();
+			this.initPager();
+			this.bindEvent();
+			this.bindQueryEvent();
+		},
+		bindEvent : function () {
+			var self = this;
+			self.$resultBox .tooltip({
+				selector : '[title]'
+			});
+			self.$resultBox.on('click', '.btn[data-href]', function (e) {
+				var $btn = $(this),
+					path = $btn.attr('data-href');
+				document.location.href = path;
+			});
+			self.$pager.on('page', function (e, pageNo) {
+				var params = self.model.getPagerParams();
+				params['Page']['pageNo'] = pageNo;
+				self.model.emit('load', IX.inherit(params, {
+					pageNo : $XP(params, 'Page.pageNo', 1),
+					pageSize : $XP(params, 'Page.pageSize', 15)
+				}));
+			});
+		},
+		bindQueryEvent : function () {
+
+		},
+		mapTimeData : function (s) {
+			var r = {value : '', text : ''};
+			var s1 = '';
+			if (IX.isString(s) && s.length > 0) {
+				s1 = s.replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
+				s1 = IX.Date.getDateByFormat(s1, 'yyyy/mm/dd HH:MM');
+				r = IX.inherit({value : s, text : s1});
+			}
+			return r;
+		},
+		mapTransStatus : function (s) {
+			s = s || '';
+			var status = Hualala.TypeDef.FSMTransStatus;
+			var m = _.filter(status, function (el) {
+				return $XP(el, 'value', '') == s;
+			});
+			if (s.length == 0 || m.length == 0) {
+				return {text : '', value : ''};
+			}
+			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', '')};
+		},
+		mapTransType : function (s) {
+			s = s || '';
+			var types = Hualala.TypeDef.FSMTransType;
+			var m = _.filter(types, function (el) {
+				return $XP(el, 'value', '') == s;
+			});
+			if (s.length == 0 || m.length == 0) {
+				return {text : '', value : ''};
+			}
+			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', '')};
+		},
+		mapCashData : function (s) {
+			return {text : s, value : s};
+		},
+		mapTransChanged : function (r) {
+			var transAmount = $XP(r, 'transAmount', 0),
+				transSalesCommission = $XP(r, 'transSalesCommission', 0),
+				transPoundage = $XP(r, 'transPoundage', 0),
+				transChanged = transAmount - transSalesCommission - transPoundage;
+			return {value : transChanged, text : transChanged};
+		},
+		mapColsRenderData : function (row) {
+			var self = this;
+			var colKeys = 'transCreateTime,SUATransItemID,transStatus,transType,transAmount,transSalesCommission,transPoundage,transChanged,transAfterBalance,rowControl';
+			var col = {clz : '', type : 'text'};
+
+			var cols = _.map(colKeys.split(','), function (k, i) {
+				var r = null;
+				switch(k) {
+					case 'transCreateTime':
+						r = self.mapTimeData($XP(row, k, ''));
+						break;
+					case 'SUATransItemID':
+						r = {value : $XP(row, k, ''), text : $XP(row, k, '')};
+						break;
+					case 'transStatus':
+						r = self.mapTransStatus($XP(row, k, ''));
+						break;
+					case 'transType':
+						r = self.mapTransType($XP(row, k, ''));
+						break;
+					case 'transAmount':
+					case 'transSalesCommission':
+					case 'transPoundage':
+					case 'transAfterBalance':
+						r = self.mapCashData($XP(row, k, ''));
+						break;
+					case 'transChanged':
+						r = self.mapTransChanged(row);
+						break;
+					case 'rowControl':
+						r = {
+							type : 'button',
+							btnClz : '',
+							label : '查看',
+							SUATransItemID : $XP(row, 'SUATransItemID', ''),
+							transType : $XP(row, 'transType', ''),
+							orderKey : $XP(row, 'orderKey', '')
+						};
+						break;
+				}
+				return IX.inherit(col, r);
+			});
+			return cols;
+		},
+		mapRenderData : function (data) {
+			var self = this;
+			var tblClz = 'table-striped table-hover',
+				tblHeaders = TransResultCols;
+			var rows = _.map(data, function (row) {
+				return {
+					clz : '',
+					cols : self.mapColsRenderData(row)
+				};
+			});
+			return {
+				clz : tblClz,
+				thead : tblHeaders,
+				rows : rows
+			};
+		},
+		render : function () {
+			var self = this,
+				model = self.model,
+				pagerParams = model.getPagerParams(),
+				pageNo = $XP(pagerParams, 'Page.pageNo');
+			var results = model.getDataByPageNo(pageNo);
+			var renderData = self.mapRenderData(results);
+			var tableTpl = self.get('tableTpl');
+			var html = tableTpl(renderData);
+			self.$resultBox.empty();
+			self.$resultBox.html(html);
+			self.initPager({
+				total : model.get('pageCount'),
+				page : model.get('pageNo'),
+				href : 'javascript:void(0);'
+			});
+		}
+	});
+	Hualala.Account.AccountTransListView = AccountTransListView;
 })(jQuery, window);

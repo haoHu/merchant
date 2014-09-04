@@ -166,8 +166,8 @@
 				'{{#with result}}',
 					'{{> transaQueryResult}}',
 				'{{/with}}',
-				'<div class="page-selection pull-right"></div>',
 			'</div>',
+			'<div class="page-selection pull-right"></div>',
 		'</div>'
 	].join('');
 	TplLib.register('tpl_account_detail', tpl_account_detail);
@@ -249,7 +249,7 @@
 				'<thead>',
 					'<tr>',
 						'{{#each thead}}',
-							'<th class="clz">{{label}}</th>',
+							'<th class="{{clz}}">{{label}}</th>',
 						'{{/each}}',
 					'</tr>',
 				'</thead>',
@@ -259,7 +259,7 @@
 							'{{#each cols}}',
 								'<td class="{{clz}}">',
 									'{{#chkColType type type="button"}}',
-										'<a href="javascript:void(0);" class="{{btnClz}}">{{label}}</a>',
+										'<a href="javascript:void(0);" class="{{btnClz}}" data-id="{{SUATransItemID}}" data-type="{{transType}}" data-orderKey="{{orderKey}}" >{{label}}</a>',
 									'{{/chkColType}}',
 									'{{#chkColType type type="text"}}',
 										'<p data-value="{{value}}">{{{text}}}</p>',

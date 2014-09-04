@@ -168,4 +168,105 @@
 	});
 
 	Hualala.Account.BaseAccountModel = BaseAccountModel;
+
+	var AccountTransListModel = AccountListModel.subclass({
+		constructor : function () {
+			this.callServer = Hualala.Global.queryAccountTransDetail;
+		}
+	});
+	AccountTransListModel.proto({
+		init : function (params) {
+			this.set({
+				pageCount : 0,
+				totalSize : 0,
+				pageNo : $XP(params, 'Page.pageNo', 1),
+				pageSize : $XP(params, 'Page.pageSize', 15),
+				transCreateBeginTime : $XP(params, 'transCreateBeginTime', ''),
+				transCreateEndTime : $XP(params, 'transCreateEndTime', ''),
+				settleUnitID : $XP(params, 'settleUnitID', ''),
+				transStatus : $XP(params, 'transStatus', ''),
+				transType : $XP(params, 'transType', ''),
+				groupID : $XP(params, 'groupID', ''),
+				minTransAmount : $XP(params, 'minTransAmount', ''),
+				maxTransAmount : $XP(params, 'maxTransAmount', ''),
+				ds_trans : new IX.IListManager(),
+				ds_page : new IX.IListManager()
+			});
+		},
+		updateDataStore : function (data, pageNo) {
+			var self = this,
+				transHT = self.get('ds_trans'),
+				pageHT = self.get('ds_page');
+			var transIDs = _.map(data, function (trans, i, l) {
+				var transID = $XP(trans, 'SUATransItemID'),
+					mTrans = new BaseTransactionModel(trans);
+				transHT.register(transID, mTrans);
+				return transID;
+			});
+			pageHT.register(pageNo, transIDs);
+		},
+		resetDataStore : function () {
+			var self = this,
+				transHT = self.get('ds_trans'),
+				pageHT = self.get('ds_page');
+			transHT.clear();
+			pageHT.clear();
+		},
+		load : function (params, cbFn) {
+			var self = this;
+			self.updatePagerParams(params);
+			self.callServer(self.getPagerParams(), function (res) {
+				if (res.resultcode == '000') {
+					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.pageNo'));
+					self.updatePagerParams($XP(res, 'data', {}));
+				} else {
+					toptip({
+						msg : $XP(res, 'resultmsg', ''),
+						type : 'danger'
+					});
+				}
+				cbFn(self);
+			});
+		},
+		getDataByPageNo : function (pageNo) {
+			var self = this,
+				transHT = self.get('ds_trans'),
+				pageHT = self.get('ds_page');
+			var ret = _.map(transHT.getByKeys(pageHT.get(pageNo)), function (mTrans) {
+				return mTrans.getAll();
+			});
+			console.info("pageData :");
+			console.info(ret);
+			return ret;
+		},
+		getModelByID : function (transID) {
+			var self = this,	
+				transHT = self.get('ds_trans');
+			return transHT.get(transID);
+		}
+	});
+
+	Hualala.Account.AccountTransListModel = AccountTransListModel;
+
+	var BaseTransactionModel = BaseAccountModel.subclass({
+		constructor : BaseAccountModel.prototype.constructor
+	});
+	BaseTransactionModel.proto({
+		bindEvent : function () {
+			var self = this;
+			
+		}
+	});
+
+
+
+
+
+
+
+
+
+
+
+
 })(jQuery, window);

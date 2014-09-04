@@ -118,10 +118,10 @@
 	var genTransCreateDate = function () {
 		var date = new Date(),
 			randomMiliSeconds = Test.getRandom(0, Hualala.Constants.SecondsOfWeek * 1000);
-		var sec = (date.getTime() - randomMiliSeconds) / 1000;
+		var sec = parseInt((date.getTime() - randomMiliSeconds) / 1000);
 		var d = Hualala.Date(sec).toText();
 		// IX.Date.getDateByFormat(Hualala.Date(new Date().getTime() / 1000).toText(), 'yyyymmddHHMMss')
-		return IX.Date.getDateByFormat(d, 'yyyymmddHHMMss');
+		return IX.Date.getDateByFormat(d, 'yyyyMMddHHmmss');
 
 	};
 
