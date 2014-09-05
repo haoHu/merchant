@@ -235,6 +235,18 @@
 	};
 
 	/**
+	 * 删除结算账户
+	 * @param  {Object} params 参数{settleUnitID,groupID}
+	 * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 */
+	Hualala.Global.deleteAccount = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(res);
+	};
+
+	/**
 	 * 结算账户交易明细查询
 	 * @param  {Object} params {transCreateBeginTime, transCreateEndTime, settleUnitID, 
 	 * 			transStatus, transType, groupID, minTransAmount, maxTransAmount}

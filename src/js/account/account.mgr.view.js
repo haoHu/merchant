@@ -124,7 +124,7 @@
 			self.on({
 				'updateSettleBalance' : function (mAccount) {
 					var settleUnitID = mAccount.get('settleUnitID'),
-						settleBalance = mAccount.get('settleBalance');
+						settleBalance = Hualala.Common.Math.prettyNumeric(mAccount.get('settleBalance'));
 					self.$container.find('[data-id=' + settleUnitID + '] .cash > strong').html(settleBalance);
 				}
 			});
@@ -134,7 +134,7 @@
 		},
 		withdraw : function ($trigger) {
 			var self = this;
-			console.info('withdraw');
+			// console.info('withdraw');
 			// 提现操作
 			var modal = new Hualala.Account.WithdrawCashView({
 				triggerEl : $trigger,
@@ -147,7 +147,21 @@
 			console.info('queryShops');
 		},
 		deleteAccount : function () {
-			console.info('deleteAccount');
+			// console.info('deleteAccount');
+			var self = this;
+			Hualala.UI.Confirm({
+				title : '删除结算账户',
+				msg : '是否删除该账户？',
+				okLabel : '删除',
+				okFn : function () {
+					self.model.emit('delete', {
+						successFn : function (settleUnitID) {
+							document.location.href = Hualala.PageRoute.createPath('account', [settleUnitID]);
+						}
+					});
+				}
+			});
+			
 		},
 		mapRenderData : function () {
 			var self = this,

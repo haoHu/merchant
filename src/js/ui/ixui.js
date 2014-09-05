@@ -86,6 +86,8 @@
 	 * cfg :{
 	 * 		container : DOM|jQuery Obj //default $('body') 
 	 * 		id : '',	//default IX.id()
+	 * 		backdrop : true|false|'static'  //true（默认）:点击窗口外区域自动关闭窗口；false:点击窗口外围不会关闭窗口,半透明蒙版也没有；
+	 * 											static:点击窗口外围不会关闭窗口,但是半透明蒙版存在
 	 * 		zIndex : null,	//default null
 	 * 		dragHandler : null,	//拖动手柄 default null
 	 * 		containment : null,	//拖动范围容器 default null
@@ -107,6 +109,7 @@
 	var ModalDialog = function (cfg) {
 		var config = IX.inherit({
 			container : null,
+			backdrop : true,
 			id : null,
 			html : '',
 			ifDrag : false,
@@ -136,7 +139,8 @@
 		var dialogCfg = {
 			clz : $XP(config, 'clz', ''),
 			id : dialogId,
-			title : $XP(config, 'title', '')
+			title : $XP(config, 'title', ''),
+			backdrop : $XP(config, 'backdrop', true)
 		};
 
 		var initStyle = function () {
@@ -223,6 +227,85 @@
 		};
 		init();
 		return _model;
+	};
+
+	/**
+	 * Alert提示框
+	 * @param {Object} cfg 	{msg, label, cbFn}
+	 */
+	var Alert = function (cfg) {
+		var msg = $XP(cfg, 'msg', ''),
+			label = $XP(cfg, 'label', '确定'),
+			cbFn = $XF(cfg, 'cbFn');
+		var btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_modal_btns'));
+		var btns = [{
+			clz : 'btn btn-warning', name : 'ok', label : label
+		}];
+		var modal = new ModalDialog({
+			id : 'ix_alert_' + IX.id(),
+			clz : 'x-alert',
+			title : '',
+			showTitle : false,
+			backdrop : 'static',
+			afterRemove : function () {
+
+			}
+		});
+		var $dialog = modal._.dialog,
+			$header = modal._.header,
+			$body = modal._.body,
+			$footer = modal._.footer;
+		$body.html(msg);
+		$footer.html(btnTpl({btns:btns}));
+		$dialog.on('click', '.btn[name=ok]', function (e) {
+			modal.hide();
+			cbFn();
+		});
+		modal.show();
+	};
+	/**
+	 * Confirm提示框
+	 * @param {Object} cfg  {title, msg, okLabel, okFn, cancelLabel, cancelFn}
+	 */
+	var Confirm = function (cfg) {
+		var msg = $XP(cfg, 'msg', ''),
+			title = $XP(cfg, 'title', ''),
+			okLabel = $XP(cfg, 'okLabel', '确定'),
+			cancelLabel = $XP(cfg, 'cancelLabel', '取消'),
+			okFn = $XF(cfg, 'okFn'),
+			cancelFn = $XF(cfg, 'cancelFn');
+		var btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_modal_btns'));
+		var btns = [{
+			clz : 'btn btn-default', name : 'cancel', label : cancelLabel
+		}, {
+			clz : 'btn btn-warning', name : 'ok', label : okLabel
+		}];
+		var modal = new ModalDialog({
+			id : 'ix_confirm_' + IX.id(),
+			clz : 'x-confirm',
+			title : title,
+			showTitle : true,
+			backdrop : 'static',
+			afterRemove : function () {
+
+			}
+		});
+		var $dialog = modal._.dialog,
+			$header = modal._.header,
+			$body = modal._.body,
+			$footer = modal._.footer;
+		$body.html(msg);
+		$footer.html(btnTpl({btns:btns}));
+		$dialog.on('click', '.btn[name]', function (e) {
+			var act = $(this).attr('name');
+			modal.hide();
+			if (act == 'ok') {
+				okFn();
+			} else {
+				cancelFn();
+			}
+		});
+		modal.show();
 	};
 
 	/**
@@ -320,6 +403,8 @@
 	Hualala.UI.PopoverMsgTip = PopoverMsgTip;
 	Hualala.UI.TopTip = TopTip;
 	Hualala.UI.ModalDialog = ModalDialog;
+	Hualala.UI.Alert = Alert;
+	Hualala.UI.Confirm = Confirm;
 	Hualala.UI.BreadCrumb = BreadCrumb;
 
     Hualala.UI.uploadImg = uploadImg;

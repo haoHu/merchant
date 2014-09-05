@@ -591,7 +591,7 @@
 			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', '')};
 		},
 		mapCashData : function (s) {
-			return {text : s, value : s};
+			return {text : Hualala.Common.Math.prettyNumeric(s), value : s};
 		},
 		mapTransChanged : function (r) {
 			var transAmount = $XP(r, 'transAmount', 0),

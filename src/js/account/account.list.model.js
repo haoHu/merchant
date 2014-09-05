@@ -134,6 +134,7 @@
 						cbFn();
 					});
 				},
+				// 提现
 				"withdrawCash" : function (cfg) {
 					var callServer = Hualala.Global.withdrawCash,
 						params = $XP(cfg, 'params', {}),
@@ -152,8 +153,7 @@
 						} else {
 							var transAmount = $XP(params, 'transAmount', 0),
 								settleBalance = self.get('settleBalance') || 0,
-								// newSettleBalance = window.numeric.sub(settleBalance, transAmount);
-								newSettleBalance = parseFloat(settleBalance - transAmount).toFixed(2);
+								newSettleBalance = Hualala.Common.Math.sub(settleBalance - transAmount);
 							self.set('settleBalance', newSettleBalance);
 							// TODO update View
 							successFn();
@@ -161,6 +161,33 @@
 								msg : '提现成功!',
 								type : 'success'
 							});
+						}
+					});
+				},
+				// 删除结算账户
+				"delete" : function (cfg) {
+					var callServer = Hualala.Global.deleteAccount,
+						settleUnitID = self.get('settleUnitID'),
+						groupID = $XP(Hualala.getSessionSite(), 'groupID', ''),
+						failFn = $XF(cfg, 'failFn'),
+						successFn = $XF(cfg, 'successFn');
+					callServer({
+						settleUnitID : settleUnitID,
+						groupID : groupID
+					}, function (res) {
+						if (res.resultcode !== '000') {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+							failFn(settleUnitID);
+						} else {
+							toptip({
+								msg : '提现成功!',
+								type : 'success'
+							});
+							// TODO update View
+							successFn(settleUnitID);
 						}
 					});
 				}

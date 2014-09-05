@@ -12,7 +12,7 @@
 
 	// 模态窗口模板
 	var tpl_modal_dialog = [
-		'<div class="modal fade {{clz}}" id="{{id}}">',
+		'<div class="modal fade {{clz}}" id="{{id}}" data-backdrop="{{backdrop}}">',
 			'<div class="modal-dialog">',
 				'<div class="modal-content">',
 					'<div class="modal-header">',
@@ -280,6 +280,13 @@
         '</div>',
         '</div>'].join('');
     TemplateList.register('tpl_site_uploadimg', tpl_site_uploadimg);
+
+    var tpl_site_modal_btns = [
+		'{{#each btns}}',
+			'<button type="button" class="btn {{clz}}" name="{{name}}">{{label}}</button>',
+		'{{/each}}'
+	].join('');
+	TemplateList.register('tpl_site_modal_btns', tpl_site_modal_btns);
 
 	var TplLib = function () {
 		return {
