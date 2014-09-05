@@ -64,7 +64,7 @@ S.initInfo = function ($container, pageType, params)
         $form.find('#openingHoursStart, #openingHoursEnd').timepicker({
             minuteStep: 1,
             showMeridian: false,
-            //disableFocus : true,
+            disableFocus : true,
             showInputs : false
         });
         // 初始化表单验证
@@ -217,7 +217,7 @@ S.initInfo = function ($container, pageType, params)
             }
             
         }
-        // 修改店铺基本信息
+        // 切换为编辑模式
         if($target.is('#editBtn'))
         {
             $form.removeClass('read-mode').addClass('edit-mode');
@@ -250,10 +250,26 @@ S.initInfo = function ($container, pageType, params)
                 
                 $form.removeClass('edit-mode').addClass('read-mode');
                 topTip({msg: '保存成功！', type: 'success'});
+                updateReadMode($form, shopData);
             });
         }
     });
     
+}
+// 保存提交后更新店铺信息只读模式
+function updateReadMode($form, data)
+{
+    $form.find('input, select').not('.map-keyword, #openingHoursEnd').each(function ()
+    {
+        var $this = $(this),
+            $p = $this.siblings('p');
+        if($this.is('#openingHoursStart'))
+            $p.text(data.openingHours);
+        else if($this.is('select'))
+            $p.text(getSelectText($this));
+        else
+            $p.text($this.val());
+    });
 }
 // 初始化菜系下拉列表
 function initCuisines($cuisine1, $cuisine2, cityID, cuisineID1, cuisineID2)

@@ -1,5 +1,12 @@
 (function ($, window) {
 	IX.ns("Hualala.Shop");
+    /**
+	  * 渲染店铺详情页头部
+	  * @param {Object | String} shopInfo 店铺ID或者店铺详情信息对象
+	  * @param {jQuery Object} container  容器
+      * @param {function} callback  回调函数，参数是店铺详情头部的jQuery对象
+	  * @return {NULL} 
+	  */
     Hualala.Shop.createShopInfoHead = function(shopInfo, container, callback)
     {
         var $container = container || $('#ix_wrapper > .ix-body > .container'),
@@ -22,7 +29,7 @@
                 onText : '已开通',
                 offText : '未开通'
             }).on('switchChange.bootstrapSwitch', function (e, state)
-            {
+            {//店铺状态切换
                 var $chkbox = $(this);
                 Hualala.Global.switchShopStatus({shopID: shopInfo.shopID, status: state}, function (rsp)
                 {
@@ -34,35 +41,75 @@
                     }
                 });
 			});;
-            
+            //重置客户端密码
             $shopInfoHead.find('#resetPwd').on('click', function ()
             {
                 var resetPwdTpl = Handlebars.compile(Hualala.TplLib.get('tpl_set_shop_client_pwd'));
                 var $resetPwdForm = $(resetPwdTpl(shopInfo));
-                new Hualala.UI.ModalDialog({
+                //弹出重置客户端密码模态框
+                var modal = new Hualala.UI.ModalDialog({
                     id: 'resetCltPwdDlg',
                     title: '重置客户端密码',
                     html: $resetPwdForm,
                     sizeCls: 'modal-sm',
                     hideCloseBtn: false
                 }).show();
-                var $pwd = $resetPwdForm.find('#shopClinetPwd');
+                var $feedback = $resetPwdForm.find('.has-feedback'),
+                    $feedbackIcon = $feedback.find('.form-control-feedback'),
+                    $errMsg = $feedback.find('small');
+                var $pwd = $resetPwdForm.find('#shopClinetPwd').data('validate', false).on('blur', function ()
+                {//验证密码输入
+                    var $this = $(this),
+                        l = $.trim($this.val()).length;
+                    $this.data('validate', false);
+                    if(!l)
+                        $errMsg.text('密码不能为空');
+                    else if(l < 6 || l > 16)
+                        $errMsg.text('密码长度必须在6到16个字符之间');
+                    else
+                    {
+                        $errMsg.text('');
+                        $this.data('validate', true);
+                    }
+                        
+                    var isValid = $this.data('validate');
+                    $feedback.toggleClass('has-success', isValid).toggleClass('has-error', !isValid);
+                    $feedbackIcon.toggleClass('glyphicon-ok', isValid).toggleClass('glyphicon-remove', !isValid);
+                });
+                //密码/明文切换
                 $resetPwdForm.find('#showPwd').change(function()
-                { 
+                {
                     $pwd.attr('type', this.checked ? 'text' : 'password');
+                });
+                //提交密码重设请求
+                modal._.footer.find('.btn-ok').on('click', function ()
+                {
+                    if(!$pwd.trigger('blur').data('validate')) return;
+                    
+                    Hualala.Global.setShopClientPwd({shopID: shopInfo.shopID, hLLAgentLoginPWD: $pwd.val()}, function (rsp)
+                    {
+                        if(rsp.resultcode != '000')
+                        {
+                            rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                            return;
+                        }
+                        modal.hide();
+                        Hualala.UI.TopTip({msg: '重置客户端密码成功！', type: 'success'});
+                    });
+                    
                 });
                 
             });
-            
+            //执行回调函数
             callback && callback($shopInfoHead);
         };
-        
+        //如果是参数shopInfo是店铺详情对象
         if($.isPlainObject(shopInfo))
         {
             fn(shopInfo);
             return;
         }
-        
+        //如果参数shopInfo是shopID，发送ajax获取店铺详情信息
         Hualala.Global.getShopInfo({shopID: shopInfo}, function (rsp)
         {
             if(rsp.resultcode != '000')
@@ -114,6 +161,11 @@
 
 	var initShopBaseInfoMgr = function (pageType, params) {
         var $body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
 		Hualala.Shop.initInfo($body, pageType, params);
 	};
 	Hualala.Shop.BaseInfoMgrInit = initShopBaseInfoMgr;
@@ -132,8 +184,13 @@
 	Hualala.Shop.FoodMenuMgrInit = initFoodMenuMgr;
 
 	var initCreateShop = function (pageType, params) {
-		var $body = $('#ix_wrapper > .ix-body > .container'),
-            tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_create')),
+		var $body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+        var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_create')),
             $shopCreateWizard = $(tpl({
                 pcClientPath: Hualala.PageRoute.createPath('pcclient')
             }));

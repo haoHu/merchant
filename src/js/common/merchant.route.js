@@ -275,12 +275,14 @@
 		while(!IX.isEmpty(curName)) {
 			ret.unshift({
 				name : curName,
-				label : $XP(curContext, 'label', '')
+				label : $XP(curContext, 'label', ''),
+                path: Hualala.PageRoute.createPath(curName, curContext.params)
 			});
 			var parentName = $XP(curContext, 'parentName', null);
 			curContext = IX.isEmpty(parentName) ? null : $XP(PageConfigurations, parentName, null);
 			curName = $XP(curContext, 'name', null);
 		}
+        ret[ret.length - 1].isLastNode = true;
 		return ret;
 	};
     

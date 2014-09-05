@@ -93,7 +93,7 @@
 }
 .shop-info-head 
 { 
-    margin: 20px 0 10px 0; padding: 10px 20px;
+    margin: 15px 15px 10px 15px; padding: 10px 20px;
     text-align: right; 
     .fl { margin-top: 2px; }
     .shop-name { color: @color-warning; font-size: 16px }
@@ -120,7 +120,7 @@
     dt { font-weight: bold }
     dd { margin-left: 12px }
 }
-.map-result { margin: 10px; }
+.map-result { margin: 10px 0; }
 
 #resetCltPwdDlg
 {
@@ -148,6 +148,7 @@
 // 店铺详情页功能导航
 .shop-func-nav
 {
+    margin-left: 15px; margin-right: 15px;
     .active a { cursor: default; }
 }
 // 表单的只读模式/编辑模式
@@ -173,7 +174,8 @@ form.edit-mode, .form.edit-mode
 }
 //创建店铺
 #shopCreateWizard 
-{ 
+{
+    margin-top: 15px;
     .step-nav, .step-action { margin: 0 15px }
     .form-control.d-ib { width: 70px; }
     #tab1 { margin-top: 50px; margin-bottom: 50px }
@@ -216,7 +218,6 @@ form.edit-mode, .form.edit-mode
 
 @media (max-width: 768px)
 {
-    .shop-info-head, .shop-func-nav { margin-left: 15px; margin-right: 15px }
     .shop-info-head 
     { 
         text-align: left;
@@ -224,7 +225,7 @@ form.edit-mode, .form.edit-mode
     }
     .shop-func-nav .navbar-nav { margin: 0 }
     .feed-back-out { margin: 0 20px }
-    #uploadImg { text-align: left; margin-bottom: 15px }
+    #uploadImg { margin-bottom: 15px }
 }
 .shop-info 
 {
