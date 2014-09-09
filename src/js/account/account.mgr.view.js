@@ -108,9 +108,10 @@
 			});
 			self.$schema.on('click', '[data-act]', function (e) {
 				var act = $(this).attr('data-act');
+				var $btn = $(this);
 				switch(act) {
 					case 'edit':
-						self.editAccount();
+						self.editAccount($btn);
 						break;
 					case 'queryShops':
 						self.queryShops();
@@ -129,8 +130,15 @@
 				}
 			});
 		},
-		editAccount : function () {
+		editAccount : function ($trigger) {
 			console.info('editAccount');
+			// triggerEl, mode, model, parentView
+			var editAccount = new AccountEditView({
+				triggerEl : $trigger,
+				mode : 'edit',
+				model : this.model,
+				parentView : this
+			});
 		},
 		withdraw : function ($trigger) {
 			var self = this;
@@ -220,4 +228,309 @@
 	});
 	
 	Hualala.Account.AccountMgrView = AccountMgrView; 
+
+
+	// 结算账户表单配置
+	var AccountEditFormElsCfg = {
+		receiverType : {
+			type : "radios",
+			label : "收款方类型",
+			defaultVal : 2,
+			options : Hualala.TypeDef.AccountReceiverTypes,
+			validCfg : {
+				validators : {}
+			}
+		},
+		receiverName : {
+			type : "text",
+			label : "收款单位/姓名",
+			defaultVal : "",
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "收款单位/姓名不能为空"
+					},
+					stringLength : {
+						max : 20,
+						message : "收款单位/姓名不能超过20个字"
+					}
+				}
+			}
+		},
+		settleUnitName : {
+			type : "text",
+			label : "结算主体名称",
+			defaultVal : "",
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "结算主体名称不能为空"
+					},
+					stringLength : {
+						max : 50,
+						message : "结算主体名称不能超过50个字"
+					}
+				}
+			}
+		},
+		bankAccount : {
+			type : "text",
+			label : "转账账号",
+			defaultVal : "",
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "转账账号不能为空"
+					},
+					stringLength : {
+						max : 30,
+						message : "转账账号不能超过30个字"
+					}
+				}
+			}
+		},
+		bankCode : {
+			type : "combo",
+			label : "转账银行",
+			defaultVal : "CMB",
+			options : Hualala.TypeDef.BankOptions,
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "转账银行不能为空"
+					}
+				}
+			}
+		},
+		bankName : {
+			type : "text",
+			label : "转账分行",
+			defaultVal : "",
+			prefix : '<span class="icon-CMB-16"></span>',
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "转账分行不能为空"
+					},
+					stringLength : {
+						max : 40,
+						message : "转账分行不能超过40个字"
+					}
+				}
+			}
+		},
+		remark : {
+			type : "textarea",
+			label : "备注",
+			defaultVal : "",
+			validCfg : {
+				validators : {
+					stringLength : {
+						max : 250,
+						message : "备注不能超过250个字"
+					}
+				}
+			}
+		},
+		defaultAccount : {
+			type : "switcher",
+			label : "设为默认账户",
+			defaultVal : 1,
+			onLabel : "开启",
+			offLabel : "关闭",
+			validCfg : {
+				validators : {}
+			}
+		},
+		receiverLinkman : {
+			type : "text",
+			label : "姓名",
+			defaultVal : "",
+			prefix : '<span class="glyphicon glyphicon-user"></span>',
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "姓名不能为空"
+					},
+					stringLength : {
+						max : 20,
+						message : "姓名不能超过20个字"
+					}
+				}
+			}
+		},
+		receiverMobile : {
+			type : "text",
+			label : "手机",
+			defaultVal : "",
+			prefix : '<span class="glyphicon glyphicon-phone"></span>',
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "手机不能为空"
+					},
+					stringLength : {
+						max : 30,
+						message : "手机不能超过30个字符"
+					}
+				}
+			}
+		},
+		receiverEmail : {
+			type : "text",
+			label : "邮箱",
+			defaultVal : "",
+			prefix : '<span class="glyphicon glyphicon-envelope"></span>',
+			validCfg : {
+				validators : {
+					stringLength : {
+						max : 50,
+						message : "邮箱不能超过30个字符"
+					}
+				}
+			}
+		}
+	};
+	var AccountEditFormElsHT = new IX.IListManager();
+	_.each(AccountEditFormElsCfg, function (el, k) {
+		var type = $XP(el, 'type');
+		var labelClz = 'col-sm-offset-1 col-sm-3 control-label';
+		AccountEditFormElsHT.register(k, IX.inherit(el, {
+			id : k + '_' + IX.id(),
+			name : k,
+			labelClz : labelClz,
+			clz : 'col-sm-5'
+		}));
+	});
+	
+	// 结算账户编辑窗口
+	var AccountEditView = Stapes.subclass({
+		/**
+		 * 结算账户编辑窗口构造器
+		 * @param  {Object} cfg {triggerEl, mode, model, parentView}
+		 * 				@param {jQueryObj} triggerEl 出发元素
+		 * 				@param {String} mode  操作模式add:添加账户模式；edit:编辑模式; read:只读模式
+		 * 				@param {Object} model 结算账户数据模型
+		 * 				@param {Object} parentView 父级View层
+		 * @return {Object}		账户编辑实例
+		 */
+		constructor : function (cfg) {
+			this.$trigger = $XP(cfg, 'trigger', null);
+			this.mode = $XP(cfg, 'mode', 'edit');
+			this.model = $XP(cfg, 'model', null);
+			this.parentView = $XP(cfg, 'parentView', null);
+			this.modal = null;
+			this.loadTemplates();
+			this.initModal();
+			this.renderForm();
+			this.bindEvent();
+			this.emit('show');
+		}
+	});
+	AccountEditView.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_edit')),
+				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
+			Handlebars.registerHelper('checkFormElementType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			Handlebars.registerHelper('isInputGroup', function (prefix, surfix, options) {
+				return (!prefix && !surfix) ? options.inverse(this) : options.fn(this);
+			});
+			this.set({
+				layoutTpl : layoutTpl,
+				btnTpl : btnTpl
+			});
+		},
+		getModalTitle : function () {
+			return (this.mode == 'edit' ?  '修改' : '增加') + '结算账户';
+		},
+		initModal : function () {
+			var self = this;
+			self.modal = new Hualala.UI.ModalDialog({
+				id : 'account_edit',
+				clz : 'account-modal',
+				title : self.getModalTitle(),
+				afterRemove : function () {
+
+				}
+			});
+		},
+		mapFormElsData : function () {
+			var self = this,
+				formKeys = 'receiverType,receiverName,settleUnitName,bankAccount,bankCode,bankName,remark,defaultAccount,receiverLinkman,receiverMobile,receiverEmail'.split(',');
+			var formEls = _.map(formKeys, function (key) {
+				var elCfg = AccountEditFormElsHT.get(key),
+					type = $XP(elCfg, 'type');
+				if (type == 'combo') {
+					var v = self.model.get(key) || $XP(elCfg, 'defaultVal'),
+						options = _.map($XP(elCfg, 'options'), function (op) {
+							return IX.inherit(op, {
+								selected : $XP(op, 'value') == v ? 'selected' : ''
+							});
+						});
+					return IX.inherit(elCfg, {
+						value : v,
+						options : options
+					});
+				} else if (type == 'switcher') {
+					return IX.inherit(elCfg, {
+						checked : self.model.get(key) == $XP(elCfg, 'defaultVal') ? 'checked' : ''
+					});
+				} else {
+					return IX.inherit(elCfg, {
+						value : self.model.get(key) || $XP(elCfg, 'defaultVal')
+					});
+				}
+			});
+			return formEls;
+		},
+		renderForm : function () {
+			var self = this,
+				renderData = self.mapFormElsData(),
+				tpl = self.get('layoutTpl'),
+				btnTpl = self.get('btnTpl'),
+				htm = tpl({
+					formClz : 'account-form',
+					items : renderData
+				});
+			self.modal._.body.html(htm);
+			self.modal._.footer.html(btnTpl({
+				btns : [
+					{clz : 'btn-default', name : 'cancel', label : '取消'},
+					{clz : 'btn-warning', name : 'submit', label : self.mode == 'edit' ? '保存' : '添加'}
+				]
+			}));
+
+			self.initSwitcher(':checkbox[data-type=switcher]');
+		},
+		bindEvent : function () {
+			var self = this;
+			this.on({
+				show : function () {
+					this.modal.show();
+				},
+				hide : function () {
+					this.modal.hide();
+				}
+			});
+		},
+		initSwitcher : function (selector) {
+			var self = this;
+			self.modal._.body.find(selector).each(function () {
+				var $el = $(this),
+					onLabel = $el.attr('data-onLabel'),
+					offLabel = $el.attr('data-offLabel');
+				$el.bootstrapSwitch({
+					size : 'normal',
+					onColor : 'primary',
+					offColor : 'default',
+					onText : onLabel,
+					offText : offLabel
+				});
+			});
+		}
+	});
+
+	Hualala.Account.AccountEditView = AccountEditView;
 })(jQuery, window);

@@ -99,20 +99,20 @@
 	 */
 	Hualala.TypeDef.FSMTransType = [
 		{value : '', label : "全部"},
-		{value : 101, label : "网上订餐消费"},
-		{value : 102, label : "账户充值"},
+		{value : 101, label : "网上订餐消费", showDetail : true},
+		{value : 102, label : "账户充值", showDetail : true},
 		{value : 103, label : "网上订餐用券"},
 		{value : 104, label : "到店消费验券"},
 		{value : 105, label : "会员卡充值"},
-		{value : 199, label : "账户资金调加"},
+		{value : 199, label : "账户资金调加", showDetail : false},
 		{value : 201, label : "订餐消费后退款"},
-		{value : 202, label : "平台预付款"},
-		{value : 203, label : "提现"},
+		{value : 202, label : "平台预付款", showDetail : false},
+		{value : 203, label : "提现", showDetail : false},
 		// {value : 204, label : "支付平台服务费"},
 		// {value : 205, label : "支付平台广告费"},
 		// {value : 206, label : "支付平台信息费"},
 		{value : 207, label : "订餐消费后退券"},
-		{value : 299, label : "账户资金调减"},
+		{value : 299, label : "账户资金调减", showDetail : false},
 		{value : 410, label : "店内自助"}
 	];
 	/**
@@ -145,6 +145,15 @@
 		{value : 31, label : "帐户提现.支票"},
 		{value : 32, label : "帐户提现.银行转账"},
 		{value : 33, label : "帐户提现.刷银行卡"}
+	];
+
+	/**
+	 * 结算账户收款方方式
+	 * @type {Array} 1:个人;2:单位
+	 */
+	Hualala.TypeDef.AccountReceiverTypes = [
+		{value : 2, label : "单位"},
+		{value : 1, label : "个人"}
 	];
 
 	/**
