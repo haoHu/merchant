@@ -222,8 +222,9 @@
 			var htm = tpl(renderData);
 			self.initBreadCrumbs();
 			self.$schema.html(htm);
-
-
+		},
+		refresh : function () {
+			this.render();
 		}
 	});
 	
@@ -233,7 +234,7 @@
 	// 结算账户表单配置
 	var AccountEditFormElsCfg = {
 		receiverType : {
-			type : "radios",
+			type : "radiogrp",
 			label : "收款方类型",
 			defaultVal : 2,
 			options : Hualala.TypeDef.AccountReceiverTypes,
@@ -320,7 +321,7 @@
 			}
 		},
 		remark : {
-			type : "textarea",
+			type : "text",
 			label : "备注",
 			defaultVal : "",
 			validCfg : {
@@ -395,12 +396,29 @@
 	_.each(AccountEditFormElsCfg, function (el, k) {
 		var type = $XP(el, 'type');
 		var labelClz = 'col-sm-offset-1 col-sm-3 control-label';
-		AccountEditFormElsHT.register(k, IX.inherit(el, {
-			id : k + '_' + IX.id(),
-			name : k,
-			labelClz : labelClz,
-			clz : 'col-sm-5'
-		}));
+		if (type == 'radiogrp') {
+			var ops = _.map($XP(el, 'options'), function (op) {
+				return IX.inherit(op, {
+					id : k + '_' + IX.id(),
+					name : k,
+					clz : 'col-sm-6'
+				});
+			});
+			AccountEditFormElsHT.register(k, IX.inherit(el, {
+				id : '',
+				options : ops,
+				labelClz : labelClz,
+				clz : 'col-sm-5'
+			}));
+		} else {
+			AccountEditFormElsHT.register(k, IX.inherit(el, {
+				id : k + '_' + IX.id(),
+				name : k,
+				labelClz : labelClz,
+				clz : 'col-sm-5'
+			}));
+		}
+		
 	});
 	
 	// 结算账户编辑窗口
@@ -417,9 +435,10 @@
 		constructor : function (cfg) {
 			this.$trigger = $XP(cfg, 'trigger', null);
 			this.mode = $XP(cfg, 'mode', 'edit');
-			this.model = $XP(cfg, 'model', null);
+			this.model = $XP(cfg, 'model', null) || new Hualala.Account.BaseAccountModel();
 			this.parentView = $XP(cfg, 'parentView', null);
 			this.modal = null;
+			this.formKeys = 'receiverType,receiverName,settleUnitName,bankAccount,bankCode,bankName,remark,defaultAccount,receiverLinkman,receiverMobile,receiverEmail'.split(',');
 			this.loadTemplates();
 			this.initModal();
 			this.renderForm();
@@ -458,7 +477,7 @@
 		},
 		mapFormElsData : function () {
 			var self = this,
-				formKeys = 'receiverType,receiverName,settleUnitName,bankAccount,bankCode,bankName,remark,defaultAccount,receiverLinkman,receiverMobile,receiverEmail'.split(',');
+				formKeys = self.formKeys;
 			var formEls = _.map(formKeys, function (key) {
 				var elCfg = AccountEditFormElsHT.get(key),
 					type = $XP(elCfg, 'type');
@@ -467,6 +486,17 @@
 						options = _.map($XP(elCfg, 'options'), function (op) {
 							return IX.inherit(op, {
 								selected : $XP(op, 'value') == v ? 'selected' : ''
+							});
+						});
+					return IX.inherit(elCfg, {
+						value : v,
+						options : options
+					});
+				} else if (type == 'radiogrp') {
+					var v = self.model.get(key) || $XP(elCfg, 'defaultVal'),
+						options = _.map($XP(elCfg, 'options'), function (op) {
+							return IX.inherit(op, {
+								checked : $XP(op, 'value') == v ? 'checked' : ''
 							});
 						});
 					return IX.inherit(elCfg, {
@@ -504,8 +534,26 @@
 
 			self.initSwitcher(':checkbox[data-type=switcher]');
 		},
+		initValidFieldOpts : function () {
+			var self = this,
+				formKeys = self.formKeys,
+				ret = {};
+			_.each(formKeys, function (key) {
+				var elCfg = AccountEditFormElsHT.get(key),
+					type = $XP(elCfg, 'type');
+				if (type == 'section') {
+					var min = key + '_min', max = key + '_max';
+					ret[min] = $XP(elCfg, 'min.validCfg', {});
+					ret[max] = $XP(elCfg, 'max.validCfg', {});
+				} else {
+					ret[key] = $XP(elCfg, 'validCfg', {});
+				}
+			});
+			return ret;
+		},
 		bindEvent : function () {
 			var self = this;
+			var fvOpts = self.initValidFieldOpts();
 			this.on({
 				show : function () {
 					this.modal.show();
@@ -513,6 +561,41 @@
 				hide : function () {
 					this.modal.hide();
 				}
+			});
+			self.modal._.dialog.find('.btn').on('click', function (e) {
+				var $btn = $(this),
+					act = $btn.attr('name');
+				if (act == 'cancel') {
+					self.emit('hide');
+				} else {
+					var bv = self.modal._.body.find('form').data('bootstrapValidator');
+					$btn.button('提交中...');
+					bv.validate();
+				}
+			});
+			self.modal._.body.find('form').bootstrapValidator({
+				trigger : 'blur',
+				fields : fvOpts
+			}).on('error.field.bv', function (e, data) {
+				var $form = $(e.target),
+					bv = $form.data('bootstrapValidator');
+			}).on('success.form.bv', function (e, data) {
+				e.preventDefault();
+				var $form = $(e.target),
+					bv = $form.data('bootstrapValidator');
+				var formParams = self.serializeForm();
+				console.info(formParams);
+				self.model.emit(self.mode, {
+					params : formParams,
+					failFn : function () {
+						self.modal._.footer.find('.btn[name=submit]').button('reset');
+					},
+					successFn : function () {
+						self.modal._.footer.find('.btn[name=submit]').button('reset');
+						self.parentView && IX.isFn(self.parentView.refresh) && self.parentView.refresh();
+						self.emit('hide');
+					}
+				});
 			});
 		},
 		initSwitcher : function (selector) {
@@ -529,6 +612,21 @@
 					offText : offLabel
 				});
 			});
+		},
+		serializeForm : function () {
+			var self = this,
+				formKeys = self.formKeys,
+				ret = {},
+				formEls = _.map(formKeys, function (key) {
+					var elCfg = AccountEditFormElsHT.get(key),
+						type = $XP(elCfg, 'type');
+					if (type == 'switcher') {
+						ret[key] = $('[name=' + key + ']').attr('checked') ? 1 : 0;
+					} else {
+						ret[key] = $('[name=' + key + ']').val();
+					}
+				});
+			return ret;
 		}
 	});
 

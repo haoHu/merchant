@@ -117,6 +117,42 @@ Hualala.Global.queryAccount = function (params, cbFn) {}
 Hualala.Global.withdrawCash = function (params, cbFn) {};
 
 /**
+ * 删除结算账户
+ * @param  {Object} params 参数{settleUnitID,groupID}
+ * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+ * @return {NULL}
+ */
+Hualala.Global.deleteAccount = function (params, cbFn) {
+	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+	var res = {resultcode : '000', resultmsg : ''};
+	fn(res);
+};
+
+/**
+ * 修改结算账户
+ * @param  {Object} params 参数{settleUnitID, groupID, receiverType,receiverName,settleUnitName,bankAccount,bankCode,bankName,remark,defaultAccount,receiverLinkman,receiverMobile,receiverEmail}
+ * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+ * @return {NULL}
+ */
+Hualala.Global.editAccount = function (params, cbFn) {
+	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+	var res = {resultcode : '000', resultmsg : ''};
+	fn(res);
+};
+
+/**
+ * 添加结算账户
+ * @param  {Object} params 参数{groupID, receiverType,receiverName,settleUnitName,bankAccount,bankCode,bankName,remark,defaultAccount,receiverLinkman,receiverMobile,receiverEmail}
+ * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+ * @return {NULL}
+ */
+Hualala.Global.addAccount = function (params, cbFn) {
+	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+	var res = {resultcode : '000', resultmsg : ''};
+	fn(res);
+};
+
+/**
  * 结算账户交易明细查询
  * @param  {Object} params {transCreateBeginTime, transCreateEndTime, settleUnitID, 
  * 			transStatus, transType, groupID, minTransAmount, maxTransAmount}

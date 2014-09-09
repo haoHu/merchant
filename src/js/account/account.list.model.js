@@ -183,11 +183,65 @@
 							failFn(settleUnitID);
 						} else {
 							toptip({
-								msg : '提现成功!',
+								msg : '删除成功!',
 								type : 'success'
 							});
 							// TODO update View
 							successFn(settleUnitID);
+						}
+					});
+				},
+				// 编辑结算账户
+				"edit" : function (cfg) {
+					var callServer = Hualala.Global.editAccount,
+						settleUnitID = self.get('settleUnitID'),
+						groupID = $XP(Hualala.getSessionSite(), 'groupID', ''),
+						failFn = $XF(cfg, 'failFn'),
+						successFn = $XF(cfg, 'successFn');
+					callServer(IX.inherit($XP(cfg, 'params', {}), {
+						groupID : groupID,
+						settleUnitID : settleUnitID
+					}), function (res) {
+						if (res.resultcode !== '000') {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+							failFn(settleUnitID);
+						} else {
+							toptip({
+								msg : '修改成功!',
+								type : 'success'
+							});
+							// TODO update View
+							self.set($XP(cfg, 'params', {}));
+							successFn(settleUnitID);
+						}
+					});
+				},
+				// 添加结算账户
+				"add" : function (cfg) {
+					var callServer = Hualala.Global.addAccount,
+						groupID = $XP(Hualala.getSessionSite(), 'groupID', ''),
+						failFn = $XF(cfg, 'failFn'),
+						successFn = $XF(cfg, 'successFn');
+					callServer(IX.inherit($XP(cfg, 'params', {}), {
+						groupID : groupID
+					}), function (res) {
+						if (res.resultcode !== '000') {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+							failFn();
+						} else {
+							toptip({
+								msg : '修改成功!',
+								type : 'success'
+							});
+							// TODO update View
+							self.set($XP(cfg, 'params', {}));
+							successFn();
 						}
 					});
 				}

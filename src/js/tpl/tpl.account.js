@@ -327,7 +327,7 @@
 						'<div class="{{clz}}">',
 							'{{#each options}}',
 								'<label class="{{clz}}">',
-									'<input type="radio" name="{{name}}" id="{{id}}" value="{{value}}"  />',
+									'<input type="radio" name="{{name}}" id="{{id}}" value="{{value}}" {{checked}} />',
 									'{{label}}',
 								'</label>',
 							'{{/each}}',

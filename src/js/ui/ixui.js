@@ -342,7 +342,7 @@
 		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_breadcrumb'));
 		var mapFn = $XF(settings, 'mapRenderData');
 		var $breadCrumb = $(tpl(mapFn($XP(settings, 'nodes'), $XP(settings, 'hideRoot', false), $XP(settings, 'clz', ''))));
-		settings.container.append($breadCrumb);
+		settings.container.empty().append($breadCrumb);
 		$breadCrumb.on('click', 'a', function (e) {
 			$XF(settings, 'clickFn').apply(this, e);
 		});

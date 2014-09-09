@@ -52,7 +52,12 @@
 			self.$list.on('click', '.create-account', function (e) {
 				var $btn = $(this);
 				// TODO 创建账户
-				
+				var editAccount = new Hualala.Account.AccountEditView({
+					triggerEl : $btn,
+					mode : 'add',
+					model : null,
+					parentView : self
+				});
 			});
 			self.on({
 				'updateSettleBalance' : function (mAccount) {
