@@ -111,6 +111,10 @@
 				page : model.get('pageNo'),
 				href : 'javascript:void(0);'
 			});
+		},
+		refresh : function () {
+			var self = this;
+			self.render();
 		}
 		
 	});

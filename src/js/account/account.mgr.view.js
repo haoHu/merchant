@@ -621,7 +621,8 @@
 					var elCfg = AccountEditFormElsHT.get(key),
 						type = $XP(elCfg, 'type');
 					if (type == 'switcher') {
-						ret[key] = $('[name=' + key + ']').attr('checked') ? 1 : 0;
+						// ret[key] = $('[name=' + key + ']').attr('checked') ? 1 : 0;
+						ret[key] = !$('[name=' + key + ']').data('bootstrapSwitch').options.state ? 0 : 1;
 					} else {
 						ret[key] = $('[name=' + key + ']').val();
 					}

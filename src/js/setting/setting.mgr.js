@@ -612,7 +612,8 @@
 							max = $('[name=' + key + '_max]').val();
 						ret[key] = self.encodeTimeStr(min, max);
 					} else if (type == 'switcher') {
-						ret[key] = $('[name=' + key + ']').attr('checked') ? 1 : 0;
+						// ret[key] = $('[name=' + key + ']').attr('checked') ? 1 : 0;
+						ret[key] = !$('[name=' + key + ']').data('bootstrapSwitch').options.state ? 0 : 1;
 					} else {
 						ret[key] = $('[name=' + key + ']').val();
 					}
