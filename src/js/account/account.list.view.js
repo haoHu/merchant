@@ -688,4 +688,64 @@
 		}
 	});
 	Hualala.Account.AccountTransListView = AccountTransListView;
+
+	var AccountQueryShopView = Hualala.Shop.QueryView.subclass({
+		constructor : Hualala.Shop.QueryView.prototype.constructor
+	});
+	Hualala.Account.AccountQueryShopView = AccountQueryShopView;
+
+	var AccountQueryShopResultView = CardListView.subclass({
+		constructor : CardListView.prototype.constructor
+	});
+	AccountQueryShopResultView.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_list_layout')),
+				listTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_list')),
+				itemTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_table'));
+			// 注册shopCard子模板
+			Handlebars.registerPartial("shopTable", Hualala.TplLib.get('tpl_shop_table'));
+
+			this.set({
+				layoutTpl : layoutTpl,
+				listTpl : listTpl,
+				itemTpl : itemTpl
+			});
+		},
+		// 格式化渲染数据
+		mapRenderData : function (data) {
+			var self = this;
+			
+			var ret = _.map(data, function (shop, i, l) {
+				return {
+					clz : '',
+					id : $XP(shop, 'shopID', ''),
+					name : $XP(shop, 'shopName', ''),
+					city : $XP(shop, 'cityName', '')
+				};
+			});
+			return {
+				shopTable : {
+					rows : ret
+				}
+			};
+		},
+		render : function () {
+			var self = this,
+				model = self.model,
+				pagerParams = model.getPagerParams(),
+				pageNo = $XP(pagerParams, 'Page.pageNo');
+			var shops = model.getShops(pageNo);
+			var renderData = self.mapRenderData(shops);
+			var listTpl = self.get('listTpl');
+			var html = listTpl(renderData);
+			self.$list.empty();
+			self.$list.html(html);
+			self.initPager({
+				total : model.get('pageCount'),
+				page : model.get('pageNo'),
+				href : 'javascript:void(0);'
+			});
+		}
+	});
+	Hualala.Account.AccountQueryShopResultView = AccountQueryShopResultView;
 })(jQuery, window);

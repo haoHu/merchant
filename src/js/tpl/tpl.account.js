@@ -339,4 +339,15 @@
 	].join('');
 	TplLib.register('tpl_account_edit', tpl_account_edit);
 
+	var tpl_account_query_shop = [
+		'<div class="query-shop {{clz}}">',
+			'<p class="title">',
+				'{{label}}:<strong>{{title}}</strong>',
+			'</p>',
+			'<div class="query-box"></div>',
+			'<div class="result-box"></div>',
+		'</div>'
+	].join('');
+	TplLib.register('tpl_account_query_shop', tpl_account_query_shop);
+
 })(jQuery, window);

@@ -271,6 +271,30 @@
 	};
 
 	/**
+	 * 获取结算账户关联店铺
+	 * @param  {Object} params {settleUnitID, settleName, shopCount}
+	 * @param  {Function} cbFn response cbFn回调参数{resultcode, resultmsg, data : {pageCount, pageNo, pageSize, records : $$ShopList, totalSize}}
+	 * 				@param {Object} response cbFn回调参数 {resultcode, resultmsg, data}
+	 *            	@param {String} resultcode Response结果码
+	 *            	@param {String} resultmsg Response结果描述
+	 *            	@param {Object} data Response数据
+	 *            	@param {Array} data.cities 城市概要数据
+	 *            	@param {Array} data.areas 区域概要数据
+	 *            	@param {Array} data.shops 店铺概要数据
+	 * @return {NULL}
+	 */
+	Hualala.Global.getAccountQueryShop = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var random = Test.getRandom(1, 10);
+		var res = {resultcode : '000', resultmsg : ''};
+		var testData = Test.querySchema;
+		
+		fn(IX.inherit(res, {
+			data : testData
+		}));
+	};
+
+	/**
 	 * 结算账户交易明细查询
 	 * @param  {Object} params {transCreateBeginTime, transCreateEndTime, settleUnitID, 
 	 * 			transStatus, transType, groupID, minTransAmount, maxTransAmount}

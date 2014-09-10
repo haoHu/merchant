@@ -340,6 +340,78 @@
 		}
 	});
 
+	Hualala.Account.BaseTransactionModel = BaseTransactionModel;
+
+	var AccountQueryShopModel = Hualala.Shop.QueryModel.subclass({
+		constructor : function () {
+			// 原始数据
+			this.origCities = [];
+			this.origAreas = [];
+			this.origShops = [];
+			// 数据是否已经加载完毕
+			this.isReady = false;
+			// this.callServer = Hualala.Global.getShopQuerySchema;
+			this.callServer = Hualala.Global.getAccountQueryShop;
+		}
+	});
+
+	Hualala.Account.AccountQueryShopModel = AccountQueryShopModel;
+
+	var AccountQueryShopResultModel = Hualala.Shop.CardListModel.subclass({
+		constructor : function () {
+			this.origData = null;
+			
+			this.dataStore = new IX.IListManager();
+		}
+	});
+	AccountQueryShopResultModel.proto({
+		initDataStore : function (data) {
+			var self = this;
+			self.origData = data;
+			_.each(self.origData, function (shop) {
+				self.dataStore.register($XP(shop, 'shipID'), shop);
+			});
+		},
+		load : function (params, cbFn) {
+			var self = this;
+			self.updatePagerParams(params);
+			var pageNo = self.get('pageNo'),
+				pageSize = self.get('pageSize'),
+				cityID = self.get('cityID'),
+				areaID = self.get('areaID'),
+				keywordLst = self.get('keywordLst'),
+				totalSize = 0,
+				start = (pageNo - 1) * pageSize,
+				end = pageSize * pageNo,
+				pageCount = 0;
+			var shops = [];
+			shops = areaID.length > 0 ? _.filter(self.origData, function (_shop) {
+				return $XP(_shop, 'areaID') == areaID;
+			}) : self.origData;
+			shops = cityID.length > 0 ? _.filter(shops, function (_shop) {
+				return $XP(_shop, 'cityID') == cityID;
+			}) : shops;
+			shops = keywordLst.length > 0 ? _.filter(shops, function (_shop) {
+				return $XP(_shop, 'shopName') == keywordLst;
+			}) : shops;
+			totalSize = shops.length;
+			pageCount = Math.ceil(totalSize / pageSize);
+			shops = _.filter(shops, function (_shop, idx) {
+				return idx >= start && idx < end;
+			});
+			self.updateDataStore(shops, pageNo);
+			self.updatePagerParams({
+				pageCount : pageCount,
+				totalSize : totalSize,
+				pageNo : pageNo,
+				pageSize : pageSize
+			});
+			cbFn(self);
+		}
+	});
+
+	Hualala.Account.AccountQueryShopResultModel = AccountQueryShopResultModel;
+
 
 
 

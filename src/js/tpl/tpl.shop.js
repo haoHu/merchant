@@ -520,15 +520,48 @@
 			'{{#each list}}',
 				'{{> shopItem}}',
 			'{{/each}}',
+		'{{/with}}',
+		'{{#with shopTable}}',
+			'{{> shopTable}}',
 		'{{/with}}'
 	].join('');
 	TplLib.register('tpl_shop_list', tpl_shop_list);
+
+	var tpl_shop_table = [
+		'<div class="col-xs-12 table-responsive">',
+			'<table class="table">',
+				'<thead>',
+					'<tr>',
+						'<th>城市</th>',
+						'<th>店铺ID</th>',
+						'<th>店铺名称</th>',
+					'</tr>',
+				'</thead>',
+				'<tbody>',
+					'{{#each rows}}',
+						'<tr class="{{clz}}">',
+							'<td class="">',
+								'{{city}}',
+							'</td>',
+							'<td class="">',
+								'{{id}}',
+							'</td>',
+							'<td class="">',
+								'{{name}}',
+							'</td>',
+						'</tr>',
+					'{{/each}}',
+				'</tbody>',
+			'</table>',
+		'</div>'
+	].join('');
+	TplLib.register('tpl_shop_table', tpl_shop_table);
 
 	var tpl_shop_list_layout = [
 		'<div class="shop-list">',
 			'<div class="row shop-list-body">',
 			'</div>',
-			'<div class="shop-list-footer">',
+			'<div class="shop-list-footer clearfix">',
 				'<div class="page-selection pull-right"></div>',
 			'</div>',
 		'</div>'

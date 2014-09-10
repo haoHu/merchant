@@ -151,7 +151,14 @@
 				parentView : self
 			});
 		},
-		queryShops : function () {
+		queryShops : function ($trigger) {
+			var self = this;
+			var modal = new Hualala.Account.AccountQueryShopModal({
+				triggerEl : $trigger,
+				settleUnitID : self.model.get('settleUnitID'),
+				model : self.model,
+				parentView : self
+			});
 			console.info('queryShops');
 		},
 		deleteAccount : function () {
@@ -632,4 +639,96 @@
 	});
 
 	Hualala.Account.AccountEditView = AccountEditView;
+
+	var AccountQueryShopModal = Stapes.subclass({
+		constructor : function (cfg) {
+			this.$trigger = $XP(cfg, 'trigger', null);
+			this.model = $XP(cfg, 'model', null);
+			this.parentView = $XP(cfg, 'parentView', null);
+			this.modal = null;
+			this.$queryBox = null;
+			this.$resultBox = null;
+			this.queryCtrl = null;
+
+			this.loadTemplates();
+			this.initModal();
+			this.render();
+			this.bindEvent();
+			this.initQueryBox();
+			this.emit('show');
+		}
+	});
+	AccountQueryShopModal.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_query_shop')),
+				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
+			
+			this.set({
+				layoutTpl : layoutTpl,
+				btnTpl : btnTpl
+			});
+		},
+		initModal : function () {
+			var self = this;
+			self.modal = new Hualala.UI.ModalDialog({
+				id : 'account_query_shop',
+				clz : 'account-modal',
+				title : "结算账户关联店铺",
+				afterRemove : function () {
+
+				}
+			});
+		},
+		render : function () {
+			var self = this,
+				layoutTpl = self.get('layoutTpl'),
+				btnTpl = self.get('btnTpl');
+			var settleUnitName = self.model.get('settleUnitName') || '',
+				btns = [{clz : 'btn-default', name : 'cancel', label : '关闭'}];
+			var htm = layoutTpl({
+				clz : '',
+				title : settleUnitName,
+				label : "结算账户名称"
+			});
+			self.modal._.body.html(htm);
+			self.modal._.footer.html(btnTpl({
+				btns : btns
+			}));
+			self.$queryBox = self.modal._.body.find('.query-box');
+			self.$resultBox = self.modal._.body.find('.result-box');
+		},
+		bindEvent : function () {
+			var self = this;
+			this.on({
+				"show" : function () {
+					self.modal.show();
+				},
+				"hide" : function () {
+					self.modal.hide();
+				}
+			});
+			self.modal._.dialog.find('.btn').on('click', function (e) {
+				var $btn = $(this),
+					act = $btn.attr('name');
+				if (act == 'cancel') {
+					self.emit('hide');
+				}
+			});
+		},
+		initQueryBox : function () {
+			var self = this;
+			self.queryCtrl = new Hualala.Account.AccountQueryShopController({
+				container : self.$queryBox,
+				resultContainer : self.$resultBox,
+				// resultController : new Hualala.Account.AccountQueryShopResultController({
+				// 	container : self.$resultBox,
+				// 	model : new Hualala.Account.AccountQueryShopResultModel(),
+				// 	view : new Hualala.Account.AccountQueryShopResultView()
+				// })
+			});
+		}
+	});
+	Hualala.Account.AccountQueryShopModal = AccountQueryShopModal;
+
+	
 })(jQuery, window);
