@@ -99,21 +99,21 @@
 	 */
 	Hualala.TypeDef.FSMTransType = [
 		{value : '', label : "全部"},
-		{value : 101, label : "网上订餐消费", showDetail : true},
-		{value : 102, label : "账户充值", showDetail : true},
-		{value : 103, label : "网上订餐用券"},
-		{value : 104, label : "到店消费验券"},
-		{value : 105, label : "会员卡充值"},
-		{value : 199, label : "账户资金调加", showDetail : false},
-		{value : 201, label : "订餐消费后退款"},
-		{value : 202, label : "平台预付款", showDetail : false},
-		{value : 203, label : "提现", showDetail : false},
+		{value : 101, label : "网上订餐消费", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		{value : 102, label : "账户充值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
+		{value : 103, label : "网上订餐用券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		{value : 104, label : "到店消费验券", tpl : "tpl_chktick_detail", queryCall : null, queryKeys : null},
+		{value : 105, label : "会员卡充值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
+		{value : 199, label : "账户资金调加"},
+		{value : 201, label : "订餐消费后退款", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		{value : 202, label : "平台预付款"},
+		{value : 203, label : "提现", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
 		// {value : 204, label : "支付平台服务费"},
 		// {value : 205, label : "支付平台广告费"},
 		// {value : 206, label : "支付平台信息费"},
-		{value : 207, label : "订餐消费后退券"},
-		{value : 299, label : "账户资金调减", showDetail : false},
-		{value : 410, label : "店内自助"}
+		{value : 207, label : "订餐消费后退券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		{value : 299, label : "账户资金调减"},
+		{value : 410, label : "店内自助", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"}
 	];
 	/**
 	 * 交易状态

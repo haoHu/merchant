@@ -530,11 +530,18 @@
 			var self = this;
 			self.$resultBox.on('click', 'a[data-orderkey]', function (e) {
 				var $btn = $(this),
-					orderKey = $btn.attr('data-orderkey'),
-					transType = $btn.attr('data-type'),
-					transID = $btn.attr('data-id');
+					orderKey = $btn.attr('data-orderkey') || '',
+					transType = $btn.attr('data-type') || '',
+					transID = $btn.attr('data-id') || '',
+					orderID = $btn.attr('data-orderid') || '';
 				// TODO show transaction detail modal
-
+				var detail = new Hualala.Account.AccountTransDetailModal({
+					triggerEl : $btn,
+					orderKey : orderKey,
+					orderID : orderID,
+					transType : transType,
+					transID : transID
+				});
 			});
 			self.$queryForm.on('click', '.btn', function (e) {
 				// TODO Update modal params and render query result
@@ -578,7 +585,7 @@
 			return r;
 		},
 		mapTransStatus : function (s) {
-			s = s || '';
+			s = (s + "") || '';
 			var status = Hualala.TypeDef.FSMTransStatus;
 			var m = _.filter(status, function (el) {
 				return $XP(el, 'value', '') == s;
@@ -639,13 +646,16 @@
 						r = self.mapTransChanged(row);
 						break;
 					case 'rowControl':
+						var transType = $XP(row, 'transType', ''),
+							transStatus = $XP(row, 'transStatus', '');
 						r = {
 							type : 'button',
-							btnClz : '',
+							btnClz : (transType == "203" && transStatus < 1) ? 'hidden' : '',
 							label : '查看',
 							SUATransItemID : $XP(row, 'SUATransItemID', ''),
-							transType : $XP(row, 'transType', ''),
-							orderKey : $XP(row, 'orderKey', '')
+							transType : transType,
+							orderKey : $XP(row, 'orderKey', ''),
+							orderID : $XP(row, 'orderID', '')
 						};
 						break;
 				}

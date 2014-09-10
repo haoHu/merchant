@@ -730,5 +730,156 @@
 	});
 	Hualala.Account.AccountQueryShopModal = AccountQueryShopModal;
 
+	// 结算账户交易明细
+	var AccountTransDetailModal = Stapes.subclass({
+		/**
+		 * 构造
+		 * @param  {Object} cfg {triggerEl, orderKey, orderID, transType, transID}
+		 * @return {Object}
+		 */
+		constructor : function (cfg) {
+			this.$trigger = $XP(cfg, 'triggerEl');
+			this.orderKey = $XP(cfg, 'orderKey', '');
+			this.orderID = $XP(cfg, 'orderID', '');
+			this.transType = $XP(cfg, 'transType', '');
+			this.transID = $XP(cfg, 'transID', '');
+			this.transTypes = Hualala.TypeDef.FSMTransType;
+			this.transTypeHT = new IX.IListManager();
+			this.initTransTypeLib();
+			this.modal = null;
+			this.tplName = $XP(this.transTypeHT.get(this.transType), 'tpl', null);
+			this.callServerName = $XP(this.transTypeHT.get(this.transType), 'queryCall', null);
+			this.callServer = null;
+			if (IX.isFn(this.callServerName)) {
+				this.callServer = this.callServerName;
+			} else if (!IX.isString(this.callServerName)) {
+				throw("Configuration failed : Invalid Page Initialized for " + this.callServerName);
+				return false;
+			} else if (IX.nsExisted(this.callServerName)) {
+				this.callServer = IX.getNS(this.callServerName);
+			}
+			this.queryKeys = $XP(this.transTypeHT.get(this.transType), 'queryKeys', null);
+			if (!this.tplName || !this.callServer) return null;
+			this.loadTemplates();
+			this.initModal();
+			this.bindEvent();
+			this.emit('load', this.mapQueryParams());
+		}
+	});
+	AccountTransDetailModal.proto({
+		initTransTypeLib : function () {
+			var self = this;
+			_.each(this.transTypes, function (el) {
+				var type = $XP(el, 'value', '').toString();
+				if (type.length > 0) {
+					self.transTypeHT.register(type, el);
+				}
+			});
+		},
+		loadTemplates : function () {
+			var self = this;
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get(self.tplName)),
+				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
+			this.set({
+				layoutTpl : layoutTpl,
+				btnTpl : btnTpl
+			});
+		},
+		initModal : function () {
+			var self = this;
+			self.modal = new Hualala.UI.ModalDialog({
+				id : 'account_trans_detail',
+				clz : 'account-modal',
+				title : "结算账户交易详情",
+				afterRemove : function () {
+
+				}
+			});
+		},
+		bindEvent : function () {
+			var self = this;
+			self.on({
+				"load" : function (params) {
+					self.callServer(params, function (res) {
+						if (res.resultcode == '000') {
+							self.render($XP(res, 'data', null));
+						} else {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+						}
+					});
+				},
+				"show" : function () {
+					self.modal.show();
+				},
+				"hide" : function () {
+					self.modal.hide();
+				}
+			}, this);
+			self.modal._.dialog.on('click', '.btn', function (e) {
+				var $btn = $(this),
+					act = $btn.attr('name');
+				if (act == 'cancel') {
+					self.emit('hide');
+				}
+			});
+		},
+		mapOrderPayDetail : function (data) {
+			return data;
+		},
+		mapFsmCustomerDetail : function (data) {
+			var settleUnitDetail = $XP(data, 'settleUnitDetail', [])[0],
+				customerCard = $XP(data, 'customerCard', [])[0];
+			return {
+				settleUnitDetail : settleUnitDetail,
+				customerCard : customerCard
+			};
+		},
+		mapRenderData : function (data) {
+			var self = this;
+			var type = _.last(self.callServerName.split('.'));
+			var ret = null;
+			switch(type) {
+				case "queryAccountOrderPayDetail":
+					ret = self.mapOrderPayDetail(data);
+					break;
+				case "queryAccountFsmCustomerDetail":
+					ret = self.mapFsmCustomerDetail(data);
+					break;
+				default : 
+					break;
+			}
+			return ret;
+		},
+		render : function (data) {
+			var self = this;
+			var renderData = self.mapRenderData(data),
+				layoutTpl = self.get('layoutTpl'),
+				btnTpl = self.get('btnTpl');
+			var htm = layoutTpl(renderData);
+			self.modal._.body.html(htm);
+			self.modal._.footer.html(btnTpl({
+				btns : [
+					{clz : 'btn-default', name : 'cancel', label : '关闭'}
+				]
+			}));
+			self.emit('show');
+		},
+		mapQueryParams : function () {
+			var self = this;
+			var params = {};
+			_.each(self.queryKeys.split(','), function (k) {
+				var _k = k == 'SUA_TransItemID' ? 'transID' : k;
+				params[k] = self[_k]; 
+			});
+			console.info('queryParams:');
+			console.info(params);
+			return params;
+		}
+	});
+	Hualala.Account.AccountTransDetailModal = AccountTransDetailModal;
+
 	
 })(jQuery, window);

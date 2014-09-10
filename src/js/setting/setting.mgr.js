@@ -400,7 +400,7 @@
 			if (IX.isFn(this.callServer)) {
 				this.callServer = this.callServer;
 			} else if (!IX.isString(this.callServer)) {
-				throw("Configuration failed : Invalid Page Initialized for " + name);
+				throw("Configuration failed : Invalid Page Initialized for " + this.callServer);
 				return false;
 			} else if (IX.nsExisted(this.callServer)) {
 				this.callServer = IX.getNS(this.callServer);

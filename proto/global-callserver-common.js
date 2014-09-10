@@ -310,6 +310,36 @@
 		}));
 	};
 
+	/**
+	 * 查询结算交易明细
+	 * @param  {[type]} params
+	 * @param  {[type]} cbFn
+	 * @return {[type]}
+	 */
+	Hualala.Global.queryAccountOrderPayDetail = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		var accountTransList = Test.queryAccountTransDetail(params);
+		fn(IX.inherit(res, {
+			data : accountTransList
+		}));
+	};
+
+	/**
+	 * 查询结算会员充值明细
+	 * @param  {[type]} params
+	 * @param  {[type]} cbFn
+	 * @return {[type]}
+	 */
+	Hualala.Global.queryAccountFsmCustomerDetail = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		var data = Test.queryFsnCustomerDetail;
+		fn(IX.inherit(res, {
+			data : data
+		}));
+	};
+
      /**
 	  * 获取已启用城市
 	  * @param {Object} params 参数{isActive: 1}

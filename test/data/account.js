@@ -226,6 +226,33 @@
 		};
 	};
 
+	Test.queryFsnCustomerDetail = {
+		settleUnitDetail : [
+			{
+				settleUnitName : "北京财务部",
+				settleUnitID : "123",
+				transAfterBalance : 30,
+				transAmount : 300,
+				transSalesCommission : 5,
+				transSalesCommissionRemark : "",
+				transStatus : 1,
+				transSuccessTime : "201407141830",
+				transType : 105
+			}
+		],
+		customerCard : [
+			{
+				saveCashTotal : 500,
+				saveMoneyTotal : 500,
+				moneyBalance : 600,
+				cardNO : 1111100000111110000,
+				customerMobile : 13311112222,
+				customerName : "懂酒博"
+			}
+		]
+	};
+
+	
 
 
 
