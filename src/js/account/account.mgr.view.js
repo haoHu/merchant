@@ -830,10 +830,38 @@
 			return data;
 		},
 		mapFsmCustomerDetail : function (data) {
+			var self = this;
 			var settleUnitDetail = $XP(data, 'settleUnitDetail', [])[0],
 				customerCard = $XP(data, 'customerCard', [])[0];
+			var transType = $XP(settleUnitDetail, 'transType'),
+				transTypeLabel = $XP(self.transTypeHT.get(transType), 'label', '');
+			settleUnitDetail = IX.each(settleUnitDetail, {}, function (acc, el, k) {
+				var cashKeys = 'transAfterBalance,transAmount,transSalesCommission';
+				if (cashKeys.indexOf(k) >= 0) {
+					acc[k] = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.prettyPrice(el));
+				} else if (k == 'transType') {
+					acc = IX.inherit(acc, {
+						transType : el,
+						transTypeLabel : $XP(self.transTypeHT.get(el), 'label', '')
+					});
+				} else {
+					acc[k] = el;
+				}
+				return acc;
+			});
+			customerCard = IX.each(customerCard, {}, function (acc, el, k) {
+				var cashKeys = 'saveCashTotal,saveMoneyTotal,moneyBalance';
+				if (cashKeys.indexOf(k) >= 0) {
+					acc[k] = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.prettyPrice(el));
+				} else {
+					acc[k] = el;
+				}
+				return acc;
+			});
 			return {
-				settleUnitDetail : settleUnitDetail,
+				settleUnitDetail : IX.inherit(settleUnitDetail, {
+					transTypeLabel : transTypeLabel
+				}),
 				customerCard : customerCard
 			};
 		},
