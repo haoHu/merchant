@@ -319,9 +319,9 @@
 	Hualala.Global.queryAccountOrderPayDetail = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		var res = {resultcode : '000', resultmsg : ''};
-		var accountTransList = Test.queryAccountTransDetail(params);
+		var data = Test.queryOrderPayDetail;
 		fn(IX.inherit(res, {
-			data : accountTransList
+			data : data
 		}));
 	};
 

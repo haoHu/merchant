@@ -731,6 +731,243 @@
 	Hualala.Account.AccountQueryShopModal = AccountQueryShopModal;
 
 	// 结算账户交易明细
+	var PersonUnit = Hualala.Constants.PersonUnit,
+		CashUnit = Hualala.Constants.CashUnit;
+	var getOrderSubTypeLabel = function (orderSubType) {
+		if (IX.isEmpty(orderSubType)) return '';
+		var l = Hualala.TypeDef.ShopBusiness;
+		var m = _.find(l, function (el) {
+			var id = $XP(el, 'id');
+			return id == orderSubType;
+		});
+		if (!m) return '';
+		return $XP(m, 'label', '');
+	};
+	var getGenderLabel = function (v) {
+		if (IX.isEmpty(v)) return '';
+		var l = Hualala.TypeDef.GENDER;
+		var m = _.find(l, function (el) {
+			var id = $XP(el, 'value');
+			return id == v;
+		});
+		if (!m) return '';
+		return $XP(m, 'label', '');
+	};
+	var mapUserFields = function (cfg, data) {
+		var label = $XP(cfg, 'label', ''), fieldType = $XP(cfg, 'fieldType', ''), fields = $XP(cfg, 'fields', []);
+		var userSex = $XP(data, 'userSex', '');
+		userSex = IX.isEmpty(userSex) ? '' : '(' + getGenderLabel(userSex) + ')';
+		var _fields = _.map(fields, function (key) {
+			var fieldLabelCfg = OrderPayFieldLabelLib[key], label = $XP(fieldLabelCfg, 'label', ''),
+				unit = $XP(fieldLabelCfg, 'unit', ''), clz = $XP(fieldLabelCfg, 'clz', '');
+			var value = $XP(data, key, '');
+			value += (key == 'userName') ? userSex : '';
+			value += unit;
+			return {
+				key : key,
+				clz : clz,
+				label : label,
+				value : value
+			};
+		});
+		return {
+			label : label,
+			fieldType : fieldType,
+			fields : _fields
+		};
+	};
+	var mapOrderFields = function (cfg, data) {
+		var label = $XP(cfg, 'label', ''), fieldType = $XP(cfg, 'fieldType', ''), fields = $XP(cfg, 'fields', []);
+		var orderSubType = $XP(data, 'orderSubType', ''),
+			orderSubTypeLabel = getOrderSubTypeLabel(orderSubType);
+		orderSubTypeLabel = IX.isEmpty(orderSubTypeLabel) ? '' : '(' + orderSubTypeLabel + ')';
+		var _fields = _.map(fields, function (key) {
+			var fieldLabelCfg = OrderPayFieldLabelLib[key], label = $XP(fieldLabelCfg, 'label', ''),
+				unit = $XP(fieldLabelCfg, 'unit', ''), clz = $XP(fieldLabelCfg, 'clz', '');
+			var value = $XP(data, key, '');
+			switch(key) {
+				case 'timeName':
+				case 'consumptionTypeName' :
+				case 'promotionDesc' :
+				case 'orderRemark':
+					clz += IX.isEmpty(value) ? ' hidden' : '';
+					break;
+				case 'orderTime':
+				case 'orderCreateTime':
+					value = IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(value), 'yyyy/MM/dd HH:mm');
+					break;
+				case 'orderStatus':
+					var isAlreadyPaid = $XP(data, 'isAlreadyPaid', 0);
+					var surfix = '';
+					if (value >= 20 && isAlreadyPaid == 1) {
+						surfix = "<span>线上付款</span>";
+					} else if (value >= 20 && isAlreadyPaid == 0) {
+						surfix = '<span color="red">' + (value == 20 ? "餐到付款" : "到店付款") + "</span>";
+					} else {
+						surfix = "<span>未付款</span>";
+					}
+					surfix = '(' + surfix + ')';
+					value = value + surfix;
+					break;
+				case 'takeoutAddress' :
+					clz += orderSubType == 20 || orderSubType == 21 ? '' : ' hidden';
+					break;
+			}
+			value += unit;
+			return {
+				key : key,
+				clz : clz,
+				label : label,
+				value : value
+			};
+		});
+		return {
+			label : label,
+			orderSubTypeLabel : orderSubTypeLabel,
+			fieldType : fieldType,
+			fields : _fields
+		};
+	};
+	var mapPayFields = function (cfg, data) {
+		var label = $XP(cfg, 'label', ''), fieldType = $XP(cfg, 'fieldType', ''), fields = $XP(cfg, 'fields', []);
+		var orderSubType = $XP(data, 'orderSubType', '');
+		var _fields = _.map(fields, function (key) {
+			var fieldLabelCfg = OrderPayFieldLabelLib[key], label = $XP(fieldLabelCfg, 'label', ''),
+				unit = $XP(fieldLabelCfg, 'unit', ''), clz = $XP(fieldLabelCfg, 'clz', '');
+			var value = $XP(data, key, '');
+			switch(key) {
+				case 'serviceAmount':
+				case 'discountAmount':
+				case 'freeAmount':
+				case 'giftAmount':
+				case 'cardDiscountAmount':
+				case 'pointBalance':
+				case 'moneyBalance':
+				case 'orderRefundAmount':
+					clz += value == 0 ? ' hidden' : '';
+					break;
+				case 'presentInfo':
+					clz += IX.isEmpty(value) ? ' hidden' : '';
+					break;
+				case 'takeoutPackagingAmount':
+					clz += orderSubType == 20 || orderSubType == 21 ? '' : ' hidden';
+					break;
+
+			}
+			value += unit;
+			return {
+				key : key,
+				clz : clz,
+				label : label,
+				value : value
+			};
+		});
+		return {
+			label : label,
+			fieldType : fieldType,
+			fields : _fields
+		};
+	};
+	var mapFoodsFields = function (cfg, data) {
+		var label = $XP(cfg, 'label', ''), fieldType = $XP(cfg, 'fieldType', ''), fields = $XP(cfg, 'fields', []);
+		var dishes = $XP(data, 'records', []),
+			categories = _.groupBy(dishes, function (dish) {return $XP(dish, 'foodCategoryID');});
+		categories = _.map(categories, function (cate, key) {
+			var foodCategoryName = '';
+			var foodCategorySum = cate.length;
+			var _dishes = _.map(cate, function (dish) {
+				var _dish = {};
+				_.each(fields, function (k) {
+					var v = $XP(dish, k, ''),
+						unit = !IX.isEmpty(OrderPayFieldLabelLib[k]) && !IX.isEmpty(OrderPayFieldLabelLib[k]['unit']) ?
+							OrderPayFieldLabelLib[k]['unit'] : '';
+					if (k == 'foodCategoryName') {
+						foodCategoryName = v;
+					}
+					
+					_dish[k] = v + unit;
+				});
+				return _dish;
+			});
+			return {
+				foodCategoryName : foodCategoryName,
+				foodCategorySum : '(' + foodCategorySum + ')',
+				foodCategoryID : key,
+				rows : _dishes
+			}
+		});
+		
+		return {
+			fieldType : fieldType,
+			label : label,
+			categories : categories
+		};
+	};
+	var OrderPayFieldLabelLib = {
+		"userName" : {label : "姓名", clz : "col-xs-6"},
+		"userLoginMobile" : {label : "手机", clz : "col-xs-6"},
+		"orderID" : {label : "订单号", clz : "col-xs-6"},
+		"orderCheckPWD" : {label : "消费密码", clz : "col-xs-6"},
+		"person" : {label : "人数", unit : PersonUnit, clz : "col-xs-6"},
+		"timeName" : {label : "餐段名称", clz : "col-xs-6"},
+		"tableName" : {label : "桌台号", clz : "col-xs-6"},
+		"shopOrderKey" : {label : "餐饮软件凭证号", clz : "col-xs-6"},
+		"orderTime" : {label : "用餐时间", clz : "col-xs-12"},
+		"orderCreateTime" : {label : "下单时间", clz : "col-xs-12"},
+		"orderStatus" : {label : "订餐状态", clz : "col-xs-12"},
+		"takeoutAddress" : {label : "外送地址", clz : "col-xs-6"},
+		"consumptionTypeName" : {label : "用餐类型", clz : "col-xs-12"},
+		"promotionDesc" : {label : "店家促销描述", clz : "col-xs-12"},
+		"orderRemark" : {label : "订单备注", clz : "col-xs-12"},
+		"foodAmount" : {label : "菜品金额", unit : CashUnit, clz : "col-xs-6"},
+		"serviceAmount" : {label : "服务费", unit : CashUnit, clz : "col-xs-6"},
+		"paidAmount" : {label : "买单前已付金额", unit : CashUnit, clz : "col-xs-6"},
+		"promotionTotalAmount" : {label : "餐饮软件优惠金额", unit : CashUnit, clz : "col-xs-6"},
+		"discountAmount" : {label : "商家折免", unit : CashUnit, clz : "col-xs-6"},
+		"freeAmount" : {label : "商家减免", unit : CashUnit, clz : "col-xs-6"},
+		"giftAmount" : {label : "商家代金券金额", unit : CashUnit, clz : "col-xs-6"},
+		"presentInfo" : {label : "赠送", clz : "col-xs-6"},
+		"cardDiscountAmount" : {label : "会员卡优惠", unit : CashUnit, clz : "col-xs-6"},
+		"pointBalance" : {label : "积分抵扣", unit : CashUnit, clz : "col-xs-6"},
+		"moneyBalance" : {label : "会员卡余额支付", unit : CashUnit, clz : "col-xs-6"},
+		"takeoutPackagingAmount" : {label : "打包费", unit : CashUnit, clz : "col-xs-6"},
+		"orderTotal" : {label : "订单金额", unit : CashUnit, clz : "col-xs-6"},
+		"orderRefundAmount" : {label : "退款金额", unit : CashUnit, clz : "col-xs-6"},
+		"shopName" : {label : "店铺名称", clz : "col-xs-6"},
+		"shopTel" : {label : "电话", clz : "col-xs-6"},
+		"foodPrice" : {label : "菜品价格", unit : CashUnit}
+	};
+	var OrderPayDetailElsCfg = {
+		userFields : {
+			label : "个人信息",
+			fieldType : "list",
+			fields : ["userName","userLoginMobile"],
+			mapFn : mapUserFields
+		},
+		orderFields : {
+			label : "订单信息",
+			fieldType : "list",
+			fields : ["orderID","orderCheckPWD","person","timeName","tableName","shopOrderKey","orderTime","orderCreateTime",
+			"orderStatus","takeoutAddress","consumptionTypeName","promotionDesc","orderRemark"],
+			mapFn : mapOrderFields
+		},
+		payFields : {
+			label : "支付详情",
+			fieldType : "list",
+			fields : ["foodAmount","serviceAmount","paidAmount","promotionTotalAmount","discountAmount",
+			"freeAmount","giftAmount","presentInfo","cardDiscountAmount","pointBalance","moneyBalance","takeoutPackagingAmount",
+			"orderTotal","orderRefundAmount","shopName","shopTel"],
+			mapFn : mapPayFields
+		},
+		foodsFields : {
+			label : "菜品信息",
+			fieldType : "table",
+			fields : ["foodCategoryName","foodCategoryID","foodName","foodUnit","foodPrice","foodAmount"],
+			mapFn : mapFoodsFields
+		}
+
+	};
+	
 	var AccountTransDetailModal = Stapes.subclass({
 		/**
 		 * 构造
@@ -780,6 +1017,9 @@
 			var self = this;
 			var layoutTpl = Handlebars.compile(Hualala.TplLib.get(self.tplName)),
 				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
+			Handlebars.registerHelper('chkFieldType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
 			this.set({
 				layoutTpl : layoutTpl,
 				btnTpl : btnTpl
@@ -790,6 +1030,7 @@
 			self.modal = new Hualala.UI.ModalDialog({
 				id : 'account_trans_detail',
 				clz : 'account-modal',
+				sizeCls : 'modal-lg',
 				title : "结算账户交易详情",
 				afterRemove : function () {
 
@@ -827,7 +1068,28 @@
 			});
 		},
 		mapOrderPayDetail : function (data) {
-			return data;
+			var self = this;
+			var fieldsets = "userFields,orderFields,payFields,foodsFields".split(',');
+			fieldsets = _.map(fieldsets, function (key, i) {
+				var fieldCfg = OrderPayDetailElsCfg[key];
+				var mapFn = $XF(fieldCfg, 'mapFn');
+				var cfg = _.pick(fieldCfg, 'label', 'fieldType', 'fields');
+				return mapFn(cfg, $XP(data, 'data', {}));
+			});
+			console.info(fieldsets);
+			var orderSubType = $XP(data, 'data.orderSubType', ''),
+				orderSubTypeLabel = getOrderSubTypeLabel(orderSubType);
+			orderSubTypeLabel = IX.isEmpty(orderSubTypeLabel) ? '' : '(' + orderSubTypeLabel + ')';
+			var printDetail = {
+				label : "订单打印内容",
+				orderSubTypeLabel : orderSubTypeLabel,
+				content : $XP(data, 'data.orderPrnStr', '').replace(/\n/g, '<br/>')
+			};
+
+			return {
+				fieldsets : fieldsets,
+				printDetail : printDetail
+			};
 		},
 		mapFsmCustomerDetail : function (data) {
 			var self = this;

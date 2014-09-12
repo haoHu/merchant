@@ -648,9 +648,10 @@
 					case 'rowControl':
 						var transType = $XP(row, 'transType', ''),
 							transStatus = $XP(row, 'transStatus', '');
+						var hideBtnTransType = "104,199,202,204,205,206,299";
 						r = {
 							type : 'button',
-							btnClz : (transType == "203" && transStatus < 1) ? 'hidden' : '',
+							btnClz : (hideBtnTransType.indexOf(transType) >= 0 || (transType == "203" && transStatus < 1)) ? 'hidden' : '',
 							label : '查看',
 							SUATransItemID : $XP(row, 'SUATransItemID', ''),
 							transType : transType,

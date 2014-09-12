@@ -238,6 +238,21 @@
 
 	// Date
 	Hualala.Date = IX.Util.Date;
+	/**
+	 * 格式化Ajax返回给前端的日期时间数据
+	 * 后端返回前端时间日期数据格式为：yyyyMMddHHmmss，
+	 * 我们要将这种奇怪的日期字符串格式转化为统一的标准的日期字符串格式yyyy/MM/dd HH:mm:ss
+	 * @param  {String} v 	奇怪的日期时间数据字符串：yyyyMMddHHmmss
+	 * @return {String}		统一的标准时间日期数据字符串 ： yyyy/MM/dd HH:mm:ss
+	 */
+	Hualala.Common.formatDateTimeValue = function (v) {
+		if (IX.isEmpty(v) || !IX.isString(v)) return '';
+		var fullLen = 14, l = v.length, r = '00000000000000';
+		if (l < fullLen) {
+			v += r.slice(0, (fullLen - l));
+		}
+		return v.replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
+	};
 
 	/**
 	 * 设置垂直居中位置

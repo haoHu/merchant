@@ -11,8 +11,8 @@
 	];
 
 	Hualala.TypeDef.GENDER = [
-		{value : '0', valueStr : 'female', label : '女'},
-		{value : '1', valueStr : 'male', label : '男'},
+		{value : '0', valueStr : 'female', label : '女士'},
+		{value : '1', valueStr : 'male', label : '先生'},
 		{value : '2', valueStr : 'unkonwn', label : '未知'}
 	];
 	/**
