@@ -204,10 +204,9 @@ S.initInfo = function ($container, pageType, params)
                         rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
                         return;
                     }
-                    else
-                    {
-                        topTip({msg: '重新标记地图成功！', type: 'success'});
-                    }
+                    
+                    topTip({msg: '重新标记地图成功！', type: 'success'});
+                    
                 });
                 
             }
