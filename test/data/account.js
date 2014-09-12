@@ -313,6 +313,7 @@
 			"orderRemark": "",
 			"orderSettlementTotal": "115.20",
 			"orderStatus": "40",
+			"statusName" : "已消费",
 			"orderSubmitTime": "0",
 			"orderSubtype": "20",
 			"orderTime": "201409101156",

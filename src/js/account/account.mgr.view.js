@@ -796,13 +796,14 @@
 				case 'orderCreateTime':
 					value = IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(value), 'yyyy/MM/dd HH:mm');
 					break;
-				case 'orderStatus':
-					var isAlreadyPaid = $XP(data, 'isAlreadyPaid', 0);
+				case 'statusName':
+					var isAlreadyPaid = $XP(data, 'isAlreadyPaid', 0),
+						orderStatus = $XP(data, 'orderStatus', '');
 					var surfix = '';
-					if (value >= 20 && isAlreadyPaid == 1) {
+					if (orderStatus >= 20 && isAlreadyPaid == 1) {
 						surfix = "<span>线上付款</span>";
-					} else if (value >= 20 && isAlreadyPaid == 0) {
-						surfix = '<span color="red">' + (value == 20 ? "餐到付款" : "到店付款") + "</span>";
+					} else if (orderStatus >= 20 && isAlreadyPaid == 0) {
+						surfix = '<span color="red">' + (orderStatus == 20 ? "餐到付款" : "到店付款") + "</span>";
 					} else {
 						surfix = "<span>未付款</span>";
 					}
@@ -914,7 +915,7 @@
 		"shopOrderKey" : {label : "餐饮软件凭证号", clz : "col-xs-6"},
 		"orderTime" : {label : "用餐时间", clz : "col-xs-12"},
 		"orderCreateTime" : {label : "下单时间", clz : "col-xs-12"},
-		"orderStatus" : {label : "订餐状态", clz : "col-xs-12"},
+		"statusName" : {label : "订餐状态", clz : "col-xs-12"},
 		"takeoutAddress" : {label : "外送地址", clz : "col-xs-6"},
 		"consumptionTypeName" : {label : "用餐类型", clz : "col-xs-12"},
 		"promotionDesc" : {label : "店家促销描述", clz : "col-xs-12"},
@@ -948,7 +949,7 @@
 			label : "订单信息",
 			fieldType : "list",
 			fields : ["orderID","orderCheckPWD","person","timeName","tableName","shopOrderKey","orderTime","orderCreateTime",
-			"orderStatus","takeoutAddress","consumptionTypeName","promotionDesc","orderRemark"],
+			"statusName","takeoutAddress","consumptionTypeName","promotionDesc","orderRemark"],
 			mapFn : mapOrderFields
 		},
 		payFields : {
