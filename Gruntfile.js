@@ -149,6 +149,7 @@ module.exports = function (grunt) {
 
 					"<%= pkg.srcPath.jsPath %>/shop/shop.create.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.info.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.menu.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.map.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.mgr.js",
 
