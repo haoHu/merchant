@@ -132,7 +132,8 @@
 	 * 切换店铺状态
 	 * @param  {Object} params 参数{shopID, status}
 	 * @param  {Function} cbFn   回调参数{resultcode, resultmsg}
-	 * @return {NULL}        
+	 * @return {NULL}    
+     * 服务调用 URL: /shop/status.ajax
 	 */
 	Hualala.Global.switchShopStatus = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
@@ -346,6 +347,7 @@
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {records: [
         {cityID , cityName}, ...]}}
 	  * @return {NULL} 
+      * 服务调用URL: /shop/queryCity.ajax
 	  */
 	Hualala.Global.getCities = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
@@ -367,6 +369,7 @@
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {records: [
         {areaID , areaName}, ...]}}
 	  * @return {NULL} 
+      * 服务调用 URL: /shop/queryArea.ajax
 	  */
 	Hualala.Global.getAreas = function (params, cbFn) {
 		var cityID = params.cityID,
@@ -392,6 +395,7 @@
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {records: [
         {cuisineID , cuisineName}, ...]}}
 	  * @return {NULL} 
+      * 服务调用 URL: /shop/queryCuisine.ajax
 	  */
 	Hualala.Global.getCuisines = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
@@ -414,6 +418,7 @@
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {records: [
         {shopID , shopName, ...}]}}
 	  * @return {NULL} 
+      * 服务调用 URL: /shop/create.ajax
 	  */
 	Hualala.Global.createShop = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
@@ -437,6 +442,7 @@
 	  * @param {Object} params 参数{shopID, imagePath, shopName, operationMode, cityID, openingHoursStart, openingHoursEnd, PCCL, tel, address, areaID, areaName, cuisineID1, cuisineID2, cuisineName1, cuisineName2, keywordLst, openingHours}
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
 	  * @return {NULL} 
+      * 服务调用 URL: /shop/updateShopBaseInfo.ajax
 	  */
 	Hualala.Global.updateShopBaseInfo = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
@@ -449,8 +455,22 @@
 	  * @param {Object} params 参数{shopID, mapLongitudeValue, mapLatitudeValue, mapLongitudeValueBaiDu, mapLatitudeValueBaiDu}
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
 	  * @return {NULL} 
+      * 服务调用 URL: /shop/updateMap.ajax
 	  */
 	Hualala.Global.setShopMap = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {resultcode: '000', resultmsg: ''};
+		fn(rsp);
+	};
+    
+    /**
+	  * 修改PC客户端密码
+	  * @param {Object} params 参数{shopID, hLLAgentLoginPWD}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL} 
+      * 服务调用 URL: /shop/resetPWDforClient.ajax
+	  */
+	Hualala.Global.setShopClientPwd = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
         var rsp = {resultcode: '000', resultmsg: ''};
 		fn(rsp);
@@ -462,6 +482,7 @@
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {records: [
         {imagePath, shopName, operationMode, cityID, PCCL, tel, address, areaID, areaName, cuisineID1, cuisineID2, cuisineName1, cuisineName2, keywordLst, openingHours}]}}
 	  * @return {NULL} 
+      * 服务调用 URL: shop/queryShopInfo.ajax
 	  */
 	Hualala.Global.getShopInfo = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
@@ -487,13 +508,35 @@
                         operationMode: "0",
                         shopID: "83830",
                         shopName: "豆捞坊(西单店)2",
-                        status: "6",
+                        status: "1",
                         tel: "010-59716881"
                     }]
                 }
             };
 		fn(rsp);
 	};
+    
+    /**
+	  * 获取某个店铺的菜品数据
+	  * @param {Object} params 参数{shopID, foodCategoryID, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, page, records}
+	  * @return {NULL} 
+      * 服务调用URL: /shop/queryShopFoodMenu.ajax
+	  */
+	Hualala.Global.getShopMenu = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = Test.foodsData;
+		fn(rsp);
+	};
 
 
 })();
+
+
+
+
+
+
+
+
+
