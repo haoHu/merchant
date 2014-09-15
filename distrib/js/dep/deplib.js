@@ -6191,7 +6191,9 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
         return '';
       }
 
-      return this.hour + ':' + (this.minute.toString().length === 1 ? '0' + this.minute : this.minute) + (this.showSeconds ? ':' + (this.second.toString().length === 1 ? '0' + this.second : this.second) : '') + (this.showMeridian ? ' ' + this.meridian : '');
+      // return this.hour + ':' + (this.minute.toString().length === 1 ? '0' + this.minute : this.minute) + (this.showSeconds ? ':' + (this.second.toString().length === 1 ? '0' + this.second : this.second) : '') + (this.showMeridian ? ' ' + this.meridian : '');
+      return (this.hour.toString().length === 1 ? '0' + this.hour : this.hour) 
+        +':' + (this.minute.toString().length === 1 ? '0' + this.minute : this.minute) + (this.showSeconds ? ':' + (this.second.toString().length === 1 ? '0' + this.second : this.second) : '') + (this.showMeridian ? ' ' + this.meridian : '');
     },
 
     hideWidget: function() {
@@ -13522,10 +13524,11 @@ var __module0__ = (function(__dependency1__, __dependency2__, __dependency3__, _
             
             if(!rst) return false;
             
-            var times = value.replace('\uff1a', ':').split(':');
-            times[0] = $.trim(times[0]);  // hours
-            times[1] = $.trim(times[1]);  // minutes
-            $field.val(times.join(':'));
+            var times = value.replace('\uff1a', ':').split(':'),
+                h = parseInt($.trim(times[0]), 10),  // hours
+                m = $.trim(times[1]);  // minutes
+            h = h < 10 ? 0 + '' + h : h;
+            $field.val(h + ':' + m);
             
             if(!options.startTimeField) return true;
             
