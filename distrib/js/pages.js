@@ -1502,14 +1502,14 @@ Hualala.Shop.initCreate = function ($wizard)
         U.uploadImg({
             onSuccess: function (imgPath, $dlg)
             {
-                var src = 'http://res.hualala.com/' + imgPath;
+                var src = G.IMAGE_RESOURCE_DOMAIN + '/' + imgPath;
                 imagePath = imgPath;
                 $uploadImg.find('img').attr('src', src);
                 $dlg.modal('hide');
             }
         });
     });
-    //bsWizard.show(2);
+    //bsWizard.show(1);
     var dataStep1 = null, // 第一步店铺基本信息数据
         map = null, // 地图组件实例
         shopID = '',
@@ -1542,7 +1542,7 @@ Hualala.Shop.initCreate = function ($wizard)
             {
                 if(rsp.resultcode != '000')
                 {
-                    rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
                     return;
                 }
                 shopID = shopID || rsp.data.records[0].shopID;
@@ -1577,7 +1577,7 @@ Hualala.Shop.initCreate = function ($wizard)
             {
                 if(rsp.resultcode != '000')
                 {
-                    rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
                     return;
                 }
             });
@@ -1594,7 +1594,7 @@ function initCuisines($cuisine1, $cuisine2, cityID)
     {
         if(rsp.resultcode != '000')
         {
-            rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
         
@@ -1611,7 +1611,7 @@ function initAreas($selectBox, cityID)
     {
         if(rsp.resultcode != '000')
         {
-            rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
         
@@ -1627,7 +1627,7 @@ function initCities($selectBox)
     {
         if(rsp.resultcode != '000')
         {
-            rsp.resultmsg && topTip(rsp.resultmsg, 'danger');
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
         
@@ -1669,9 +1669,735 @@ function getSelectText($select)
 
 
 ;(function ($, window) {
+IX.ns('Hualala.Shop');
+var G = Hualala.Global,
+    U = Hualala.UI,
+    S = Hualala.Shop,
+    topTip = U.TopTip,
+    parseForm = Hualala.Common.parseForm,
+    initMap = Hualala.Shop.map;
+// 初始化店铺店铺详情页面
+S.initInfo = function ($container, pageType, params)
+{
+    if(!params) return;
+    // 渲染店铺功能导航
+    var $shopFuncNav = S.createShopFuncNav(pageType, params, $container);
+    
+    var shopID = params, shopInfo = null,
+        $form = null, $city = null, $area = null, 
+        $cuisine1 = null, $cuisine2 = null,
+        imagePath = '', $img = null,
+        imgHost = G.IMAGE_RESOURCE_DOMAIN + '/',
+        bv = null, map = null;
+    
+    G.getShopInfo({shopID : shopID}, function (rsp)
+    {
+        if(rsp.resultcode != '000')
+        {
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+            return;
+        }
+        shopInfo = rsp.data.records[0];
+        
+        // 渲染店铺详情头部
+        S.createShopInfoHead(shopInfo, $container, function($shopInfoHead)
+        {
+            $shopFuncNav.before($shopInfoHead);
+        });
+        
+        var openTime = shopInfo.openingHours.split('-');
+        shopInfo.openingHoursStart = openTime[0];
+        shopInfo.openingHoursEnd = openTime[1];
+        shopInfo.operationModeName = shopInfo.operationMode == '1' ? '快餐' : '正餐';
+        
+        var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_info'));
+        $form = $(tpl(shopInfo)).appendTo($container);
+        $city = $form.find('#cityID'),
+        $area = $form.find('#areaID'),
+        $cuisine1 = $form.find('#cuisineID1'),
+        $cuisine2 = $form.find('#cuisineID2');
+        
+        // 初始化城市列表下拉框
+        $city.on('change', function (e, areaID, cuisineID1, cuisineID2)
+        {
+            var cityID = $(this).val();
+            if(!cityID) return;
+            
+            initAreas($area, cityID, areaID);
+            initCuisines($cuisine1, $cuisine2, cityID, cuisineID1, cuisineID2);
+            
+        });
+        initCities($city, shopInfo);
+        // 根据所选择的城市设置地标、菜系下拉列表
+        
+        // 初始化timepicker
+        $form.find('#openingHoursStart, #openingHoursEnd').timepicker({
+            minuteStep: 1,
+            showMeridian: false,
+            disableFocus : true,
+            showInputs : false
+        });
+        // 初始化表单验证
+        $form.bootstrapValidator({
+            fields: {
+                shopName: {
+                    message: '店铺名无效',
+                    validators: {
+                        notEmpty: {
+                            message: '店铺名不能为空'
+                        },
+                        stringLength: {
+                            min: 2,
+                            max: 100,
+                            message: '店铺名长度必须在2到100个字符之间'
+                        }
+                    }
+                },
+                cityID: {
+                    validators: { notEmpty: { message: '请选择店铺所在城市' } }
+                },
+                tel: {
+                    validators: {
+                        notEmpty: { message: '店铺电话不能为空' },
+                        telOrMobile: { message: '' }
+                    }
+                },
+                address: {
+                    validators: {
+                        notEmpty: { message: '店铺地址不能为空' },
+                        stringLength: {
+                            min: 6,
+                            max: 100,
+                            message: '地址长度必须在6到100个字符之间'
+                        }
+                    }
+                },
+                PCCL: {
+                    validators: {
+                        notEmpty: { message: '人均消费不能为空' },
+                        numeric: { message: '人均消费必须是金额数字' }
+                    }
+                },
+                operationMode: {
+                    validators: {
+                        notEmpty: { message: '请选择店铺运营模式' }
+                    }
+                },
+                openingHoursStart: {
+                    validators: {
+                        notEmpty: { message: '每天营业开始时间不能空' },
+                        time: { message: '' }
+                    }
+                },
+                openingHoursEnd: {
+                    validators: {
+                        notEmpty: { message: '每天营业结束时间不能空' },
+                        time: {
+                            message: '',
+                            startTimeField: 'openingHoursStart'
+                        }
+                    }
+                },
+                areaID: {
+                    validators: {
+                        notEmpty: { message: '请选择店铺所在地标' }
+                    }
+                },
+                cuisineID1: {
+                    validators: {
+                        notEmpty: { message: '请选择菜系1' }
+                    }
+                }
+            }
+        });
+        bv = $form.data('bootstrapValidator');
+        
+        var $uploadImg = $form.find('#uploadImg');
+        $img = $uploadImg.find('img');
+        imagePath = shopInfo.imagePath;
+        imagePath && $img.attr('src', imgHost + imagePath);
+        
+        map = initMap({data: {
+            isSearchMap: false,
+            shopName: shopInfo.shopName,
+            tel: shopInfo.tel,
+            address: shopInfo.address,
+            lng: shopInfo.mapLongitudeValueBaiDu,
+            lat: shopInfo.mapLatitudeValueBaiDu
+        }});
+        
+    });
+    // click 事件 delegate
+    $container.on('click', function(e)
+    {
+        var $target = $(e.target);
+        // 修改门头图
+        if($target.is('#uploadImg img, #uploadImg a'))
+        {
+            U.uploadImg({
+                onSuccess: function (imgPath, $dlg)
+                {
+                    imagePath = imgPath;
+                    $img.attr('src', imgHost + imgPath);
+                    $dlg.modal('hide');
+                }
+            });
+        }
+        // 重新标记地图
+        if($target.is('#remarkMap'))
+        {
+            if(bv.isValidField('shopName') && bv.isValidField('tel') && bv.isValidField('address'))
+            {
+                var coords = map.mapPoint,
+                    formData = parseForm($form);
+                map = initMap({data: {
+                    isSearchMap: false,
+                    shopName: formData.shopName,
+                    tel: formData.tel,
+                    address: formData.address,
+                    lng: coords.lng,
+                    lat: coords.lat
+                }});
+                
+                var mapInfo = {
+                        shopID: shopID,
+                        mapLongitudeValue: coords.lng,
+                        mapLatitudeValue: coords.lat,
+                        mapLongitudeValueBaiDu: coords.lng,
+                        mapLatitudeValueBaiDu: coords.lat
+                    };
+                // 标注店铺地图callServer调用
+                G.setShopMap(mapInfo, function(rsp)
+                {
+                    if(rsp.resultcode != '000')
+                    {
+                        rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    
+                    topTip({msg: '重新标记地图成功！', type: 'success'});
+                    
+                });
+                
+            }
+            else
+            {
+                topTip({msg: '店铺相关信息填写有误！', type: 'danger'});
+            }
+            
+        }
+        // 切换为编辑模式
+        if($target.is('#editBtn'))
+        {
+            $form.removeClass('read-mode').addClass('edit-mode');
+        }
+        // 保存店铺基本信息修改
+        if($target.is('#saveBtn'))
+        {
+            if(!bv.validate().isValid()) return;
+            // 数据提交前预处理
+            var shopData = parseForm($form);
+            shopData.shopID = shopID;
+            shopData.shopName = shopData.shopName.replace('（', '(').replace('）', ')');
+            shopData.areaName = getSelectText($area);
+            shopData.cuisineName1 = getSelectText($cuisine1);
+            shopData.cuisineName2 = shopData.cuisineID2 ? getSelectText($cuisine2) : '';
+            shopData.imagePath = imagePath;
+            shopData.openingHours = shopData.openingHoursStart + '-' + shopData.openingHoursEnd;
+            var keywords = [shopData.shopName, shopData.address, shopData.cuisineName1];
+            shopData.cuisineName2 && keywords.push(shopData.cuisineName2);
+            keywords.push(shopData.areaName);
+            shopData.keywordLst = keywords.join(' | ');
+            // 保存店铺基本信息callServer调用
+            G.updateShopBaseInfo(shopData, function(rsp)
+            {
+                if(rsp.resultcode != '000')
+                {
+                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                
+                $form.removeClass('edit-mode').addClass('read-mode');
+                topTip({msg: '保存成功！', type: 'success'});
+                updateReadMode($form, shopData);
+            });
+        }
+    });
+    
+}
+// 保存提交后更新店铺信息只读模式
+function updateReadMode($form, data)
+{
+    $form.find('input, select').not('.map-keyword, #openingHoursEnd').each(function ()
+    {
+        var $this = $(this),
+            $p = $this.siblings('p');
+        if($this.is('#openingHoursStart'))
+            $p.text(data.openingHours);
+        else if($this.is('select'))
+            $p.text(getSelectText($this));
+        else
+            $p.text($this.val());
+    });
+}
+// 初始化菜系下拉列表
+function initCuisines($cuisine1, $cuisine2, cityID, cuisineID1, cuisineID2)
+{
+    var callServer = G.getCuisines;
+    callServer({cityID: cityID}, function(rsp)
+    {
+        if(rsp.resultcode != '000')
+        {
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+            return;
+        }
+        
+        fillSelectBox($cuisine1, rsp.data.records, 'cuisineID', 'cuisineName');
+        fillSelectBox($cuisine2, rsp.data.records, 'cuisineID', 'cuisineName', '--不限--');
+        cuisineID1 && $cuisine1.val(cuisineID1);
+        cuisineID2 && $cuisine2.val(cuisineID2);
+    });
+    
+}
+// 初始化地标下拉列表
+function initAreas($area, cityID, areaID)
+{
+    var callServer = G.getAreas;
+    callServer({cityID: cityID}, function(rsp)
+    {
+        if(rsp.resultcode != '000')
+        {
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+            return;
+        }
+        
+        fillSelectBox($area, rsp.data.records, 'areaID', 'areaName');
+        areaID && $area.val(areaID);
+    });
+    
+}
+// 初始化城市下拉列表
+function initCities($city, shopInfo)
+{
+    var callServer = G.getCities;
+    callServer({isActive: 1}, function(rsp)
+    {
+        if(rsp.resultcode != '000')
+        {
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+            return;
+        }
+        
+        fillSelectBox($city, rsp.data.records, 'cityID', 'cityName');
+        $city.val(shopInfo.cityID).trigger('change', [shopInfo.areaID, shopInfo.cuisineID1, shopInfo.cuisineID2]);
+    });
+    
+}
+// 设置下拉列表的项
+function fillSelectBox($selectBox, data, key, value, initialValue)
+{
+    var optionsHtml = '<option value="">' + 
+                      (initialValue || '--请选择--') + 
+                      '</option>';
+    $.each(data, function (i, o)
+    {
+        optionsHtml += '<option value="' + 
+                       o[key] + '">' + 
+                       o[value] + 
+                       '</option>';
+    });
+        
+    $selectBox.empty().html(optionsHtml);
+}
+// 处理并获取下拉列表当前选择项的文本
+function getSelectText($select)
+{
+    return $select.find('option:selected').text().replace(/-/g, '');
+}
+
+})(jQuery, window);
+
+
+
+
+
+
+
+
+
+
+;(function ($, window) {
+IX.ns('Hualala.Shop');
+var G = Hualala.Global,
+    U = Hualala.UI,
+    S = Hualala.Shop,
+    topTip = U.TopTip,
+    parseForm = Hualala.Common.parseForm;
+// 初始化店铺店铺菜品页面
+S.initShopMenu = function ($container, pageType, params)
+{
+    if(!params) return;
+    
+}
+
+})(jQuery, window);
+
+
+
+
+
+
+
+
+
+
+;
+;(function($) 
+{
+	var defaults = {
+            data : {
+                isSearchMap: false,
+                keyword: '',
+                shopName: '',
+                tel: '',
+                address: '',
+                city: '',
+                area: '',
+                lng: '',
+                lat: ''
+            },
+            searchBox: '.map-search-box',
+            mapResult: '.map-result',
+            //mapContainer: '#shopMap',
+            mapCanvasId: 'mapCanvas',
+            load: function() { },
+            serach: function() { }
+        };
+	function ShopMap(options)
+    {
+        this.cfg = $.extend({}, defaults, options);
+        //this.$shopMap = $(mapContainer);
+        this.sContent = '';
+        this.$searchBox = $(this.cfg.searchBox);
+        this.$mapResult = $(this.cfg.mapResult);
+        this.map = '';
+        this.searchArea = true;
+        this.mapPoint = {};
+        
+    }
+	ShopMap.prototype = 
+    {
+        init: function()
+        {
+            var self = this,
+                markerTrick = false,
+                mapParams = self.cfg.data;
+            self.map = new BMap.Map(self.cfg.mapCanvasId);
+            //添加默认缩放平移控件
+            self.map.addControl(new BMap.NavigationControl());
+            self.map.enableScrollWheelZoom();
+            self.sContent = [
+                '<dl class="map-shop-info">',
+                    '<dt>' + mapParams.shopName + '</dt>',
+                    '<dd>',
+                        '<p><span>电话：</span>' + mapParams.tel + '</p>',
+                        '<p><span>地址：</span>' + mapParams.address + '</p>',
+                    '</dd>',
+                '</dl>'
+            ].join('');
+            
+            self[(mapParams.isSearchMap || !mapParams.lng || !mapParams.lat ? 'search' : 'load') + 'Map'](mapParams);
+            
+            if(self.$searchBox[0])
+            {
+                var $keyword = self.$searchBox.find('.map-keyword'),
+                    $searchBtn = self.$searchBox.find('.map-search-btn'),
+                    searchParams = $.extend({}, self.cfg.data);
+                $searchBtn.on('click', function ()
+                {
+                    searchParams.keyword = $keyword.val();
+                    self.searchMap(searchParams);
+                });
+            }
+            
+            
+            return this;
+        },
+        loadMap: function(data)
+        {
+            var self = this;
+            data = data || self.self.cfg.data;
+            self.map.centerAndZoom(new BMap.Point(data.lng, data.lat), 14);
+            self.map.enableScrollWheelZoom();
+
+            var marker = new BMap.Marker(new BMap.Point(data.lng, data.lat), 
+                {
+                    enableMassClear: true,
+                    raiseOnDrag: true
+                });
+            marker.enableDragging();
+            self.map.addOverlay(marker);
+            marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
+           /* map.addEventListener("click", function(e){
+                if(!(e.overlay)){
+                    map.clearOverlays();
+                    marker.show();
+                    map.addOverlay(marker);
+                    marker.setPosition(e.point);
+                    setResult(e.point.lng, e.point.lat);
+                }
+            });*/
+            marker.addEventListener("click", function(e)
+            {
+                 marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
+            });
+            marker.addEventListener("dragend", function(e)
+            {
+                self.setResult(e.point.lng, e.point.lat);
+            });
+            self.setResult(data.lng, data.lat);
+        },
+        searchMap : function (data)
+        {
+            var self = this;
+            data = data || self.cfg.data;
+            //self.map.centerAndZoom(new BMap.Point(116.404, 39.915), 14);
+            //self.map.enableScrollWheelZoom();
+                
+            var local = new BMap.LocalSearch(self.map, {
+                renderOptions: {map: self.map},
+                pageCapacity: 1,
+                onInfoHtmlSet : function (poi) {
+                    poi.marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
+                    //target.openInfoWindow(infoWindow);
+                },
+                onMarkersSet : function (poi) {
+                    //console.info(poi.marker.infoWindow);
+                }
+            });
+            local.search(data.keyword || data.address || data.area || data.city);
+
+            local.setSearchCompleteCallback(function(results)
+            {
+                if(local.getStatus() !== BMAP_STATUS_SUCCESS)
+                {
+                    if(self.searchArea)
+                    {
+                        local.search(data.area);
+                        self.searchArea = false;
+                    } else
+                    {
+                        local.search(data.city);
+                    }
+                } else 
+                {
+                    //marker.hide();
+                }
+            });
+            local.setMarkersSetCallback(function(pois)
+            {
+                for(var i = pois.length; i--;)
+                {
+                    var marker = pois[i].marker;
+                    marker.enableDragging();
+                    self.setResult(marker.point.lng, marker.point.lat);
+                    //var mapParams = {
+                    //  width : 250,     // 信息窗口宽度
+                    //  height: 100,     // 信息窗口高度
+                    //  title : "Hello"  // 信息窗口标题
+                    //}
+                    //var infoWindow = new BMap.InfoWindow("World", mapParams);  // 创建信息窗口对象
+                    //map.openInfoWindow(infoWindow,point); //开启信息窗口
+                    marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
+                    marker.addEventListener("click", function(e)
+                    {
+                       // markerTrick = true;
+                        var pos = this.getPosition();
+                        self.setResult(pos.lng, pos.lat);
+                    });
+                    marker.addEventListener("dragend", function(e)
+                    {
+                        self.setResult(e.point.lng, e.point.lat);
+                    });
+                }
+            });
+            
+        },
+         /*
+         * setResult : 定义得到标注经纬度后的操作
+         * 请修改此函数以满足您的需求
+         * lng: 标注的经度
+         * lat: 标注的纬度
+         */
+        setResult: function (lng, lat)
+        {
+            var self = this;
+            self.mapPoint = { lng: lng, lat: lat };
+            self.$mapResult[0] && self.$mapResult.html('您店铺的经度：' + lng + '    纬度： ' + lat);
+        }
+	}
+    IX.ns("Hualala.Shop");
+    Hualala.Shop.map = function(options) 
+    { 
+        return new ShopMap(options).init(); 
+    };
+}(jQuery));
+
+
+
+
+
+
+;(function ($, window) {
+	
+})(jQuery, window);;(function ($, window) {
 	IX.ns("Hualala.Shop");
+    /**
+	  * 渲染店铺详情页头部
+	  * @param {Object | String} shopInfo 店铺ID或者店铺详情信息对象
+	  * @param {jQuery Object} container  容器
+      * @param {function} callback  回调函数，参数是店铺详情头部的jQuery对象
+	  * @return {NULL} 
+	  */
+    Hualala.Shop.createShopInfoHead = function(shopInfo, container, callback)
+    {
+        var $container = container || $('#ix_wrapper > .ix-body > .container'),
+            $shopInfoHead = $('<div class="bs-callout shop-info-head"></div>');
+        !callback && $shopInfoHead.appendTo($container);
+        
+        var fn = function (shopInfo)
+        {
+            var tplData = {
+                    shopName: shopInfo.shopName,
+                    shopUrl: Hualala.Common.getShopUrl(shopInfo.shopID),
+                    shopListLink: Hualala.PageRoute.createPath('shop'),
+                    checked: shopInfo.status == 1 ? 'checked' : ''
+                };
+            
+            var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_info_head'));
+            
+            $shopInfoHead.append($(tpl(tplData))).find('input').bootstrapSwitch({
+                onColor : 'success',
+                onText : '已开通',
+                offText : '未开通'
+            }).on('switchChange.bootstrapSwitch', function (e, state)
+            {//店铺状态切换
+                var $chkbox = $(this);
+                Hualala.Global.switchShopStatus({shopID: shopInfo.shopID, status: state}, function (rsp)
+                {
+                    if(rsp.resultcode != '000')
+                    {
+                        $chkbox.bootstrapSwitch('toggleState', true);
+                        rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                });
+			});;
+            //重置客户端密码
+            $shopInfoHead.find('#resetPwd').on('click', function ()
+            {
+                var resetPwdTpl = Handlebars.compile(Hualala.TplLib.get('tpl_set_shop_client_pwd'));
+                var $resetPwdForm = $(resetPwdTpl(shopInfo));
+                //弹出重置客户端密码模态框
+                var modal = new Hualala.UI.ModalDialog({
+                    id: 'resetCltPwdDlg',
+                    title: '重置客户端密码',
+                    html: $resetPwdForm,
+                    sizeCls: 'modal-sm',
+                    hideCloseBtn: false
+                }).show();
+                var $feedback = $resetPwdForm.find('.has-feedback'),
+                    $feedbackIcon = $feedback.find('.form-control-feedback'),
+                    $errMsg = $feedback.find('small');
+                var $pwd = $resetPwdForm.find('#shopClinetPwd').data('validate', false).on('blur', function ()
+                {//验证密码输入
+                    var $this = $(this),
+                        l = $.trim($this.val()).length;
+                    $this.data('validate', false);
+                    if(!l)
+                        $errMsg.text('密码不能为空');
+                    else if(l < 6 || l > 16)
+                        $errMsg.text('密码长度必须在6到16个字符之间');
+                    else
+                    {
+                        $errMsg.text('');
+                        $this.data('validate', true);
+                    }
+                        
+                    var isValid = $this.data('validate');
+                    $feedback.toggleClass('has-success', isValid).toggleClass('has-error', !isValid);
+                    $feedbackIcon.toggleClass('glyphicon-ok', isValid).toggleClass('glyphicon-remove', !isValid);
+                });
+                //密码/明文切换
+                $resetPwdForm.find('#showPwd').change(function()
+                {
+                    $pwd.attr('type', this.checked ? 'text' : 'password');
+                });
+                //提交密码重设请求
+                modal._.footer.find('.btn-ok').on('click', function ()
+                {
+                    if(!$pwd.trigger('blur').data('validate')) return;
+                    
+                    Hualala.Global.setShopClientPwd({shopID: shopInfo.shopID, hLLAgentLoginPWD: $pwd.val()}, function (rsp)
+                    {
+                        if(rsp.resultcode != '000')
+                        {
+                            rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                            return;
+                        }
+                        modal.hide();
+                        Hualala.UI.TopTip({msg: '重置客户端密码成功！', type: 'success'});
+                    });
+                    
+                });
+                
+            });
+            //执行回调函数
+            callback && callback($shopInfoHead);
+        };
+        //如果是参数shopInfo是店铺详情对象
+        if($.isPlainObject(shopInfo))
+        {
+            fn(shopInfo);
+            return;
+        }
+        //如果参数shopInfo是shopID，发送ajax获取店铺详情信息
+        Hualala.Global.getShopInfo({shopID: shopInfo}, function (rsp)
+        {
+            if(rsp.resultcode != '000')
+            {
+                rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                return;
+            }
+            var shopInfo = rsp.data.records[0];
+            fn(shopInfo);
+        });
+        
+    };
+    
+    // 店铺详情页功能导航
+    Hualala.Shop.createShopFuncNav = function (currentPageName, shopID, container)
+    {
+        var shopFuncs = ['shopInfo', 'shopMenu'],
+            R = Hualala.PageRoute,
+            $ul = $('<ul class="nav navbar-nav"></ul>'),
+            $container = container || $('#ix_wrapper > .ix-body > .container');
+        
+        for(i = 0, l = shopFuncs.length; i < l; i++)
+        {
+            var shopFunc = shopFuncs[i],
+                isActive = shopFunc == currentPageName,
+                path = isActive ? 'javascript:;' : R.createPath(shopFunc, [shopID]),
+                label = R.getPageLabelByName(shopFunc);
+            
+            $('<li></li>').toggleClass('active', isActive).append($('<a></a>').attr('href', path).text(label)).appendTo($ul);
+        }
+        
+        return $('<div class="navbar navbar-default shop-func-nav"></div>').append($ul).appendTo($container);
+    };
+    
 	var initShopList = function (pageType, params) {
-		var $body = $('#ix_wrapper > .ix-body > .container');
+        var $body = $('#ix_wrapper > .ix-body > .container');
 		var queryPanel = new Hualala.Shop.QueryController({
 			needShopCreate : true,
 			container : $body,
@@ -1686,15 +2412,13 @@ function getSelectText($select)
 	Hualala.Shop.HomePageInit = initShopList;
 
 	var initShopBaseInfoMgr = function (pageType, params) {
-		var $body = $('#ix_wrapper > .ix-body > .container');
-		$body.html(
-			'<div class="jumbotron">'+
-				'<h1>这里是店铺详情管理页面</h1>' +
-				'<p>提供查看店铺信息，编辑店铺信息</p>' +
-				
-			'</div>'
-			);
-		// TODO 店铺详情页面，编辑店铺基本信息
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+		Hualala.Shop.initInfo($body, pageType, params);
 	};
 	Hualala.Shop.BaseInfoMgrInit = initShopBaseInfoMgr;
 
@@ -1712,8 +2436,13 @@ function getSelectText($select)
 	Hualala.Shop.FoodMenuMgrInit = initFoodMenuMgr;
 
 	var initCreateShop = function (pageType, params) {
-		var $body = $('#ix_wrapper > .ix-body > .container'),
-            tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_create')),
+		var $body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+        var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_create')),
             $shopCreateWizard = $(tpl({
                 pcClientPath: Hualala.PageRoute.createPath('pcclient')
             }));
@@ -2005,11 +2734,8 @@ function getSelectText($select)
 			offLabel : '不需要',
 			validCfg : {
 				validators : {
-					notEmpty : {
-						message : "下单时输入桌号不能为空"
-					}
+					
 				}
-				
 			}
 		},
 		supportInvoice : {
@@ -2020,9 +2746,6 @@ function getSelectText($select)
 			offLabel : '不需要',
 			validCfg : {
 				validators : {
-					notEmpty : {
-						message : "提供发票不能为空"
-					}
 				}
 			}
 			
@@ -2035,9 +2758,6 @@ function getSelectText($select)
 			offLabel : '不支持',
 			validCfg : {
 				validators : {
-					notEmpty : {
-						message : "下单到餐饮软件不能为空"
-					}
 				}
 			}
 		},
@@ -2062,9 +2782,6 @@ function getSelectText($select)
 			offLabel : '不支持',
 			validCfg : {
 				validators : {
-					notEmpty : {
-						message : "支付完成后能下单不能为空"
-					}
 				}
 			}
 			
@@ -2138,7 +2855,7 @@ function getSelectText($select)
 			if (IX.isFn(this.callServer)) {
 				this.callServer = this.callServer;
 			} else if (!IX.isString(this.callServer)) {
-				throw("Configuration failed : Invalid Page Initialized for " + name);
+				throw("Configuration failed : Invalid Page Initialized for " + this.callServer);
 				return false;
 			} else if (IX.nsExisted(this.callServer)) {
 				this.callServer = IX.getNS(this.callServer);
@@ -2202,7 +2919,15 @@ function getSelectText($select)
 			});
 		},
 		getServiceInfo : function (key, val) {
-			return _.find(this.serviceList, function (v) {return v[key] == val});
+			var self = this;
+			var operationMode = self.model.get('operationMode');
+			var servData = IX.inherit({}, _.find(this.serviceList, function (v) {return v[key] == val}));
+			if (!IX.isEmpty($XP(servData, 'operationMode'))) {
+				servData = IX.inherit(servData, {
+					formKeys : $XP(servData, 'operationMode.' + operationMode)
+				});
+			}
+			return servData;
 		},
 		getModalTitle : function () {
 			return $XP(this.serviceInfo, 'label') + '配置';
@@ -2342,7 +3067,8 @@ function getSelectText($select)
 							max = $('[name=' + key + '_max]').val();
 						ret[key] = self.encodeTimeStr(min, max);
 					} else if (type == 'switcher') {
-						ret[key] = $('[name=' + key + ']').attr('checked') ? 1 : 0;
+						// ret[key] = $('[name=' + key + ']').attr('checked') ? 1 : 0;
+						ret[key] = !$('[name=' + key + ']').data('bootstrapSwitch').options.state ? 0 : 1;
 					} else {
 						ret[key] = $('[name=' + key + ']').val();
 					}
@@ -2384,6 +3110,2634 @@ function getSelectText($select)
 		});
 	};
 	Hualala.Setting.ShopMgrInit = initShopMgr;
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Account");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+	var CardListModel = Hualala.Shop.CardListModel;
+	var AccountListModel = CardListModel.subclass({
+		constructor : CardListModel.prototype.constructor
+	});
+	AccountListModel.proto({
+		init : function (params) {
+			this.set({
+				pageCount : 0,
+				totalSize : 0,
+				pageNo : $XP(params, 'Page.pageNo', 1),
+				pageSize : $XP(params, 'Page.pageSize', 15),
+				transCreateBeginTime : $XP(params, 'transCreateBeginTime', ''),
+				transCreateEndTime : $XP(params, 'transCreateEndTime', ''),
+				settleUnitID : $XP(params, 'settleUnitID', ''),
+				transStatus : $XP(params, 'transStatus', ''),
+				transType : $XP(params, 'transType', ''),
+				groupID : $XP(params, 'groupID', ''),
+				minTransAmount : $XP(params, 'minTransAmount', ''),
+				maxTransAmount : $XP(params, 'maxTransAmount', ''),
+				ds_account : new IX.IListManager(),
+				ds_page : new IX.IListManager()
+			});
+		},
+		updatePagerParams : function (params) {
+			var self = this;
+			var pagerParamkeys = 'pageCount,totalSize,pageNo,pageSize,transCreateBeginTime,transCreateEndTime,settleUnitID,transStatus,transType,groupID,minTransAmount,maxTransAmount';
+			_.each(params, function (v, k, l) {
+				if (pagerParamkeys.indexOf(k) > -1) {
+					self.set(k, v);
+				}
+			});
+		},
+		getPagerParams : function () {
+			return {
+				Page : {
+					pageNo : this.get('pageNo'),
+					pageSize : this.get('pageSize')
+				},
+				settleUnitID : this.get('settleUnitID'),
+				transCreateBeginTime : this.get('transCreateBeginTime'),
+				transCreateEndTime : this.get('transCreateEndTime'),
+				transStatus : this.get('transStatus'),
+				transType : this.get('transType'),
+				groupID : this.get('groupID'),
+				minTransAmount : this.get('minTransAmount'),
+				maxTransAmount : this.get('maxTransAmount')
+			};
+		},
+		updateDataStore : function (data, pageNo) {
+			var self = this,
+				accountHT = self.get('ds_account'),
+				pageHT = self.get('ds_page');
+			var accountIDs = _.map(data, function (account, i, l) {
+				var settleUnitID = $XP(account, 'settleUnitID'),
+					mAccount = new BaseAccountModel(account);
+				accountHT.register(settleUnitID, mAccount);
+				return settleUnitID;
+			});
+			pageHT.register(pageNo, accountIDs);
+		},
+		resetDataStore : function () {
+			var self = this,
+				accountHT = self.get('ds_account'),
+				pageHT = self.get('ds_page');
+			accountHT.clear();
+			pageHT.clear();
+		},
+		load : function (params, cbFn) {
+			var self = this;
+			self.updatePagerParams(params);
+			self.callServer(self.getPagerParams(), function (res) {
+				if (res.resultcode == '000') {
+					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.pageNo'));
+					self.updatePagerParams($XP(res, 'data', {}));
+				} else {
+					toptip({
+						msg : $XP(res, 'resultmsg', ''),
+						type : 'danger'
+					});
+				}
+				cbFn(self);
+			});
+		},
+		getAccounts : function (pageNo) {
+			var self = this,
+				accountHT = self.get('ds_account'),
+				pageHT = self.get('ds_page');
+			var ret = _.map(accountHT.getByKeys(pageHT.get(pageNo)), function (mAccount) {
+				return mAccount.getAll();
+			});
+			console.info("pageData :");
+			console.info(ret);
+			return ret;
+		},
+		getAccountModelByID : function (accountID) {
+			var self = this,	
+				accountHT = self.get('ds_account');
+			return accountHT.get(accountID);
+		}
+	});
+
+
+	Hualala.Account.AccountListModel = AccountListModel;
+
+	var BaseAccountModel = Stapes.subclass({
+		constructor : function (account) {
+			!IX.isEmpty(account) && this.set(account);
+			this.bindEvent();
+		}
+	});
+	BaseAccountModel.proto({
+		bindEvent : function () {
+			var self = this;
+			self.on({
+				"load" : function (params) {
+					var settleUnitID = $XP(params, 'settleUnitID'),
+						cbFn = $XF(params, 'cbFn');
+					var callServer = Hualala.Global.queryAccount,
+						groupID = $XP(Hualala.getSessionSite(), 'groupID', '');
+					callServer({
+						settleUnitID : settleUnitID,
+						groupID : groupID
+					}, function (res) {
+						var records = $XP(res, "data.records", []);
+						if (records.length == 0) {
+							throw("get Account Data (" + settleUnitID + ") Failed!");
+							return ;
+						}
+						self.set(records[0]);
+						cbFn();
+					});
+				},
+				// 提现
+				"withdrawCash" : function (cfg) {
+					var callServer = Hualala.Global.withdrawCash,
+						params = $XP(cfg, 'params', {}),
+						settleUnitID = self.get('settleUnitID'),
+						failFn = $XF(cfg, 'failFn'),
+						successFn = $XF(cfg, 'successFn');
+					callServer(IX.inherit(params, {
+						settleUnitID : settleUnitID
+					}), function (res) {
+						if (res.resultcode !== '000') {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+							failFn();
+						} else {
+							var transAmount = $XP(params, 'transAmount', 0),
+								settleBalance = self.get('settleBalance') || 0,
+								newSettleBalance = Hualala.Common.Math.sub(settleBalance - transAmount);
+							self.set('settleBalance', newSettleBalance);
+							// TODO update View
+							successFn();
+							toptip({
+								msg : '提现成功!',
+								type : 'success'
+							});
+						}
+					});
+				},
+				// 删除结算账户
+				"delete" : function (cfg) {
+					var callServer = Hualala.Global.deleteAccount,
+						settleUnitID = self.get('settleUnitID'),
+						groupID = $XP(Hualala.getSessionSite(), 'groupID', ''),
+						failFn = $XF(cfg, 'failFn'),
+						successFn = $XF(cfg, 'successFn');
+					callServer({
+						settleUnitID : settleUnitID,
+						groupID : groupID
+					}, function (res) {
+						if (res.resultcode !== '000') {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+							failFn(settleUnitID);
+						} else {
+							toptip({
+								msg : '删除成功!',
+								type : 'success'
+							});
+							// TODO update View
+							successFn(settleUnitID);
+						}
+					});
+				},
+				// 编辑结算账户
+				"edit" : function (cfg) {
+					var callServer = Hualala.Global.editAccount,
+						settleUnitID = self.get('settleUnitID'),
+						groupID = $XP(Hualala.getSessionSite(), 'groupID', ''),
+						failFn = $XF(cfg, 'failFn'),
+						successFn = $XF(cfg, 'successFn');
+					callServer(IX.inherit($XP(cfg, 'params', {}), {
+						groupID : groupID,
+						settleUnitID : settleUnitID
+					}), function (res) {
+						if (res.resultcode !== '000') {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+							failFn(settleUnitID);
+						} else {
+							toptip({
+								msg : '修改成功!',
+								type : 'success'
+							});
+							// TODO update View
+							self.set($XP(cfg, 'params', {}));
+							successFn(settleUnitID);
+						}
+					});
+				},
+				// 添加结算账户
+				"add" : function (cfg) {
+					var callServer = Hualala.Global.addAccount,
+						groupID = $XP(Hualala.getSessionSite(), 'groupID', ''),
+						failFn = $XF(cfg, 'failFn'),
+						successFn = $XF(cfg, 'successFn');
+					callServer(IX.inherit($XP(cfg, 'params', {}), {
+						groupID : groupID
+					}), function (res) {
+						if (res.resultcode !== '000') {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+							failFn();
+						} else {
+							toptip({
+								msg : '修改成功!',
+								type : 'success'
+							});
+							// TODO update View
+							self.set($XP(cfg, 'params', {}));
+							successFn();
+						}
+					});
+				}
+			});
+		}
+	});
+
+	Hualala.Account.BaseAccountModel = BaseAccountModel;
+
+	var AccountTransListModel = AccountListModel.subclass({
+		constructor : function () {
+			this.callServer = Hualala.Global.queryAccountTransDetail;
+		}
+	});
+	AccountTransListModel.proto({
+		init : function (params) {
+			this.set({
+				pageCount : 0,
+				totalSize : 0,
+				pageNo : $XP(params, 'Page.pageNo', 1),
+				pageSize : $XP(params, 'Page.pageSize', 15),
+				transCreateBeginTime : $XP(params, 'transCreateBeginTime', ''),
+				transCreateEndTime : $XP(params, 'transCreateEndTime', ''),
+				settleUnitID : $XP(params, 'settleUnitID', ''),
+				transStatus : $XP(params, 'transStatus', ''),
+				transType : $XP(params, 'transType', ''),
+				groupID : $XP(params, 'groupID', ''),
+				minTransAmount : $XP(params, 'minTransAmount', ''),
+				maxTransAmount : $XP(params, 'maxTransAmount', ''),
+				ds_trans : new IX.IListManager(),
+				ds_page : new IX.IListManager()
+			});
+		},
+		updateDataStore : function (data, pageNo) {
+			var self = this,
+				transHT = self.get('ds_trans'),
+				pageHT = self.get('ds_page');
+			var transIDs = _.map(data, function (trans, i, l) {
+				var transID = $XP(trans, 'SUATransItemID'),
+					mTrans = new BaseTransactionModel(trans);
+				transHT.register(transID, mTrans);
+				return transID;
+			});
+			pageHT.register(pageNo, transIDs);
+		},
+		resetDataStore : function () {
+			var self = this,
+				transHT = self.get('ds_trans'),
+				pageHT = self.get('ds_page');
+			transHT.clear();
+			pageHT.clear();
+		},
+		load : function (params, cbFn) {
+			var self = this;
+			self.updatePagerParams(params);
+			self.callServer(self.getPagerParams(), function (res) {
+				if (res.resultcode == '000') {
+					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.pageNo'));
+					self.updatePagerParams($XP(res, 'data', {}));
+				} else {
+					toptip({
+						msg : $XP(res, 'resultmsg', ''),
+						type : 'danger'
+					});
+				}
+				cbFn(self);
+			});
+		},
+		getDataByPageNo : function (pageNo) {
+			var self = this,
+				transHT = self.get('ds_trans'),
+				pageHT = self.get('ds_page');
+			var ret = _.map(transHT.getByKeys(pageHT.get(pageNo)), function (mTrans) {
+				return mTrans.getAll();
+			});
+			console.info("pageData :");
+			console.info(ret);
+			return ret;
+		},
+		getModelByID : function (transID) {
+			var self = this,	
+				transHT = self.get('ds_trans');
+			return transHT.get(transID);
+		}
+	});
+
+	Hualala.Account.AccountTransListModel = AccountTransListModel;
+
+	var BaseTransactionModel = BaseAccountModel.subclass({
+		constructor : BaseAccountModel.prototype.constructor
+	});
+	BaseTransactionModel.proto({
+		bindEvent : function () {
+			var self = this;
+			
+		}
+	});
+
+	Hualala.Account.BaseTransactionModel = BaseTransactionModel;
+
+	var AccountQueryShopModel = Hualala.Shop.QueryModel.subclass({
+		constructor : function () {
+			// 原始数据
+			this.origCities = [];
+			this.origAreas = [];
+			this.origShops = [];
+			// 数据是否已经加载完毕
+			this.isReady = false;
+			// this.callServer = Hualala.Global.getShopQuerySchema;
+			this.callServer = Hualala.Global.getAccountQueryShop;
+		}
+	});
+
+	Hualala.Account.AccountQueryShopModel = AccountQueryShopModel;
+
+	var AccountQueryShopResultModel = Hualala.Shop.CardListModel.subclass({
+		constructor : function () {
+			this.origData = null;
+			
+			this.dataStore = new IX.IListManager();
+		}
+	});
+	AccountQueryShopResultModel.proto({
+		initDataStore : function (data) {
+			var self = this;
+			self.origData = data;
+			_.each(self.origData, function (shop) {
+				self.dataStore.register($XP(shop, 'shipID'), shop);
+			});
+		},
+		load : function (params, cbFn) {
+			var self = this;
+			self.updatePagerParams(params);
+			var pageNo = self.get('pageNo'),
+				pageSize = self.get('pageSize'),
+				cityID = self.get('cityID'),
+				areaID = self.get('areaID'),
+				keywordLst = self.get('keywordLst'),
+				totalSize = 0,
+				start = (pageNo - 1) * pageSize,
+				end = pageSize * pageNo,
+				pageCount = 0;
+			var shops = [];
+			shops = areaID.length > 0 ? _.filter(self.origData, function (_shop) {
+				return $XP(_shop, 'areaID') == areaID;
+			}) : self.origData;
+			shops = cityID.length > 0 ? _.filter(shops, function (_shop) {
+				return $XP(_shop, 'cityID') == cityID;
+			}) : shops;
+			shops = keywordLst.length > 0 ? _.filter(shops, function (_shop) {
+				return $XP(_shop, 'shopName') == keywordLst;
+			}) : shops;
+			totalSize = shops.length;
+			pageCount = Math.ceil(totalSize / pageSize);
+			shops = _.filter(shops, function (_shop, idx) {
+				return idx >= start && idx < end;
+			});
+			self.updateDataStore(shops, pageNo);
+			self.updatePagerParams({
+				pageCount : pageCount,
+				totalSize : totalSize,
+				pageNo : pageNo,
+				pageSize : pageSize
+			});
+			cbFn(self);
+		}
+	});
+
+	Hualala.Account.AccountQueryShopResultModel = AccountQueryShopResultModel;
+
+
+
+
+
+
+
+
+
+
+
+
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Account");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+	var CardListView = Hualala.Shop.CardListView;
+	var AccountListView = CardListView.subclass({
+		constructor : CardListView.prototype.constructor
+	});
+	AccountListView.proto({
+		// 重载loadTemplates
+		// 加载View层所需要的模板
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_list_layout')),
+				listTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_list')),
+				itemTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_card')),
+				addAccountTpl = Handlebars.compile(Hualala.TplLib.get('tpl_addAccount_Card'));
+			// 注册accountCard子模板
+			Handlebars.registerPartial("accountCard", Hualala.TplLib.get('tpl_account_card'));
+			Handlebars.registerPartial("addAccountCard", Hualala.TplLib.get('tpl_addAccount_Card'));
+
+			this.set({
+				layoutTpl : layoutTpl,
+				listTpl : listTpl,
+				itemTpl : itemTpl
+			});
+		},
+		// 重载initLayout
+		initLayout : function () {
+			var layoutTpl = this.get('layoutTpl');
+			var htm = layoutTpl();
+			this.$container.append(htm);
+			this.$resultBox = this.$container.find('.account-list');
+			this.$list = this.$container.find('.account-list-body');
+			this.$pager = this.$container.find('.page-selection');
+			this.initPager();
+			this.bindEvent();
+			this.bindCardEvent();
+		},
+		bindCardEvent : function () {
+			var self = this;
+			self.$list.on('click', '.btn.withdraw', function (e) {
+				var $btn = $(this);
+				var settleAccountID = $btn.parents('.bank-card').attr('data-id');
+				// 提现操作
+				var modal = new WithdrawCashView({
+					triggerEl : $btn,
+					settleUnitID : settleAccountID,
+					model : self.model.getAccountModelByID(settleAccountID),
+					parentView : self
+				});
+			});
+			self.$list.on('click', '.create-account', function (e) {
+				var $btn = $(this);
+				// TODO 创建账户
+				var editAccount = new Hualala.Account.AccountEditView({
+					triggerEl : $btn,
+					mode : 'add',
+					model : null,
+					parentView : self
+				});
+			});
+			self.on({
+				'updateSettleBalance' : function (mAccount) {
+					var settleUnitID = mAccount.get('settleUnitID'),
+						settleBalance = mAccount.get('settleBalance');
+					self.$container.find('[data-id=' + settleUnitID + '] .cash > strong').html(settleBalance);
+				}
+			});
+		},
+		// 重载格式化渲染数据
+		mapRenderData : function (data) {
+			var self = this;
+			var ret = _.map(data, function (account, i, l) {
+				var settleUnitID = $XP(account, 'settleUnitID'),
+					hasDefault = $XP(account, 'defaultAccount', 0) == 0 ? false : true,
+					bankInfo = Hualala.Common.mapBankInfo($XP(account, 'bankCode')),
+					bankAccountStr = Hualala.Common.codeMask($XP(account, 'bankAccount', ''), 0, -4);
+
+				return {
+					settleUnitID : settleUnitID,
+					hasDefault : hasDefault,
+					settleUnitName : $XP(account, 'settleUnitName', ''),
+					settleBalance : parseFloat($XP(account, 'settleBalance', 0)),
+					bankIcon : $XP(bankInfo, 'icon_16', ''),
+					bankComName : $XP(bankInfo, 'name', ''),
+					bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
+					shopCount : parseInt($XP(account, 'shopCount', 0)),
+					path : Hualala.PageRoute.createPath('accountDetail', [settleUnitID])
+				};
+			});
+			return {
+				accountCard : {
+					list : ret
+				}
+			}
+		},
+		// 重载渲染列表
+		render : function () {
+			var self = this,
+				model = self.model,
+				pagerParams = model.getPagerParams(),
+				pageNo = $XP(pagerParams, 'Page.pageNo');
+			var accounts = model.getAccounts(pageNo);
+			var renderData = self.mapRenderData(accounts);
+			var listTpl = self.get('listTpl');
+			var html = listTpl(renderData);
+			self.$list.empty();
+			self.$list.html(html);
+			self.initPager({
+				total : model.get('pageCount'),
+				page : model.get('pageNo'),
+				href : 'javascript:void(0);'
+			});
+		},
+		refresh : function () {
+			var self = this;
+			self.render();
+		}
+		
+	});
+
+	Hualala.Account.AccountListView = AccountListView;
+
+	var WithdrawCashView = Stapes.subclass({
+		/**
+		 * 提现窗口
+		 * @param  {Object} cfg {triggerEl, settleUnitID, model}
+		 *              @param {jQueryObj} triggerEl 触发元素
+		 *              @param {String} settleUnitID 结算账户ID
+		 *              @param {Object} model 结算账户数据模型
+		 *              @param {Object} parentView 父级View层
+		 * @return {Obj}     提现实例
+		 */
+		constructor : function (cfg) {
+			this.$trigger = $XP(cfg, 'triggerEl');
+			this.settleUnitID = $XP(cfg, 'settleUnitID', null);
+			this.model = $XP(cfg, 'model', null);
+			this.parentView = $XP(cfg, 'parentView', null);
+			this.modal = null;
+			if (!this.settleUnitID || !this.model) {
+				throw("Withdraw Cash View init failed!");
+			}
+			this.loadTemplates();
+			this.initModal();
+			this.renderForm();
+			this.bindEvent();
+			this.emit('show');		
+		}
+	});
+
+	WithdrawCashView.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_withdraw_form')),
+				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
+			this.set({
+				layoutTpl : layoutTpl,
+				btnTpl : btnTpl
+			});
+		},
+		initModal : function () {
+			var self = this;
+			self.modal = new Hualala.UI.ModalDialog({
+				id : 'account_withdraw',
+				clz : 'service-modal',
+				title : '结算账户提现',
+				afterRemove : function () {
+
+				}
+			});
+		},
+		mapFormElsData : function () {
+			var self = this,
+				accountInfoKeys = [
+					{key : 'settleUnitName', label : '结算账户名称'},
+					{key : 'receiverName', label : '开户名'},
+					{key : 'bankName', label : '开户行'},
+					{key : 'bankAccount', label : '账号'},
+					{key : 'settleBalance', label : '账户余额'}
+				],
+				accountInfo = _.map(accountInfoKeys, function (el) {
+					var k = $XP(el, 'key');
+					return {
+						label : $XP(el, 'label', ''),
+						value : k == 'settleBalance' ? ('<strong>' + self.model.get(k) + '</strong>元') : self.model.get(k)
+					};
+				});
+			return {
+				accountInfo : accountInfo,
+				formClz : 'account-withdraw-form',
+				labelClz : 'col-sm-4 control-label',
+				clz : 'col-sm-7',
+				id : 'transAmount',
+				label : '请输入提现金额',
+				name : 'transAmount',
+				value : self.model.get('settleBalance')
+			};
+		},
+		renderForm : function () {
+			var self = this,
+				renderData = self.mapFormElsData(),
+				tpl = self.get('layoutTpl'),
+				btnTpl = self.get('btnTpl'),
+				htm = tpl(renderData);
+			self.modal._.body.html(htm);
+			self.modal._.footer.html(btnTpl({
+				btns : [
+					{clz : 'btn-default', name : 'cancel', label : '取消'},
+					{clz : 'btn-warning', name : 'submit', label : '立即提现'}
+				]
+			}));
+		},
+		bindEvent : function () {
+			var self = this;
+			this.on({
+				show : function () {
+					this.modal.show();
+				},
+				hide : function () {
+					this.modal.hide();
+					this.parentView.emit('updateSettleBalance', self.model);
+				}
+			});
+			self.modal._.dialog.find('.btn').on('click', function (e) {
+				var $btn = $(this),
+					act = $btn.attr('name');
+				if (act == 'cancel') {
+					self.emit('hide');
+				} else {
+					var bv = self.modal._.body.find('form').data('bootstrapValidator');
+					$btn.button('提交中...');
+					bv.validate();
+				}
+			});
+			self.modal._.body.find('form').bootstrapValidator({
+				trigger : 'blur',
+				fields : {
+					transAmount : {
+						validators : {
+							notEmpty : {
+								message : "提现金额不能为空"
+							},
+							numeric : {
+								message: "提现金额必须为数字"
+							},
+							greaterThan : {
+								inclusive : false,
+								value : 0,
+								message : "提现金额必须大于0"
+							},
+							lessThan : {
+								inclusive : true,
+								value : self.model.get('settleBalance')
+							},
+							accuracy : {
+								accuracy : 2,
+								message : "输入现金只能精确到小数点后2位"
+							}
+						}
+					}
+				}
+			}).on('error.field.bv', function (e, data) {
+				var $form = $(e.target),
+					bv = $form.data('bootstrapValidator');
+			}).on('success.form.bv', function (e, data) {
+				e.preventDefault();
+				var $form = $(e.target),
+					bv = $form.data('bootstrapValidator');
+				var formParams = self.serializeForm();
+				self.model.emit('withdrawCash', {
+					params : formParams,
+					failFn : function () {
+						self.modal._.footer.find('.btn[name=submit]').button('reset');
+					},
+					successFn : function () {
+						self.modal._.footer.find('.btn[name=submit]').button('reset');
+						self.emit('hide');
+					}
+				})
+			});
+		},
+		serializeForm : function () {
+			var self = this,
+				$body = self.modal._.body;
+			return {
+				transAmount : $body.find('#transAmount').val()
+			};
+		}
+
+	});
+
+	Hualala.Account.WithdrawCashView = WithdrawCashView;
+
+	var QueryTransFormElsCfg = {
+		transCreateTime : {
+			type : 'section',
+			label : '日期',
+			min : {
+				type : 'datetimepicker',
+				surfix : '<span class="glyphicon glyphicon-calendar"></span>',
+				defaultVal : '',
+				validCfg : {
+					group : '.min-input',
+					validators : {}
+				}
+			},
+			max : {
+				type : 'datetimepicker',
+				surfix : '<span class="glyphicon glyphicon-calendar"></span>',
+				defaultVal : '',
+				validCfg : {
+					group : '.max-input',
+					validators : {}
+				}
+			}
+		},
+		transAmount : {
+			type : 'section',
+			label : '金额',
+			min : {
+				type : 'text',
+				prefix : '￥',
+				surfix : '元',
+				defaultVal : '',
+				validCfg : {
+					validators : {
+						numeric : {
+							message: "金额必须为数字"
+						},
+						greaterThan : {
+							inclusive : true,
+							value : 0,
+							message : "金额必须大于或等于0"
+						}
+					}
+				}
+			},
+			max : {
+				type : 'text',
+				prefix : '￥',
+				surfix : '元',
+				defaultVal : '',
+				validCfg : {
+					validators : {
+						numeric : {
+							message: "金额必须为数字"
+						},
+						greaterThan : {
+							inclusive : true,
+							value : 0,
+							message : "金额必须大于或等于0"
+						}
+					}
+				}
+			}
+		},
+		transStatus : {
+			type : 'combo',
+			label : '状态',
+			defaultVal : '',
+			options : Hualala.TypeDef.FSMTransStatus,
+			validCfg : {
+				validators : {
+					
+				}
+			}
+		},
+		transType : {
+			type : 'combo',
+			label : '类型',
+			defaultVal : '',
+			options : Hualala.TypeDef.FSMTransType,
+			validCfg : {
+				validators : {
+					
+				}
+			}
+		},
+		button : {
+			type : 'button',
+			clz : 'btn btn-block btn-warning',
+			label : '查询'
+		}
+	};
+	var QueryTransFormElsHT = new IX.IListManager();
+	_.each(QueryTransFormElsCfg, function (el, k) {
+		var type = $XP(el, 'type');
+		var labelClz = 'col-xs-2 col-sm-2 col-md-2 control-label';
+		if (type == 'section') {
+			var id = minID = k + '_min_' + IX.id(), maxID = k + '_max_' + IX.id(),
+				minName = k == 'transCreateTime' ? 'transCreateBeginTime' : 'minTransAmount',
+				maxName = k == 'transCreateTime' ? 'transCreateEndTime' : 'maxTransAmount',
+				min = IX.inherit($XP(el, 'min', {}), {
+					id : minID, name : minName, clz : 'col-xs-5 col-sm-5 col-md-5',
+				}), max = IX.inherit($XP(el, 'max', {}), {
+					id : maxID, name : maxName, clz : 'col-xs-5 col-sm-5 col-md-5',
+				});
+			QueryTransFormElsHT.register(k, IX.inherit(el, {
+				id : id,
+				labelClz : labelClz,
+				min : min,
+				max : max
+			}));
+		} else {
+			QueryTransFormElsHT.register(k, IX.inherit(el, {
+				id : k + '_' + IX.id(),
+				name : k,
+				labelClz : labelClz,
+			}, $XP(el, 'type') !== 'button' ? {clz : 'col-xs-5 col-sm-8 col-md-5'} : null));
+		}
+	});
+	var TransResultCols = [
+		{clz : '', label : '时间'},
+		{clz : '', label : '流水号'},
+		{clz : '', label : '交易状态'},
+		{clz : '', label : '交易类型'},
+		{clz : '', label : '交易金额'},
+		{clz : '', label : '佣金'},
+		{clz : '', label : '手续费'},
+		{clz : '', label : '余额变动'},
+		{clz : '', label : '交易后余额'},
+		{clz : '', label : '操作'}
+	];
+
+	var AccountTransListView = CardListView.subclass({
+		constructor : function () {
+			// View层容器
+			this.$container = null;
+			// 查询表单
+			this.$queryForm = null;
+			// 结果容器
+			this.$resultBox = null;
+			// 分页容器
+			this.$pager = null;
+			this.loadTemplates();
+		}
+	});
+	AccountTransListView.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_detail')),
+				tableTpl = Handlebars.compile(Hualala.TplLib.get('tpl_transaQuery_result'));
+			Handlebars.registerPartial("transaQueryForm", Hualala.TplLib.get('tpl_transaQuery_form'));
+			Handlebars.registerPartial("transaQueryResult", Hualala.TplLib.get('tpl_transaQuery_result'));
+			Handlebars.registerHelper('checkFormElementType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			Handlebars.registerHelper('chkColType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			this.set({
+				layoutTpl : layoutTpl,
+				tableTpl : tableTpl
+			});
+		},
+		initLayout : function () {
+			var layoutTpl = this.get('layoutTpl');
+			var result = [],
+				tblClz = 'table-striped table-hover',
+				tblHeaders = TransResultCols,
+				query = {cols : [
+					{
+						colClz : 'col-sm-6',
+						items : QueryTransFormElsHT.getByKeys(['transCreateTime', 'transAmount'])
+					},
+					{
+						colClz : 'col-sm-4',
+						items : QueryTransFormElsHT.getByKeys(['transType', 'transStatus'])
+					},
+					{
+						colClz : 'col-sm-2',
+						items : QueryTransFormElsHT.getByKeys(['button'])
+					}
+				]};
+			var htm = layoutTpl({
+				query : query,
+				result : {
+					clz : tblClz,
+					thead : tblHeaders,
+					rows : result
+				}
+			});
+			this.$container.html(htm);
+			this.$queryForm = this.$container.find('.query-form');
+			this.$resultBox = this.$container.find('.query-result');
+			this.$pager = this.$container.find('.page-selection');
+			this.render();
+			this.initPager();
+			this.initQueryEls();
+			this.bindEvent();
+			this.bindQueryEvent();
+		},
+		initQueryEls : function () {
+			var self = this;
+			self.$queryForm.find('[data-type=datetimepicker]').datetimepicker({
+				format : 'yyyy/mm/dd',
+				startDate : '2010/01/01',
+				autoclose : true,
+				minView : 'month',
+				todayBtn : true,
+				todayHighlight : true,
+				language : 'zh-CN'
+			});
+			self.$queryForm.on('click', '.input-group-addon', function (e) {
+				var $this = $(this),
+					$picker = $this.prev(':text[data-type=datetimepicker]');
+				if ($picker.length > 0) {
+					$picker.datetimepicker('show');
+				}
+			});
+		},
+		bindEvent : function () {
+			var self = this;
+			self.$resultBox.tooltip({
+				selector : '[title]'
+			});
+			self.$resultBox.on('click', '.btn[data-href]', function (e) {
+				var $btn = $(this),
+					path = $btn.attr('data-href');
+				document.location.href = path;
+			});
+			self.$pager.on('page', function (e, pageNo) {
+				var params = self.model.getPagerParams();
+				params['Page']['pageNo'] = pageNo;
+				self.model.emit('load', IX.inherit(params, {
+					pageNo : $XP(params, 'Page.pageNo', 1),
+					pageSize : $XP(params, 'Page.pageSize', 15)
+				}));
+			});
+		},
+		bindQueryEvent : function () {
+			var self = this;
+			self.$resultBox.on('click', 'a[data-orderkey]', function (e) {
+				var $btn = $(this),
+					orderKey = $btn.attr('data-orderkey') || '',
+					transType = $btn.attr('data-type') || '',
+					transID = $btn.attr('data-id') || '',
+					orderID = $btn.attr('data-orderid') || '';
+				// TODO show transaction detail modal
+				var detail = new Hualala.Account.AccountTransDetailModal({
+					triggerEl : $btn,
+					orderKey : orderKey,
+					orderID : orderID,
+					transType : transType,
+					transID : transID
+				});
+			});
+			self.$queryForm.on('click', '.btn', function (e) {
+				// TODO Update modal params and render query result
+				var params = self.getQueryFormParams();
+				self.model.emit('load', params);
+			});
+		},
+		getQueryFormParams : function () {
+			var self = this;
+			// var formKeys = ['transCreateBeginTime', 'transCreateEndTime', 'minTransAmount', 'maxTransAmount', 'transType', 'transStatus'];
+			var params = self.$queryForm.find('>form').serializeArray();
+			var ret = {};
+			_.each(params, function (el, i) {
+				var k = $XP(el, 'name'), v = $XP(el, 'value', '');
+				switch(k) {
+					case 'transCreateBeginTime':
+					case 'transCreateEndTime':
+						if (IX.isEmpty(v)) {
+							v = '';
+						} else {
+							v = IX.Date.getDateByFormat(v, 'yyyyMMddHHmmss');
+						}
+						break;
+					default :
+						v = IX.isEmpty(v) ? '' : v;
+						break;
+				}
+				ret[k] = v;
+			});
+			console.info(ret);
+			return ret;
+		},
+		mapTimeData : function (s) {
+			var r = {value : '', text : ''};
+			var s1 = '';
+			if (IX.isString(s) && s.length > 0) {
+				s1 = s.replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
+				s1 = IX.Date.getDateByFormat(s1, 'yyyy/MM/dd HH:mm');
+				r = IX.inherit({value : s, text : s1});
+			}
+			return r;
+		},
+		mapTransStatus : function (s) {
+			s = (s + "") || '';
+			var status = Hualala.TypeDef.FSMTransStatus;
+			var m = _.filter(status, function (el) {
+				return $XP(el, 'value', '') == s;
+			});
+			if (s.length == 0 || m.length == 0) {
+				return {text : '', value : ''};
+			}
+			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', '')};
+		},
+		mapTransType : function (s) {
+			s = s || '';
+			var types = Hualala.TypeDef.FSMTransType;
+			var m = _.filter(types, function (el) {
+				return $XP(el, 'value', '') == s;
+			});
+			if (s.length == 0 || m.length == 0) {
+				return {text : '', value : ''};
+			}
+			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', '')};
+		},
+		mapCashData : function (s) {
+			return {text : Hualala.Common.Math.prettyNumeric(s), value : s};
+		},
+		mapTransChanged : function (r) {
+			var transAmount = $XP(r, 'transAmount', 0),
+				transSalesCommission = $XP(r, 'transSalesCommission', 0),
+				transPoundage = $XP(r, 'transPoundage', 0),
+				transChanged = transAmount - transSalesCommission - transPoundage;
+			return {value : transChanged, text : transChanged};
+		},
+		mapColsRenderData : function (row) {
+			var self = this;
+			var colKeys = 'transCreateTime,SUATransItemID,transStatus,transType,transAmount,transSalesCommission,transPoundage,transChanged,transAfterBalance,rowControl';
+			var col = {clz : '', type : 'text'};
+
+			var cols = _.map(colKeys.split(','), function (k, i) {
+				var r = null;
+				switch(k) {
+					case 'transCreateTime':
+						r = self.mapTimeData($XP(row, k, ''));
+						break;
+					case 'SUATransItemID':
+						r = {value : $XP(row, k, ''), text : $XP(row, k, '')};
+						break;
+					case 'transStatus':
+						r = self.mapTransStatus($XP(row, k, ''));
+						break;
+					case 'transType':
+						r = self.mapTransType($XP(row, k, ''));
+						break;
+					case 'transAmount':
+					case 'transSalesCommission':
+					case 'transPoundage':
+					case 'transAfterBalance':
+						r = self.mapCashData($XP(row, k, ''));
+						break;
+					case 'transChanged':
+						r = self.mapTransChanged(row);
+						break;
+					case 'rowControl':
+						var transType = $XP(row, 'transType', ''),
+							transStatus = $XP(row, 'transStatus', '');
+						var hideBtnTransType = "104,199,202,204,205,206,299";
+						r = {
+							type : 'button',
+							btnClz : (hideBtnTransType.indexOf(transType) >= 0 || (transType == "203" && transStatus < 1)) ? 'hidden' : '',
+							label : '查看',
+							SUATransItemID : $XP(row, 'SUATransItemID', ''),
+							transType : transType,
+							orderKey : $XP(row, 'orderKey', ''),
+							orderID : $XP(row, 'orderID', '')
+						};
+						break;
+				}
+				return IX.inherit(col, r);
+			});
+			return cols;
+		},
+		mapRenderData : function (data) {
+			var self = this;
+			var tblClz = 'table-striped table-hover',
+				tblHeaders = TransResultCols;
+			var rows = _.map(data, function (row) {
+				return {
+					clz : '',
+					cols : self.mapColsRenderData(row)
+				};
+			});
+			return {
+				clz : tblClz,
+				thead : tblHeaders,
+				rows : rows
+			};
+		},
+		render : function () {
+			var self = this,
+				model = self.model,
+				pagerParams = model.getPagerParams(),
+				pageNo = $XP(pagerParams, 'Page.pageNo');
+			var results = model.getDataByPageNo(pageNo);
+			var renderData = self.mapRenderData(results);
+			var tableTpl = self.get('tableTpl');
+			var html = tableTpl(renderData);
+			self.$resultBox.empty();
+			self.$resultBox.html(html);
+			self.initPager({
+				total : model.get('pageCount'),
+				page : model.get('pageNo'),
+				href : 'javascript:void(0);'
+			});
+		}
+	});
+	Hualala.Account.AccountTransListView = AccountTransListView;
+
+	var AccountQueryShopView = Hualala.Shop.QueryView.subclass({
+		constructor : Hualala.Shop.QueryView.prototype.constructor
+	});
+	Hualala.Account.AccountQueryShopView = AccountQueryShopView;
+
+	var AccountQueryShopResultView = CardListView.subclass({
+		constructor : CardListView.prototype.constructor
+	});
+	AccountQueryShopResultView.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_list_layout')),
+				listTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_list')),
+				itemTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_table'));
+			// 注册shopCard子模板
+			Handlebars.registerPartial("shopTable", Hualala.TplLib.get('tpl_shop_table'));
+
+			this.set({
+				layoutTpl : layoutTpl,
+				listTpl : listTpl,
+				itemTpl : itemTpl
+			});
+		},
+		// 格式化渲染数据
+		mapRenderData : function (data) {
+			var self = this;
+			
+			var ret = _.map(data, function (shop, i, l) {
+				return {
+					clz : '',
+					id : $XP(shop, 'shopID', ''),
+					name : $XP(shop, 'shopName', ''),
+					city : $XP(shop, 'cityName', '')
+				};
+			});
+			return {
+				shopTable : {
+					rows : ret
+				}
+			};
+		},
+		render : function () {
+			var self = this,
+				model = self.model,
+				pagerParams = model.getPagerParams(),
+				pageNo = $XP(pagerParams, 'Page.pageNo');
+			var shops = model.getShops(pageNo);
+			var renderData = self.mapRenderData(shops);
+			var listTpl = self.get('listTpl');
+			var html = listTpl(renderData);
+			self.$list.empty();
+			self.$list.html(html);
+			self.initPager({
+				total : model.get('pageCount'),
+				page : model.get('pageNo'),
+				href : 'javascript:void(0);'
+			});
+		}
+	});
+	Hualala.Account.AccountQueryShopResultView = AccountQueryShopResultView;
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Account");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+	var AccountListModel = Hualala.Account.AccountListModel;
+	var AccountListView = Hualala.Account.AccountListView;
+	var ShopListController = Hualala.Shop.ShopListController;
+
+	var QueryModel = Hualala.Shop.QueryModel;
+	var QueryView = Hualala.Shop.QueryView;
+	var QueryController = Hualala.Shop.QueryController;
+
+	var AccountListController = ShopListController.subclass({
+		/**
+		 * 结算账户列表控制器
+		 * @param  {Object} cfg 配置参数
+		 *          @param {JQueryObj} container 容器
+		 *          @param {Object} view  结果的View模块实例
+		 *          @param {Object} model 结果的数据模块实例
+		 * @return {Object}     
+		 */
+		constructor : ShopListController.prototype.constructor
+	});
+
+
+	Hualala.Account.AccountListController = AccountListController;
+
+	var AccountQueryShopController = QueryController.subclass({
+		constructor : function (cfg) {
+			this.set({
+				sessionData : Hualala.getSessionData()
+			});
+			this.container = $XP(cfg, 'container', null);
+			this.needShopCreate = false;
+			this.model = new Hualala.Account.AccountQueryShopModel();
+			this.view = new Hualala.Account.AccountQueryShopView();
+			this.resultContainer = $XP(cfg, 'resultContainer', null);
+			this.resultController = new Hualala.Account.AccountQueryShopResultController({
+				container : this.resultContainer,
+				model : new Hualala.Account.AccountQueryShopResultModel(),
+				view : new Hualala.Account.AccountQueryShopResultView()
+			})
+			this.init();
+		}
+	});
+	AccountQueryShopController.proto({
+		init : function () {
+			var self = this;
+			self.bindEvent();
+			self.model.emit('load', function () {
+				if (!self.model.hasReady()) {
+					throw("Shop Query Init Failed!!");
+					return;
+				}
+				self.resultController.initDataStore(self.model.getShops());
+				// 加载View层
+				self.view.emit('init');
+				
+			});
+		},
+	});
+	Hualala.Account.AccountQueryShopController = AccountQueryShopController;
+
+	var AccountQueryShopResultController = Hualala.Shop.ShopListController.subclass({
+		constructor : Hualala.Shop.ShopListController.prototype.constructor
+	});
+	AccountQueryShopResultController.proto({
+		initDataStore : function (data) {
+			this.model.initDataStore(data);
+		},
+		bindEvent : function () {
+			this.on({
+				load : function (params) {
+					var self = this;
+					if (!self.hasReady()) {
+						self.init(params);
+					}
+					self.model.emit('load', params);
+				}
+			}, this);
+			this.model.on({
+				load : function (params) {
+					var self = this;
+					var cbFn = function () {
+						self.view.emit('render');
+					};
+					self.model.load(params, cbFn);
+				}
+			}, this);
+			this.view.on({
+				render : function () {
+					var self = this;
+					self.view.render();
+				},
+				reloadPager : function () {
+					var self = this;
+					self.view.initPager(params);
+				}
+			}, this);
+		}
+	});
+	Hualala.Account.AccountQueryShopResultController = AccountQueryShopResultController;
+	
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Account");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+	var BaseAccountModel = Hualala.Account.BaseAccountModel;
+
+	/*账户管理控制器*/
+	var AccountMgrController = Stapes.subclass({
+		/**
+		 * 构造控制器
+		 * @param  {Object} cfg {container, settleUnitID, accountModel, mgrView, transaDetailCtrl}
+		 * @return {Object}     AccountMgrController实例
+		 */
+		constructor : function (cfg) {
+			this.container = $XP(cfg, 'container', null);
+			this.settleUnitID = $XP(cfg, 'settleUnitID', null);
+			this.model = $XP(cfg, 'accountModel', null);
+			this.view = $XP(cfg, 'mgrView', null);
+			this.transaDetailCtrl = $XP(cfg, 'transaDetailCtrl', null);
+			if (!this.container || !this.model || !this.view || !this.transaDetailCtrl) {
+				throw("Account Detail Mgr Init Failed!!");
+				return ;
+			}
+			this.init();
+		}
+	});
+	AccountMgrController.proto({
+		// 初始化控制器
+		init : function () {
+			var self = this;
+			self.bindEvent();
+			self.model.emit('load', {
+				settleUnitID : self.settleUnitID,
+				cbFn : function () {
+					self.view.emit('init', {
+						model : self.model,
+						container : self.container
+					});
+					self.view.emit('render');
+				}
+			});
+		},
+		// 控制器绑定事件
+		bindEvent : function () {
+			this.on({
+				// 触发交易明细控制器进行查询
+				query : function () {
+					var self = this;
+					
+				}
+			}, this);
+			
+			this.view.on({
+				init : function (params) {
+					var self = this;
+					self.view.init(params);
+					self.transaDetailCtrl.init({
+						container : self.container.find('.account-detail-box'),
+						settleUnitID : self.settleUnitID
+					});
+				},
+				render : function () {
+					var self = this;
+					self.view.render();
+				}
+			}, this);
+		}
+	});
+
+	Hualala.Account.AccountMgrController = AccountMgrController; 
+
+	/*交易明细控制器*/
+	var TransactionDetailController = Stapes.subclass({
+		constructor: function () {
+			this.set({
+				sessionData : Hualala.getSessionData()
+			});
+			this.container = null;
+			this.settleUnitID = null;
+			this.model = new Hualala.Account.AccountTransListModel();
+			this.view = new Hualala.Account.AccountTransListView();
+			
+		}
+	});
+	TransactionDetailController.proto({
+		init : function (cfg) {
+			var self = this;
+			self.container = $XP(cfg, 'container', null);
+			self.settleUnitID = $XP(cfg, 'settleUnitID', '');
+			if (!this.container || !this.model || !this.view) {
+				throw("Account Transaction Detail Mgr Init Failed!!");
+				return ;
+			}
+			self.bindEvent();
+			self.model.init({
+				
+				groupID : $XP(self.get('sessionData'), 'site.groupID'),
+				settleUnitID : self.settleUnitID
+			});
+			self.model.emit('load', {
+				pageNo : 1, pageSize : 15,
+				cbFn : function (model) {
+					self.view.emit('init', {
+						container : self.container,
+						model : model
+					});
+				}
+			});
+		},
+		bindEvent : function () {
+			this.model.on({
+				load : function (params) {
+					var self = this;
+					var cbFn = $XP(params, 'cbFn', function () {
+						self.view.emit('render');
+					});
+					this.model.load(params, cbFn);
+				}
+			}, this);
+			this.view.on({
+				init : function (cfg) {
+					this.view.init(cfg);
+				},
+				render : function () {
+					this.view.render();
+				}
+			}, this);
+		}
+	});
+	Hualala.Account.TransactionDetailController = TransactionDetailController;
+})(jQuery, window);
+;(function ($, window) {
+	IX.ns("Hualala.Account");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+
+	var AccountActs = [
+		{clz : 'btn-success withdraw', act : 'withdraw', label : '提现'},
+		{clz : 'btn-link', act : 'edit', label : '修改银行卡'},
+		{clz : 'btn-link', act : 'queryShops', label : '查看全部店铺'},
+		{clz : 'btn-link', act : 'delete', label : '删除此帐户'}
+	];
+
+	var AccountMgrView = Stapes.subclass({
+		constructor : function () {
+			// View层容器
+			this.$container = null;
+			// 面包屑导航条
+			this.$nav = null;
+			this.breadCrumbs = null;
+			// schema容器
+			this.$schema = null;
+			// 交易详情
+			this.$detail = null;
+
+			this.model = null;
+
+			this.loadTemplates();
+		}
+	});
+
+	AccountMgrView.proto({
+		/**
+		 * 初始化View层
+		 * 
+		 * @param  {Object} cfg {model, container}
+		 * @return {[type]}
+		 */
+		init : function (cfg) {
+			this.$container = $XP(cfg, 'container', null);
+			this.model = $XP(cfg, 'model', null);
+			if (!this.$container || !this.model) {
+				throw("Account Detail View Init Failed!");
+				return ;
+			}
+			this.initLayout();
+		},
+		initLayout : function () {
+			var layoutTpl = this.get('layoutTpl');
+			var htm = layoutTpl();
+			this.$container.html(htm);
+			this.$nav = this.$container.find('.account-nav');
+			this.$schema = this.$container.find('.account-schema-box');
+			this.$detail = this.$container.find('.account-detail-box');
+			this.bindEvent();
+		},
+		initBreadCrumbs : function () {
+			var self = this,
+				$nav = self.$nav,
+				parentNames = Hualala.PageRoute.getParentNamesByPath();
+			self.breadCrumbs = new Hualala.UI.BreadCrumb({
+				container : $nav,
+				hideRoot : true,
+				nodes : parentNames,
+				clz : 'account-crumbs',
+				clickFn : function () {
+					var $this = $(this);
+					document.location.href = $this.attr('data-href');
+				},
+				mapRenderData : function (data, hideRoot, clz) {
+					var list = _.map(data, function (el, idx, l) {
+						var label = $XP(el, 'label', ''),
+							name = $XP(el, 'name', ''),
+							path = Hualala.PageRoute.createPath(name, [self.model.get('settleUnitID')]);
+						return {
+							clz : 'crumb',
+							label : label,
+							path : path,
+							name : name,
+							isLastNode : (data.length - 1 == idx) ? true : false
+						};
+					});
+					hideRoot === true && list.shift();
+					return {
+						clz : clz,
+						items : list
+					};
+				}
+
+			});
+
+		},
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_accountMgr_layout')),
+				schemaTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_schema')),
+				withDrawTpl = Handlebars.compile(Hualala.TplLib.get('tpl_withdraw_form'));
+			// 注册子模版
+			Handlebars.registerPartial("accountCard", Hualala.TplLib.get('tpl_account_card'));
+			this.set({
+				layoutTpl : layoutTpl,
+				schemaTpl : schemaTpl,
+				withDrawTpl : withDrawTpl
+			});
+		},
+		bindEvent : function () {
+			var self = this;
+			self.$schema.on('click', '.btn.withdraw', function (e) {
+				self.withdraw($(this));
+			});
+			self.$schema.on('click', '[data-act]', function (e) {
+				var act = $(this).attr('data-act');
+				var $btn = $(this);
+				switch(act) {
+					case 'edit':
+						self.editAccount($btn);
+						break;
+					case 'queryShops':
+						self.queryShops();
+						break;
+					case 'delete':
+						self.deleteAccount();
+						break;
+				}
+			});
+			
+			self.on({
+				'updateSettleBalance' : function (mAccount) {
+					var settleUnitID = mAccount.get('settleUnitID'),
+						settleBalance = Hualala.Common.Math.prettyNumeric(mAccount.get('settleBalance'));
+					self.$container.find('[data-id=' + settleUnitID + '] .cash > strong').html(settleBalance);
+				}
+			});
+		},
+		editAccount : function ($trigger) {
+			console.info('editAccount');
+			// triggerEl, mode, model, parentView
+			var editAccount = new AccountEditView({
+				triggerEl : $trigger,
+				mode : 'edit',
+				model : this.model,
+				parentView : this
+			});
+		},
+		withdraw : function ($trigger) {
+			var self = this;
+			// console.info('withdraw');
+			// 提现操作
+			var modal = new Hualala.Account.WithdrawCashView({
+				triggerEl : $trigger,
+				settleUnitID : self.model.get('settleUnitID'),
+				model : self.model,
+				parentView : self
+			});
+		},
+		queryShops : function ($trigger) {
+			var self = this;
+			var modal = new Hualala.Account.AccountQueryShopModal({
+				triggerEl : $trigger,
+				settleUnitID : self.model.get('settleUnitID'),
+				model : self.model,
+				parentView : self
+			});
+			console.info('queryShops');
+		},
+		deleteAccount : function () {
+			// console.info('deleteAccount');
+			var self = this;
+			Hualala.UI.Confirm({
+				title : '删除结算账户',
+				msg : '是否删除该账户？',
+				okLabel : '删除',
+				okFn : function () {
+					self.model.emit('delete', {
+						successFn : function (settleUnitID) {
+							document.location.href = Hualala.PageRoute.createPath('account', [settleUnitID]);
+						}
+					});
+				}
+			});
+			
+		},
+		mapRenderData : function () {
+			var self = this,
+				model = self.model,
+				acts = AccountActs,
+				acts1 = _.filter(IX.clone(acts), function (el) {
+					return $XP(el, 'act') != 'withdraw';
+				}),
+				accountCard = null;
+			var settleUnitID = model.get('settleUnitID') || '',
+				hasDefault = model.get('defaultAccount') == 0 ? false : true,
+				bankInfo = Hualala.Common.mapBankInfo(model.get('bankCode')),
+				bankAccountStr = Hualala.Common.codeMask((model.get('bankAccount') || ''), 0, -4);
+
+			accountCard = {
+				clz : 'pull-left',
+				settleUnitID : settleUnitID,
+				hasDefault : hasDefault,
+				settleUnitName : model.get('settleUnitName') || '',
+				settleBalance : parseFloat(model.get('settleBalance') || 0),
+				bankIcon : $XP(bankInfo, 'icon_16', ''),
+				bankComName : $XP(bankInfo, 'name', ''),
+				bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
+				shopCount : parseInt(model.get('shopCount') || 0),
+				path : Hualala.PageRoute.createPath('accountDetail', [settleUnitID]),
+				isDetail : true,
+				acts : IX.map(acts1, function (el, i) {
+					return IX.inherit(el, {
+						isFirst : i == 0 ? true : false
+					});
+				})
+			};
+			return {
+				accountCard : accountCard,
+				acts : _.map(acts, function (el) {
+					if ($XP(el, 'act') == 'queryShops') {
+						return IX.inherit(el, {
+							label : $XP(el, 'label', '') + '(' + parseInt(model.get('shopCount') || 0) + ')'
+						});
+					}
+					return el;
+				})
+			};
+		},
+		render : function () {
+			var self = this,
+				model = self.model,
+				renderData = self.mapRenderData(),
+				tpl = self.get('schemaTpl');
+			var htm = tpl(renderData);
+			self.initBreadCrumbs();
+			self.$schema.html(htm);
+		},
+		refresh : function () {
+			this.render();
+		}
+	});
+	
+	Hualala.Account.AccountMgrView = AccountMgrView; 
+
+
+	// 结算账户表单配置
+	var AccountEditFormElsCfg = {
+		receiverType : {
+			type : "radiogrp",
+			label : "收款方类型",
+			defaultVal : 2,
+			options : Hualala.TypeDef.AccountReceiverTypes,
+			validCfg : {
+				validators : {}
+			}
+		},
+		receiverName : {
+			type : "text",
+			label : "收款单位/姓名",
+			defaultVal : "",
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "收款单位/姓名不能为空"
+					},
+					stringLength : {
+						max : 20,
+						message : "收款单位/姓名不能超过20个字"
+					}
+				}
+			}
+		},
+		settleUnitName : {
+			type : "text",
+			label : "结算主体名称",
+			defaultVal : "",
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "结算主体名称不能为空"
+					},
+					stringLength : {
+						max : 50,
+						message : "结算主体名称不能超过50个字"
+					}
+				}
+			}
+		},
+		bankAccount : {
+			type : "text",
+			label : "转账账号",
+			defaultVal : "",
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "转账账号不能为空"
+					},
+					stringLength : {
+						max : 30,
+						message : "转账账号不能超过30个字"
+					}
+				}
+			}
+		},
+		bankCode : {
+			type : "combo",
+			label : "转账银行",
+			defaultVal : "CMB",
+			options : Hualala.TypeDef.BankOptions,
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "转账银行不能为空"
+					}
+				}
+			}
+		},
+		bankName : {
+			type : "text",
+			label : "转账分行",
+			defaultVal : "",
+			prefix : '<span class="icon-CMB-16"></span>',
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "转账分行不能为空"
+					},
+					stringLength : {
+						max : 40,
+						message : "转账分行不能超过40个字"
+					}
+				}
+			}
+		},
+		remark : {
+			type : "text",
+			label : "备注",
+			defaultVal : "",
+			validCfg : {
+				validators : {
+					stringLength : {
+						max : 250,
+						message : "备注不能超过250个字"
+					}
+				}
+			}
+		},
+		defaultAccount : {
+			type : "switcher",
+			label : "设为默认账户",
+			defaultVal : 1,
+			onLabel : "开启",
+			offLabel : "关闭",
+			validCfg : {
+				validators : {}
+			}
+		},
+		receiverLinkman : {
+			type : "text",
+			label : "姓名",
+			defaultVal : "",
+			prefix : '<span class="glyphicon glyphicon-user"></span>',
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "姓名不能为空"
+					},
+					stringLength : {
+						max : 20,
+						message : "姓名不能超过20个字"
+					}
+				}
+			}
+		},
+		receiverMobile : {
+			type : "text",
+			label : "手机",
+			defaultVal : "",
+			prefix : '<span class="glyphicon glyphicon-phone"></span>',
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "手机不能为空"
+					},
+					stringLength : {
+						max : 30,
+						message : "手机不能超过30个字符"
+					}
+				}
+			}
+		},
+		receiverEmail : {
+			type : "text",
+			label : "邮箱",
+			defaultVal : "",
+			prefix : '<span class="glyphicon glyphicon-envelope"></span>',
+			validCfg : {
+				validators : {
+					stringLength : {
+						max : 50,
+						message : "邮箱不能超过30个字符"
+					}
+				}
+			}
+		}
+	};
+	var AccountEditFormElsHT = new IX.IListManager();
+	_.each(AccountEditFormElsCfg, function (el, k) {
+		var type = $XP(el, 'type');
+		var labelClz = 'col-sm-offset-1 col-sm-3 control-label';
+		if (type == 'radiogrp') {
+			var ops = _.map($XP(el, 'options'), function (op) {
+				return IX.inherit(op, {
+					id : k + '_' + IX.id(),
+					name : k,
+					clz : 'col-sm-6'
+				});
+			});
+			AccountEditFormElsHT.register(k, IX.inherit(el, {
+				id : '',
+				options : ops,
+				labelClz : labelClz,
+				clz : 'col-sm-5'
+			}));
+		} else {
+			AccountEditFormElsHT.register(k, IX.inherit(el, {
+				id : k + '_' + IX.id(),
+				name : k,
+				labelClz : labelClz,
+				clz : 'col-sm-5'
+			}));
+		}
+		
+	});
+	
+	// 结算账户编辑窗口
+	var AccountEditView = Stapes.subclass({
+		/**
+		 * 结算账户编辑窗口构造器
+		 * @param  {Object} cfg {triggerEl, mode, model, parentView}
+		 * 				@param {jQueryObj} triggerEl 出发元素
+		 * 				@param {String} mode  操作模式add:添加账户模式；edit:编辑模式; read:只读模式
+		 * 				@param {Object} model 结算账户数据模型
+		 * 				@param {Object} parentView 父级View层
+		 * @return {Object}		账户编辑实例
+		 */
+		constructor : function (cfg) {
+			this.$trigger = $XP(cfg, 'trigger', null);
+			this.mode = $XP(cfg, 'mode', 'edit');
+			this.model = $XP(cfg, 'model', null) || new Hualala.Account.BaseAccountModel();
+			this.parentView = $XP(cfg, 'parentView', null);
+			this.modal = null;
+			this.formKeys = 'receiverType,receiverName,settleUnitName,bankAccount,bankCode,bankName,remark,defaultAccount,receiverLinkman,receiverMobile,receiverEmail'.split(',');
+			this.loadTemplates();
+			this.initModal();
+			this.renderForm();
+			this.bindEvent();
+			this.emit('show');
+		}
+	});
+	AccountEditView.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_edit')),
+				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
+			Handlebars.registerHelper('checkFormElementType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			Handlebars.registerHelper('isInputGroup', function (prefix, surfix, options) {
+				return (!prefix && !surfix) ? options.inverse(this) : options.fn(this);
+			});
+			this.set({
+				layoutTpl : layoutTpl,
+				btnTpl : btnTpl
+			});
+		},
+		getModalTitle : function () {
+			return (this.mode == 'edit' ?  '修改' : '增加') + '结算账户';
+		},
+		initModal : function () {
+			var self = this;
+			self.modal = new Hualala.UI.ModalDialog({
+				id : 'account_edit',
+				clz : 'account-modal',
+				title : self.getModalTitle(),
+				afterRemove : function () {
+
+				}
+			});
+		},
+		mapFormElsData : function () {
+			var self = this,
+				formKeys = self.formKeys;
+			var formEls = _.map(formKeys, function (key) {
+				var elCfg = AccountEditFormElsHT.get(key),
+					type = $XP(elCfg, 'type');
+				if (type == 'combo') {
+					var v = self.model.get(key) || $XP(elCfg, 'defaultVal'),
+						options = _.map($XP(elCfg, 'options'), function (op) {
+							return IX.inherit(op, {
+								selected : $XP(op, 'value') == v ? 'selected' : ''
+							});
+						});
+					return IX.inherit(elCfg, {
+						value : v,
+						options : options
+					});
+				} else if (type == 'radiogrp') {
+					var v = self.model.get(key) || $XP(elCfg, 'defaultVal'),
+						options = _.map($XP(elCfg, 'options'), function (op) {
+							return IX.inherit(op, {
+								checked : $XP(op, 'value') == v ? 'checked' : ''
+							});
+						});
+					return IX.inherit(elCfg, {
+						value : v,
+						options : options
+					});
+				} else if (type == 'switcher') {
+					return IX.inherit(elCfg, {
+						checked : self.model.get(key) == $XP(elCfg, 'defaultVal') ? 'checked' : ''
+					});
+				} else {
+					return IX.inherit(elCfg, {
+						value : self.model.get(key) || $XP(elCfg, 'defaultVal')
+					});
+				}
+			});
+			return formEls;
+		},
+		renderForm : function () {
+			var self = this,
+				renderData = self.mapFormElsData(),
+				tpl = self.get('layoutTpl'),
+				btnTpl = self.get('btnTpl'),
+				htm = tpl({
+					formClz : 'account-form',
+					items : renderData
+				});
+			self.modal._.body.html(htm);
+			self.modal._.footer.html(btnTpl({
+				btns : [
+					{clz : 'btn-default', name : 'cancel', label : '取消'},
+					{clz : 'btn-warning', name : 'submit', label : self.mode == 'edit' ? '保存' : '添加'}
+				]
+			}));
+
+			self.initSwitcher(':checkbox[data-type=switcher]');
+		},
+		initValidFieldOpts : function () {
+			var self = this,
+				formKeys = self.formKeys,
+				ret = {};
+			_.each(formKeys, function (key) {
+				var elCfg = AccountEditFormElsHT.get(key),
+					type = $XP(elCfg, 'type');
+				if (type == 'section') {
+					var min = key + '_min', max = key + '_max';
+					ret[min] = $XP(elCfg, 'min.validCfg', {});
+					ret[max] = $XP(elCfg, 'max.validCfg', {});
+				} else {
+					ret[key] = $XP(elCfg, 'validCfg', {});
+				}
+			});
+			return ret;
+		},
+		bindEvent : function () {
+			var self = this;
+			var fvOpts = self.initValidFieldOpts();
+			this.on({
+				show : function () {
+					this.modal.show();
+				},
+				hide : function () {
+					this.modal.hide();
+				}
+			});
+			self.modal._.dialog.find('.btn').on('click', function (e) {
+				var $btn = $(this),
+					act = $btn.attr('name');
+				if (act == 'cancel') {
+					self.emit('hide');
+				} else {
+					var bv = self.modal._.body.find('form').data('bootstrapValidator');
+					$btn.button('提交中...');
+					bv.validate();
+				}
+			});
+			self.modal._.body.find('form').bootstrapValidator({
+				trigger : 'blur',
+				fields : fvOpts
+			}).on('error.field.bv', function (e, data) {
+				var $form = $(e.target),
+					bv = $form.data('bootstrapValidator');
+			}).on('success.form.bv', function (e, data) {
+				e.preventDefault();
+				var $form = $(e.target),
+					bv = $form.data('bootstrapValidator');
+				var formParams = self.serializeForm();
+				console.info(formParams);
+				self.model.emit(self.mode, {
+					params : formParams,
+					failFn : function () {
+						self.modal._.footer.find('.btn[name=submit]').button('reset');
+					},
+					successFn : function () {
+						self.modal._.footer.find('.btn[name=submit]').button('reset');
+						self.parentView && IX.isFn(self.parentView.refresh) && self.parentView.refresh();
+						self.emit('hide');
+					}
+				});
+			});
+		},
+		initSwitcher : function (selector) {
+			var self = this;
+			self.modal._.body.find(selector).each(function () {
+				var $el = $(this),
+					onLabel = $el.attr('data-onLabel'),
+					offLabel = $el.attr('data-offLabel');
+				$el.bootstrapSwitch({
+					size : 'normal',
+					onColor : 'primary',
+					offColor : 'default',
+					onText : onLabel,
+					offText : offLabel
+				});
+			});
+		},
+		serializeForm : function () {
+			var self = this,
+				formKeys = self.formKeys,
+				ret = {},
+				formEls = _.map(formKeys, function (key) {
+					var elCfg = AccountEditFormElsHT.get(key),
+						type = $XP(elCfg, 'type');
+					if (type == 'switcher') {
+						// ret[key] = $('[name=' + key + ']').attr('checked') ? 1 : 0;
+						ret[key] = !$('[name=' + key + ']').data('bootstrapSwitch').options.state ? 0 : 1;
+					} else {
+						ret[key] = $('[name=' + key + ']').val();
+					}
+				});
+			return ret;
+		}
+	});
+
+	Hualala.Account.AccountEditView = AccountEditView;
+
+	var AccountQueryShopModal = Stapes.subclass({
+		constructor : function (cfg) {
+			this.$trigger = $XP(cfg, 'trigger', null);
+			this.model = $XP(cfg, 'model', null);
+			this.parentView = $XP(cfg, 'parentView', null);
+			this.modal = null;
+			this.$queryBox = null;
+			this.$resultBox = null;
+			this.queryCtrl = null;
+
+			this.loadTemplates();
+			this.initModal();
+			this.render();
+			this.bindEvent();
+			this.initQueryBox();
+			this.emit('show');
+		}
+	});
+	AccountQueryShopModal.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_query_shop')),
+				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
+			
+			this.set({
+				layoutTpl : layoutTpl,
+				btnTpl : btnTpl
+			});
+		},
+		initModal : function () {
+			var self = this;
+			self.modal = new Hualala.UI.ModalDialog({
+				id : 'account_query_shop',
+				clz : 'account-modal',
+				title : "结算账户关联店铺",
+				afterRemove : function () {
+
+				}
+			});
+		},
+		render : function () {
+			var self = this,
+				layoutTpl = self.get('layoutTpl'),
+				btnTpl = self.get('btnTpl');
+			var settleUnitName = self.model.get('settleUnitName') || '',
+				btns = [{clz : 'btn-default', name : 'cancel', label : '关闭'}];
+			var htm = layoutTpl({
+				clz : '',
+				title : settleUnitName,
+				label : "结算账户名称"
+			});
+			self.modal._.body.html(htm);
+			self.modal._.footer.html(btnTpl({
+				btns : btns
+			}));
+			self.$queryBox = self.modal._.body.find('.query-box');
+			self.$resultBox = self.modal._.body.find('.result-box');
+		},
+		bindEvent : function () {
+			var self = this;
+			this.on({
+				"show" : function () {
+					self.modal.show();
+				},
+				"hide" : function () {
+					self.modal.hide();
+				}
+			});
+			self.modal._.dialog.find('.btn').on('click', function (e) {
+				var $btn = $(this),
+					act = $btn.attr('name');
+				if (act == 'cancel') {
+					self.emit('hide');
+				}
+			});
+		},
+		initQueryBox : function () {
+			var self = this;
+			self.queryCtrl = new Hualala.Account.AccountQueryShopController({
+				container : self.$queryBox,
+				resultContainer : self.$resultBox,
+				// resultController : new Hualala.Account.AccountQueryShopResultController({
+				// 	container : self.$resultBox,
+				// 	model : new Hualala.Account.AccountQueryShopResultModel(),
+				// 	view : new Hualala.Account.AccountQueryShopResultView()
+				// })
+			});
+		}
+	});
+	Hualala.Account.AccountQueryShopModal = AccountQueryShopModal;
+
+	// 结算账户交易明细
+	var PersonUnit = Hualala.Constants.PersonUnit,
+		CashUnit = Hualala.Constants.CashUnit;
+	var getOrderSubTypeLabel = function (orderSubType) {
+		if (IX.isEmpty(orderSubType)) return '';
+		var l = Hualala.TypeDef.ShopBusiness;
+		var m = _.find(l, function (el) {
+			var id = $XP(el, 'id');
+			return id == orderSubType;
+		});
+		if (!m) return '';
+		return $XP(m, 'label', '');
+	};
+	var getGenderLabel = function (v) {
+		if (IX.isEmpty(v)) return '';
+		var l = Hualala.TypeDef.GENDER;
+		var m = _.find(l, function (el) {
+			var id = $XP(el, 'value');
+			return id == v;
+		});
+		if (!m) return '';
+		return $XP(m, 'label', '');
+	};
+	var mapUserFields = function (cfg, data) {
+		var label = $XP(cfg, 'label', ''), fieldType = $XP(cfg, 'fieldType', ''), fields = $XP(cfg, 'fields', []);
+		var userSex = $XP(data, 'userSex', '');
+		userSex = IX.isEmpty(userSex) ? '' : '(' + getGenderLabel(userSex) + ')';
+		var _fields = _.map(fields, function (key) {
+			var fieldLabelCfg = OrderPayFieldLabelLib[key], label = $XP(fieldLabelCfg, 'label', ''),
+				unit = $XP(fieldLabelCfg, 'unit', ''), clz = $XP(fieldLabelCfg, 'clz', '');
+			var value = $XP(data, key, '');
+			value += (key == 'userName') ? userSex : '';
+			value += unit;
+			return {
+				key : key,
+				clz : clz,
+				label : label,
+				value : value
+			};
+		});
+		return {
+			label : label,
+			fieldType : fieldType,
+			fields : _fields
+		};
+	};
+	var mapOrderFields = function (cfg, data) {
+		var label = $XP(cfg, 'label', ''), fieldType = $XP(cfg, 'fieldType', ''), fields = $XP(cfg, 'fields', []);
+		var orderSubType = $XP(data, 'orderSubType', ''),
+			orderSubTypeLabel = getOrderSubTypeLabel(orderSubType);
+		orderSubTypeLabel = IX.isEmpty(orderSubTypeLabel) ? '' : '(' + orderSubTypeLabel + ')';
+		var _fields = _.map(fields, function (key) {
+			var fieldLabelCfg = OrderPayFieldLabelLib[key], label = $XP(fieldLabelCfg, 'label', ''),
+				unit = $XP(fieldLabelCfg, 'unit', ''), clz = $XP(fieldLabelCfg, 'clz', '');
+			var value = $XP(data, key, '');
+			switch(key) {
+				case 'timeName':
+				case 'consumptionTypeName' :
+				case 'promotionDesc' :
+				case 'orderRemark':
+					clz += IX.isEmpty(value) ? ' hidden' : '';
+					break;
+				case 'orderTime':
+				case 'orderCreateTime':
+					value = IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(value), 'yyyy/MM/dd HH:mm');
+					break;
+				case 'statusName':
+					var isAlreadyPaid = $XP(data, 'isAlreadyPaid', 0),
+						orderStatus = $XP(data, 'orderStatus', '');
+					var surfix = '';
+					if (orderStatus >= 20 && isAlreadyPaid == 1) {
+						surfix = "<span>线上付款</span>";
+					} else if (orderStatus >= 20 && isAlreadyPaid == 0) {
+						surfix = '<span color="red">' + (orderStatus == 20 ? "餐到付款" : "到店付款") + "</span>";
+					} else {
+						surfix = "<span>未付款</span>";
+					}
+					surfix = '(' + surfix + ')';
+					value = value + surfix;
+					break;
+				case 'takeoutAddress' :
+					clz += orderSubType == 20 || orderSubType == 21 ? '' : ' hidden';
+					break;
+			}
+			value += unit;
+			return {
+				key : key,
+				clz : clz,
+				label : label,
+				value : value
+			};
+		});
+		return {
+			label : label,
+			orderSubTypeLabel : orderSubTypeLabel,
+			fieldType : fieldType,
+			fields : _fields
+		};
+	};
+	var mapPayFields = function (cfg, data) {
+		var label = $XP(cfg, 'label', ''), fieldType = $XP(cfg, 'fieldType', ''), fields = $XP(cfg, 'fields', []);
+		var orderSubType = $XP(data, 'orderSubType', '');
+		var _fields = _.map(fields, function (key) {
+			var fieldLabelCfg = OrderPayFieldLabelLib[key], label = $XP(fieldLabelCfg, 'label', ''),
+				unit = $XP(fieldLabelCfg, 'unit', ''), clz = $XP(fieldLabelCfg, 'clz', '');
+			var value = $XP(data, key, '');
+			switch(key) {
+				case 'serviceAmount':
+				case 'discountAmount':
+				case 'freeAmount':
+				case 'giftAmount':
+				case 'cardDiscountAmount':
+				case 'pointBalance':
+				case 'moneyBalance':
+				case 'orderRefundAmount':
+					clz += value == 0 ? ' hidden' : '';
+					break;
+				case 'presentInfo':
+					clz += IX.isEmpty(value) ? ' hidden' : '';
+					break;
+				case 'takeoutPackagingAmount':
+					clz += orderSubType == 20 || orderSubType == 21 ? '' : ' hidden';
+					break;
+
+			}
+			value += unit;
+			return {
+				key : key,
+				clz : clz,
+				label : label,
+				value : value
+			};
+		});
+		return {
+			label : label,
+			fieldType : fieldType,
+			fields : _fields
+		};
+	};
+	var mapFoodsFields = function (cfg, data) {
+		var label = $XP(cfg, 'label', ''), fieldType = $XP(cfg, 'fieldType', ''), fields = $XP(cfg, 'fields', []);
+		var dishes = $XP(data, 'records', []),
+			categories = _.groupBy(dishes, function (dish) {return $XP(dish, 'foodCategoryID');});
+		categories = _.map(categories, function (cate, key) {
+			var foodCategoryName = '';
+			var foodCategorySum = cate.length;
+			var _dishes = _.map(cate, function (dish) {
+				var _dish = {};
+				_.each(fields, function (k) {
+					var v = $XP(dish, k, ''),
+						unit = !IX.isEmpty(OrderPayFieldLabelLib[k]) && !IX.isEmpty(OrderPayFieldLabelLib[k]['unit']) ?
+							OrderPayFieldLabelLib[k]['unit'] : '';
+					if (k == 'foodCategoryName') {
+						foodCategoryName = v;
+					}
+					
+					_dish[k] = v + unit;
+				});
+				return _dish;
+			});
+			return {
+				foodCategoryName : foodCategoryName,
+				foodCategorySum : '(' + foodCategorySum + ')',
+				foodCategoryID : key,
+				rows : _dishes
+			}
+		});
+		
+		return {
+			fieldType : fieldType,
+			label : label,
+			categories : categories
+		};
+	};
+	var OrderPayFieldLabelLib = {
+		"userName" : {label : "姓名", clz : "col-xs-6"},
+		"userLoginMobile" : {label : "手机", clz : "col-xs-6"},
+		"orderID" : {label : "订单号", clz : "col-xs-6"},
+		"orderCheckPWD" : {label : "消费密码", clz : "col-xs-6"},
+		"person" : {label : "人数", unit : PersonUnit, clz : "col-xs-6"},
+		"timeName" : {label : "餐段名称", clz : "col-xs-6"},
+		"tableName" : {label : "桌台号", clz : "col-xs-6"},
+		"shopOrderKey" : {label : "餐饮软件凭证号", clz : "col-xs-6"},
+		"orderTime" : {label : "用餐时间", clz : "col-xs-12"},
+		"orderCreateTime" : {label : "下单时间", clz : "col-xs-12"},
+		"statusName" : {label : "订餐状态", clz : "col-xs-12"},
+		"takeoutAddress" : {label : "外送地址", clz : "col-xs-6"},
+		"consumptionTypeName" : {label : "用餐类型", clz : "col-xs-12"},
+		"promotionDesc" : {label : "店家促销描述", clz : "col-xs-12"},
+		"orderRemark" : {label : "订单备注", clz : "col-xs-12"},
+		"foodAmount" : {label : "菜品金额", unit : CashUnit, clz : "col-xs-6"},
+		"serviceAmount" : {label : "服务费", unit : CashUnit, clz : "col-xs-6"},
+		"paidAmount" : {label : "买单前已付金额", unit : CashUnit, clz : "col-xs-6"},
+		"promotionTotalAmount" : {label : "餐饮软件优惠金额", unit : CashUnit, clz : "col-xs-6"},
+		"discountAmount" : {label : "商家折免", unit : CashUnit, clz : "col-xs-6"},
+		"freeAmount" : {label : "商家减免", unit : CashUnit, clz : "col-xs-6"},
+		"giftAmount" : {label : "商家代金券金额", unit : CashUnit, clz : "col-xs-6"},
+		"presentInfo" : {label : "赠送", clz : "col-xs-6"},
+		"cardDiscountAmount" : {label : "会员卡优惠", unit : CashUnit, clz : "col-xs-6"},
+		"pointBalance" : {label : "积分抵扣", unit : CashUnit, clz : "col-xs-6"},
+		"moneyBalance" : {label : "会员卡余额支付", unit : CashUnit, clz : "col-xs-6"},
+		"takeoutPackagingAmount" : {label : "打包费", unit : CashUnit, clz : "col-xs-6"},
+		"orderTotal" : {label : "订单金额", unit : CashUnit, clz : "col-xs-6"},
+		"orderRefundAmount" : {label : "退款金额", unit : CashUnit, clz : "col-xs-6"},
+		"shopName" : {label : "店铺名称", clz : "col-xs-6"},
+		"shopTel" : {label : "电话", clz : "col-xs-6"},
+		"foodPrice" : {label : "菜品价格", unit : CashUnit}
+	};
+	var OrderPayDetailElsCfg = {
+		userFields : {
+			label : "个人信息",
+			fieldType : "list",
+			fields : ["userName","userLoginMobile"],
+			mapFn : mapUserFields
+		},
+		orderFields : {
+			label : "订单信息",
+			fieldType : "list",
+			fields : ["orderID","orderCheckPWD","person","timeName","tableName","shopOrderKey","orderTime","orderCreateTime",
+			"statusName","takeoutAddress","consumptionTypeName","promotionDesc","orderRemark"],
+			mapFn : mapOrderFields
+		},
+		payFields : {
+			label : "支付详情",
+			fieldType : "list",
+			fields : ["foodAmount","serviceAmount","paidAmount","promotionTotalAmount","discountAmount",
+			"freeAmount","giftAmount","presentInfo","cardDiscountAmount","pointBalance","moneyBalance","takeoutPackagingAmount",
+			"orderTotal","orderRefundAmount","shopName","shopTel"],
+			mapFn : mapPayFields
+		},
+		foodsFields : {
+			label : "菜品信息",
+			fieldType : "table",
+			fields : ["foodCategoryName","foodCategoryID","foodName","foodUnit","foodPrice","foodAmount"],
+			mapFn : mapFoodsFields
+		}
+
+	};
+	
+	var AccountTransDetailModal = Stapes.subclass({
+		/**
+		 * 构造
+		 * @param  {Object} cfg {triggerEl, orderKey, orderID, transType, transID}
+		 * @return {Object}
+		 */
+		constructor : function (cfg) {
+			this.$trigger = $XP(cfg, 'triggerEl');
+			this.orderKey = $XP(cfg, 'orderKey', '');
+			this.orderID = $XP(cfg, 'orderID', '');
+			this.transType = $XP(cfg, 'transType', '');
+			this.transID = $XP(cfg, 'transID', '');
+			this.transTypes = Hualala.TypeDef.FSMTransType;
+			this.transTypeHT = new IX.IListManager();
+			this.initTransTypeLib();
+			this.modal = null;
+			this.tplName = $XP(this.transTypeHT.get(this.transType), 'tpl', null);
+			this.callServerName = $XP(this.transTypeHT.get(this.transType), 'queryCall', null);
+			this.callServer = null;
+			if (IX.isFn(this.callServerName)) {
+				this.callServer = this.callServerName;
+			} else if (!IX.isString(this.callServerName)) {
+				throw("Configuration failed : Invalid Page Initialized for " + this.callServerName);
+				return false;
+			} else if (IX.nsExisted(this.callServerName)) {
+				this.callServer = IX.getNS(this.callServerName);
+			}
+			this.queryKeys = $XP(this.transTypeHT.get(this.transType), 'queryKeys', null);
+			if (!this.tplName || !this.callServer) return null;
+			this.loadTemplates();
+			this.initModal();
+			this.bindEvent();
+			this.emit('load', this.mapQueryParams());
+		}
+	});
+	AccountTransDetailModal.proto({
+		initTransTypeLib : function () {
+			var self = this;
+			_.each(this.transTypes, function (el) {
+				var type = $XP(el, 'value', '').toString();
+				if (type.length > 0) {
+					self.transTypeHT.register(type, el);
+				}
+			});
+		},
+		loadTemplates : function () {
+			var self = this;
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get(self.tplName)),
+				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
+			Handlebars.registerHelper('chkFieldType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			this.set({
+				layoutTpl : layoutTpl,
+				btnTpl : btnTpl
+			});
+		},
+		initModal : function () {
+			var self = this;
+			self.modal = new Hualala.UI.ModalDialog({
+				id : 'account_trans_detail',
+				clz : 'account-modal',
+				sizeCls : 'modal-lg',
+				title : "结算账户交易详情",
+				afterRemove : function () {
+
+				}
+			});
+		},
+		bindEvent : function () {
+			var self = this;
+			self.on({
+				"load" : function (params) {
+					self.callServer(params, function (res) {
+						if (res.resultcode == '000') {
+							self.render($XP(res, 'data', null));
+						} else {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+						}
+					});
+				},
+				"show" : function () {
+					self.modal.show();
+				},
+				"hide" : function () {
+					self.modal.hide();
+				}
+			}, this);
+			self.modal._.dialog.on('click', '.btn', function (e) {
+				var $btn = $(this),
+					act = $btn.attr('name');
+				if (act == 'cancel') {
+					self.emit('hide');
+				}
+			});
+		},
+		mapOrderPayDetail : function (data) {
+			var self = this;
+			var fieldsets = "userFields,orderFields,payFields,foodsFields".split(',');
+			fieldsets = _.map(fieldsets, function (key, i) {
+				var fieldCfg = OrderPayDetailElsCfg[key];
+				var mapFn = $XF(fieldCfg, 'mapFn');
+				var cfg = _.pick(fieldCfg, 'label', 'fieldType', 'fields');
+				return mapFn(cfg, $XP(data, 'data', {}));
+			});
+			console.info(fieldsets);
+			var orderSubType = $XP(data, 'data.orderSubType', ''),
+				orderSubTypeLabel = getOrderSubTypeLabel(orderSubType);
+			orderSubTypeLabel = IX.isEmpty(orderSubTypeLabel) ? '' : '(' + orderSubTypeLabel + ')';
+			var printDetail = {
+				label : "订单打印内容",
+				orderSubTypeLabel : orderSubTypeLabel,
+				content : $XP(data, 'data.orderPrnStr', '').replace(/\n/g, '<br/>')
+			};
+
+			return {
+				fieldsets : fieldsets,
+				printDetail : printDetail
+			};
+		},
+		mapFsmCustomerDetail : function (data) {
+			var self = this;
+			var settleUnitDetail = $XP(data, 'settleUnitDetail', [])[0],
+				customerCard = $XP(data, 'customerCard', [])[0];
+			var transType = $XP(settleUnitDetail, 'transType'),
+				transTypeLabel = $XP(self.transTypeHT.get(transType), 'label', '');
+			settleUnitDetail = IX.each(settleUnitDetail, {}, function (acc, el, k) {
+				var cashKeys = 'transAfterBalance,transAmount,transSalesCommission';
+				if (cashKeys.indexOf(k) >= 0) {
+					acc[k] = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.prettyPrice(el));
+				} else if (k == 'transType') {
+					acc = IX.inherit(acc, {
+						transType : el,
+						transTypeLabel : $XP(self.transTypeHT.get(el), 'label', '')
+					});
+				} else {
+					acc[k] = el;
+				}
+				return acc;
+			});
+			customerCard = IX.each(customerCard, {}, function (acc, el, k) {
+				var cashKeys = 'saveCashTotal,saveMoneyTotal,moneyBalance';
+				if (cashKeys.indexOf(k) >= 0) {
+					acc[k] = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.prettyPrice(el));
+				} else {
+					acc[k] = el;
+				}
+				return acc;
+			});
+			return {
+				settleUnitDetail : IX.inherit(settleUnitDetail, {
+					transTypeLabel : transTypeLabel
+				}),
+				customerCard : customerCard
+			};
+		},
+		mapRenderData : function (data) {
+			var self = this;
+			var type = _.last(self.callServerName.split('.'));
+			var ret = null;
+			switch(type) {
+				case "queryAccountOrderPayDetail":
+					ret = self.mapOrderPayDetail(data);
+					break;
+				case "queryAccountFsmCustomerDetail":
+					ret = self.mapFsmCustomerDetail(data);
+					break;
+				default : 
+					break;
+			}
+			return ret;
+		},
+		render : function (data) {
+			var self = this;
+			var renderData = self.mapRenderData(data),
+				layoutTpl = self.get('layoutTpl'),
+				btnTpl = self.get('btnTpl');
+			var htm = layoutTpl(renderData);
+			self.modal._.body.html(htm);
+			self.modal._.footer.html(btnTpl({
+				btns : [
+					{clz : 'btn-default', name : 'cancel', label : '关闭'}
+				]
+			}));
+			self.emit('show');
+		},
+		mapQueryParams : function () {
+			var self = this;
+			var params = {};
+			_.each(self.queryKeys.split(','), function (k) {
+				var _k = k == 'SUA_TransItemID' ? 'transID' : k;
+				params[k] = self[_k]; 
+			});
+			console.info('queryParams:');
+			console.info(params);
+			return params;
+		}
+	});
+	Hualala.Account.AccountTransDetailModal = AccountTransDetailModal;
+
+	
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Account");
+	var initAccountListPage = function () {
+		var $body = $('#ix_wrapper > .ix-body > .container');
+		var accountListPanel = new Hualala.Account.AccountListController({
+			container : $body,
+			view : new Hualala.Account.AccountListView(),
+			model : new Hualala.Account.AccountListModel({
+				callServer : Hualala.Global.queryAccount
+			})
+		});
+		accountListPanel.emit('load', {
+			pageNo : 1,
+			pageSize : 15
+		});
+	};
+
+	var initAccountMgrPage = function () {
+		var ctx = Hualala.PageRoute.getPageContextByPath();
+		var $body = $('#ix_wrapper > .ix-body > .container');
+		var accountMgrCtrl = new Hualala.Account.AccountMgrController({
+			container : $body,
+			settleUnitID : $XP(ctx, 'params', [])[0],
+			accountModel : new Hualala.Account.BaseAccountModel(),
+			mgrView : new Hualala.Account.AccountMgrView(),
+			transaDetailCtrl : new Hualala.Account.TransactionDetailController()
+		});
+		// $body.html("<h1>结算账户管理页面</h1>");
+	};
+
+	Hualala.Account.AccountMgrInit = initAccountMgrPage;
+	
+	Hualala.Account.AccountListInit = initAccountListPage;
 })(jQuery, window);;(function ($, window) {
 	IX.ns("Hualala.Common");
 	var pageBrickConfigs = [
@@ -2822,80 +6176,80 @@ function getSelectText($select)
 		// 登录
 		{
 			name : "login", path : "/#login", reg : /login$/, bodyClz : "",
-			PageInitiator : "Hualala.Common.LoginInit"
+			PageInitiator : "Hualala.Common.LoginInit", label : "登录"
 		},
 		// home page主页
 		{
 			name : "main", path : "/#home", reg : /home$/, bodyClz : "",
-			PageInitiator : "Hualala.Common.HomePageInit"
+			PageInitiator : "Hualala.Common.HomePageInit", label : "首页"
 		},
 
 		// 店铺管理主页		
 		{
 			name : "shop", path : "/#shop", reg : /shop$/, bodyClz : "",
-			PageInitiator : "Hualala.Shop.HomePageInit"
+			PageInitiator : "Hualala.Shop.HomePageInit", parentName : "main", label : "店铺管理"
 		},
 		// 创建店铺
 		{
 			name : "shopCreate", path : "/#shop/create", reg : /shop\/create$/, bodyClz : "",
-			PageInitiator : "Hualala.Shop.CreateShopInit"
+			PageInitiator : "Hualala.Shop.CreateShopInit", parentName : "shop", label : "创建店铺"
 		},
 		// 店铺信息管理
 		{
 			name : "shopInfo", path : "/#shop/{id}/info", reg : /shop\/(.*)\/info$/, bodyClz : "",
-			PageInitiator : "Hualala.Shop.BaseInfoMgrInit"
+			PageInitiator : "Hualala.Shop.BaseInfoMgrInit", parentName : "shop", label : "店铺信息"
 		},
 		// 店铺菜单管理
 		{
 			name : "shopMenu", path : "/#shop/{id}/menu", reg : /shop\/(.*)\/menu$/, bodyClz : "",
-			PageInitiator : "Hualala.Shop.FoodMenuMgrInit"
+			PageInitiator : "Hualala.Shop.FoodMenuMgrInit", parentName : "shop", label : "菜单管理"
 		},
 
 		// 店铺功能设置页面
 		{
 			name : "setting", path : "/#setting", reg : /setting$/, bodyClz : "",
-			PageInitiator : "Hualala.Setting.ShopMgrInit"
+			PageInitiator : "Hualala.Setting.ShopMgrInit", parentName : "main", label : "业务设置"
 		},
 
 		// 结算账户页面
 		{
 			name : "account", path : "/#account", reg : /account$/, bodyClz : "",
-			PageInitiator : "Hualala.Account.AccountListInit"
+			PageInitiator : "Hualala.Account.AccountListInit", parentName : "main", label : "结算"
 		},
 		// 结算账户详情设置页面
 		{
 			name : "accountDetail", path : "/#account/{id}/detail", reg : /account\/(.*)\/detail$/, bodyClz : "",
-			PageInitiator : "Hualala.Account.AccountMgrInit"
+			PageInitiator : "Hualala.Account.AccountMgrInit", parentName : "account", label : "账户明细"
 		},
 
 		// 账号管理页面
 		{
 			name : "user", path : "/#user", reg : /user$/, bodyClz : "",
-			PageInitiator : "Hualala.User.UserListInit"
+			PageInitiator : "Hualala.User.UserListInit", parentName : "main", label : "账号管理"
 		},
 
 		// 订单报表页面
 		{
 			name : "order", path : "/#order", reg : /order$/, bodyClz : "",
-			PageInitiator : "Hualala.Order.OrderChartInit"
+			PageInitiator : "Hualala.Order.OrderChartInit", parentName : "main", label : "订单"
 		},
 
 		// PC客户端下载页面
 		{
 			name : "pcclient", path : "/#download", reg : /download$/, bodyClz : "",
-			PageInitiator : "Hualala.Common.PCClientDownloadInit"
+			PageInitiator : "Hualala.Common.PCClientDownloadInit", parentName : "main", label : "客户端下载"
 		},
 
 		// 关于商户中心
 		{
 			name : "about", path : "/#about", reg : /about$/, bodyClz : "",
-			PageInitiator : "Hualala.Common.AboutInit"
+			PageInitiator : "Hualala.Common.AboutInit", parentName : "main", label : "关于"
 		},
 
 		// 联系我们
 		{
 			name : "contact", path : "/#contact", reg : /contact$/, bodyClz : "",
-			PageInitiator : "Hualala.Common.ContactInit"
+			PageInitiator : "Hualala.Common.ContactInit", parentName : "main", label : "联系我们"
 		},
 		// 上面的path都匹配不到，需要自动跳转home
 		{
@@ -2911,7 +6265,8 @@ function getSelectText($select)
 		var _name = $XP(cfg, 'name'), _path = $XP(cfg, 'path'), _reg = $XP(cfg, 'reg');
 		mappingRoute(_path, _name, _reg);
 		PageConfigurations[_name] = {
-			name : _name, bodyClz : $XP(_cfg, 'bodyClz', ''), path : _path, reg : $XP(_cfg, 'reg', null)
+			name : _name, bodyClz : $XP(_cfg, 'bodyClz', ''), path : _path, reg : $XP(_cfg, 'reg', null),
+			parentName : $XP(cfg, 'parentName', null), label : $XP(cfg, 'label', '')
 		};
 		var _pageInit = "PageInitiator" in _cfg ? _cfg.PageInitiator : null;
 		if (!IX.isString(_pageInit) && !IX.isFn(_pageInit))
@@ -2967,5 +6322,31 @@ function getSelectText($select)
 		params.shift();
 		return IX.inherit({params : params}, match[match.length - 1]);
 	};
+
+	Hualala.PageRoute.getParentNamesByPath = function (path) {
+		var curContext = Hualala.PageRoute.getPageContextByPath(path);
+		var curName = $XP(curContext, 'name', null);
+		var ret = [];
+		while(!IX.isEmpty(curName)) {
+			ret.unshift({
+				name : curName,
+				label : $XP(curContext, 'label', ''),
+                path: Hualala.PageRoute.createPath(curName, curContext.params)
+			});
+			var parentName = $XP(curContext, 'parentName', null);
+			curContext = IX.isEmpty(parentName) ? null : $XP(PageConfigurations, parentName, null);
+			curName = $XP(curContext, 'name', null);
+		}
+        ret[ret.length - 1].isLastNode = true;
+		return ret;
+	};
+    
+    Hualala.PageRoute.getPageLabelByName = function (name) {
+        if(!name) return null;
+        var cfg = PageConfigurations[name];
+        if(!cfg) return null;
+        return cfg.label;
+    };
+    
 
 })(jQuery, window);

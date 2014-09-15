@@ -97,6 +97,8 @@
 	 * cfg :{
 	 * 		container : DOM|jQuery Obj //default $('body') 
 	 * 		id : '',	//default IX.id()
+	 * 		backdrop : true|false|'static'  //true（默认）:点击窗口外区域自动关闭窗口；false:点击窗口外围不会关闭窗口,半透明蒙版也没有；
+	 * 											static:点击窗口外围不会关闭窗口,但是半透明蒙版存在
 	 * 		zIndex : null,	//default null
 	 * 		dragHandler : null,	//拖动手柄 default null
 	 * 		containment : null,	//拖动范围容器 default null
@@ -118,6 +120,7 @@
 	var ModalDialog = function (cfg) {
 		var config = IX.inherit({
 			container : null,
+			backdrop : true,
 			id : null,
 			html : '',
 			ifDrag : false,
@@ -131,6 +134,7 @@
 			title : '',
 			hideWithRemove : true,
 			clz : '',
+            sizeCls: '',
 			afterRemove : IX.emptyFn,
 			afterHide : IX.emptyFn,
 			aftetShow : IX.emptyFn,
@@ -146,7 +150,8 @@
 		var dialogCfg = {
 			clz : $XP(config, 'clz', ''),
 			id : dialogId,
-			title : $XP(config, 'title', '')
+			title : $XP(config, 'title', ''),
+			backdrop : $XP(config, 'backdrop', true)
 		};
 
 		var initStyle = function () {
@@ -201,6 +206,8 @@
 			$closeBtn = $dialogHead.find('.close');
 			$dialogBody = $self.find('.modal-body');
 			$dialogFoot = $self.find('.modal-footer');
+            config.html && $dialogBody.html(config.html);
+            config.sizeCls && $self.find('.modal-dialog').addClass(config.sizeCls);
 			_model._ = {
 				container : $con,
 				dialog : $self,
@@ -218,6 +225,7 @@
 
 		var _show = function () {
 			_model._.dialog.modal('show');
+            return _model;
 		};
 
 		var _model = {
@@ -231,6 +239,135 @@
 		init();
 		return _model;
 	};
+
+	/**
+	 * Alert提示框
+	 * @param {Object} cfg 	{msg, label, cbFn}
+	 */
+	var Alert = function (cfg) {
+		var msg = $XP(cfg, 'msg', ''),
+			label = $XP(cfg, 'label', '确定'),
+			cbFn = $XF(cfg, 'cbFn');
+		var btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_modal_btns'));
+		var btns = [{
+			clz : 'btn btn-warning', name : 'ok', label : label
+		}];
+		var modal = new ModalDialog({
+			id : 'ix_alert_' + IX.id(),
+			clz : 'x-alert',
+			title : '',
+			showTitle : false,
+			backdrop : 'static',
+			afterRemove : function () {
+
+			}
+		});
+		var $dialog = modal._.dialog,
+			$header = modal._.header,
+			$body = modal._.body,
+			$footer = modal._.footer;
+		$body.html(msg);
+		$footer.html(btnTpl({btns:btns}));
+		$dialog.on('click', '.btn[name=ok]', function (e) {
+			modal.hide();
+			cbFn();
+		});
+		modal.show();
+	};
+	/**
+	 * Confirm提示框
+	 * @param {Object} cfg  {title, msg, okLabel, okFn, cancelLabel, cancelFn}
+	 */
+	var Confirm = function (cfg) {
+		var msg = $XP(cfg, 'msg', ''),
+			title = $XP(cfg, 'title', ''),
+			okLabel = $XP(cfg, 'okLabel', '确定'),
+			cancelLabel = $XP(cfg, 'cancelLabel', '取消'),
+			okFn = $XF(cfg, 'okFn'),
+			cancelFn = $XF(cfg, 'cancelFn');
+		var btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_modal_btns'));
+		var btns = [{
+			clz : 'btn btn-default', name : 'cancel', label : cancelLabel
+		}, {
+			clz : 'btn btn-warning', name : 'ok', label : okLabel
+		}];
+		var modal = new ModalDialog({
+			id : 'ix_confirm_' + IX.id(),
+			clz : 'x-confirm',
+			title : title,
+			showTitle : true,
+			backdrop : 'static',
+			afterRemove : function () {
+
+			}
+		});
+		var $dialog = modal._.dialog,
+			$header = modal._.header,
+			$body = modal._.body,
+			$footer = modal._.footer;
+		$body.html(msg);
+		$footer.html(btnTpl({btns:btns}));
+		$dialog.on('click', '.btn[name]', function (e) {
+			var act = $(this).attr('name');
+			modal.hide();
+			if (act == 'ok') {
+				okFn();
+			} else {
+				cancelFn();
+			}
+		});
+		modal.show();
+	};
+
+	/**
+	 * 面包屑控件
+	 * 根据当前页面生成页面层级面包屑
+	 * @param {Object} cfg {container,hideRoot,nodes, clz, clickFn, mapRenderData}
+	 *         @param {jQueryObj} container	容器
+	 *         @param {Boolean} hideRoot 是否隐藏根节点
+	 *         @param {Array} nodes 节点数据[{name,label,path},...]
+	 *         @param {String} clz 面包屑样式类
+	 *         @param {Function} clickFn 点击事件处理,
+	 *         @param {Function} mapRenderData 处理渲染数据方法
+	 * @return {Object} BreadCrumb
+	 */
+	var BreadCrumb = function (cfg) {
+		var settings = {
+			container : null,
+			hideRoot : false,
+			nodes : [],
+			clz : '',
+			clickFn : function () {
+				var $this = $(this);
+				document.location.href = $this.attr('data-href');
+			},
+			mapRenderData : function (data, hideRoot, clz) {
+				hideRoot === true && data.shift();
+				return {
+					clz : clz || '',
+					items : data
+				};
+			}
+		};
+		settings = IX.inherit(settings, cfg);
+		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_breadcrumb'));
+		var mapFn = $XF(settings, 'mapRenderData');
+		var $breadCrumb = $(tpl(mapFn($XP(settings, 'nodes'), $XP(settings, 'hideRoot', false), $XP(settings, 'clz', ''))));
+		settings.container.empty().append($breadCrumb);
+		$breadCrumb.on('click', 'a', function (e) {
+			$XF(settings, 'clickFn').apply(this, e);
+		});
+		return {
+			breadCrumb : $breadCrumb,
+			show : function () {$breadCrumb.show();},
+			hide : function () {$breadCrumb.hide();}
+		};
+	};
+
+
+
+
+
     /*
     options = {
         onSuccess: function () {},
@@ -277,6 +414,10 @@
 	Hualala.UI.PopoverMsgTip = PopoverMsgTip;
 	Hualala.UI.TopTip = TopTip;
 	Hualala.UI.ModalDialog = ModalDialog;
+	Hualala.UI.Alert = Alert;
+	Hualala.UI.Confirm = Confirm;
+	Hualala.UI.BreadCrumb = BreadCrumb;
+
     Hualala.UI.uploadImg = uploadImg;
 })(jQuery, window);;(function ($, window) {
 	/**
@@ -307,7 +448,7 @@
 			$self.data('settings') || {}, 
 			options || {});
 
-		if (settings.total <= 0 ) {
+		if (settings.total < 0 ) {
 			return this;
 		}
 		// 所有页码全部显示
@@ -362,6 +503,9 @@
 			}
 			for (var c = 1; c <= Math.min(settings.total, settings.maxVisible); c++) {
 				htm.push('<li data-pg="' + c + '"><a href="' + genHref(c) + '">' + c + '</a></li>');
+			}
+			if (settings.total == 0) {
+				htm.push('<li data-pg="' + 1 + '"><a href="' + genHref(c) + '">' + 1 + '</a></li>');
 			}
 			if (settings.next) {
 				pg = settings.leaps && settings.total > settings.maxVisible 

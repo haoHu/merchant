@@ -1853,6 +1853,10 @@ IX.Date = (function(){
             } catch (ex) {
                 return _dateStr;
             }
+        },
+        getTimeTickInSec : function (_dateStr) {
+        	var _str = IX.Date.getDateByFormat(_dateStr, 'yyyy/MM/dd HH:mm:ss');
+        	return parseInt((new Date(_str)).getTime() / 1000);
         }
 	};
 })();
@@ -2907,6 +2911,98 @@ IX.extend(String.prototype, {
 
 	toSafe : function(){
 		return this.replace(/\$/g, "&#36;");
+	},
+	/**
+	 * 左补齐字符串
+	 * @param  {Number} nLen	要补齐的长度
+	 * @param  {String} ch 	要补齐的字符
+	 * @return {String}		补齐后的字符串
+	 */
+	padLeft : function (nLen, ch) {
+		var len = 0,
+			s = this ? this : "";
+		// 默认要补齐0
+		ch = ch ? ch : '0';
+		len = s.length;
+		while(len < nLen) {
+			s = ch + s;
+			len++;
+		}
+		return s;
+	},
+	/**
+	 * 右补齐字符串
+	 * @param  {Number} nLen	要补齐的长度
+	 * @param  {String} ch 		要补齐的字符
+	 * @return {String}			补齐后的字符串
+	 */
+	padRight : function (nLen, ch) {
+		var len = 0,
+			s = this ? this : "";
+		// 默认要补齐0
+		ch = ch ? ch : '0';
+		len = s.length;
+		while(len < nLen) {
+			s = s + ch;
+			len++;
+		}
+		return s;
+	},
+	/**
+	 * 左移小数点的位置（用于数学计算，相当于除以Math.pow(10, scale)）
+	 * @param  {Number} scale 	要移位的刻度
+	 * @return {String} 		返回移位后的数字字符串
+	 */
+	movePointLeft : function (scale) {
+		var s, s1, s2, ch, ps, sign;
+		ch = '.';
+		sign = '';
+		s = this ? this : "";
+		if (scale <= 0) return s;
+		ps = s.split('.');
+		s1 = ps[0] ? ps[0] : "";
+		s2 = ps[1] ? ps[1] : "";
+		if (s1.slice(0, 1) == "-") {
+			// 负数
+			s1 = s1.slice(1);
+			sign = '-';
+		}
+		if (s1.length <= scale) {
+			ch = "0.";
+			s1 = s1.padLeft(scale);
+		}
+		return sign + s1.slice(0, -scale) + ch + s1.slice(-scale) + s2;
+	},
+	/**
+	 * 右移小数点位置（用于数学计算，相当于乘以Math.pow(10, scale)）
+	 * @param  {Number} scale 	要移位的刻度
+	 * @return {String} 		返回移位后的数字字符串
+	 */
+	movePointRight : function (scale) {
+		var s, s1, s2, ch, ps;
+		ch = '.';
+		s = this ? this : "";
+		if (scale <= 0) return s;
+		ps = s.split('.');
+		s1 = ps[0] ? ps[0] : "";
+		s2 = ps[1] ? ps[1] : "";
+		if (s2.length <= scale) {
+			ch = '';
+			s2 = s2.padRight(scale);
+		}
+		return s1 + s2.slice(0, scale) + ch + s2.slice(scale, s2.length);
+	},
+	/**
+	 * 移动小数点位置（用于数学计算，相当于（乘以／除以）Math.pow(10, scale)）
+	 * @param  {Number} scale 		要移位的刻度（正数表示向右移动；负数表示向左移动；0返回原值）
+	 * @return {String} 			返回移位后的数字字符串
+	 */
+	movePoint : function (scale) {
+		if (scale >= 0) {
+			return this.movePointRight(scale);
+		} else {
+			return this.movePointLeft(-scale);
+		}
 	}
 });
 
@@ -3410,6 +3506,21 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 
 	// Date
 	Hualala.Date = IX.Util.Date;
+	/**
+	 * 格式化Ajax返回给前端的日期时间数据
+	 * 后端返回前端时间日期数据格式为：yyyyMMddHHmmss，
+	 * 我们要将这种奇怪的日期字符串格式转化为统一的标准的日期字符串格式yyyy/MM/dd HH:mm:ss
+	 * @param  {String} v 	奇怪的日期时间数据字符串：yyyyMMddHHmmss
+	 * @return {String}		统一的标准时间日期数据字符串 ： yyyy/MM/dd HH:mm:ss
+	 */
+	Hualala.Common.formatDateTimeValue = function (v) {
+		if (IX.isEmpty(v) || !IX.isString(v)) return '';
+		var fullLen = 14, l = v.length, r = '00000000000000';
+		if (l < fullLen) {
+			v += r.slice(0, (fullLen - l));
+		}
+		return v.replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
+	};
 
 	/**
 	 * 设置垂直居中位置
@@ -3554,7 +3665,180 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		});
 		return bankHT.get(bankCode);
 	};
+    /**
+	 * 根据shopID获得店铺在哗啦啦www上的店铺URL
+	 * @param  {String} shopID 店铺ID
+	 * @return {String}    店铺URL
+	 */
+    Hualala.Common.getShopUrl = function(shopID)
+    {
+        return Hualala.Global.HualalaWebSite + '/shop_' + shopID;
+    };
 
+})(jQuery);
+
+// Common Math Fn
+(function ($) {
+	// 提高数字的易读性，在数字每隔3位处增加逗号
+	var prettyNumeric = function (num, separator) {
+		if (isNaN(num)) return num.toString();
+		var s = num.toString().split('.'),
+			s1 = s[0],
+			s2 = s[1],
+			l = s1.length,
+			r = '';
+		separator = !separator ? ',' : separator;
+		if (l > 3) {
+			var l1 = parseInt(l / 3),
+				idx = l % 3;
+			r = idx == 0 ? '' : s1.slice(0, idx) + separator;
+			for (var i = 0; i < l1; i++) {
+				r += s1.slice(idx + (i * 3), (idx + (i + 1) * 3)) + separator;
+			}
+			r = r.slice(0, -1) + '.' + s2;
+		} else {
+			r = num;
+		}
+		return r;
+	};
+	// 如果字符串是易读的数字模式，使用这个函数可以还原成正常数字模式
+	var restoreNumeric = function (str, separator) {
+		separator = !separator ? ',' : separator;
+		var s = str.split(separator).join('');
+		return isNaN(s) ? str : Number(s);
+	};
+	// 美化价格显示，如果价格为整数，不现实小数点后的部分，如果价格为小数，显示小数点后2位
+	var prettyPrice = function (price) {
+		price = parseFloat(price).toFixed(2).toString();
+		price = price.replace(/0+$/, '');
+		var dot = price.indexOf('.');
+		if (dot == price.length - 1) {
+			price = price.substr(0, dot);
+		}
+		return price;
+	};
+	
+	var add = function () {
+		var baseNum = 0, args = $XA(arguments);
+		var ret = 0;
+		_.each(args, function (v) {
+			var v1 = 0;
+			try {
+				v1 = v.toString().split('.')[1].length;
+			} catch (e) {
+				v1 = 0;
+			}
+			baseNum = v1 > baseNum ? v1 : baseNum;
+		});
+		// 使用字符串移动小数点方式规避javascript中由于精度差异导致的无法精确表示浮点数的bug
+		// baseNum = Math.pow(10, baseNum);
+		_.each(args, function (v) {
+			// ret += v * baseNum;
+			ret += Number(v.toString().movePoint(baseNum));
+		});
+		// return ret / baseNum;
+		return Number(ret.toString().movePoint(-baseNum));
+	};
+	var sub = function () {
+		var baseNum = 0, args = $XA(arguments),
+		// 精度
+			precision;
+		var ret = 0;
+		_.each(args, function (v) {
+			var v1 = 0;
+			try {
+				v1 = v.toString().split(".")[1].length;
+			} catch (e) {
+				v1 = 0;
+			}
+			baseNum = v1 > baseNum ? v1 : baseNum;
+		});
+		precision = baseNum;
+		// 使用字符串移动小数点方式规避javascript中由于精度差异导致的无法精确表示浮点数的bug
+		// baseNum = Math.pow(10, baseNum);
+		
+		_.each(args, function (v, i) {
+			// ret = i == 0 ? (v * baseNum) : (ret - v * baseNum);
+			ret = i == 0 ?
+				Number(v.toString().movePoint(baseNum)) : (ret - Number(v.toString().movePoint(baseNum)));
+			// if (i == 0) {
+			// 	// ret += v * baseNum;
+			// 	ret += Number(v.toString().movePoint(baseNum));
+			// } else {
+			// 	// ret -= v * baseNum;
+			// 	ret -= Number(v.toString().movePoint(baseNum));
+			// }
+		});
+		// return (ret / baseNum).toFixed(precision);
+		return Number(numberToFixed(Number(ret.toString().movePoint(-baseNum)), precision));
+	};
+	var multi = function () {
+		var baseNum = 0, args = $XA(arguments);
+		var ret = 1;
+		_.each(args, function (v) {
+			try {
+				baseNum += v.toString().split('.')[1].length;
+			} catch (e) {
+
+			}
+		});
+		_.each(args, function (v) {
+			ret *= Number(v.toString().replace(".", ""));
+		});
+		// 使用字符串移动小数点方式规避javascript中由于精度差异导致的无法精确表示浮点数的bug
+		// return ret / Math.pow(10, baseNum);
+		return Number(ret.toString().movePoint(-baseNum));
+	};
+	var div = function () {
+		var baseNum = [], baseNum1 = [], args = $XA(arguments);
+		var ret = 1, scale = 0;
+		_.each(args, function (v) {
+			try {
+				baseNum.push(v.toString().split(".")[1].length);
+			} catch (e) {
+				baseNum.push(0);
+			}
+		});
+		with (Math) {
+			_.each(args, function (v, i) {
+				var v1 = Number(v.toString().replace(".", ""));
+				ret = i == 0 ? v1 : (ret / v1);
+			});
+			_.each(baseNum, function (v, i) {
+				scale = i == 0 ? v : (scale - v);
+			});
+			// 使用字符串移动小数点方式规避javascript中由于精度差异导致的无法精确表示浮点数的bug
+			// return ret * pow(10, scale);
+			return Number(ret.toString().movePoint(-scale));
+		}
+	};
+	var numberToFixed = function (num, scale) {
+		var s, s1, s2, start;
+		scale = scale || 0;
+		s1 = num + "";
+		start = s1.indexOf('.');
+		s = s1.movePoint(scale);
+		if (start >= 0) {
+			s2 = Number(s1.substr(start + scale + 1, 1));
+			if (s2 >= 5 && num >= 0 || s2 < 5 && num < 0) {
+				a = Math.ceil(s);
+			} else {
+				a = Math.floor(s);
+			}
+		}
+		return Number(a.toString().movePoint(-scale));
+	};
+	IX.ns("Hualala.Common");
+	Hualala.Common.Math = {
+		prettyNumeric : prettyNumeric,
+		restoreNumeric : restoreNumeric,
+		prettyPrice : prettyPrice,
+		add : add,
+		sub : sub,
+		multi : multi,
+		div : div,
+		numberToFixed : numberToFixed
+	};
 })(jQuery);
 
 
@@ -3623,8 +3907,8 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 	];
 
 	Hualala.TypeDef.GENDER = [
-		{value : '0', valueStr : 'female', label : '女'},
-		{value : '1', valueStr : 'male', label : '男'},
+		{value : '0', valueStr : 'female', label : '女士'},
+		{value : '1', valueStr : 'male', label : '先生'},
 		{value : '2', valueStr : 'unkonwn', label : '未知'}
 	];
 	/**
@@ -3710,16 +3994,22 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 	 * 101：网上订餐消费（卖出）+ 102：账户充值+ 199：账户资金调加+ 201：订餐消费后退款（退款）- 202：平台预付款- 203：提现- 204：支付平台服务费- 205：支付平台广告费- 206：支付平台信息费- 299：账户资金调减-
 	 */
 	Hualala.TypeDef.FSMTransType = [
-		{value : 101, label : "网上订餐消费（卖出）"},
-		{value : 102, label : "账户充值"},
+		{value : '', label : "全部"},
+		{value : 101, label : "网上订餐消费", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		{value : 102, label : "账户充值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
+		{value : 103, label : "网上订餐用券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		{value : 104, label : "到店消费验券", tpl : "tpl_chktick_detail", queryCall : null, queryKeys : null},
+		{value : 105, label : "会员卡充值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
 		{value : 199, label : "账户资金调加"},
-		{value : 201, label : "订餐消费后退款（退款）"},
+		{value : 201, label : "订餐消费后退款", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
 		{value : 202, label : "平台预付款"},
-		{value : 203, label : "提现"},
-		{value : 204, label : "支付平台服务费"},
-		{value : 205, label : "支付平台广告费"},
-		{value : 206, label : "支付平台信息费"},
-		{value : 299, label : "账户资金调减"}
+		{value : 203, label : "提现", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		// {value : 204, label : "支付平台服务费"},
+		// {value : 205, label : "支付平台广告费"},
+		// {value : 206, label : "支付平台信息费"},
+		{value : 207, label : "订餐消费后退券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		{value : 299, label : "账户资金调减"},
+		{value : 410, label : "店内自助", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"}
 	];
 	/**
 	 * 交易状态
@@ -3727,6 +4017,7 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 	 * 
 	 */
 	Hualala.TypeDef.FSMTransStatus = [
+		{value : '', label : "全部"},
 		{value : 0, label : "等待交易完成"},
 		{value : 1, label : "交易成功"},
 		{value : 2, label : "交易关闭"}
@@ -3750,6 +4041,15 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		{value : 31, label : "帐户提现.支票"},
 		{value : 32, label : "帐户提现.银行转账"},
 		{value : 33, label : "帐户提现.刷银行卡"}
+	];
+
+	/**
+	 * 结算账户收款方方式
+	 * @type {Array} 1:个人;2:单位
+	 */
+	Hualala.TypeDef.AccountReceiverTypes = [
+		{value : 2, label : "单位"},
+		{value : 1, label : "个人"}
 	];
 
 	/**
@@ -3801,7 +4101,13 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		},
 		{id : 41, label : "店内自助", name : "spot_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setSpotOrderParams',
-			formKeys : 'fetchFoodMode,payMethodAtShop,payBeforeCommit,supportCommitToSoftware'
+			formKeys : 'fetchFoodMode,payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
+			operationMode : {
+				// 正餐
+				0 : 'fetchFoodMode,supportCommitToSoftware',
+				// 快餐
+				1 : 'payMethodAtShop,payBeforeCommit,supportCommitToSoftware'
+			}
 		}
 		// {id : 42, label : "店内买单", name : "spot_pay"}
 	];
@@ -3950,7 +4256,9 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		SecondsOfDay : 24 * 3600,
 		SecondsOfWeek : 7 * 24 * 3600,
 		NumberKeys : [1,2,3,4,5,6,7,8,9,0],
-		Alphabet : 'abcdefghijklmnopqrstuvwxyz'.split('')
+		Alphabet : 'abcdefghijklmnopqrstuvwxyz'.split(''),
+		PersonUnit : "人",
+		CashUnit : "元"
 	});
 })(jQuery);;(function ($, window) {
 	/**
