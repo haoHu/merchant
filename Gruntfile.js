@@ -115,7 +115,8 @@ module.exports = function (grunt) {
 			tpl : {
 				src : [
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.lib.js",
-					"<%= pkg.srcPath.jsPath %>/tpl/tpl.shop.js"
+					"<%= pkg.srcPath.jsPath %>/tpl/tpl.shop.js",
+					"<%= pkg.srcPath.jsPath %>/tpl/tpl.account.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/tpl.js",
 				nonull : true
@@ -127,13 +128,15 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/ui/pager.js",
 					"<%= pkg.srcPath.jsPath %>/ui/switch.js",
 					"<%= pkg.srcPath.jsPath %>/ui/wizard.js",
-					"<%= pkg.srcPath.jsPath %>/ui/chosen.jquery.js"
+					"<%= pkg.srcPath.jsPath %>/ui/chosen.jquery.js",
+					"<%= pkg.srcPath.jsPath %>/ui/wizard.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/ui.js",
 				nonull : true
 			},
 			pages : {
 				src : [
+					// Shop Moudle
 					"<%= pkg.srcPath.jsPath %>/entry/entry.init.js",
 
 					"<%= pkg.srcPath.jsPath %>/shop/shop.query.model.js",
@@ -145,12 +148,27 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/shop/shop.list.controler.js",
 
 					"<%= pkg.srcPath.jsPath %>/shop/shop.create.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.info.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.map.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.mgr.js",
 
 					"<%= pkg.srcPath.jsPath %>/shop/shop.init.js",
 
+					// Setting Moudle
 					"<%= pkg.srcPath.jsPath %>/setting/setting.mgr.js",
 					"<%= pkg.srcPath.jsPath %>/setting/setting.init.js",
 
+					// Account Moudle
+					"<%= pkg.srcPath.jsPath %>/account/account.list.model.js",
+					"<%= pkg.srcPath.jsPath %>/account/account.list.view.js",
+					"<%= pkg.srcPath.jsPath %>/account/account.list.controler.js",
+
+					"<%= pkg.srcPath.jsPath %>/account/account.mgr.controler.js",
+					"<%= pkg.srcPath.jsPath %>/account/account.mgr.view.js",
+
+					"<%= pkg.srcPath.jsPath %>/account/account.init.js",
+
+					// Merchant init
 					"<%= pkg.srcPath.jsPath %>/common/merchant.layout.js",
 					"<%= pkg.srcPath.jsPath %>/common/merchant.init.js",
 					"<%= pkg.srcPath.jsPath %>/common/merchant.route.js",
