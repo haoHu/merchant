@@ -23,7 +23,7 @@
 		["getAccountQueryShop", "/fsm/settlementShopDetail.ajax", "", "GET"],
 		["queryAccountTransDetail", "/fsm/queryFsmAccountTransDetail.ajax", "", "GET"],
 		["queryAccountOrderPayDetail", "/order/queryOrderPayDetail.ajax", "", "GET"],
-		["queryAccountFsmCustomerDetail", "/fsm/queryFsmCustomerDetail.ajax", "", "GET"],
+		["queryAccountFsmCustomerDetail", "/fsm/queryFsmCustomerDetail.ajax", "", "GET"]
 
 	]);
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([
