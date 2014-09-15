@@ -6032,7 +6032,7 @@ S.initShopMenu = function ($container, pageType, params)
 			// 		}
 			// 	});
 			// });
-			Hualala.PageRoute.start(function (pageName) {
+			Hualala.PageRoute.start(function (pageName, pageParams, pageInitFn) {
 				var hasNoNavPages = 'main,pcclient,about,contact,login';
 				var commonPages = _.filter(hasNoNavPages.split(','), function (v) {return v != 'main'}).join(',');
 				if (commonPages.indexOf(pageName) >= 0) {
@@ -6040,6 +6040,7 @@ S.initShopMenu = function ($container, pageType, params)
 					if (hasNoNavPages.indexOf(pageName) < 0) {
 						Hualala.Common.initSiteNavBar(pageName);
 					}
+					pageInitFn && pageInitFn.apply(null, [pageName, pageParams]);
 					return ;
 				}
 				initMainPage(function () {
@@ -6047,6 +6048,8 @@ S.initShopMenu = function ($container, pageType, params)
 					if (hasNoNavPages.indexOf(pageName) < 0) {
 						Hualala.Common.initSiteNavBar(pageName);
 					}
+
+					pageInitFn && pageInitFn.apply(null, [pageName, pageParams]);
 				});
 			});
 			APPInitialized = true;
@@ -6286,10 +6289,11 @@ S.initShopMenu = function ($container, pageType, params)
 			
 			handler = function (params) {
 				console.info("INFO: Init Page :" + name);
-				IX.isFn(cbFn) && cbFn(name);
 				console.info("Load Page :" + name);
 				console.info("arguments is :" + params);
-				initFn && initFn.apply(null, [name, params]);
+				IX.isFn(cbFn) && cbFn(name, params, initFn);
+				
+				// initFn && initFn.apply(null, [name, params]);
 			};
 			
 			Router.add(re, handler);

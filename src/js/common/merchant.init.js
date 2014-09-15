@@ -80,7 +80,7 @@
 			// 		}
 			// 	});
 			// });
-			Hualala.PageRoute.start(function (pageName) {
+			Hualala.PageRoute.start(function (pageName, pageParams, pageInitFn) {
 				var hasNoNavPages = 'main,pcclient,about,contact,login';
 				var commonPages = _.filter(hasNoNavPages.split(','), function (v) {return v != 'main'}).join(',');
 				if (commonPages.indexOf(pageName) >= 0) {
@@ -88,6 +88,7 @@
 					if (hasNoNavPages.indexOf(pageName) < 0) {
 						Hualala.Common.initSiteNavBar(pageName);
 					}
+					pageInitFn && pageInitFn.apply(null, [pageName, pageParams]);
 					return ;
 				}
 				initMainPage(function () {
@@ -95,6 +96,8 @@
 					if (hasNoNavPages.indexOf(pageName) < 0) {
 						Hualala.Common.initSiteNavBar(pageName);
 					}
+
+					pageInitFn && pageInitFn.apply(null, [pageName, pageParams]);
 				});
 			});
 			APPInitialized = true;

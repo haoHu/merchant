@@ -15,18 +15,20 @@
 	 */
 	Hualala.Global.loadAppData = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
-		fn({
-			resultcode : '000',
-			// resultcode : '111',
-			resultmsg : '',
-			data : {
-				pcClient : Test.PCClient,
-				site : Test.SiteData,
-				user : Test.LoginUser,
-				userRight : Test.UserRight,
-				roles : Test.Roles
-			}
-		});
+		setTimeout(function () {
+			fn({
+				resultcode : '000',
+				// resultcode : '111',
+				resultmsg : '',
+				data : {
+					pcClient : Test.PCClient,
+					site : Test.SiteData,
+					user : Test.LoginUser,
+					userRight : Test.UserRight,
+					roles : Test.Roles
+				}
+			});
+		}, 200);
 	};
 
 	/**

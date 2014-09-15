@@ -231,10 +231,11 @@
 			
 			handler = function (params) {
 				console.info("INFO: Init Page :" + name);
-				IX.isFn(cbFn) && cbFn(name);
 				console.info("Load Page :" + name);
 				console.info("arguments is :" + params);
-				initFn && initFn.apply(null, [name, params]);
+				IX.isFn(cbFn) && cbFn(name, params, initFn);
+				
+				// initFn && initFn.apply(null, [name, params]);
 			};
 			
 			Router.add(re, handler);
