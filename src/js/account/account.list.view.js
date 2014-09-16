@@ -99,7 +99,7 @@
 			var self = this,
 				model = self.model,
 				pagerParams = model.getPagerParams(),
-				pageNo = $XP(pagerParams, 'Page.pageNo');
+				pageNo = $XP(pagerParams, 'pageNo');
 			var accounts = model.getAccounts(pageNo);
 			var renderData = self.mapRenderData(accounts);
 			var listTpl = self.get('listTpl');
@@ -519,10 +519,10 @@
 			});
 			self.$pager.on('page', function (e, pageNo) {
 				var params = self.model.getPagerParams();
-				params['Page']['pageNo'] = pageNo;
+				params['pageNo'] = pageNo;
 				self.model.emit('load', IX.inherit(params, {
-					pageNo : $XP(params, 'Page.pageNo', 1),
-					pageSize : $XP(params, 'Page.pageSize', 15)
+					pageNo : $XP(params, 'pageNo', 1),
+					pageSize : $XP(params, 'pageSize', 15)
 				}));
 			});
 		},
@@ -684,7 +684,7 @@
 			var self = this,
 				model = self.model,
 				pagerParams = model.getPagerParams(),
-				pageNo = $XP(pagerParams, 'Page.pageNo');
+				pageNo = $XP(pagerParams, 'pageNo');
 			var results = model.getDataByPageNo(pageNo);
 			var renderData = self.mapRenderData(results);
 			var tableTpl = self.get('tableTpl');
@@ -744,7 +744,7 @@
 			var self = this,
 				model = self.model,
 				pagerParams = model.getPagerParams(),
-				pageNo = $XP(pagerParams, 'Page.pageNo');
+				pageNo = $XP(pagerParams, 'pageNo');
 			var shops = model.getShops(pageNo);
 			var renderData = self.mapRenderData(shops);
 			var listTpl = self.get('listTpl');

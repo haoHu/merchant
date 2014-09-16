@@ -22,8 +22,8 @@
 			this.set({
 				pageCount : 0,
 				totalSize : 0,
-				pageNo : $XP(params, 'Page.pageNo', 1),
-				pageSize : $XP(params, 'Page.pageSize', 15),
+				pageNo : $XP(params, 'pageNo', 1),
+				pageSize : $XP(params, 'pageSize', 15),
 				cityID : $XP(params, 'cityID', ''),
 				areaID : $XP(params, 'areaID', ''),
 				keywordLst : $XP(params, 'keywordLst', ''),
@@ -58,11 +58,18 @@
 			});
 		},
 		getPagerParams : function () {
+			// return {
+			// 	Page : {
+			// 		pageNo : this.get('pageNo'),
+			// 		pageSize : this.get('pageSize')
+			// 	},
+			// 	cityID : this.get('cityID'),
+			// 	areaID : this.get('areaID'),
+			// 	keywordLst : this.get('keywordLst')
+			// };
 			return {
-				Page : {
-					pageNo : this.get('pageNo'),
-					pageSize : this.get('pageSize')
-				},
+				pageNo : this.get('pageNo'),
+				pageSize : this.get('pageSize'),
 				cityID : this.get('cityID'),
 				areaID : this.get('areaID'),
 				keywordLst : this.get('keywordLst')

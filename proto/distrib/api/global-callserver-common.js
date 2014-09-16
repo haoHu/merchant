@@ -8,22 +8,22 @@
 		/*Session Data*/
 		["loadAppData", "/getUserInfo.ajax", "", "GET"],
 		/*Shop Moudle and Shop Setting Moudle*/
-		["getShopQuerySchema", "/shop/schema.ajax", "", "GET"],
-		["queryShop", "/shop/query.ajax", "", "GET"],
+		["getShopQuerySchema", "/shop/schema.ajax", "", "POST"],
+		["queryShop", "/shop/query.ajax", "", "POST"],
 		["switchShopStatus", "/shop/status.ajax", "", "POST"],
 		["switchShopServiceFeatureStatus", "/shop/controlServiceFeatures.ajax", "", "POST"],
 		["setJustEatParams", "/shop/justEatParam.ajax", "", "POST"],
 		["setSpotOrderParams", "/shop/spotParam.ajax", "", "POST"],
 		/*Account Moudle*/
-		["queryAccount", "/fsm/queryFsmSettleUnit.ajax", "", "GET"],
+		["queryAccount", "/fsm/queryFsmSettleUnit.ajax", "", "POST"],
 		["withdrawCash", "/fsm/Withdraw.ajax", "", "POST"],
 		["deleteAccount", "/fsm/deleteFsmSettleUnit.ajax", "", "POST"],
 		["editAccount", "/fsm/updateSettleUnit.ajax", "", "POST"],
 		["addAccount", "/fsm/addSettleUnit.ajax", "", "POST"],
-		["getAccountQueryShop", "/fsm/settlementShopDetail.ajax", "", "GET"],
-		["queryAccountTransDetail", "/fsm/queryFsmAccountTransDetail.ajax", "", "GET"],
-		["queryAccountOrderPayDetail", "/order/queryOrderPayDetail.ajax", "", "GET"],
-		["queryAccountFsmCustomerDetail", "/fsm/queryFsmCustomerDetail.ajax", "", "GET"]
+		["getAccountQueryShop", "/fsm/settlementShopDetail.ajax", "", "POST"],
+		["queryAccountTransDetail", "/fsm/queryFsmAccountTransDetail.ajax", "", "POST"],
+		["queryAccountOrderPayDetail", "/order/queryOrderPayDetail.ajax", "", "POST"],
+		["queryAccountFsmCustomerDetail", "/fsm/queryFsmCustomerDetail.ajax", "", "POST"]
 
 	]);
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([

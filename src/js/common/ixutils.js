@@ -1523,7 +1523,7 @@ function AjaxCaller(routes, _ajaxFn, urlFac){
 			return;
 		}
 		var _cbFn = IX.isFn(cbFn) ? cbFn : IX.emptyFn;
-		var _contentType =  _caller.dataType == 'json' ? 'application/json' : 'application/x-www-form-urlencoded';
+		var _contentType =  _caller.dataType == 'json' ? 'application/json; charset=UTF-8' : 'application/x-www-form-urlencoded; charset=UTF-8';
 		var _data = _caller.preAjax(_name, params);
 		_data = _caller.dataType == 'json' ? JSON.stringify(_data) : _data;
 		_ajaxFn({

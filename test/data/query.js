@@ -97,8 +97,8 @@
 
 	// params : {Page : {pageNo, pageSize}, cityID, areaID, keywordLst}
 	var getQueryShopData = function (params) {
-		var pageNo = $XP(params, 'Page.pageNo', 1),
-			pageSize = $XP(params, 'Page.pageSize', 10),
+		var pageNo = $XP(params, 'pageNo', 1),
+			pageSize = $XP(params, 'pageSize', 10),
 			cityID = $XP(params, 'cityID', null),
 			areaID = $XP(params, 'areaID', null);
 		var _shops = _.filter(shops, function (s, i, l) {

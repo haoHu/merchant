@@ -11,8 +11,8 @@
 			this.set({
 				pageCount : 0,
 				totalSize : 0,
-				pageNo : $XP(params, 'Page.pageNo', 1),
-				pageSize : $XP(params, 'Page.pageSize', 15),
+				pageNo : $XP(params, 'pageNo', 1),
+				pageSize : $XP(params, 'pageSize', 15),
 				transCreateBeginTime : $XP(params, 'transCreateBeginTime', ''),
 				transCreateEndTime : $XP(params, 'transCreateEndTime', ''),
 				settleUnitID : $XP(params, 'settleUnitID', ''),
@@ -35,11 +35,23 @@
 			});
 		},
 		getPagerParams : function () {
+			// return {
+			// 	Page : {
+			// 		pageNo : this.get('pageNo'),
+			// 		pageSize : this.get('pageSize')
+			// 	},
+			// 	settleUnitID : this.get('settleUnitID'),
+			// 	transCreateBeginTime : this.get('transCreateBeginTime'),
+			// 	transCreateEndTime : this.get('transCreateEndTime'),
+			// 	transStatus : this.get('transStatus'),
+			// 	transType : this.get('transType'),
+			// 	groupID : this.get('groupID'),
+			// 	minTransAmount : this.get('minTransAmount'),
+			// 	maxTransAmount : this.get('maxTransAmount')
+			// };
 			return {
-				Page : {
-					pageNo : this.get('pageNo'),
-					pageSize : this.get('pageSize')
-				},
+				pageNo : this.get('pageNo'),
+				pageSize : this.get('pageSize'),
 				settleUnitID : this.get('settleUnitID'),
 				transCreateBeginTime : this.get('transCreateBeginTime'),
 				transCreateEndTime : this.get('transCreateEndTime'),
@@ -261,8 +273,8 @@
 			this.set({
 				pageCount : 0,
 				totalSize : 0,
-				pageNo : $XP(params, 'Page.pageNo', 1),
-				pageSize : $XP(params, 'Page.pageSize', 15),
+				pageNo : $XP(params, 'pageNo', 1),
+				pageSize : $XP(params, 'pageSize', 15),
 				transCreateBeginTime : $XP(params, 'transCreateBeginTime', ''),
 				transCreateEndTime : $XP(params, 'transCreateEndTime', ''),
 				settleUnitID : $XP(params, 'settleUnitID', ''),

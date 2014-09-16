@@ -680,8 +680,8 @@
 			this.set({
 				pageCount : 0,
 				totalSize : 0,
-				pageNo : $XP(params, 'Page.pageNo', 1),
-				pageSize : $XP(params, 'Page.pageSize', 15),
+				pageNo : $XP(params, 'pageNo', 1),
+				pageSize : $XP(params, 'pageSize', 15),
 				cityID : $XP(params, 'cityID', ''),
 				areaID : $XP(params, 'areaID', ''),
 				keywordLst : $XP(params, 'keywordLst', ''),
@@ -716,11 +716,18 @@
 			});
 		},
 		getPagerParams : function () {
+			// return {
+			// 	Page : {
+			// 		pageNo : this.get('pageNo'),
+			// 		pageSize : this.get('pageSize')
+			// 	},
+			// 	cityID : this.get('cityID'),
+			// 	areaID : this.get('areaID'),
+			// 	keywordLst : this.get('keywordLst')
+			// };
 			return {
-				Page : {
-					pageNo : this.get('pageNo'),
-					pageSize : this.get('pageSize')
-				},
+				pageNo : this.get('pageNo'),
+				pageSize : this.get('pageSize'),
 				cityID : this.get('cityID'),
 				areaID : this.get('areaID'),
 				keywordLst : this.get('keywordLst')
@@ -994,10 +1001,10 @@
 			});
 			self.$pager.on('page', function (e, pageNo) {
 				var params = self.model.getPagerParams();
-				params['Page']['pageNo'] = pageNo;
+				params['pageNo'] = pageNo;
 				self.model.emit('load', IX.inherit(params, {
-					pageNo : $XP(params, 'Page.pageNo', 1),
-					pageSize : $XP(params, 'Page.pageSize', 15)
+					pageNo : $XP(params, 'pageNo', 1),
+					pageSize : $XP(params, 'pageSize', 15)
 				}));
 			});
 		},
@@ -1085,7 +1092,7 @@
 			var self = this,
 				model = self.model,
 				pagerParams = model.getPagerParams(),
-				pageNo = $XP(pagerParams, 'Page.pageNo');
+				pageNo = $XP(pagerParams, 'pageNo');
 			var shops = model.getShops(pageNo);
 			var renderData = self.mapRenderData(shops);
 			var listTpl = self.get('listTpl');
@@ -1125,10 +1132,10 @@
 			});
 			self.$pager.on('page', function (e, pageNo) {
 				var params = self.model.getPagerParams();
-				params['Page']['pageNo'] = pageNo;
+				params['pageNo'] = pageNo;
 				self.model.emit('load', IX.inherit(params, {
-					pageNo : $XP(params, 'Page.pageNo', 1),
-					pageSize : $XP(params, 'Page.pageSize', 15)
+					pageNo : $XP(params, 'pageNo', 1),
+					pageSize : $XP(params, 'pageSize', 15)
 				}));
 			});
 			// 弹出修改业务窗口
@@ -1277,7 +1284,7 @@
 			var self = this,
 				model = self.model,
 				pagerParams = model.getPagerParams(),
-				pageNo = $XP(pagerParams, 'Page.pageNo');
+				pageNo = $XP(pagerParams, 'pageNo');
 			var shops = model.getShops(pageNo);
 			var renderData = self.mapRenderData(shops);
 			var listTpl = self.get('listTpl');
@@ -3123,8 +3130,8 @@ S.initShopMenu = function ($container, pageType, params)
 			this.set({
 				pageCount : 0,
 				totalSize : 0,
-				pageNo : $XP(params, 'Page.pageNo', 1),
-				pageSize : $XP(params, 'Page.pageSize', 15),
+				pageNo : $XP(params, 'pageNo', 1),
+				pageSize : $XP(params, 'pageSize', 15),
 				transCreateBeginTime : $XP(params, 'transCreateBeginTime', ''),
 				transCreateEndTime : $XP(params, 'transCreateEndTime', ''),
 				settleUnitID : $XP(params, 'settleUnitID', ''),
@@ -3147,11 +3154,23 @@ S.initShopMenu = function ($container, pageType, params)
 			});
 		},
 		getPagerParams : function () {
+			// return {
+			// 	Page : {
+			// 		pageNo : this.get('pageNo'),
+			// 		pageSize : this.get('pageSize')
+			// 	},
+			// 	settleUnitID : this.get('settleUnitID'),
+			// 	transCreateBeginTime : this.get('transCreateBeginTime'),
+			// 	transCreateEndTime : this.get('transCreateEndTime'),
+			// 	transStatus : this.get('transStatus'),
+			// 	transType : this.get('transType'),
+			// 	groupID : this.get('groupID'),
+			// 	minTransAmount : this.get('minTransAmount'),
+			// 	maxTransAmount : this.get('maxTransAmount')
+			// };
 			return {
-				Page : {
-					pageNo : this.get('pageNo'),
-					pageSize : this.get('pageSize')
-				},
+				pageNo : this.get('pageNo'),
+				pageSize : this.get('pageSize'),
 				settleUnitID : this.get('settleUnitID'),
 				transCreateBeginTime : this.get('transCreateBeginTime'),
 				transCreateEndTime : this.get('transCreateEndTime'),
@@ -3373,8 +3392,8 @@ S.initShopMenu = function ($container, pageType, params)
 			this.set({
 				pageCount : 0,
 				totalSize : 0,
-				pageNo : $XP(params, 'Page.pageNo', 1),
-				pageSize : $XP(params, 'Page.pageSize', 15),
+				pageNo : $XP(params, 'pageNo', 1),
+				pageSize : $XP(params, 'pageSize', 15),
 				transCreateBeginTime : $XP(params, 'transCreateBeginTime', ''),
 				transCreateEndTime : $XP(params, 'transCreateEndTime', ''),
 				settleUnitID : $XP(params, 'settleUnitID', ''),
@@ -3636,7 +3655,7 @@ S.initShopMenu = function ($container, pageType, params)
 			var self = this,
 				model = self.model,
 				pagerParams = model.getPagerParams(),
-				pageNo = $XP(pagerParams, 'Page.pageNo');
+				pageNo = $XP(pagerParams, 'pageNo');
 			var accounts = model.getAccounts(pageNo);
 			var renderData = self.mapRenderData(accounts);
 			var listTpl = self.get('listTpl');
@@ -4056,10 +4075,10 @@ S.initShopMenu = function ($container, pageType, params)
 			});
 			self.$pager.on('page', function (e, pageNo) {
 				var params = self.model.getPagerParams();
-				params['Page']['pageNo'] = pageNo;
+				params['pageNo'] = pageNo;
 				self.model.emit('load', IX.inherit(params, {
-					pageNo : $XP(params, 'Page.pageNo', 1),
-					pageSize : $XP(params, 'Page.pageSize', 15)
+					pageNo : $XP(params, 'pageNo', 1),
+					pageSize : $XP(params, 'pageSize', 15)
 				}));
 			});
 		},
@@ -4221,7 +4240,7 @@ S.initShopMenu = function ($container, pageType, params)
 			var self = this,
 				model = self.model,
 				pagerParams = model.getPagerParams(),
-				pageNo = $XP(pagerParams, 'Page.pageNo');
+				pageNo = $XP(pagerParams, 'pageNo');
 			var results = model.getDataByPageNo(pageNo);
 			var renderData = self.mapRenderData(results);
 			var tableTpl = self.get('tableTpl');
@@ -4281,7 +4300,7 @@ S.initShopMenu = function ($container, pageType, params)
 			var self = this,
 				model = self.model,
 				pagerParams = model.getPagerParams(),
-				pageNo = $XP(pagerParams, 'Page.pageNo');
+				pageNo = $XP(pagerParams, 'pageNo');
 			var shops = model.getShops(pageNo);
 			var renderData = self.mapRenderData(shops);
 			var listTpl = self.get('listTpl');

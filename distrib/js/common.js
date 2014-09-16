@@ -2152,7 +2152,7 @@ function AjaxCaller(routes, _ajaxFn, urlFac){
 			return;
 		}
 		var _cbFn = IX.isFn(cbFn) ? cbFn : IX.emptyFn;
-		var _contentType =  _caller.dataType == 'json' ? 'application/json' : 'application/x-www-form-urlencoded';
+		var _contentType =  _caller.dataType == 'json' ? 'application/json; charset=UTF-8' : 'application/x-www-form-urlencoded; charset=UTF-8';
 		var _data = _caller.preAjax(_name, params);
 		_data = _caller.dataType == 'json' ? JSON.stringify(_data) : _data;
 		_ajaxFn({
@@ -3908,11 +3908,11 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 
 	Hualala.TypeDef.OrderSubNavType = [
 		{name : 'order', label : '概览', pkeys : []},
-		{name : 'orderQuery', label : '订单查询', pkeys : ['begin','end','cityID','shopID','status','mobile','orderKey','minAmount','maxAmount']},
-		{name : 'orderQueryDay', label : '订单日汇总', pkeys : ['begin','end','cityID','shopID','status']},
-		{name : 'orderQueryDuring', label : '订单期间汇总', pkeys : ['begin','end','cityID','shopID','status']},
-		{name : 'orderDishesHot', label : '菜品销量排行榜', pkeys : ['begin','end','cityID','shopID','foodCategoryName']},
-		{name : 'orderQueryCustomer', label : '顾客统计', pkeys : ['begin','end','cityID','shopID','mobile','customerName']}
+		{name : 'orderQuery', label : '订单查询', pkeys : ['startDate','endDate','cityID','shopID','orderStatus','userMobile','orderID','s_orderTotal','e_orderTotal']},
+		{name : 'orderQueryDay', label : '订单日汇总', pkeys : ['startDate','endDate','cityID','shopID','orderStatus']},
+		{name : 'orderQueryDuring', label : '订单期间汇总', pkeys : ['startDate','endDate','cityID','shopID','orderStatus']},
+		{name : 'orderDishesHot', label : '菜品销量排行榜', pkeys : ['startDate','endDate','cityID','shopID','foodCategoryName']},
+		{name : 'orderQueryCustomer', label : '顾客统计', pkeys : ['startDate','endDate','cityID','shopID','userLoginMobile','userName']}
 	];
 
 	Hualala.TypeDef.GENDER = [

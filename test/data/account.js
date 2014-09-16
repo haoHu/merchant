@@ -152,8 +152,8 @@
 
 
 	Test.queryAccountTransDetail = function (params) {
-		var pageNo = parseInt($XP(params, 'Page.pageNo', 1)),
-			pageSize = parseInt($XP(params, 'Page.pageSize', 10)),
+		var pageNo = parseInt($XP(params, 'pageNo', 1)),
+			pageSize = parseInt($XP(params, 'pageSize', 10)),
 			transCreateBeginTime = $XP(params, 'transCreateBeginTime', ''),
 			transCreateEndTime = $XP(params, 'transCreateEndTime', ''),
 			settleUnitID = $XP(params, 'settleUnitID', ''),
