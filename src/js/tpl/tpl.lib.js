@@ -288,6 +288,47 @@
 	].join('');
 	TemplateList.register('tpl_site_modal_btns', tpl_site_modal_btns);
 
+	// 基础数据表格模版
+	var tpl_base_datagrid = [
+		'<div class="table-responsive">',
+			'<table class="table {{clz}}">',
+				'<thead>',
+					'<tr>',
+						'{{#each thead}}',
+							'<th class="{{clz}}">{{{label}}}</th>',
+						'{{/each}}',
+					'</tr>',
+				'</thead>',
+				'<tbody>',
+					'{{#each rows}}',
+						'<tr class="{{clz}}">',
+							'{{#each cols}}',
+								'<td class="{{clz}}">',
+									'{{#chkColType colType type="button"}}',
+										'{{> colBtns}}',
+									'{{/chkColType}}',
+									'{{#chkColType colType type="text"}}',
+										'<p data-value="{{value}}">{{{text}}}</p>',
+									'{{/chkColType}}',
+								'</td>',
+							'{{/each}}',
+						'</tr>',
+					'{{/each}}',
+				'</tbody>',
+			'</table>',
+		'</div>'
+	].join('');
+	TemplateList.register('tpl_base_datagrid', tpl_base_datagrid);
+	// 基础数据表格操作列
+	var tpl_base_grid_colbtns = [
+		'<div class="">',
+			'{{#each btns}}',
+				'<a href="{{link}}" class="{{clz}}" data-id="{{id}}" data-type="{{type}}"',
+			'{{/each}}',
+		'</div>'
+	].join('');
+	TemplateList.register('tpl_base_grid_colbtns', tpl_base_grid_colbtns);
+
 	var TplLib = function () {
 		return {
 			register : function (key, tpl) {

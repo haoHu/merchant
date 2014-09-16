@@ -124,13 +124,22 @@
 				shopName : s.shopName
 			});
 		});
+		// return {
+		// 	pageCount : pageCount,
+		// 	pageNo : pageNo,
+		// 	pageSize : pageSize,
+		// 	records : _shops,
+		// 	totalSize : totalSize
+		// };
 		return {
-			pageCount : pageCount,
-			pageNo : pageNo,
-			pageSize : pageSize,
-			records : _shops,
-			totalSize : totalSize
-		};
+			page : {
+				pageCount : pageCount,
+				pageNo : pageNo,
+				pageSize : pageSize,
+				totalSize : totalSize
+			},
+			records : _shops
+		}
 	};
 
 
