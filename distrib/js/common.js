@@ -3906,6 +3906,15 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		{name : 'user', label : '账号管理'}
 	];
 
+	Hualala.TypeDef.OrderSubNavType = [
+		{name : 'order', label : '概览', pkeys : []},
+		{name : 'orderQuery', label : '订单查询', pkeys : ['begin','end','cityID','shopID','status','mobile','orderKey','minAmount','maxAmount']},
+		{name : 'orderQueryDay', label : '订单日汇总', pkeys : ['begin','end','cityID','shopID','status']},
+		{name : 'orderQueryDuring', label : '订单期间汇总', pkeys : ['begin','end','cityID','shopID','status']},
+		{name : 'orderDishesHot', label : '菜品销量排行榜', pkeys : ['begin','end','cityID','shopID','foodCategoryName']},
+		{name : 'orderQueryCustomer', label : '顾客统计', pkeys : ['begin','end','cityID','shopID','mobile','customerName']}
+	];
+
 	Hualala.TypeDef.GENDER = [
 		{value : '0', valueStr : 'female', label : '女士'},
 		{value : '1', valueStr : 'male', label : '先生'},

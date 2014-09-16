@@ -753,8 +753,8 @@
 			self.updatePagerParams(params);
 			self.callServer(self.getPagerParams(), function (res) {
 				if (res.resultcode == '000') {
-					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.pageNo'));
-					self.updatePagerParams($XP(res, 'data', {}));
+					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.page.pageNo'));
+					self.updatePagerParams($XP(res, 'data.page', {}));
 				} else {
 					toptip({
 						msg : $XP(res, 'resultmsg', ''),
@@ -3187,7 +3187,7 @@ S.initShopMenu = function ($container, pageType, params)
 			self.callServer(self.getPagerParams(), function (res) {
 				if (res.resultcode == '000') {
 					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.pageNo'));
-					self.updatePagerParams($XP(res, 'data', {}));
+					self.updatePagerParams($XP(res, 'data.page', {}));
 				} else {
 					toptip({
 						msg : $XP(res, 'resultmsg', ''),
@@ -6236,6 +6236,83 @@ S.initShopMenu = function ($container, pageType, params)
 			name : "order", path : "/#order", reg : /order$/, bodyClz : "",
 			PageInitiator : "Hualala.Order.OrderChartInit", parentName : "main", label : "订单"
 		},
+
+		// 订单查询页面
+		/*
+			b : begin date(SecondTick)
+			e : end date(SecondTick)
+			c : city ID
+			s : order status ID
+			n : shop ID
+			m : mobile number
+			o : order key
+			i : min amount
+			a : max amount
+
+		 */
+		{
+			name : "orderQuery", path : "/#order/query/b{begin}/e{end}/c{cityID}/n{shopID}/s{status}/m{mobile}/o{orderKey}/i{minAmount}/a{maxAmount}", 
+			reg : /order\/query\/b(.*)\/e(.*)\/c(.*)\/n(.*)\/s(.*)\/m(.*)\/o(.*)\/i(.*)\/a(.*)$/,
+			bodyClz : "", PageInitiator : "Hualala.Order.QueryOrderInit", parentName : "main", label : "订单查询"
+		},
+
+		// 订单日汇总页面
+		/*
+			b : begin date(SecondTick)
+			e : end date(SecondTick)
+			c : city ID
+			s : order status ID
+			n : shop ID
+		 */
+		{
+			name : "orderQueryDay", path : "/#order/query/day/b{begin}/e{end}/c{cityID}/n{shopID}/s{status}",
+			reg : /order\/query\/day\/b(.*)\/e(.*)\/c(.*)\/n(.*)\/s(.*)/, bodyClz : "",
+			PageInitiator : "Hualala.Order.QueryOrderByDayDetailInit", parentName : "main", label : "订单日汇总"
+		},
+
+		// 订单期间汇总页面
+		/*
+			b : begin date(SecondTick)
+			e : end date(SecondTick)
+			c : city ID
+			s : order status ID
+			n : shop ID
+		 */
+		{
+			name : "orderQueryDuring", path : "/#order/query/during/b{begin}/e{end}/c{cityID}/n{shopID}/s{status}",
+			reg : /order\/query\/during\/b(.*)\/e(.*)\/c(.*)\/n(.*)\/s(.*)/, bodyClz : "", 
+			PageInitiator : "Hualala.Order.QueryOrderByDuringDetailInit", parentName : "main", label : "订单期间汇总"
+		},
+
+		// 菜品销售排行页面
+		/*
+			b : begin date(SecondTick)
+			e : end date(SecondTick)
+			c : city ID
+			n : shopID
+			s : foodCategoryName
+		 */
+		{
+			name : "orderDishesHot", path : "/#order/dishes/hot/b{begin}/e{end}/c{cityID}/n{shopID}/s{foodCategoryName}",
+			reg : /order\/dishes\/hot\/b(.*)\/e(.*)\/c(.*)\/n(.*)\/s(.*)/, bodyClz : "",
+			PageInitiator : "Hualala.Order.QueryOrderDishesHotInit", parentName : "main", label : "菜品销量排行榜"
+		},
+
+		// 订餐客户查询页面
+		/*
+			b : begin date(SecondTick)
+			e : end date(SecondTick)
+			c : city ID
+			n : shopID
+			u : customerName
+			m : mobile
+		 */
+		{
+			name : "orderQueryCustomer", path : "/#order/customer/b{begin}/e{end}/c{cityID}/n{shopID}/m{mobile}/u{customerName}",
+			reg : /order\/customer\/b(.*)\/e(.*)\/c(.*)\/n(.*)\/m(.*)\/u(.*)/, bodyClz : "",
+			PageInitiator : "Hualala.Order.QueryOrderCustomerInit", parentName : "main", label : "顾客统计"
+		},
+
 
 		// PC客户端下载页面
 		{
