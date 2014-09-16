@@ -532,6 +532,126 @@
 	};
 
 
+
+	// 订单报表模块
+	/**
+	 * 订单查询
+	 * @param  {Object} params 		{Page : {pageNo, pageSize}, startDate,endDate,shopID,cityID,orderStatus,orderID,userMobile,s_orderTotal,e_orderTotal}
+	 * @param  {Function} cbFn 		回调参数
+	 * 			{
+	 * 				resultcode, resultmsg, 
+	 * 				data : {
+	 * 					page : {pageCount,pageNo,pageSize,totalSize}
+	 * 					properties : {count, foodAmount, giftAmountTotal, orderRefundAmount, orderRegAmount, orderTotal, orederAmount, shouldSettlementTotal, total},
+	 * 					records : [
+	 * 						{cardDiscountAmount,cityID,discountAmount,foodAmount,freeAmount,giftAmount,isAlreadyPaid,moneyBalance,pointBalance,serviceAmount,shopName,shouldSettlementTotal,takeoutPackagingAmount,total,userMobile,userName,userSex,orderKey,orderPrnStr,orderRefundAmount,orderStatus,orderSubtype,orderTime,orderTotal,orederAmount,}
+	 * 					]
+	 * 				},
+	 * 				
+	 * 				
+	 * 			}
+	 * @return {NULL}
+	 */
+	Hualala.Global.queryOrderDetail = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		var orders = Test.queryOrders(params);
+		fn(IX.inherit(res, {
+			data : orders
+		}));
+	};
+
+	/**
+	 * 查询订单日汇总
+	 * @param  {Object} params 		{Page:{pageNo, pageSize}, startDate,endDate,shopID,cityID,orderStatus}
+	 * @param  {Function} cbFn		回调参数 	
+	 * 			{
+	 * 				resultcode, resultmsg,
+	 * 				data : {
+	 * 					page : {pageCount,pageNo,pageSize,totalSize},
+	 * 					properties : {count, foodAmount,giftAmountTotal,orderRefundAmount,orderRegAmount,orderTotal,orderWaitTotal,orederAmount,total},
+	 * 					records : [
+	 * 						{billDate,cityID,count,foodAmount,giftAmountTotal,orderRefundAmount,orderRegAmount,orderTotal,orderWaitTotal,orderAmount,shopName,total}
+	 * 					]
+	 * 				}
+	 * 			}
+	 * @return {NULL}
+	 */
+	Hualala.Global.queryOrderDayDetail = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		var orders = Test.queryDayOrders(params);
+		fn(IX.inherit(res, {
+			data : orders
+		}));
+	};
+
+	/**
+	 * 查询订单区间汇总
+	 * @param  {Object} params 		{Page:{pageNo, pageSize}, startDate,endDate,shopID,cityID,orderStatus}
+	 * @param  {Function} cbFn 		回调参数 	
+	 * 			{
+	 * 				resultcode, resultmsg,
+	 * 				data : {
+	 * 					page : {pageCount,pageNo,pageSize,totalSize},
+	 * 					properties : {count, foodAmount,giftAmountTotal,orderRefundAmount,orderRegAmount,orderTotal,orderWaitTotal,orederAmount,total},
+	 * 					records : [
+	 * 						{cityID,count,foodAmount,giftAmountTotal,groupID,orderRefundAmount,orderTotal,orderWaitTotal,orederAmount,shopID,shopName,total}
+	 * 					]
+	 * 				}
+	 * 			}
+	 * @return {NULL}
+	 */
+	Hualala.Global.queryOrderDuringDetail = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		var orders = Test.queryDuringOrders(params);
+		fn(IX.inherit(res, {
+			data : orders
+		}));
+	};
+
+	/**
+	 * 查询订单菜品排行榜
+	 * @param  {Object} params 		{Page:{pageNo, pageSize}, startDate,endDate,shopID,cityID,foodCategoryName}
+	 * @param  {Function} cbFn 		回调参数
+	 * 			{
+	 * 				resultcode, resultmsg,
+	 * 				data : {
+	 * 					page : {pageCount, pageNo, pageSize, totalSize},
+	 * 					records : [
+	 * 						{foodCategoryName, foodName, foodUnit, sumFoodAmount, sumMaster, sumPrice}
+	 * 					]
+	 * 				}
+	 * 			}
+	 * @return {NULL}
+	 */
+	Hualala.Global.queryOrderDishesHot = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		var dishes = Test.queryDishesHot(params);
+		fn(IX.inherit(res, {
+			data : dishes
+		}));
+	};
+
+	/**
+	 * 顾客统计
+	 * @param  {Object} params 		{Page:{pageNo, pageSize}, startDate,endDate,shopID,cityID,userName,userLoginMobile}
+	 * @param  {Function} cbFn 		回调参数
+	 * 			{
+	 * 				resultcode, resultmsg,
+	 * 				data : {
+	 * 					page : {pageCount, pageNo, pageSize, totalSize},
+	 * 					records : [
+	 * 						{foodAmount, maxOrderTime, minOrderTime, sumRecord, userID, userLoginMobile, userName, userSex}
+	 * 					]
+	 * 				}
+	 * 			}
+	 * @return {NULL}
+	 */
+	Hualala.Global.queryUserOrderStatistic = function (params, cbFn) {};
+
 })();
 
 

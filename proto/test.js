@@ -10,6 +10,7 @@
 		Test.TestRoot + "/app.js",
 		Test.TestRoot + "/query.js",
 		Test.TestRoot + "/account.js",
+		Test.TestRoot + "/order.js",
         Test.TestRoot + "/foods.js"
 	];
 

@@ -12,11 +12,11 @@
 
 	Hualala.TypeDef.OrderSubNavType = [
 		{name : 'order', label : '概览', pkeys : []},
-		{name : 'orderQuery', label : '订单查询', pkeys : ['begin','end','cityID','shopID','status','mobile','orderKey','minAmount','maxAmount']},
-		{name : 'orderQueryDay', label : '订单日汇总', pkeys : ['begin','end','cityID','shopID','status']},
-		{name : 'orderQueryDuring', label : '订单期间汇总', pkeys : ['begin','end','cityID','shopID','status']},
-		{name : 'orderDishesHot', label : '菜品销量排行榜', pkeys : ['begin','end','cityID','shopID','foodCategoryName']},
-		{name : 'orderQueryCustomer', label : '顾客统计', pkeys : ['begin','end','cityID','shopID','mobile','customerName']}
+		{name : 'orderQuery', label : '订单查询', pkeys : ['startDate','endDate','cityID','shopID','orderStatus','userMobile','orderID','s_orderTotal','e_orderTotal']},
+		{name : 'orderQueryDay', label : '订单日汇总', pkeys : ['startDate','endDate','cityID','shopID','orderStatus']},
+		{name : 'orderQueryDuring', label : '订单期间汇总', pkeys : ['startDate','endDate','cityID','shopID','orderStatus']},
+		{name : 'orderDishesHot', label : '菜品销量排行榜', pkeys : ['startDate','endDate','cityID','shopID','foodCategoryName']},
+		{name : 'orderQueryCustomer', label : '顾客统计', pkeys : ['startDate','endDate','cityID','shopID','userLoginMobile','userName']}
 	];
 
 	Hualala.TypeDef.GENDER = [

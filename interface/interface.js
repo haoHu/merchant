@@ -161,3 +161,133 @@ Hualala.Global.addAccount = function (params, cbFn) {
  */
 Hualala.Global.queryAccountTransDetail = function (params, cbFn) {};
 
+/**
+ * 获取结算账户关联店铺
+ * @param  {Object} params {settleUnitID, settleName, shopCount}
+ * @param  {Function} cbFn response cbFn回调参数{resultcode, resultmsg, data : {pageCount, pageNo, pageSize, records : $$ShopList, totalSize}}
+ * 				@param {Object} response cbFn回调参数 {resultcode, resultmsg, data}
+ *            	@param {String} resultcode Response结果码
+ *            	@param {String} resultmsg Response结果描述
+ *            	@param {Object} data Response数据
+ *            	@param {Array} data.cities 城市概要数据
+ *            	@param {Array} data.areas 区域概要数据
+ *            	@param {Array} data.shops 店铺概要数据
+ * @return {NULL}
+ */
+Hualala.Global.getAccountQueryShop = function (params, cbFn) {};
+
+/**
+ * 结算账户交易明细查询
+ * @param  {Object} params {transCreateBeginTime, transCreateEndTime, settleUnitID, 
+ * 			transStatus, transType, groupID, minTransAmount, maxTransAmount}
+ * @param  {Function} cbFn
+ * @return {NULL}
+ */
+Hualala.Global.queryAccountTransDetail = function (params, cbFn) {};
+
+/**
+ * 查询结算交易明细
+ * @param  {[type]} params
+ * @param  {[type]} cbFn
+ * @return {[type]}
+ */
+Hualala.Global.queryAccountOrderPayDetail = function (params, cbFn) {};
+
+/**
+ * 查询结算会员充值明细
+ * @param  {[type]} params
+ * @param  {[type]} cbFn
+ * @return {[type]}
+ */
+Hualala.Global.queryAccountFsmCustomerDetail = function (params, cbFn) {};
+
+/**
+ * 订单查询
+ * @param  {Object} params 		{Page : {pageNo, pageSize}, startDate,endDate,shopID,cityID,orderStatus,orderID,userMobile,s_orderTotal,e_orderTotal}
+ * @param  {Function} cbFn 		回调参数
+ * 			{
+ * 				resultcode, resultmsg, 
+ * 				data : {
+ * 					page : {pageCount,pageNo,pageSize,totalSize}
+ * 					properties : {count, foodAmount, giftAmountTotal, orderRefundAmount, orderRegAmount, orderTotal, orederAmount, shouldSettlementTotal, total},
+ * 					records : [
+ * 						{cardDiscountAmount,cityID,discountAmount,foodAmount,freeAmount,giftAmount,isAlreadyPaid,moneyBalance,pointBalance,serviceAmount,shopName,shouldSettlementTotal,takeoutPackagingAmount,total,userMobile,userName,userSex,orderKey,orderPrnStr,orderRefundAmount,orderStatus,orderSubtype,orderTime,orderTotal,orederAmount,}
+ * 					]
+ * 				},
+ * 				
+ * 				
+ * 			}
+ * @return {NULL}
+ */
+Hualala.Global.queryOrderDetail = function (params, cbFn) {};
+
+/**
+ * 查询订单日汇总
+ * @param  {Object} params 		{Page:{pageNo, pageSize}, startDate,endDate,shopID,cityID,orderStatus}
+ * @param  {Function} cbFn		回调参数 	
+ * 			{
+ * 				resultcode, resultmsg,
+ * 				data : {
+ * 					page : {pageCount,pageNo,pageSize,totalSize},
+ * 					properties : {count, foodAmount,giftAmountTotal,orderRefundAmount,orderRegAmount,orderTotal,orderWaitTotal,orederAmount,total},
+ * 					records : [
+ * 						{billDate,cityID,count,foodAmount,giftAmountTotal,orderRefundAmount,orderRegAmount,orderTotal,orderWaitTotal,orderAmount,shopName,total}
+ * 					]
+ * 				}
+ * 			}
+ * @return {NULL}
+ */
+Hualala.Global.queryOrderDayDetail = function (params, cbFn) {};
+
+/**
+ * 查询订单区间汇总
+ * @param  {Object} params 		{Page:{pageNo, pageSize}, startDate,endDate,shopID,cityID,orderStatus}
+ * @param  {Function} cbFn 		回调参数 	
+ * 			{
+ * 				resultcode, resultmsg,
+ * 				data : {
+ * 					page : {pageCount,pageNo,pageSize,totalSize},
+ * 					properties : {count, foodAmount,giftAmountTotal,orderRefundAmount,orderRegAmount,orderTotal,orderWaitTotal,orederAmount,total},
+ * 					records : [
+ * 						{cityID,count,foodAmount,giftAmountTotal,groupID,orderRefundAmount,orderTotal,orderWaitTotal,orederAmount,shopID,shopName,total}
+ * 					]
+ * 				}
+ * 			}
+ * @return {NULL}
+ */
+Hualala.Global.queryOrderDuringDetail = function (params, cbFn) {};
+
+/**
+ * 查询订单菜品排行榜
+ * @param  {Object} params 		{Page:{pageNo, pageSize}, startDate,endDate,shopID,cityID,foodCategoryName}
+ * @param  {Function} cbFn 		回调参数
+ * 			{
+ * 				resultcode, resultmsg,
+ * 				data : {
+ * 					page : {pageCount, pageNo, pageSize, totalSize},
+ * 					records : [
+ * 						{foodCategoryName, foodName, foodUnit, sumFoodAmount, sumMaster, sumPrice}
+ * 					]
+ * 				}
+ * 			}
+ * @return {NULL}
+ */
+Hualala.Global.queryOrderDishesHot = function (params, cbFn) {};
+
+/**
+ * 顾客统计
+ * @param  {Object} params 		{Page:{pageNo, pageSize}, startDate,endDate,shopID,cityID,userName,userLoginMobile}
+ * @param  {Function} cbFn 		回调参数
+ * 			{
+ * 				resultcode, resultmsg,
+ * 				data : {
+ * 					page : {pageCount, pageNo, pageSize, totalSize},
+ * 					records : [
+ * 						{foodAmount, maxOrderTime, minOrderTime, sumRecord, userID, userLoginMobile, userName, userSex}
+ * 					]
+ * 				}
+ * 			}
+ * @return {NULL}
+ */
+Hualala.Global.queryUserOrderStatistic = function (params, cbFn) {};
+
