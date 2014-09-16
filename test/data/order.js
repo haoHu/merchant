@@ -1,7 +1,7 @@
 (function () {
 	IX.ns("Test");
-	Test.queryOrders = function () {};
-	Test.queryDayOrders = function () {};
-	Test.queryDuringOrders = function () {};
-	Test.queryDishesHot = function () {};
+	Test.queryOrders = function (params) {};
+	Test.queryDayOrders = function (params) {};
+	Test.queryDuringOrders = function (params) {};
+	Test.queryDishesHot = function (params) {};
 })();
