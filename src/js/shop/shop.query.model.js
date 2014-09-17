@@ -105,6 +105,34 @@
 			return ret;
 		},
 		/**
+		 * 获取指定区域下的店铺数据
+		 * @param  {String} areaID 指定区域ID
+		 * @return {Array|NULL} 如果没有找到匹配的店铺数据返回null，否则返回店铺数据的数组数据
+		 */
+		getShopsByAreaID : function (areaID) {
+			if (!areaID) return null;
+			var ds = this.get('ds_shop');
+			var ret = _.filter(ds.getAll(), function (s, idx) {
+				var aid = $XP(s, 'areaID');
+				return areaID == aid;
+			});
+			return ret.length == 0 ? null : ret;
+		},
+		/**
+		 * 获取指定城市的店铺数据
+		 * @param  {String} cityID 指定城市ID
+		 * @return {Array|NULL} 如果没有找到匹配的店铺数据返回null，否则返回店铺数据的数组数据
+		 */
+		getShopsByCityID : function (cityID) {
+			if (!cityID) return null;
+			var ds = this.get('ds_shop');
+			var ret = _.filter(ds.getAll(), function (s, idx) {
+				var cid = $XP(s, 'cityID');
+				return cityID == cid;
+			});
+			return ret.length == 0 ? null : ret;
+		},
+		/**
 		 * 通过areaIDs获取区域数据
 		 * @param  {String|Array|NULL} ids areaID，如果参数是一个区域的areaID，获取一个区域的数据；如果参数是areaID的数组，获取多个区域数据；如果不传参数，获取全部区域数据
 		 * @return {Array|NULL}	如果没有找到匹配的区域数据返回null，否则返回区域数据的数组数据     

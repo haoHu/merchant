@@ -74,6 +74,22 @@
 		{value : 8, label : "信息完善中"},
 		{value : 9, label : "已关闭"}
 	];
+
+	/**
+	 * 订单状态
+	 * @type {Array}
+	 */
+	Hualala.TypeDef.OrderStatus = [
+		{value : '', label : "全部"},
+		// {value : '0', label : "已取消"},
+		// {value : '10', label : "未完成"},
+		// {value : '15', label : "已确认"},
+		{value : '20', label : "待消费(已付款)"},
+		{value : '30', label : "已退单"},
+		{value : '40', label : "已消费"}
+		// {value : '50', label : "已完成 "},
+	];
+
 	/**
 	 * 菜品属性
 	 */
