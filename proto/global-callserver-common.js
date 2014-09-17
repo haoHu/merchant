@@ -650,7 +650,14 @@
 	 * 			}
 	 * @return {NULL}
 	 */
-	Hualala.Global.queryUserOrderStatistic = function (params, cbFn) {};
+	Hualala.Global.queryUserOrderStatistic = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		var users = Test.queryOrderUsers(params);
+		fn(IX.inherit(res, {
+			data : users
+		}));
+	};
 
 })();
 
