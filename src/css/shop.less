@@ -108,11 +108,7 @@
     .map-help { padding-top: 8px }
     .map_canvas { height: 400px; border-top: 1px solid #d4d4d4; }
 }
-.map-search-box
-{
-    .input-group-addon { top: 0 }
-    .glyphicon-search:active { background: #fff }
-}
+
 .map-shop-info
 {
     dt, dd { line-height: 32px; }
@@ -219,7 +215,7 @@ form.edit-mode, .form.edit-mode
         .shop-name, a { margin-bottom: 15px; }
     }
     .shop-func-nav .navbar-nav { margin: 0 }
-    .feed-back-out { margin: 0 20px }
+    .feed-back-out { margin: 0 5px }
     #uploadImg { margin-bottom: 15px }
 }
 .shop-info 
@@ -237,25 +233,35 @@ form.edit-mode, .form.edit-mode
 // 菜谱管理
 .shop-menu
 {
+    color: @x-font-color-midGray;
     .panel { padding: 15px }
     .food-class span 
     { cursor: pointer; display: inline-block; 
       margin-right: 30px; line-height: 30px;
     }
+    .current-food-class { color: #ae7343 }
     .food-search
     {
-        select, label { margin-right: 30px; }
+        padding-bottom: 0;
+        select, label { margin: 0 30px 15px 0; font-weight: normal }
         input[type=checkbox] { margin: 0; vertical-align: middle }
     }
     #foodSearchInfo { margin-bottom: 12px }
     .tbl-wrap
     {
+        max-width: 100%; overflow: auto;
+        .tbl-head, tbl-body { overflow: hidden }
         table { width: 100%; border: 1px solid #ddd; border-top: none }
         .tbl-head
         {
-            table { border-top: 1px solid #ddd }
+            table { border-top: 1px solid #ddd; border-radius: 4px 4px 0 0 }
             table:last-child { display: none }
-            th { padding: 15px; }
+            th 
+            { 
+                padding: 15px; font-weight: normal;
+                b { font-weight: normal }
+                em, b { &:after { content: '/'; color: #ddd } }
+            }
         }
         th, td 
         { width: 92px; min-width: 92px; line-height: 1.8;
@@ -286,25 +292,33 @@ form.edit-mode, .form.edit-mode
             img { width: 92px; height: 92px }
             p
             {
-                margin: 0; text-align: left;
-                * { display: inline-block;  }
-                span { width: 3.5em; text-align: right }
-                em, b { width: 5em; }
+                margin: 0; 
+                * { display: inline-block; text-align: left; }
+                span { width: 3.5em; text-align: right; margin-right: 4px; }
             }
+            em, b { font-weight: bold }
         }
+        em, i { font-style: normal; }
+        em, b { width: 5em; }
+        em { color: #390 }
+        b { color: @x-base-font-color }
+        
+        i { text-decoration: line-through; }
         .ico-ok:before { content: '\2714'; }
         .ico-no:before { content: '—'; }
         .ico-ok, .ico-no { font-size: 18px; font-weight: bold; }
+        .ico-ok { color: #390 }
+        .ico-no { color: @x-font-color-lightGray }
         
     }
     @media (min-width: 1200px)
     {
         .tbl-wrap 
         { 
-            width: 1190px; 
+            width: 1190px; max-width: none;
             table { float: left; width: 575px; margin-right: 20px; }
         }
-        .tbl-head table:last-child { display: table }
+        .tbl-wrap .tbl-head table:last-child { display: table }
         
     }
 }

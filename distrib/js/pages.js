@@ -2071,9 +2071,128 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
     
     var G = Hualala.Global,
         U = Hualala.UI,
-        S = Hualala.Shop,
         topTip = U.TopTip,
         parseForm = Hualala.Common.parseForm;
+    
+    var shopID = params;
+        imgHost = 'http://res.hualala.com/',
+        imgRoot = '../../src/img/';
+
+    var classifiedFoods = null,
+        foodClass = '',
+        foods = null;
+    
+    var foodTpl = Handlebars.compile(Hualala.TplLib.get('tpl_food'));
+    var $menu = $(Hualala.TplLib.get('tpl_shop_menu')),
+        $foods = $menu.find('.tbl-body');
+    
+    G.getShopMenu({shopID : shopID}, function (rsp)
+    {
+        if(rsp.resultcode != '000')
+        {
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+            return;
+        }
+        
+        classifiedFoods = classifyFoods(rsp.data.records);
+        foods = filterFoods();
+        var $foodClass = $menu.find('#foodClass').append($('<span></span>').text('全部菜品 (' + foods.length + ')'));
+        
+        for(var id in classifiedFoods)
+        {
+            var category = classifiedFoods[id]; 
+            $('<span></span>').data('id', id).text(category.foodCategoryName + ' (' + category.foods.length + ')').appendTo($foodClass);
+        }
+        
+        $foods.append(foodTpl({foods: foods}));
+        
+        $menu.appendTo($container);
+    });
+
+    function filterFoods(args)
+    {
+        var result = [];
+        if(!foodClass)
+        {
+            for(var foodCategoryID in classifiedFoods)
+            {
+                result.push.apply(result, classifiedFoods[foodCategoryID].foods);
+            }
+        }
+        else
+        {
+            result = classifiedFoods[foodCategoryID].foods;
+        }
+        
+        for(p in args)
+        {
+            result = $.grep(result, function (food)
+            {
+                return food[p] == args[p];
+            });
+        }
+        
+        return result;
+    }
+    //将菜品分类
+    function classifyFoods(foodsData)
+    {
+        var result = {};
+        for(i = 0, l = foodsData.length; i < l; i++)
+        {
+            var food = foodsData[i];
+            //根据foodCategoryID分类
+            result[food.foodCategoryID] = result[food.foodCategoryID] || {foods: [], foodCategoryName: food.foodCategoryName};
+            //某个菜品可能无foodID
+            if(!food.foodID) continue;
+            food.imgSrc = food.imgePath ? imgHost + food.imgePath : imgRoot + 'dino80.png';
+            food.discountIco = food.isDiscount == 1 ? 'ico-ok' : 'ico-no';
+            food.activeIco = food.foodIsActive == 1 ? 'ico-ok' : 'ico-no';
+            
+            if(food.prePrice == -1 || food.prePrice == food.price)
+            {
+                food.prePrice = food.price;
+                food.price = '';
+            }
+            if(food.vipPrice == -1 || food.vipPrice == food.prePrice)
+            {
+                food.vipPrice = '';
+            }
+            food.price = food.price || '';
+            food.prePrice = food.prePrice || '';
+            food.vipPrice = food.vipPrice || '';
+            
+            var cfs = result[food.foodCategoryID].foods,
+                unit = {
+                    unit: food.unit ? food.unit + ':' : '',
+                    price: food.price ? '￥' + parseFloat(food.price) : '',
+                    prePrice: food.prePrice ? '￥' + parseFloat(food.prePrice) : '',
+                    vipPrice: food.vipPrice ? '￥' + parseFloat(food.vipPrice) : ''
+                },
+                idx = inAarry(cfs, food, 'foodID');
+            //if(unit.prePrice == '￥NaN') console.log(food);
+            if(idx == -1)
+            {
+                food.units = [unit];
+                cfs.push(food);
+            }
+            else
+            {//将相同foodID的菜品按照规格合并
+                cfs[idx].units.push(unit);
+            }
+            
+        }
+        return result;
+    }
+    //根据对象的一个属性检查某个对象是否在一个对象数组中
+    function inAarry(arr, obj, key)
+    {
+        for(var i = 0, l = arr.length; i < l; i++)
+        {
+            if(arr[i][key] == obj[key]) return i;
+        }
+        return -1;
+    }
     
 }
 
@@ -2103,7 +2222,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                 lng: '',
                 lat: ''
             },
-            searchBox: '.map-search-box',
+            searchBox: '.search-box',
             mapResult: '.map-result',
             //mapContainer: '#shopMap',
             mapCanvasId: 'mapCanvas',

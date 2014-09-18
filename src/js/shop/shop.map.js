@@ -13,7 +13,7 @@
                 lng: '',
                 lat: ''
             },
-            searchBox: '.map-search-box',
+            searchBox: '.search-box',
             mapResult: '.map-result',
             //mapContainer: '#shopMap',
             mapCanvasId: 'mapCanvas',
