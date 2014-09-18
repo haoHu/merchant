@@ -3511,8 +3511,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			this.origShops = [];
 			// 数据是否已经加载完毕
 			this.isReady = false;
-			// this.callServer = Hualala.Global.getShopQuerySchema;
-			this.callServer = Hualala.Global.getAccountQueryShop;
+			this.callServer = Hualala.Global.getShopQuerySchema;
+			// this.callServer = Hualala.Global.getAccountQueryShop;
 		}
 	});
 
@@ -4377,6 +4377,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			this.set({
 				sessionData : Hualala.getSessionData()
 			});
+			this.settleUnitID = $XP(cfg, 'settleUnitID', '');
+			this.settleName = $XP(cfg, 'settleName', '');
+			this.shopCount = $XP(cfg, 'shopCount', '');
 			this.container = $XP(cfg, 'container', null);
 			this.needShopCreate = false;
 			this.model = new Hualala.Account.AccountQueryShopModel();
@@ -4405,6 +4408,62 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				
 			});
 		},
+		// 绑定事件
+		bindEvent : function () {
+			// 控制器的事件绑定
+			this.on({
+				reload : function () {
+					var self = this;
+					self.model.distory();
+					self.view.distory();
+					self.init();
+				},
+				query : function (params) {
+					var self = this;
+					console.info('query params:');
+					console.info(params);
+					self.resultController && self.resultController.emit('load', IX.inherit(params, {
+						pageNo : 1,
+						pageSize : 15
+					}));
+				}
+			}, this);
+			// 模型的事件绑定
+			this.model.on({
+				load : function (cbFn) {
+					var self = this,
+						params = {
+							settleUnitID : self.settleUnitID,
+							settleName : self.settleName,
+							shopCount : self.shopCount
+						};
+						// params = $XP(self.get('sessionData'), 'user', {});
+					self.model.init(params, cbFn);
+				}
+			}, this);
+			// 视图事件绑定
+			this.view.on({
+				init : function () {
+					var self = this;
+					self.view.init({
+						model : self.model,
+						needShopCreate : self.needShopCreate,
+						container : self.container
+					});
+				},
+				// 过滤操作，触发显示结果
+				filter : function (params) {
+					var self = this;
+					self.emit('query', params);
+					//TODO 重置Query的chosenPanel
+				},
+				// 搜索操作，触发显示结果
+				query : function (params) {
+					var self = this;
+					self.emit('query', params);
+				}
+			}, this);
+		}
 	});
 	Hualala.Account.AccountQueryShopController = AccountQueryShopController;
 
@@ -5230,6 +5289,11 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			this.$queryBox = null;
 			this.$resultBox = null;
 			this.queryCtrl = null;
+			this.set({
+				settleUnitID : this.model.get('settleUnitID'),
+				settleName : this.model.get('settleUnitName'),
+				shopCount : this.model.get('shopCount'),
+			});
 
 			this.loadTemplates();
 			this.initModal();
@@ -5301,6 +5365,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			self.queryCtrl = new Hualala.Account.AccountQueryShopController({
 				container : self.$queryBox,
 				resultContainer : self.$resultBox,
+				settleUnitID : self.get('settleUnitID'),
+				settleName : self.get('settleName'),
+				shopCount : self.get('shopCount')
 				// resultController : new Hualala.Account.AccountQueryShopResultController({
 				// 	container : self.$resultBox,
 				// 	model : new Hualala.Account.AccountQueryShopResultModel(),

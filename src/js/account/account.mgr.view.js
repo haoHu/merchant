@@ -649,6 +649,11 @@
 			this.$queryBox = null;
 			this.$resultBox = null;
 			this.queryCtrl = null;
+			this.set({
+				settleUnitID : this.model.get('settleUnitID'),
+				settleName : this.model.get('settleUnitName'),
+				shopCount : this.model.get('shopCount'),
+			});
 
 			this.loadTemplates();
 			this.initModal();
@@ -720,6 +725,9 @@
 			self.queryCtrl = new Hualala.Account.AccountQueryShopController({
 				container : self.$queryBox,
 				resultContainer : self.$resultBox,
+				settleUnitID : self.get('settleUnitID'),
+				settleName : self.get('settleName'),
+				shopCount : self.get('shopCount')
 				// resultController : new Hualala.Account.AccountQueryShopResultController({
 				// 	container : self.$resultBox,
 				// 	model : new Hualala.Account.AccountQueryShopResultModel(),
