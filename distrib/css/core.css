@@ -567,6 +567,14 @@ h6 {
   padding-right: 0;
 }
 /*======== Bootstrap override - End =========*/
+.search-box .glyphicon-search {
+  top: 0;
+  font-size: 20px;
+  color: #999999;
+}
+.search-box .glyphicon-search:active {
+  background: #ffffff;
+}
 /*登录页面布局*/
 body.login .login-pic > img {
   display: block;
@@ -580,6 +588,18 @@ body.login .panel-login .auth-img {
 }
 body.login .panel-login #login_sub {
   width: 100%;
+}
+.ix-header .container,
+.ix-body > .container {
+  padding-left: 0;
+  padding-right: 0;
+}
+@media (max-width: 768px) {
+  .ix-header .container,
+  .ix-body > .container {
+    margin-left: 15px;
+    margin-right: 15px;
+  }
 }
 .ix-header {
   width: 100%;
@@ -1071,6 +1091,7 @@ body.login .panel-login #login_sub {
   line-height: 18px;
 }
 .x-bread-crumb {
+  padding: 8px 0;
   background: transparent;
   margin-bottom: 0px;
 }
@@ -1275,6 +1296,7 @@ body.login .panel-login #login_sub {
 }
 .shop-card .tags {
   line-height: 2.5rem;
+  min-height: 1.5rem;
   white-space: nowrap;
   *width: 228px;
   /* IE6 需要定義寬度 */
@@ -1434,7 +1456,7 @@ body.login .panel-login #login_sub {
   box-sizing: border-box;
   cursor: pointer;
   display: inline-block !important;
-  height: 100%;
+  height: auto;
   padding-bottom: 4px;
   padding-top: 4px;
   font-size: 14px;
@@ -2071,7 +2093,7 @@ body.login .panel-login #login_sub {
   border-radius: 3px;
 }
 .shop-info-head {
-  margin: 15px 15px 10px 15px;
+  margin: 15px 0 10px 0;
   padding: 10px 20px;
   text-align: right;
 }
@@ -2089,7 +2111,7 @@ body.login .panel-login #login_sub {
 }
 .map-wrap {
   box-sizing: border-box;
-  margin: 15px;
+  margin: 15px 0;
   border: 1px solid #d4d4d4;
   -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065) inset;
   -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065) inset;
@@ -2155,10 +2177,6 @@ body.login .panel-login #login_sub {
     padding-left: 27px;
   }
 }
-.shop-func-nav {
-  margin-left: 15px;
-  margin-right: 15px;
-}
 .shop-func-nav .active a {
   cursor: default;
 }
@@ -2203,10 +2221,6 @@ form.edit-mode .control-label.no-require:before,
 #shopCreateWizard {
   margin-top: 15px;
 }
-#shopCreateWizard .step-nav,
-#shopCreateWizard .step-action {
-  margin: 0 15px;
-}
 #shopCreateWizard .form-control.d-ib {
   width: 70px;
 }
@@ -2215,7 +2229,7 @@ form.edit-mode .control-label.no-require:before,
   margin-bottom: 50px;
 }
 #shopCreateWizard #tab3 {
-  margin: 50px 15px;
+  margin: 50px 0;
 }
 #shopCreateWizard #tab3 > div {
   padding-left: 72px;
@@ -2318,6 +2332,124 @@ form.edit-mode .control-label.no-require:before,
 }
 .shop-info .map_canvas {
   height: 250px;
+}
+.shop-menu .panel {
+  padding: 15px;
+}
+.shop-menu .food-class span {
+  cursor: pointer;
+  display: inline-block;
+  margin-right: 30px;
+  line-height: 30px;
+}
+.shop-menu .food-search select,
+.shop-menu .food-search label {
+  margin-right: 30px;
+}
+.shop-menu .food-search input[type=checkbox] {
+  margin: 0;
+  vertical-align: middle;
+}
+.shop-menu #foodSearchInfo {
+  margin-bottom: 12px;
+}
+.shop-menu .tbl-wrap table {
+  width: 100%;
+  border: 1px solid #ddd;
+  border-top: none;
+}
+.shop-menu .tbl-wrap .tbl-head table {
+  border-top: 1px solid #dddddd;
+}
+.shop-menu .tbl-wrap .tbl-head table:last-child {
+  display: none;
+}
+.shop-menu .tbl-wrap .tbl-head th {
+  padding: 15px;
+}
+.shop-menu .tbl-wrap th,
+.shop-menu .tbl-wrap td {
+  width: 92px;
+  min-width: 92px;
+  line-height: 1.8;
+  text-align: center;
+  font-size: 12px;
+}
+.shop-menu .tbl-wrap td:first-child + td + td,
+.shop-menu .tbl-wrap th:first-child + th + th {
+  width: auto;
+  min-width: 220px;
+}
+.shop-menu .tbl-wrap td:first-child + td + td + td,
+.shop-menu .tbl-wrap th:first-child + th + th + th {
+  width: 60px;
+  min-width: 60px;
+}
+.shop-menu .tbl-wrap .tbl-body table:hover,
+.shop-menu .tbl-wrap .tbl-body table:active {
+  background: #fcf8e3;
+}
+.shop-menu .tbl-wrap .tbl-body td {
+  padding: 12px;
+}
+.shop-menu .tbl-wrap .tbl-body td:first-child {
+  padding: 0;
+}
+.shop-menu .tbl-wrap .tbl-body td:last-child {
+  position: relative;
+}
+.shop-menu .tbl-wrap .tbl-body td:last-child span {
+  position: absolute;
+  bottom: 6px;
+  right: 18px;
+  padding: 8px 16px;
+  display: none;
+}
+.shop-menu .tbl-wrap .tbl-body table:hover td:last-child span {
+  display: inline;
+}
+.shop-menu .tbl-wrap .tbl-body img {
+  width: 92px;
+  height: 92px;
+}
+.shop-menu .tbl-wrap .tbl-body p {
+  margin: 0;
+  text-align: left;
+}
+.shop-menu .tbl-wrap .tbl-body p * {
+  display: inline-block;
+}
+.shop-menu .tbl-wrap .tbl-body p span {
+  width: 3.5em;
+  text-align: right;
+}
+.shop-menu .tbl-wrap .tbl-body p em,
+.shop-menu .tbl-wrap .tbl-body p b {
+  width: 5em;
+}
+.shop-menu .tbl-wrap .ico-ok:before {
+  content: '\2714';
+}
+.shop-menu .tbl-wrap .ico-no:before {
+  content: '—';
+}
+.shop-menu .tbl-wrap .ico-ok,
+.shop-menu .tbl-wrap .ico-no {
+  font-size: 18px;
+  font-weight: bold;
+}
+@media (min-width: 1200px) {
+  .shop-menu .tbl-wrap {
+    width: 1190px;
+  }
+  .shop-menu .tbl-wrap table {
+    float: left;
+    width: 575px;
+    margin-right: 20px;
+  }
+  .shop-menu .tbl-head table:last-child {
+    display: table;
+  }
 }
 .account-schema {
   margin-bottom: 3rem;

@@ -212,11 +212,25 @@
 			return idx <= end && idx >= start;
 		});
 		var pageCount = Math.ceil(totalSize / pageSize);
+		// return {
+		// 	pageCount : pageCount,
+		// 	pageNo : pageNo,
+		// 	pageSize : pageSize,
+		// 	totalSize : totalSize,
+		// 	records : _.map(result, function (el) {
+		// 		return IX.inherit(el, {
+		// 			settleUnitID : settleUnitID,
+		// 			groupID : groupID
+		// 		});
+		// 	})
+		// };
 		return {
-			pageCount : pageCount,
-			pageNo : pageNo,
-			pageSize : pageSize,
-			totalSize : totalSize,
+			page : {
+				pageCount : pageCount,
+				pageNo : pageNo,
+				pageSize : pageSize,
+				totalSize : totalSize
+			},
 			records : _.map(result, function (el) {
 				return IX.inherit(el, {
 					settleUnitID : settleUnitID,

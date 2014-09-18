@@ -322,6 +322,34 @@
 			return ret;
 		},
 		/**
+		 * 获取指定区域下的店铺数据
+		 * @param  {String} areaID 指定区域ID
+		 * @return {Array|NULL} 如果没有找到匹配的店铺数据返回null，否则返回店铺数据的数组数据
+		 */
+		getShopsByAreaID : function (areaID) {
+			if (!areaID) return null;
+			var ds = this.get('ds_shop');
+			var ret = _.filter(ds.getAll(), function (s, idx) {
+				var aid = $XP(s, 'areaID');
+				return areaID == aid;
+			});
+			return ret.length == 0 ? null : ret;
+		},
+		/**
+		 * 获取指定城市的店铺数据
+		 * @param  {String} cityID 指定城市ID
+		 * @return {Array|NULL} 如果没有找到匹配的店铺数据返回null，否则返回店铺数据的数组数据
+		 */
+		getShopsByCityID : function (cityID) {
+			if (!cityID) return null;
+			var ds = this.get('ds_shop');
+			var ret = _.filter(ds.getAll(), function (s, idx) {
+				var cid = $XP(s, 'cityID');
+				return cityID == cid;
+			});
+			return ret.length == 0 ? null : ret;
+		},
+		/**
 		 * 通过areaIDs获取区域数据
 		 * @param  {String|Array|NULL} ids areaID，如果参数是一个区域的areaID，获取一个区域的数据；如果参数是areaID的数组，获取多个区域数据；如果不传参数，获取全部区域数据
 		 * @return {Array|NULL}	如果没有找到匹配的区域数据返回null，否则返回区域数据的数组数据     
@@ -2035,15 +2063,17 @@ function getSelectText($select)
 
 ;(function ($, window) {
 IX.ns('Hualala.Shop');
-var G = Hualala.Global,
-    U = Hualala.UI,
-    S = Hualala.Shop,
-    topTip = U.TopTip,
-    parseForm = Hualala.Common.parseForm;
+
 // 初始化店铺店铺菜品页面
-S.initShopMenu = function ($container, pageType, params)
+Hualala.Shop.initMenu = function ($container, pageType, params)
 {
     if(!params) return;
+    
+    var G = Hualala.Global,
+        U = Hualala.UI,
+        S = Hualala.Shop,
+        topTip = U.TopTip,
+        parseForm = Hualala.Common.parseForm;
     
 }
 
@@ -2431,14 +2461,14 @@ S.initShopMenu = function ($container, pageType, params)
 
 	var initFoodMenuMgr = function (pageType, params) {
 		var $body = $('#ix_wrapper > .ix-body > .container');
-		$body.html(
-			'<div class="jumbotron">'+
-				'<h1>这里是店铺菜谱管理页面</h1>' +
-				'<p>提供查看店铺菜谱信息，编辑店铺菜谱信息</p>' +
-				
-			'</div>'
-			);
-		// TODO 查看店铺菜谱信息，编辑店铺菜谱信息
+		Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+        Hualala.Shop.createShopInfoHead(params, $body);
+        Hualala.Shop.createShopFuncNav(pageType, params, $body);
+        Hualala.Shop.initMenu($body, pageType, params);
 	};
 	Hualala.Shop.FoodMenuMgrInit = initFoodMenuMgr;
 
@@ -3205,8 +3235,8 @@ S.initShopMenu = function ($container, pageType, params)
 			self.updatePagerParams(params);
 			self.callServer(self.getPagerParams(), function (res) {
 				if (res.resultcode == '000') {
-					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.pageNo'));
-					self.updatePagerParams($XP(res, 'data.page', {}));
+					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.page.pageNo'));
+					self.updatePagerParams(IX.inherit($XP(res, 'data', {}), $XP(res, 'data.page', {})));
 				} else {
 					toptip({
 						msg : $XP(res, 'resultmsg', ''),
@@ -3430,8 +3460,8 @@ S.initShopMenu = function ($container, pageType, params)
 			self.updatePagerParams(params);
 			self.callServer(self.getPagerParams(), function (res) {
 				if (res.resultcode == '000') {
-					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.pageNo'));
-					self.updatePagerParams($XP(res, 'data', {}));
+					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.page.pageNo'));
+					self.updatePagerParams(IX.inherit($XP(res, 'data', {}), $XP(res, 'data.page', {})));
 				} else {
 					toptip({
 						msg : $XP(res, 'resultmsg', ''),

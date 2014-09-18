@@ -216,10 +216,12 @@
 		}
 		fn(IX.inherit(res, {
 			data : {
-				pageCount : 1,
-				pageNo : 1,
-				pageSize : accountList.length,
-				totalSize : accountList.length,
+				page : {
+					pageCount : 1,
+					pageNo : 1,
+					pageSize : accountList.length,
+					totalSize : accountList.length
+				},
 				records : match
 			}
 		}));

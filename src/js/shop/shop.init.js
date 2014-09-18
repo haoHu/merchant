@@ -172,14 +172,14 @@
 
 	var initFoodMenuMgr = function (pageType, params) {
 		var $body = $('#ix_wrapper > .ix-body > .container');
-		$body.html(
-			'<div class="jumbotron">'+
-				'<h1>这里是店铺菜谱管理页面</h1>' +
-				'<p>提供查看店铺菜谱信息，编辑店铺菜谱信息</p>' +
-				
-			'</div>'
-			);
-		// TODO 查看店铺菜谱信息，编辑店铺菜谱信息
+		Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+        Hualala.Shop.createShopInfoHead(params, $body);
+        Hualala.Shop.createShopFuncNav(pageType, params, $body);
+        Hualala.Shop.initMenu($body, pageType, params);
 	};
 	Hualala.Shop.FoodMenuMgrInit = initFoodMenuMgr;
 

@@ -86,8 +86,8 @@
 			self.updatePagerParams(params);
 			self.callServer(self.getPagerParams(), function (res) {
 				if (res.resultcode == '000') {
-					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.pageNo'));
-					self.updatePagerParams($XP(res, 'data.page', {}));
+					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.page.pageNo'));
+					self.updatePagerParams(IX.inherit($XP(res, 'data', {}), $XP(res, 'data.page', {})));
 				} else {
 					toptip({
 						msg : $XP(res, 'resultmsg', ''),
@@ -311,8 +311,8 @@
 			self.updatePagerParams(params);
 			self.callServer(self.getPagerParams(), function (res) {
 				if (res.resultcode == '000') {
-					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.pageNo'));
-					self.updatePagerParams($XP(res, 'data', {}));
+					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.page.pageNo'));
+					self.updatePagerParams(IX.inherit($XP(res, 'data', {}), $XP(res, 'data.page', {})));
 				} else {
 					toptip({
 						msg : $XP(res, 'resultmsg', ''),
