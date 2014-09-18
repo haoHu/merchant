@@ -60,6 +60,17 @@
 		initOrderPageLayout();
 		var $pageBody = $body.find('.order-body');
 		var queryKeys = $XP(_.findWhere(Hualala.TypeDef.OrderSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
+		var queryPanel = new Hualala.Order.QueryController({
+			container : $pageBody,
+			resultController : new Hualala.Order.OrderListController(),
+			model : new Hualala.Order.QueryModel({
+				queryKeys : queryKeys,
+				initQueryParams : Hualala.Order.initQueryParams
+			}),
+			view : new Hualala.Order.QueryView({
+				mapRenderDataFn : Hualala.Order.mapOrderQueryBaseFormRenderData
+			})
+		});
 	};
 	/*订单期间汇总页面*/
 	var initQueryOrderDuringDetailPage = function () {
@@ -68,6 +79,17 @@
 		initOrderPageLayout();
 		var $pageBody = $body.find('.order-body');
 		var queryKeys = $XP(_.findWhere(Hualala.TypeDef.OrderSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
+		var queryPanel = new Hualala.Order.QueryController({
+			container : $pageBody,
+			resultController : new Hualala.Order.OrderListController(),
+			model : new Hualala.Order.QueryModel({
+				queryKeys : queryKeys,
+				initQueryParams : Hualala.Order.initQueryParams
+			}),
+			view : new Hualala.Order.QueryView({
+				mapRenderDataFn : Hualala.Order.mapOrderQueryBaseFormRenderData
+			})
+		});
 	};
 	/*菜品销售排行页面*/
 	var initQueryOrderDishesHotPage = function () {
@@ -76,6 +98,17 @@
 		initOrderPageLayout();
 		var $pageBody = $body.find('.order-body');
 		var queryKeys = $XP(_.findWhere(Hualala.TypeDef.OrderSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
+		var queryPanel = new Hualala.Order.QueryController({
+			container : $pageBody,
+			resultController : new Hualala.Order.OrderListController(),
+			model : new Hualala.Order.QueryModel({
+				queryKeys : queryKeys,
+				initQueryParams : Hualala.Order.initQueryParams
+			}),
+			view : new Hualala.Order.QueryView({
+				mapRenderDataFn : Hualala.Order.mapDishesHotQueryFormRenderData
+			})
+		});
 	};
 	/*顾客统计页面*/
 	var initQueryOrderCustomerPage = function () {
@@ -84,6 +117,17 @@
 		initOrderPageLayout();
 		var $pageBody = $body.find('.order-body');
 		var queryKeys = $XP(_.findWhere(Hualala.TypeDef.OrderSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
+		var queryPanel = new Hualala.Order.QueryController({
+			container : $pageBody,
+			resultController : new Hualala.Order.OrderListController(),
+			model : new Hualala.Order.QueryModel({
+				queryKeys : queryKeys,
+				initQueryParams : Hualala.Order.initQueryParams
+			}),
+			view : new Hualala.Order.QueryView({
+				mapRenderDataFn : Hualala.Order.mapUsersQueryFormRenderData
+			})
+		});
 	};
 
 

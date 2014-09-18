@@ -117,4 +117,11 @@
 	].join('');
 	TplLib.register('tpl_order_queryForm', tpl_order_queryForm);
 
+	var tpl_order_comboOpts = [
+		'{{#each opts}}',
+			'<option value="{{value}}" {{selected}}>{{label}}</option>',
+		'{{/each}}'
+	].join('');
+	TplLib.register('tpl_order_comboOpts', tpl_order_comboOpts);
+
 })(jQuery, window);
