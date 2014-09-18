@@ -43,7 +43,9 @@
 		var queryKeys = $XP(_.findWhere(Hualala.TypeDef.OrderSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
 		var queryPanel = new Hualala.Order.QueryController({
 			container : $pageBody,
-			resultController : new Hualala.Order.OrderListController(),
+			resultController : new Hualala.Order.OrderListController({
+				queryKeys
+			}),
 			model : new Hualala.Order.QueryModel({
 				queryKeys : queryKeys,
 				initQueryParams : Hualala.Order.initQueryParams
