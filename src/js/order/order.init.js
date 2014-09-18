@@ -44,7 +44,7 @@
 		var queryPanel = new Hualala.Order.QueryController({
 			container : $pageBody,
 			resultController : new Hualala.Order.OrderListController({
-				queryKeys
+				
 			}),
 			model : new Hualala.Order.QueryModel({
 				queryKeys : queryKeys,
