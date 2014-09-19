@@ -169,6 +169,15 @@ module.exports = function (grunt) {
 
 					"<%= pkg.srcPath.jsPath %>/account/account.init.js",
 
+					// Order Moudle
+					"<%= pkg.srcPath.jsPath %>/order/order.list.model.js",
+					"<%= pkg.srcPath.jsPath %>/order/order.list.view.js",
+					"<%= pkg.srcPath.jsPath %>/order/order.list.controler.js",
+					"<%= pkg.srcPath.jsPath %>/order/order.query.model.js",
+					"<%= pkg.srcPath.jsPath %>/order/order.query.view.js",
+					"<%= pkg.srcPath.jsPath %>/order/order.query.controler.js",
+					"<%= pkg.srcPath.jsPath %>/order/order.init.model.js",
+
 					// Merchant init
 					"<%= pkg.srcPath.jsPath %>/common/merchant.layout.js",
 					"<%= pkg.srcPath.jsPath %>/common/merchant.init.js",
