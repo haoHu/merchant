@@ -1594,4 +1594,130 @@
 	].join('');
 	TplLib.register('tpl_fsmcustomer_detail', tpl_fsmcustomer_detail);
 
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala");
+	var TplLib = Hualala.TplLib;
+	var tpl_order_subnav = [
+		'<div class="navbar-collapse collapse" id="order_navbar">',
+			'<ul class="nav nav-justified nav-pills">',
+				'{{#each items}}',
+				'<li class="{{active}} {{disabled}}">',
+					'<a href="{{path}}" data-page-type="{{name}}">{{label}}</a>',
+				'</li>',
+				'{{/each}}',
+			'</ul>',
+		'</div>'
+	].join('');
+	TplLib.register('tpl_order_subnav', tpl_order_subnav);
+
+	var tpl_order_queryLayout = [
+		'<div class="well well-sm query-form">',
+			'{{#with query}}',
+				'{{> orderQueryForm}}',
+			'{{/with}}',
+		'</div>'
+	].join('');
+	TplLib.register('tpl_order_queryLayout', tpl_order_queryLayout);
+
+	var tpl_order_queryForm = [
+		'<form class="form-horizontal" role="">',
+			'<div class="row">',
+				'{{#each cols}}',
+					'<div class="{{colClz}}">',
+						'{{#each items}}',
+							'{{#checkFormElementType type type="combo"}}',
+								'<div class="form-group">',
+									'<label for="{{id}}" class="{{labelClz}}">{{{label}}}</label>',
+									'<div class="{{clz}}">',
+										'<select id="{{id}}" name="{{name}}" class="form-control"  data-type="{{type}}">',
+											'{{#each options}}',
+												'<option value="{{value}}" {{selected}}>{{label}}</option>',
+											'{{/each}}',
+										'</select>',
+									'</div>',
+								'</div>',
+							'{{/checkFormElementType}}',
+							'{{#checkFormElementType type type="section"}}',
+								'<div class="form-group section">',
+									'<label for="{{id}}" class="{{labelClz}}">{{label}}</label>',
+									'{{#with min}}',
+										'<div class="min-input {{clz}}">',
+											'<div class="input-group">',
+												'{{#if prefix}}',
+													'<span class="input-group-addon">',
+														'{{{prefix}}}',
+													'</span>',
+												'{{/if}}',
+												'<input type="text" id="{{id}}" name="{{name}}" class="form-control" placeholder="{{placeholder}}" value="{{value}}"  data-type="{{type}}">',
+												'{{#if surfix}}',
+													'<span class="input-group-addon">',
+														'{{{surfix}}}',
+													'</span>',
+												'{{/if}}',
+											'</div>',
+										'</div>',
+									'{{/with}}',
+									'{{#with max}}',
+										// '<div class="col-sm-1 hidden-xs hidden-sm"><span class="to-label">到</span></div>',
+										'<div class="max-input {{clz}}">',
+											// '<span class="to-label">到</span>',
+											'<div class="input-group">',
+												'{{#if prefix}}',
+													'<span class="input-group-addon">',
+														'{{{prefix}}}',
+													'</span>',
+												'{{/if}}',
+												'<input type="text" id="{{id}}" name="{{name}}" class="form-control" placeholder="{{placeholder}}" value="{{value}}"  data-type="{{type}}">',
+												'{{#if surfix}}',
+													'<span class="input-group-addon">',
+														'{{{surfix}}}',
+													'</span>',
+												'{{/if}}',
+											'</div>',
+										'</div>',
+									'{{/with}}',
+								'</div>',
+							'{{/checkFormElementType}}',
+							'{{#checkFormElementType type type="text"}}',
+								'<div class="form-group">',
+									'<label for="{{id}}" class="{{labelClz}}">{{label}}</label>',
+									'<div class="{{clz}}">',
+										'{{#isInputGroup prefix surfix}}',
+											'<div class="input-group">',
+												'{{#if prefix}}',
+													'<span class="input-group-addon">',
+														'{{{prefix}}}',
+													'</span>',
+												'{{/if}}',
+												'<input type="text" id="{{id}}" name="{{name}}" class="form-control" placeholder="{{placeholder}}" value="{{value}}"  data-type="{{type}}">',
+												'{{#if surfix}}',
+													'<span class="input-group-addon">',
+														'{{{surfix}}}',
+													'</span>',
+												'{{/if}}',
+											'</div>',
+										'{{else}}',
+											'<input type="text" id="{{id}}" name="{{name}}" class="form-control" placeholder="{{placeholder}}" value="{{value}}"  data-type="{{type}}">',
+										'{{/isInputGroup}}',
+									'</div>',
+								'</div>',
+							'{{/checkFormElementType}}',
+							'{{#checkFormElementType type type="button"}}',
+								'<button type="button" class="btn {{clz}}">{{{label}}}</button>',
+							'{{/checkFormElementType}}',
+						'{{/each}}',
+					'</div>',
+				'{{/each}}',
+			'</div>',
+		'</form>'
+	].join('');
+	TplLib.register('tpl_order_queryForm', tpl_order_queryForm);
+
+	var tpl_order_comboOpts = [
+		'{{#each opts}}',
+			'<option value="{{value}}" {{selected}}>{{label}}</option>',
+		'{{/each}}'
+	].join('');
+	TplLib.register('tpl_order_comboOpts', tpl_order_comboOpts);
+
 })(jQuery, window);

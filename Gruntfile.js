@@ -116,7 +116,8 @@ module.exports = function (grunt) {
 				src : [
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.lib.js",
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.shop.js",
-					"<%= pkg.srcPath.jsPath %>/tpl/tpl.account.js"
+					"<%= pkg.srcPath.jsPath %>/tpl/tpl.account.js",
+					"<%= pkg.srcPath.jsPath %>/tpl/tpl.order.js",
 				],
 				dest : "<%= pkg.destPath.jsPath %>/tpl.js",
 				nonull : true
