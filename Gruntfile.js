@@ -176,7 +176,7 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/order/order.query.model.js",
 					"<%= pkg.srcPath.jsPath %>/order/order.query.view.js",
 					"<%= pkg.srcPath.jsPath %>/order/order.query.controler.js",
-					"<%= pkg.srcPath.jsPath %>/order/order.init.model.js",
+					"<%= pkg.srcPath.jsPath %>/order/order.init.js",
 
 					// Merchant init
 					"<%= pkg.srcPath.jsPath %>/common/merchant.layout.js",
