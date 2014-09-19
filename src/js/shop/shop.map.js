@@ -62,7 +62,7 @@
                     searchParams = $.extend({}, self.cfg.data);
                 $searchBtn.on('click', function ()
                 {
-                    searchParams.keyword = $keyword.val();
+                    searchParams.keyword = $.trim($keyword.val());
                     self.searchMap(searchParams);
                 });
             }
