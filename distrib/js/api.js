@@ -112,7 +112,13 @@
 		["getAccountQueryShop", "/fsm/settlementShopDetail.ajax", "", "POST"],
 		["queryAccountTransDetail", "/fsm/queryFsmAccountTransDetail.ajax", "", "POST"],
 		["queryAccountOrderPayDetail", "/order/queryOrderPayDetail.ajax", "", "POST"],
-		["queryAccountFsmCustomerDetail", "/fsm/queryFsmCustomerDetail.ajax", "", "POST"]
+		["queryAccountFsmCustomerDetail", "/fsm/queryFsmCustomerDetail.ajax", "", "POST"],
+		/*Order Moudle*/
+		["queryOrderDetail", "/shop/queryOrderDetail.ajax", "", "POST"],
+		["queryOrderDayDetail", "/shop/queryDayOfReconciliation.ajax", "", "POST"],
+		["queryOrderDuringDetail", "/shop/queryDuringTheBill.ajax", "", "POST"],
+		["queryOrderDishesHot", "/shop/foodStatistic.ajax", "", "POST"],
+		["queryUserOrderStatistic", "/shop/UserOrderStatistic.ajax", "", "POST"],
 
 	]);
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([
@@ -130,7 +136,10 @@
 		},
 		"queryAccount", "withdrawCash", "deleteAccount", "editAccount",
 		"addAccount", "getAccountQueryShop", "queryAccountTransDetail",
-		"queryAccountOrderPayDetail", "queryAccountFsmCustomerDetail"
+		"queryAccountOrderPayDetail", "queryAccountFsmCustomerDetail",
+
+		"queryOrderDetail", "queryOrderDayDetail", "queryOrderDuringDetail",
+		"queryOrderDishesHot", "queryUserOrderStatistic"
 	]);
 
 	/*Login CallServer*/
@@ -219,6 +228,23 @@
 	};
 	Hualala.Global.queryAccountFsmCustomerDetail = function (params, cbFn) {
 		Hualala.Global.commonCallServer("queryAccountFsmCustomerDetail", params, cbFn);
+	};
+
+	/*Order Moudle CallServer*/
+	Hualala.Global.queryOrderDetail = function (params, cbFn) {
+		Hualala.Global.commonCallServer("queryOrderDetail", params, cbFn);
+	};
+	Hualala.Global.queryOrderDayDetail = function (params, cbFn) {
+		Hualala.Global.commonCallServer("queryOrderDayDetail", params, cbFn);
+	};
+	Hualala.Global.queryOrderDuringDetail = function (params, cbFn) {
+		Hualala.Global.commonCallServer("queryOrderDuringDetail", params, cbFn);
+	};
+	Hualala.Global.queryOrderDishesHot = function (params, cbFn) {
+		Hualala.Global.commonCallServer("queryOrderDishesHot", params, cbFn);
+	};
+	Hualala.Global.queryUserOrderStatistic = function (params, cbFn) {
+		Hualala.Global.commonCallServer("queryUserOrderStatistic", params, cbFn);
 	};
 
 

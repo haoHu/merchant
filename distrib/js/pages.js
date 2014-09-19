@@ -2335,7 +2335,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                     searchParams = $.extend({}, self.cfg.data);
                 $searchBtn.on('click', function ()
                 {
-                    searchParams.keyword = $keyword.val();
+                    searchParams.keyword = $.trim($keyword.val());
                     self.searchMap(searchParams);
                 });
             }
@@ -6037,6 +6037,1300 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 	Hualala.Account.AccountMgrInit = initAccountMgrPage;
 	
 	Hualala.Account.AccountListInit = initAccountListPage;
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Order");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+
+	var OrderQueryResultModel = Stapes.subclass({
+		/**
+		 * 构造订单查询结果的数据模型 
+		 * @param  {Object} cfg	配置信息
+		 * 		@param {Function} callServer 获取数据接口
+		 * 		@param {Array} queryKeys 搜索条件字段序列
+		 * 		@param {Array} cities 城市数据
+		 * 		@param {Function} initQueryParams 初始化搜索条件
+		 * 		@param {Boolean} hasPager 是否支持分页true:支持；false：不支持.default true
+		 * @return {Object}
+		 */
+		constructor : function (cfg) {
+			this.callServer = $XP(cfg, 'callServer', null);
+			if (!this.callServer) {
+				throw("callServer is empty!");
+				return ;
+			}
+			this.cities = $XP(cfg, 'cities', []);
+			this.queryKeys = $XP(cfg, 'queryKeys', []);
+			this.pagerKeys = 'pageCount,totalSize,pageNo,pageSize'.split(',');
+			this.queryParamsKeys = null;
+			this.hasPager = $XP(cfg, 'hasPager', true);
+			this.recordModel = $XP(cfg, 'recordModel', BaseOrderRecordModel);
+			var initQueryParams = $XF(cfg, 'initQueryParams');
+			initQueryParams.apply(this);
+		}
+	});
+
+	OrderQueryResultModel.proto({
+		init : function (params, cities) {
+			this.cities = cities || this.cities;
+			this.set(IX.inherit({
+				ds_record : new IX.IListManager(),
+				ds_page : new IX.IListManager()
+			}, this.hasPager ? {
+				pageCount : 0,
+				totalSize : 0,
+				pageNo : $XP(params, 'pageNo', 1),
+				pageSize : $XP(params, 'pageSize', 15)
+			} : {}));
+			this.queryParamsKeys = !this.hasPager ? this.queryKeys : this.queryKeys.concat(this.pagerKeys);
+		},
+		updatePagerParams : function (params) {
+			var self = this;
+			var queryParamsKeys = self.queryParamsKeys.join(',');
+			_.each(params, function (v, k, l) {
+				if (queryParamsKeys.indexOf(k) > -1) {
+					self.set(k, v);
+				}
+			});
+		},
+		getPagerParams : function () {
+			var self = this;
+			var ret = {};
+			_.each(self.queryParamsKeys, function (k) {
+				ret[k] = self.get(k);
+			});
+			return ret;
+		},
+		updateDataStore : function (data, pageNo) {
+			var self = this,
+				recordHT = self.get('ds_record'),
+				pageHT = self.get('ds_page');
+			pageNo = self.hasPager ? pageNo : 1;
+			var recordIDs = _.map(data, function (r, i, l) {
+				var id = pageNo + '_' + IX.id(),
+					mRecord = new self.recordModel(IX.inherit(r, {
+						'__id__' : id
+					}));
+				recordHT.register(id, mRecord);
+				return id;
+			});
+			pageHT.register(pageNo, recordIDs);
+		},
+		resetDataStore : function () {
+			this.recordHT.clear();
+			this.pageHT.clear();
+		},
+		load : function (params, cbFn) {
+			var self = this;
+			self.updatePagerParams(params);
+			self.callServer(self.getPagerParams(), function (res) {
+				if (res.resultcode == '000') {
+					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.page.pageNo'));
+					self.updatePagerParams($XP(res, 'data.page', {}));
+				} else {
+					toptip({
+						msg : $XP(res, 'resultmsg', ''),
+						type : 'danger'
+					});
+				}
+				cbFn(self);
+			});
+		},
+		getRecordsByPageNo : function (pageNo) {
+			var self = this,
+				recordHT = self.get('ds_record'),
+				pageHT = self.get('ds_page');
+			pageNo = !self.hasPager ? 1 : pageNo;
+			var ret = _.map(recordHT.getByKeys(pageHT.get(pageNo)), function (mRecord, i, l) {
+				return mRecord.getAll();
+			});
+			console.info("pageData");
+			console.info(ret);
+			return ret;
+		},
+		getRecordModelByID : function (id) {
+			var self = this,
+				recordHT = self.get('ds_record');
+			return recordHT.get(id);
+		},
+		getCityByCityID : function (cityID) {
+			if (IX.isEmpty(cityID)) return null;
+			var l = this.cities;
+			var m = _.find(l, function (el) {
+				return $XP(el, 'cityID') == cityID;
+			});
+			return m;
+		}
+	});
+
+	Hualala.Order.OrderQueryResultModel = OrderQueryResultModel;
+
+	/*订单查询结果基础数据模型 */
+	var BaseOrderRecordModel = Stapes.subclass({
+		constructor : function (order) {
+			this.set(order);
+		}
+	});
+	BaseOrderRecordModel.proto({
+
+	});
+	Hualala.Order.BaseOrderRecordModel = BaseOrderRecordModel;
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Order");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+
+
+	var OrderQueryTableHeaderCfg = [
+		{key : "cityID", clz : "", label : "城市"},
+		{key : "shopName", clz : "", label : "店铺名称"},
+		{key : "orderID", clz : "", label : "订单号"},
+		{key : "userName", clz : "", label : "客户姓名"},
+		{key : "orderTime", clz : "", label : "就餐时间"},
+		{key : "orderStatus", clz : "", label : "订单状态"},
+		{key : "orderTotal", clz : "", label : "应付金额"},
+		{key : "moneyBalance", clz : "", label : "会员卡支付"},
+		{key : "pointBalance", clz : "", label : "会员卡积分支付"},
+		{key : "orderRefundAmount", clz : "", label : "退订/退款"},
+		{key : "total", clz : "", label : "应结金额"},
+		{key : "shouldSettlementTotal", clz : "", label : "结算金额"},
+		{key : "rowControl", clz : "", label : "操作"}
+	];
+	var OrderQueryDuringTableHeaderCfg = [
+		{key : "cityID", clz : "", label : "城市"},
+		{key : "billDate", clz : "", label : "日期"},
+		{key : "count", clz : "", label : "订单数"},
+		{key : "giftAmountTotal", clz : "", label : "代金券总金额"},
+		{key : "orderTotal", clz : "", label : "订单支付金额"},
+		{key : "orderWaitTotal", clz : "", label : "待消费订单金额"},
+		{key : "orderRegAmount", clz : "", label : "退款金额"},
+		{key : "orderRefundAmount", clz : "", label : "退订金额"},
+		{key : "total", clz : "", label : "成交金额"},
+		{key : "orderTotal", clz : "", label : "线下金额"},
+		{key : "rowControl", clz : "", label : "操作"}
+	];
+
+	var OrderQueryDishHotTableHeaderCfg = [
+		{key : "index", clz : "", label : "序号"},
+		{key : "foodName", clz : "", label : "菜品名称"},
+		{key : "foodCategoryName", clz : "", label : "分类名称"},
+		{key : "sumPrice", clz : "", label : "平均价格"},
+		{key : "sumMaster", clz : "", label : "销售份数"}
+	];
+
+	var OrderQueryUserTableHeaderCfg = [
+		{key : "userName", clz : "", label : "姓名"},
+		{key : "userSex", clz : "", label : "性别"},
+		{key : "userLoginMobile", clz : "", label : "手机号"},
+		{key : "sumRecord", clz : "", label : "订餐次数"},
+		{key : "foodAmount", clz : "", label : "订餐金额"},
+		{key : "minOrderTime", clz : "", label : "首次订餐时间"},
+		{key : "maxOrderTime", clz : "", label : "最近订餐时间"}
+	];
+
+	var mapColItemRenderData = function (row, rowIdx, colKey) {
+		var self = this;
+		var ctx = Hualala.PageRoute.getPageContextByPath(), pageName = $XP(ctx, 'name'),
+			pagerParams = self.model.getPagerParams(), queryKeys = self.model.queryKeys;
+		var r = {value : "", text : ""}, v = $XP(row, colKey, '');
+		switch(colKey) {
+			case "cityID":
+				v = self.getCityByCityID(v);
+				r.value = $XP(v, 'cityID', '');
+				r.text = $XP(v, 'cityName', '');
+				break;
+			case "userName":
+				var m = $XP(row, 'userMobile', ''),
+					s = Hualala.Common.getGender($XP(row, 'userSex', ''));
+				s = IX.isEmpty(s) ? '' : '(' + $XP(s, 'label', '') + ')';
+				m = IX.isEmpty(m) ? '' : '(' + m + ')';
+				r.value = $XP(row, 'userID', '');
+				r.text = v + s + m;
+				break;
+			case "orderTime":
+			case "minOrderTime":
+			case "maxOrderTime":
+				r.value = v;
+				r.text = IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd HH:mm');
+				break;
+			case "orderStatus":
+				v = Hualala.Common.getOrderStatus(v);
+				r.value = $XP(v, 'value', '');
+				r.text = $XP(v, 'label', '');
+				break;
+			case "billDate":
+				r.value = v;
+				r.text = IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd');
+				break;
+			case "index" :
+				r.value = rowIdx;
+				r.text = rowIdx + 1;
+				break;
+			case "sumMaster":
+				r.value = v;
+				r.text = v + "&nbsp;" + $XP(row, 'foodUnit', '');
+				break;
+			case "sumPrice":
+				r.value = v || 0;
+				r.text = Hualala.Common.Math.prettyPrice(Hualala.Common.Math.div(r.value, $XP(row, 'sumMaster', 1)));
+				break;
+			case "userSex":
+				r.value = v;
+				r.text = $XP(Hualala.Common.getGender($XP(row, 'userSex', '')), 'label', '');
+				break;
+			case "rowControl" :
+				if (pageName == 'orderQuery') {
+					r = {
+						type : 'button',
+						btns : [
+							{
+								label : '查看详情', 
+								link : 'javascript:void(0);', 
+								clz : '', 
+								id : $XP(row, 'orderKey', ''), 
+								type : ''
+							}
+						]
+					};
+				} else if (pageName == 'orderQueryDay' || pageName == 'orderQueryDuring' ) {
+					var n = pageName == "orderQueryDuring" ? "orderQueryDay" : "orderQuery",
+						params = _.map(queryKeys, function (k) {
+							return $XP(pagerParams, k, '');
+						}),
+						link = '';
+						if (n == 'orderQuery') {
+							params = params.concat(['','','','']);
+						}
+						link = Hualala.PageRoute.createPath(n, params);
+					r = {
+						type : 'button',
+						btns : [
+							{
+								label : '查看详情', 
+								link : link, 
+								clz : '', 
+								id : '', 
+								type : ''
+							}
+						]
+					};
+				}
+				break;
+			default : 
+				r.value = r.text = $XP(row, colKey, '');
+				break;
+		}
+		return r;
+	};
+
+	/**
+	 * 格式化需要渲染的结果数据
+	 * @param {Array|Object} records 搜索结果数据 
+	 * @return {Array|Obejct}	格式化后的渲染数据
+	 */
+	Hualala.Order.mapQueryOrderResultRenderData = function (records) {
+		var self = this;
+		var tblClz = "table-striped table-hover",
+			tblHeaders = OrderQueryTableHeaderCfg;
+		var mapColsRenderData = function (row, idx) {
+			var colKeys = _.map(tblHeaders, function (el) {
+				return $XP(el, 'key', '');
+			});
+			// colKeys.push('rowControl');
+			var col = {clz : '', type : 'text'};
+			var cols = _.map(colKeys, function (k, i) {
+				var r = mapColItemRenderData.apply(self, [row, idx, k]);
+				return IX.inherit(col, r);
+			});
+			return cols;
+		};
+		var rows = _.map(records, function (row, idx) {
+			return {
+				clz : '',
+				cols : mapColsRenderData(row, idx)
+			};
+		});
+		return {
+			clz : tblClz,
+			thead : tblHeaders,
+			rows : rows
+		};
+	};
+	/**
+	 * 格式化需要渲染的结果数据（区间汇总，日汇总 ）
+	 * @param  {[type]} records
+	 * @return {[type]}
+	 */
+	Hualala.Order.mapQueryOrderDuringRenderData = function (records) {
+		var self = this;
+		var ctx = Hualala.PageRoute.getPageContextByPath();
+		var pageName = $XP(ctx, 'name');
+		var pagerParams = self.model.getPagerParams();
+		var queryKeys = self.model.queryKeys;
+		var tblClz = "table-striped table-hover",
+			tblHeaders = IX.clone(OrderQueryDuringTableHeaderCfg);
+		if (pageName == 'orderQueryDuring') {
+			tblHeaders = _.map(tblHeaders, function (el) {
+				var key = $XP(el, 'key', '');
+				if (key == 'billDate') {
+					el = IX.inherit(el, {
+						key : 'shopName', clz : "", label : "店铺名称"
+					});
+				}
+				return el;
+			});
+		}
+		var mapColsRenderData = function (row, idx) {
+			var colKeys = _.map(tblHeaders, function (el) {
+				return $XP(el, 'key', '');
+			});
+			// colKeys.push('rowControl');
+			var col = {clz : '', type : 'text'};
+			var cols = _.map(colKeys, function (k, i) {
+				var r = mapColItemRenderData.apply(self, [row, idx, k]);
+				return IX.inherit(col, r);
+			});
+			return cols;
+		};
+		var rows = _.map(records, function (row, idx) {
+			return {
+				clz : '',
+				cols : mapColsRenderData(row, idx)
+			};
+		});
+		return {
+			clz : tblClz,
+			thead : tblHeaders,
+			rows : rows
+		};
+	};
+	/**
+	 * 格式化菜品排行榜渲染数据
+	 * @param  {[type]} records
+	 * @return {[type]}
+	 */
+	Hualala.Order.mapQueryDishesHotRenderData = function (records) {
+		var self = this;
+		var tblClz = "table-striped table-hover",
+			tblHeaders = OrderQueryDishHotTableHeaderCfg;
+		var mapColsRenderData = function (row, idx) {
+			var colKeys = _.map(tblHeaders, function (el) {
+				return $XP(el, 'key', '');
+			});
+			// colKeys.push('rowControl');
+			var col = {clz : '', type : 'text'};
+			var cols = _.map(colKeys, function (k, i) {
+				var r = mapColItemRenderData.apply(self, [row, idx, k]);
+				return IX.inherit(col, r);
+			});
+			return cols;
+		};
+		var rows = _.map(records, function (row, idx) {
+			return {
+				clz : '',
+				cols : mapColsRenderData(row, idx)
+			};
+		});
+		return {
+			clz : tblClz,
+			thead : tblHeaders,
+			rows : rows
+		};
+	};
+
+	/**
+	 * 格式化用户统计排行榜渲染数据
+	 * @param  {[type]} records
+	 * @return {[type]}
+	 */
+	Hualala.Order.mapQueryUserRenderData = function (records) {
+		var self = this;
+		var tblClz = "table-striped table-hover",
+			tblHeaders = OrderQueryUserTableHeaderCfg;
+		var mapColsRenderData = function (row, idx) {
+			var colKeys = _.map(tblHeaders, function (el) {
+				return $XP(el, 'key', '');
+			});
+			// colKeys.push('rowControl');
+			var col = {clz : '', type : 'text'};
+			var cols = _.map(colKeys, function (k, i) {
+				var r = mapColItemRenderData.apply(self, [row, idx, k]);
+				return IX.inherit(col, r);
+			});
+			return cols;
+		};
+		var rows = _.map(records, function (row, idx) {
+			return {
+				clz : '',
+				cols : mapColsRenderData(row, idx)
+			};
+		});
+		return {
+			clz : tblClz,
+			thead : tblHeaders,
+			rows : rows
+		};
+	};
+
+	/**
+	 * 渲染结果页面
+	 * @param  {Array|Object} data 	需要渲染成页面的数据
+	 * @return {NULL}
+	 */
+	Hualala.Order.renderQueryOrderResult = function (data) {
+		var self = this;
+		self.$result.empty();
+		self.$result.html(self.get('resultTpl')(data));
+	};
+
+	var OrderQueryResultView = Stapes.subclass({
+		/**
+		 * 构造View层
+		 * @param  {Object} cfg
+		 * 			@param {Function} mapResultRenderData 格式化渲染数据
+		 * 			@param {Function} renderResult 渲染方法
+		 * @return {Object}
+		 */
+		constructor : function (cfg) {
+			this.$container = null;
+			this.$resultBox = null;
+			this.$result = null;
+			this.$pager = null;
+			this.set('mapResultRenderData', $XF(cfg, 'mapResultRenderData'));
+			this.set('renderResult', $XF(cfg, 'renderResult'));
+			this.loadTemplate();
+		}
+	});
+	OrderQueryResultView.proto({
+		/**
+		 * 初始化View层
+		 * @param  {Object} cfg
+		 * 			@param {jQueryObj} container 容器
+		 * 			@param {Object} model 搜索结果数据模型
+		 * @return 
+		 */
+		init : function (cfg) {
+			this.$container = $XP(cfg, 'container', null);
+			this.model = $XP(cfg, 'model', null);
+			if (!this.$container || !this.model) {
+				throw("Query Result View Init Faild!");
+				return;
+			}
+			this.initLayout();
+		},
+		loadTemplate : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_list_layout')),
+				resultTpl = Handlebars.compile(Hualala.TplLib.get('tpl_base_datagrid'));
+			Handlebars.registerPartial("colBtns", Hualala.TplLib.get('tpl_base_grid_colbtns'));
+			Handlebars.registerHelper('chkColType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			this.set({
+				layoutTpl : layoutTpl,
+				resultTpl : resultTpl
+			});
+		},
+		initLayout : function () {
+			var layoutTpl = this.get('layoutTpl');
+			var htm = layoutTpl();
+			this.$container.append(htm);
+			this.$resultBox = this.$container.find('.shop-list');
+			this.$result = this.$container.find('.shop-list-body');
+			this.$pager = this.$container.find('.page-selection');
+			this.initPager();
+			this.bindEvent();
+		},
+		initPager : function (params) {
+			var self = this;
+			if (!self.model.hasPager) return;
+			var baseCfg = {total : 0, page : 1, maxVisible : 10, leaps : true};
+			this.$pager.IXPager(IX.inherit(baseCfg, params));
+		},
+		bindEvent : function () {
+			var self = this;
+			self.model.hasPager && self.$pager.on('page', function (e, pageNo) {
+				var params = self.model.getPagerParams();
+				params['pageNo'] = pageNo;
+				self.model.emit('load', IX.inherit(params, {
+					pageNo : $XP(params, 'pageNo', 1),
+					pageSize : $XP(params, 'pageSize', 15)
+				}));
+			});
+		},
+		mapRenderData : function (records) {
+			var mapFn = this.get('mapResultRenderData');
+			var ret = IX.isFn(mapFn) ? mapFn.apply(this, arguments) : null;
+			return ret;
+		},
+		renderRecords : function (data) {
+			var renderFn = this.get('renderResult');
+			IX.isFn(renderFn) && renderFn.apply(this, arguments);
+		},
+		render : function () {
+			var self = this,
+				model = self.model,
+				hasPager = model.hasPager,
+				pagerParams = model.getPagerParams(),
+				pageNo = $XP(pagerParams, 'pageNo', 1);
+			var records = model.getRecordsByPageNo(pageNo);
+			var renderData = self.mapRenderData(records);
+			self.renderRecords(renderData);
+			hasPager && self.initPager({
+				total : model.get('pageCount'),
+				page : model.get('pageNo'),
+				href : 'javascript:void(0);'
+			});
+		},
+		getCityByCityID : function (cityID) {
+			var self = this;
+			var c = self.model.getCityByCityID(cityID);
+			return c;
+		}
+	});
+
+	Hualala.Order.OrderQueryResultView = OrderQueryResultView;
+})(jQuery, window);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;(function ($, window) {
+	IX.ns("Hualala.Order");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+
+	var OrderListController = Stapes.subclass({
+		/**
+		 * 构造搜索结果控制器
+		 * @param  {Object} cfg
+		 * 			@param {Object} view View层实例
+		 * 			@param {Object} model Model层实例
+		 * 			@param {JQueryObj} container 容器
+		 * @return {[type]}
+		 */
+		constructor : function (cfg) {
+			this.set({
+				sessionData : Hualala.getSessionData()
+			});
+			this.container = $XP(cfg, 'container', null);
+			this.view = $XP(cfg, 'view', null);
+			this.model = $XP(cfg, 'model', null);
+			if (!this.view || !this.model || !this.container) {
+				throw("Query Result init faild!");
+			}
+			this.isReady = false;
+			this.bindEvent();
+		}
+	});
+	OrderListController.proto({
+		init : function (params) {
+			this.model.init($XP(params, 'params', {}), $XP(params, 'cities', null));
+			this.view.init({
+				model : this.model,
+				container : this.container
+			});
+			this.isReady = true;
+		},
+		hasReady : function () {return this.isReady;},
+		bindEvent : function () {
+			this.on({
+				load : function (params) {
+					var self = this;
+					if (!self.hasReady()) {
+						self.init(params);
+					}
+					self.model.emit('load', $XP(params, 'params', {}));
+				}
+			}, this);
+			this.model.on({
+				load : function (params) {
+					var self = this;
+					var cbFn = function () {
+						self.view.emit('render');
+					};
+					self.model.load(params, cbFn);
+				}
+			}, this);
+			this.view.on({
+				render : function () {
+					var self = this;
+					self.view.render();
+				}
+			}, this);
+		}
+	});
+
+	Hualala.Order.OrderListController = OrderListController;
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Order");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+
+	Hualala.Order.initQueryParams = function () {
+		var ctx = Hualala.PageRoute.getPageContextByPath();
+		var self = this;
+		var queryVals = $XP(ctx, 'params', []);
+		var queryKeys = self.queryKeys;
+		var params = _.object(queryKeys, queryVals);
+		self.set(params);
+	};
+
+	var QueryModel = Hualala.Shop.QueryModel.subclass({
+		/**
+		 * 构造订单搜索数据模型
+		 * @param  {Object} cfg
+		 * 			@param {Array} queryKeys 搜索字段
+		 * 			@param {Function} initQueryParams 初始化搜索字段方法
+		 * 			
+		 * @return {Object}
+		 */
+		constructor : function (cfg) {
+			// 原始数据
+			this.origCities = [];
+			this.origAreas = [];
+			this.origShops = [];
+			this.queryKeys = $XP(cfg, 'queryKeys', []);
+			// 数据是否已经加载完毕
+			this.isReady = false;
+			this.callServer = Hualala.Global.getShopQuerySchema;
+			var initQueryParams = $XF(cfg, 'initQueryParams');
+			initQueryParams.apply(this);
+		}
+	});
+	QueryModel.proto({
+		getQueryParams : function () {
+			var self = this;
+			var vals = _.map(self.queryKeys, function (k) {
+				return self.get(k);
+			});
+			var params = _.object(self.queryKeys, vals);
+			console.info("Order Query Params is :");
+			console.info(params);
+			return params;
+		}
+	});
+
+	Hualala.Order.QueryModel = QueryModel;
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Order");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+
+	/**
+	 * 查询条件表单元素配置信息 
+	 * @type {Object}
+	 */
+	Hualala.Order.QueryFormElsCfg = {
+		orderTime : {
+			type : 'section',
+			label : '日期',
+			min : {
+				type : 'datetimepicker',
+				// surfix : '<span class="glyphicon glyphicon-calendar"></span>',
+				defaultVal : '',
+				validCfg : {
+					group : '.min-input',
+					validators : {}
+				}
+			},
+			max : {
+				type : 'datetimepicker',
+				// surfix : '<span class="glyphicon glyphicon-calendar"></span>',
+				defaultVal : '',
+				validCfg : {
+					group : '.max-input',
+					validators : {}
+				}
+			}
+		},
+		cityID : {
+			type : 'combo',
+			label : '城市',
+			defaultVal : '',
+			options : [],
+			validCfg : {
+				validators : {}
+			}
+		},
+		shopID : {
+			type : 'combo',
+			label : '店铺',
+			defaultVal : '',
+			options : [],
+			validCfg : {
+				validators : {}
+			}
+		},
+		orderStatus : {
+			type : 'combo',
+			label : '状态',
+			defaultVal : '',
+			options : Hualala.TypeDef.OrderStatus,
+			validCfg : {
+				validators : {}
+			}
+		},
+		orderTotal : {
+			type : 'section',
+			label : '金额',
+			min : {
+				type : 'text',
+				// prefix : '￥',
+				// surfix : '元',
+				defaultVal : '',
+				validCfg : {
+					validators : {
+						numeric : {
+							message: "金额必须为数字"
+						},
+						greaterThan : {
+							inclusive : true,
+							value : 0,
+							message : "金额必须大于或等于0"
+						}
+					}
+				}
+			},
+			max : {
+				type : 'text',
+				// prefix : '￥',
+				// surfix : '元',
+				defaultVal : '',
+				validCfg : {
+					validators : {
+						numeric : {
+							message: "金额必须为数字"
+						},
+						greaterThan : {
+							inclusive : true,
+							value : 0,
+							message : "金额必须大于或等于0"
+						}
+					}
+				}
+			}
+		},
+		orderID : {
+			type : 'text',
+			label : '订单号',
+			defaultVal : '',
+			validCfg : {
+				validators : {
+					numeric : {
+						message: "订单号必须为数字"
+					}
+				}
+			}
+		},
+		userMobile : {
+			type : 'text',
+			label : '手机号',
+			defaultVal : '',
+			validCfg : {
+				validators : {
+					numeric : {
+						message: "手机号码必须为数字"
+					}
+				}
+			}
+		},
+		userLoginMobile : {
+			type : 'text',
+			label : '手机号',
+			defaultVal : '',
+			validCfg : {
+				validators : {
+					numeric : {
+						message: "手机号码必须为数字"
+					}
+				}
+			}
+		},
+		foodCategoryName : {
+			type : 'text',
+			label : '分类名称',
+			defaultVal : '',
+			validCfg : {
+				validators : {}
+			}
+		},
+		userName : {
+			type : 'text',
+			label : '订餐人',
+			defaultVal : '',
+			validCfg : {
+				validators : {}
+			}
+		},
+		button : {
+			type : 'button',
+			clz : 'btn btn-block btn-warning',
+			label : '查询'
+		}
+	};
+	var QueryFormElsHT = new IX.IListManager();
+	_.each(Hualala.Order.QueryFormElsCfg, function (el, k) {
+		var type = $XP(el, 'type');
+		var labelClz = 'col-xs-2 col-sm-2 col-md-4 control-label';
+		if (type == 'section') {
+			var id = minID = k + '_min_' + IX.id(), maxID = k + '_max_' + IX.id(),
+				minName = k == 'orderTime' ? 'startDate' : 's_orderTotal',
+				maxName = k == 'orderTime' ? 'endDate' : 'e_orderTotal',
+				min = IX.inherit($XP(el, 'min', {}), {
+					id : minID, name : minName, clz : 'col-xs-5 col-sm-5 col-md-5',
+				}), max = IX.inherit($XP(el, 'max', {}), {
+					id : maxID, name : maxName, clz : 'col-xs-5 col-sm-5 col-md-5',
+				});
+			QueryFormElsHT.register(k, IX.inherit(el, {
+				id : id,
+				labelClz : 'col-xs-2 col-sm-2 col-md-2 control-label',
+				min : min,
+				max : max
+			}));
+		} else {
+			QueryFormElsHT.register(k, IX.inherit(el, {
+				id : k + '_' + IX.id(),
+				name : k,
+				labelClz : labelClz,
+			}, $XP(el, 'type') !== 'button' ? {clz : 'col-xs-8 col-sm-8 col-md-8'} : null));
+		}
+	});
+
+	/**
+	 * 格式化订单搜索页面，搜索表单数据
+	 * @return {Object}
+	 */
+	Hualala.Order.mapOrderQueryFormRenderData = function () {
+		var self = this;
+		var queryKeys = self.model.queryKeys;
+		var query = {cols : [
+			{
+				colClz : 'col-md-4',
+				items : QueryFormElsHT.getByKeys(['orderTime', 'orderTotal'])
+			},
+			{
+				colClz : 'col-md-2',
+				items : QueryFormElsHT.getByKeys(['cityID', 'shopID'])
+			},
+			{
+				colClz : 'col-md-3',
+				items : QueryFormElsHT.getByKeys(['orderStatus', 'orderID'])
+			},
+			{
+				colClz : 'col-md-3',
+				items : QueryFormElsHT.getByKeys(['userMobile'])
+			},
+			{
+				colClz : 'col-md-offset-1 col-md-2',
+				items : QueryFormElsHT.getByKeys(['button'])
+			}
+		]};
+		return {
+			query : query
+		};
+	};
+
+	/**
+	 * 格式化订单日汇总,期间汇总搜索页面，搜索表单数据
+	 * @return {Object}
+	 */
+	Hualala.Order.mapOrderQueryBaseFormRenderData = function () {
+		var self = this;
+		var queryKeys = self.model.queryKeys;
+		var query = {cols : [
+			{
+				colClz : 'col-md-4',
+				items : QueryFormElsHT.getByKeys(['orderTime'])
+			},
+			{
+				colClz : 'col-md-2',
+				items : QueryFormElsHT.getByKeys(['cityID'])
+			},
+			{
+				colClz : 'col-md-2',
+				items : QueryFormElsHT.getByKeys(['shopID'])
+			},
+			{
+				colClz : 'col-md-2',
+				items : QueryFormElsHT.getByKeys(['orderStatus'])
+			},
+			{
+				colClz : 'col-md-2',
+				items : QueryFormElsHT.getByKeys(['button'])
+			}
+		]};
+		return {
+			query : query
+		};
+	};
+
+	/**
+	 * 格式化菜品排行榜页面搜索表单数据
+	 * @return {Object}
+	 */
+	Hualala.Order.mapDishesHotQueryFormRenderData = function () {
+		var self = this;
+		var queryKeys = self.model.queryKeys;
+		var query = {cols : [
+			{
+				colClz : 'col-md-2',
+				items : QueryFormElsHT.getByKeys(['cityID'])
+			},
+			{
+				colClz : 'col-md-2',
+				items : QueryFormElsHT.getByKeys(['shopID'])
+			},
+			{
+				colClz : 'col-md-4',
+				items : QueryFormElsHT.getByKeys(['orderTime'])
+			},
+			{
+				colClz : 'col-md-2',
+				items : QueryFormElsHT.getByKeys(['foodCategoryName'])
+			},
+			{
+				colClz : 'col-md-2',
+				items : QueryFormElsHT.getByKeys(['button'])
+			}
+		]};
+		return {
+			query : query
+		};
+	};
+
+	/**
+	 * 格式化用户统计页面搜索表单数据
+	 * @return {Object}
+	 */
+	Hualala.Order.mapUsersQueryFormRenderData = function () {
+		var self = this;
+		var queryKeys = self.model.queryKeys;
+		var query = {cols : [
+			{
+				colClz : 'col-md-3',
+				items : QueryFormElsHT.getByKeys(['cityID'])
+			},
+			{
+				colClz : 'col-md-3',
+				items : QueryFormElsHT.getByKeys(['shopID'])
+			},
+			{
+				colClz : 'col-md-4',
+				items : QueryFormElsHT.getByKeys(['orderTime'])
+			},
+			
+			{
+				colClz : 'col-md-3',
+				items : QueryFormElsHT.getByKeys(['userLoginMobile'])
+			},
+			{
+				colClz : 'col-md-3',
+				items : QueryFormElsHT.getByKeys(['userName'])
+			},
+			{
+				colClz : 'col-md-offset-4 col-md-2',
+				items : QueryFormElsHT.getByKeys(['button'])
+			}
+		]};
+		return {
+			query : query
+		};
+	};
+
+	var QueryView = Stapes.subclass({
+		/**
+		 * 订单报表搜索View层构造
+		 * @param  {Object} cfg
+		 * 			@param {Function} mapRenderDataFn 整理渲染搜索表单数据
+		 * @return {Object}
+		 */
+		constructor : function (cfg) {
+			this.isReady = false;
+			this.$container = null;
+			this.$queryBox = null;
+			this.loadTemplates();
+			this.set('mapRenderDataFn', $XF(cfg, 'mapRenderDataFn'));
+		}
+	});
+
+	QueryView.proto({
+		init : function (cfg) {
+			this.model = $XP(cfg, 'model', null);
+			this.$container = $XP(cfg, 'container', null);
+			if (!this.model || !this.$container || this.$container.length == 0) {
+				throw("Init Query View Failed!!");
+				return;
+			}
+			this.renderLayout();
+			this.bindEvent();
+			this.isReady = true;
+			this.emit('query', this.getQueryParams());
+		},
+		// 判断是否View初始化完毕
+		hasReady : function () {return this.isReady;},
+		loadTemplates : function () {
+			var self = this;
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_order_queryLayout')),
+				comboOptsTpl = Handlebars.compile(Hualala.TplLib.get('tpl_order_comboOpts'));
+			Handlebars.registerPartial("orderQueryForm", Hualala.TplLib.get('tpl_order_queryForm'));
+			Handlebars.registerHelper('checkFormElementType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			Handlebars.registerHelper('isInputGroup', function (prefix, surfix, options) {
+				return (!prefix && !surfix) ? options.inverse(this) : options.fn(this);
+			});
+			this.set({
+				layoutTpl : layoutTpl,
+				comboOptsTpl : comboOptsTpl
+			});
+		},
+		initQueryFormEls : function () {
+			var self = this,
+				els = self.model.getQueryParams(),
+				cityID = $XP(els, 'cityID', ''),
+				shopID = $XP(els, 'shopID', '');
+			self.initCityComboOpts(cityID);
+			self.initShopComboOpts(cityID, shopID);
+			_.each(els, function (v, k) {
+				if (k == 'startDate' || k == 'endDate') {
+					v = IX.isEmpty(v) ? '' : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd');
+				}
+				self.$queryBox.find('[name=' + k + ']').val(v);
+			});
+		},
+		initCityComboOpts : function (curCityID) {
+			var self = this,
+				cities = self.model.getCities();
+			if (IX.isEmpty(cities)) return ;
+			cities = _.map(cities, function (city) {
+				var id = $XP(city, 'cityID', ''), name = $XP(city, 'cityName', '');
+				return {
+					value : id,
+					label : name,
+					selected : id == curCityID ? 'selected' : ''
+				};
+			});
+			cities.unshift({
+				value : '',
+				label : '全部',
+				selected : IX.isEmpty(curCityID) ? 'selected' : ''
+			});
+			var optTpl = self.get('comboOptsTpl'),
+				htm = optTpl({
+					opts : cities
+				}),
+				$select = self.$queryBox.find('select[name=cityID]');
+			$select.html(htm);
+		},
+		initShopComboOpts : function (curCityID, curShopID) {
+			var self = this,
+				shops = IX.isEmpty(curCityID) ? self.model.getShops() : self.model.getShopsByCityID(curCityID);
+			if (IX.isEmpty(shops)) return;
+			shops = _.map(shops, function (shop) {
+				var id = $XP(shop, 'shopID', ''), name = $XP(shop, 'shopName', '');
+				return {
+					value : id,
+					label : name,
+					selected : id == curShopID ? 'selected' : ''
+				};
+			});
+			shops.unshift({
+				value : '',
+				label : '全部',
+				selected : IX.isEmpty(curShopID) ? 'selected' : ''
+			});
+			var optTpl = self.get('comboOptsTpl'),
+				htm = optTpl({
+					opts : shops
+				}),
+				$select = self.$queryBox.find('select[name=shopID]');
+			$select.html(htm);
+		},
+		initQueryEls : function () {
+			var self = this;
+			self.$queryBox.find('[data-type=datetimepicker]').datetimepicker({
+				format : 'yyyy/mm/dd',
+				startDate : '2010/01/01',
+				autoclose : true,
+				minView : 'month',
+				todayBtn : true,
+				todayHighlight : true,
+				language : 'zh-CN'
+			});
+			self.$queryBox.on('click', '.input-group-addon', function (e) {
+				var $this = $(this),
+					$picker = $this.prev(':text[data-type=datetimepicker]');
+				if ($picker.length > 0) {
+					$picker.datetimepicker('show');
+				}
+			});
+		},
+		mapRenderLayoutData : function () {
+			var mapFn = this.get('mapRenderDataFn');
+			return IX.isFn(mapFn) && mapFn.apply(this);
+		},
+		renderLayout : function () {
+			var self = this,
+				layoutTpl = self.get('layoutTpl'),
+				model = self.model;
+			var renderData = self.mapRenderLayoutData();
+			var html = layoutTpl(renderData);
+			self.$queryBox = $(html);
+			self.$container.html(self.$queryBox);
+			self.initQueryFormEls();
+			self.initQueryEls();
+		},
+		bindEvent : function () {
+			var self = this;
+			self.$queryBox.on('change', 'select', function (e) {
+				var $this = $(this),
+					v = $this.val();
+				self.initShopComboOpts(v, '');
+			});
+			self.$queryBox.on('click', '.btn.btn-warning', function (e) {
+				var $this = $(this);
+				self.emit('query', self.getQueryParams());
+			});
+		},
+		getQueryParams : function () {
+			var self = this,
+				keys = self.model.queryKeys,
+				$form = self.$queryBox.find('form'),
+				els = $form.serializeArray();
+			els = _.map(els, function (el) {
+				var n = $XP(el, 'name'), v = $XP(el, 'value', '');
+				if (n == 'startDate' || n == 'endDate') {
+					v = IX.isEmpty(v) ? '' : IX.Date.getDateByFormat(v, 'yyyyMMddHHmmss');
+					return {
+						name : n,
+						value : v
+					};
+				}
+				return el;
+			});
+			els = _.object(_.pluck(els, 'name'), _.pluck(els, 'value'));
+			self.model.set(els);
+			return els;
+		}
+
+	});
+
+	Hualala.Order.QueryView = QueryView;
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Order");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+	
+	var QueryController = Hualala.Shop.QueryController.subclass({
+		/**
+		 * 订单报表查询控制器
+		 * @param  {Object} cfg 
+		 * 			@param {JQueryObj} container 容器
+		 * 			@param {Object} resultController 结果输出控制器
+		 * 			@param {Object} model 查询数据模型
+		 * 			@param {Object} view 查询界面模型
+		 * @return {Object}	查询控制模块实例
+		 */
+		constructor : function (cfg) {
+			this.set({
+				sessionData : Hualala.getSessionData()
+			});
+			this.container = $XP(cfg, 'container', null);
+			this.resultController = $XP(cfg, 'resultController', null);
+			this.model = $XP(cfg, 'model', null);
+			this.view = $XP(cfg, 'view', null);
+			if (!this.container || !this.model || !this.view || !this.resultController) {
+				throw("QueryController init faild!");
+			}
+			this.init();
+		}
+	});
+	QueryController.proto({
+		// 绑定事件
+		bindEvent : function () {
+			// 控制器的事件绑定
+			this.on({
+				reload : function () {
+					var self = this;
+					self.model.distory();
+					self.view.distory();
+					self.init();
+				},
+				query : function (params) {
+					var self = this;
+					var cities = self.model.getCities();
+					console.info('query params:');
+					console.info(params);
+					self.resultController && self.resultController.emit('load', {
+						params : IX.inherit(params, {
+							pageNo : 1,
+							pageSize : 15
+						}),
+						cities : cities
+					});
+				}
+			}, this);
+			// 模型的事件绑定
+			this.model.on({
+				load : function (cbFn) {
+					var self = this,
+						params = $XP(self.get('sessionData'), 'user', {});
+					self.model.init(params, cbFn);
+				}
+			}, this);
+			// 视图事件绑定
+			this.view.on({
+				init : function () {
+					var self = this;
+					self.view.init({
+						model : self.model,
+						needShopCreate : self.needShopCreate,
+						container : self.container
+					});
+				},
+				// 过滤操作，触发显示结果
+				filter : function (params) {
+					var self = this;
+					self.emit('query', params);
+					//TODO 重置Query的chosenPanel
+				},
+				// 搜索操作，触发显示结果
+				query : function (params) {
+					var self = this;
+					self.emit('query', params);
+				}
+			}, this);
+		}
+	});
+	Hualala.Order.QueryController = QueryController;
 })(jQuery, window);;(function ($, window) {
 	IX.ns("Hualala.Common");
 	var pageBrickConfigs = [
