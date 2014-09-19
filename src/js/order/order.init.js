@@ -44,11 +44,16 @@
 		var queryPanel = new Hualala.Order.QueryController({
 			container : $pageBody,
 			resultController : new Hualala.Order.OrderListController({
+				container : $pageBody,
 				model : new Hualala.Order.OrderQueryResultModel({
 					callServer : Hualala.Global.queryOrderDetail,
 					queryKeys : queryKeys,
 					initQueryParams : Hualala.Order.initQueryParams
 				}),
+				view : new Hualala.Order.OrderQueryResultView({
+					mapResultRenderData : Hualala.Order.mapQueryOrderResultRenderData,
+					renderResult : Hualala.Order.renderQueryOrderResult
+				})
 			}),
 			model : new Hualala.Order.QueryModel({
 				queryKeys : queryKeys,
@@ -68,7 +73,18 @@
 		var queryKeys = $XP(_.findWhere(Hualala.TypeDef.OrderSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
 		var queryPanel = new Hualala.Order.QueryController({
 			container : $pageBody,
-			resultController : new Hualala.Order.OrderListController(),
+			resultController : new Hualala.Order.OrderListController({
+				container : $pageBody,
+				model : new Hualala.Order.OrderQueryResultModel({
+					callServer : Hualala.Global.queryOrderDayDetail,
+					queryKeys : queryKeys,
+					initQueryParams : Hualala.Order.initQueryParams
+				}),
+				view : new Hualala.Order.OrderQueryResultView({
+					mapResultRenderData : Hualala.Order.mapQueryOrderDuringRenderData,
+					renderResult : Hualala.Order.renderQueryOrderResult
+				})
+			}),
 			model : new Hualala.Order.QueryModel({
 				queryKeys : queryKeys,
 				initQueryParams : Hualala.Order.initQueryParams
@@ -87,7 +103,18 @@
 		var queryKeys = $XP(_.findWhere(Hualala.TypeDef.OrderSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
 		var queryPanel = new Hualala.Order.QueryController({
 			container : $pageBody,
-			resultController : new Hualala.Order.OrderListController(),
+			resultController : new Hualala.Order.OrderListController({
+				container : $pageBody,
+				model : new Hualala.Order.OrderQueryResultModel({
+					callServer : Hualala.Global.queryOrderDuringDetail,
+					queryKeys : queryKeys,
+					initQueryParams : Hualala.Order.initQueryParams
+				}),
+				view : new Hualala.Order.OrderQueryResultView({
+					mapResultRenderData : Hualala.Order.mapQueryOrderDuringRenderData,
+					renderResult : Hualala.Order.renderQueryOrderResult
+				})
+			}),
 			model : new Hualala.Order.QueryModel({
 				queryKeys : queryKeys,
 				initQueryParams : Hualala.Order.initQueryParams
@@ -106,7 +133,19 @@
 		var queryKeys = $XP(_.findWhere(Hualala.TypeDef.OrderSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
 		var queryPanel = new Hualala.Order.QueryController({
 			container : $pageBody,
-			resultController : new Hualala.Order.OrderListController(),
+			resultController : new Hualala.Order.OrderListController({
+				container : $pageBody,
+				model : new Hualala.Order.OrderQueryResultModel({
+					hasPager : false,
+					callServer : Hualala.Global.queryOrderDishesHot,
+					queryKeys : queryKeys,
+					initQueryParams : Hualala.Order.initQueryParams
+				}),
+				view : new Hualala.Order.OrderQueryResultView({
+					mapResultRenderData : Hualala.Order.mapQueryDishesHotRenderData,
+					renderResult : Hualala.Order.renderQueryOrderResult
+				})
+			}),
 			model : new Hualala.Order.QueryModel({
 				queryKeys : queryKeys,
 				initQueryParams : Hualala.Order.initQueryParams
@@ -125,7 +164,19 @@
 		var queryKeys = $XP(_.findWhere(Hualala.TypeDef.OrderSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
 		var queryPanel = new Hualala.Order.QueryController({
 			container : $pageBody,
-			resultController : new Hualala.Order.OrderListController(),
+			resultController : new Hualala.Order.OrderListController({
+				container : $pageBody,
+				model : new Hualala.Order.OrderQueryResultModel({
+					hasPager : false,
+					callServer : Hualala.Global.queryUserOrderStatistic,
+					queryKeys : queryKeys,
+					initQueryParams : Hualala.Order.initQueryParams
+				}),
+				view : new Hualala.Order.OrderQueryResultView({
+					mapResultRenderData : Hualala.Order.mapQueryUserRenderData,
+					renderResult : Hualala.Order.renderQueryOrderResult
+				}) 
+			}),
 			model : new Hualala.Order.QueryModel({
 				queryKeys : queryKeys,
 				initQueryParams : Hualala.Order.initQueryParams

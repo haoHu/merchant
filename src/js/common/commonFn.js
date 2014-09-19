@@ -397,6 +397,36 @@
 		});
 		return bankHT.get(bankCode);
 	};
+
+	/**
+	 * 获取性别数据
+	 * @param  {Int} 性别值
+	 * @return {Object} 	{value(性别值), valueStr(性别字符值), label（性别）}
+	 */
+	Hualala.Common.getGender = function (v) {
+		if (IX.isEmpty(v)) return null;
+		var l = Hualala.TypeDef.GENDER;
+		var m = _.find(l, function (el) {
+			var id = $XP(el, 'value');
+			return id == v;
+		});
+		return m;
+	};
+
+	/**
+	 * 获取订单状态信息
+	 * @param  {订单状态值} v
+	 * @return {Object} 订单状态信息{value, label}
+	 */
+	Hualala.Common.getOrderStatus = function (v) {
+		if (IX.isEmpty(v)) return null;
+		var l = Hualala.TypeDef.OrderStatus;
+		var m = _.find(l, function (el) {
+			return $XP(el, 'value') == v;
+		});
+		return m;
+	};
+
     /**
 	 * 根据shopID获得店铺在哗啦啦www上的店铺URL
 	 * @param  {String} shopID 店铺ID

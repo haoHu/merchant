@@ -304,10 +304,10 @@
 						'<tr class="{{clz}}">',
 							'{{#each cols}}',
 								'<td class="{{clz}}">',
-									'{{#chkColType colType type="button"}}',
+									'{{#chkColType type type="button"}}',
 										'{{> colBtns}}',
 									'{{/chkColType}}',
-									'{{#chkColType colType type="text"}}',
+									'{{#chkColType type type="text"}}',
 										'<p data-value="{{value}}">{{{text}}}</p>',
 									'{{/chkColType}}',
 								'</td>',
@@ -323,7 +323,9 @@
 	var tpl_base_grid_colbtns = [
 		'<div class="">',
 			'{{#each btns}}',
-				'<a href="{{link}}" class="{{clz}}" data-id="{{id}}" data-type="{{type}}"',
+				'<a href="{{link}}" class="{{clz}}" data-id="{{id}}" data-type="{{type}}">',
+					'{{{label}}}',
+				'</a>',
 			'{{/each}}',
 		'</div>'
 	].join('');

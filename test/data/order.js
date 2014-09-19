@@ -169,7 +169,7 @@
 				shopName : shopName,
 				cityID : cityID
 			});
-			orderDayHT.register(shopID, d);
+			orderDuringHT.register(shopID, d);
 			ret.push(d);
 		}
 		return ret;
@@ -184,7 +184,7 @@
 				foodCategoryName : foodCategoryName,
 				foodName : foodName
 			});
-			orderDayHT.register(foodID, d);
+			dishHT.register(foodID, d);
 			ret.push(d);
 		}
 		return ret;
@@ -222,10 +222,11 @@
 		});
 		var start = (pageNo - 1) * pageSize,
 			end = pageNo * pageSize - 1;
+		totalSize = result.length;
 		result = _.filter(result, function (el, idx) {
 			return idx <= end && idx >= start
 		});
-		totalSize = result.length;
+		
 		pageCount = Math.ceil(totalSize / pageSize);
 		var res = IX.inherit(orderResultTpl, {
 			page : {
@@ -253,11 +254,12 @@
 		});
 		var start = (pageNo - 1) * pageSize,
 			end = pageNo * pageSize - 1;
+		totalSize = result.length;
+		pageCount = Math.ceil(totalSize / pageSize);
 		result = _.filter(result, function (el, idx) {
 			return idx <= end && idx >= start
 		});
-		totalSize = result.length;
-		pageCount = Math.ceil(totalSize / pageSize);
+		
 		var res = IX.inherit(orderResultTpl, {
 			page : {
 				pageNo : pageNo,
@@ -284,11 +286,12 @@
 		});
 		var start = (pageNo - 1) * pageSize,
 			end = pageNo * pageSize - 1;
+		totalSize = result.length;
+		pageCount = Math.ceil(totalSize / pageSize);
 		result = _.filter(result, function (el, idx) {
 			return idx <= end && idx >= start
 		});
-		totalSize = result.length;
-		pageCount = Math.ceil(totalSize / pageSize);
+		
 		var res = IX.inherit(orderResultTpl, {
 			page : {
 				pageNo : pageNo,
@@ -311,11 +314,12 @@
 		
 		var start = (pageNo - 1) * pageSize,
 			end = pageNo * pageSize - 1;
+		totalSize = result.length;
+		pageCount = Math.ceil(totalSize / pageSize);
 		result = _.filter(result, function (el, idx) {
 			return idx <= end && idx >= start
 		});
-		totalSize = result.length;
-		pageCount = Math.ceil(totalSize / pageSize);
+		
 		var res = IX.inherit(dishesHotResultTpl, {
 			page : {
 				pageNo : pageNo,
@@ -335,11 +339,12 @@
 		
 		var start = (pageNo - 1) * pageSize,
 			end = pageNo * pageSize - 1;
+		totalSize = result.length;
+		pageCount = Math.ceil(totalSize / pageSize);
 		result = _.filter(result, function (el, idx) {
 			return idx <= end && idx >= start
 		});
-		totalSize = result.length;
-		pageCount = Math.ceil(totalSize / pageSize);
+		
 		var res = IX.inherit(usersResultTpl, {
 			page : {
 				pageNo : pageNo,

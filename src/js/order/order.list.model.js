@@ -9,16 +9,18 @@
 		 * @param  {Object} cfg	配置信息
 		 * 		@param {Function} callServer 获取数据接口
 		 * 		@param {Array} queryKeys 搜索条件字段序列
+		 * 		@param {Array} cities 城市数据
 		 * 		@param {Function} initQueryParams 初始化搜索条件
 		 * 		@param {Boolean} hasPager 是否支持分页true:支持；false：不支持.default true
 		 * @return {Object}
 		 */
 		constructor : function (cfg) {
 			this.callServer = $XP(cfg, 'callServer', null);
-			if (!callServer) {
+			if (!this.callServer) {
 				throw("callServer is empty!");
 				return ;
 			}
+			this.cities = $XP(cfg, 'cities', []);
 			this.queryKeys = $XP(cfg, 'queryKeys', []);
 			this.pagerKeys = 'pageCount,totalSize,pageNo,pageSize'.split(',');
 			this.queryParamsKeys = null;
@@ -30,17 +32,18 @@
 	});
 
 	OrderQueryResultModel.proto({
-		init : function (params) {
+		init : function (params, cities) {
+			this.cities = cities || this.cities;
 			this.set(IX.inherit({
 				ds_record : new IX.IListManager(),
-				ds_page : new IX.IlistManager()
+				ds_page : new IX.IListManager()
 			}, this.hasPager ? {
 				pageCount : 0,
 				totalSize : 0,
 				pageNo : $XP(params, 'pageNo', 1),
 				pageSize : $XP(params, 'pageSize', 15)
 			} : {}));
-			this.queryParamsKeys = !self.hasPager ? self.queryKeys : self.queryKeys.concat(self.pagerKeys);
+			this.queryParamsKeys = !this.hasPager ? this.queryKeys : this.queryKeys.concat(this.pagerKeys);
 		},
 		updatePagerParams : function (params) {
 			var self = this;
@@ -98,6 +101,7 @@
 			var self = this,
 				recordHT = self.get('ds_record'),
 				pageHT = self.get('ds_page');
+			pageNo = !self.hasPager ? 1 : pageNo;
 			var ret = _.map(recordHT.getByKeys(pageHT.get(pageNo)), function (mRecord, i, l) {
 				return mRecord.getAll();
 			});
@@ -109,6 +113,14 @@
 			var self = this,
 				recordHT = self.get('ds_record');
 			return recordHT.get(id);
+		},
+		getCityByCityID : function (cityID) {
+			if (IX.isEmpty(cityID)) return null;
+			var l = this.cities;
+			var m = _.find(l, function (el) {
+				return $XP(el, 'cityID') == cityID;
+			});
+			return m;
 		}
 	});
 
