@@ -2192,7 +2192,7 @@ form.read-mode .help-block,
 }
 form.read-mode .control-label:after,
 .form.read-mode .control-label:after {
-  content: '：';
+  content: ' :';
 }
 form.edit-mode .form-control-static,
 .form.edit-mode .form-control-static {
@@ -2339,149 +2339,129 @@ form.edit-mode .control-label.no-require:before,
   margin-right: 30px;
   line-height: 30px;
 }
+.shop-menu .current-food-class {
+  color: #ae7343;
+}
+.shop-menu .food-search {
+  padding-bottom: 0;
+}
 .shop-menu .food-search select,
-.shop-menu .food-search label {
-  margin-right: 30px;
+.shop-menu .food-search label,
+.shop-menu .food-search .input-group {
+  margin: 0 30px 15px 0;
   font-weight: normal;
+  vertical-align: middle;
 }
 .shop-menu .food-search input[type=checkbox] {
   margin: 0;
   vertical-align: middle;
 }
+.shop-menu .food-search .input-group {
+  margin-right: 0;
+}
 .shop-menu #foodSearchInfo {
   margin-bottom: 12px;
 }
-.shop-menu .tbl-wrap table {
+.shop-menu .tbl-foods {
   width: 100%;
+  min-width: 960px;
   border: 1px solid #ddd;
-  border-top: none;
-}
-.shop-menu .tbl-wrap .tbl-head table {
-  border-top: 1px solid #ddd;
   border-radius: 4px 4px 0 0;
+  /*td:first-child+td+td, th:first-child+th+th
+        { width: auto; min-width: 220px }
+        td:first-child+td+td+td, th:first-child+th+th+th
+        { width: 60px; min-width: 60px }*/
 }
-.shop-menu .tbl-wrap .tbl-head table:last-child {
-  display: none;
-}
-.shop-menu .tbl-wrap .tbl-head th {
+.shop-menu .tbl-foods thead th {
   padding: 15px;
+}
+.shop-menu .tbl-foods thead th b {
   font-weight: normal;
 }
-.shop-menu .tbl-wrap .tbl-head th b {
-  font-weight: normal;
-}
-.shop-menu .tbl-wrap .tbl-head th em:after,
-.shop-menu .tbl-wrap .tbl-head th b:after {
+.shop-menu .tbl-foods thead th em:after,
+.shop-menu .tbl-foods thead th b:after {
   content: '/';
   color: #dddddd;
 }
-.shop-menu .tbl-wrap th,
-.shop-menu .tbl-wrap td {
-  width: 92px;
-  min-width: 92px;
+.shop-menu .tbl-foods th,
+.shop-menu .tbl-foods td {
   line-height: 1.8;
   text-align: center;
   font-size: 12px;
 }
-.shop-menu .tbl-wrap td:first-child + td + td,
-.shop-menu .tbl-wrap th:first-child + th + th {
-  width: auto;
-  min-width: 220px;
+.shop-menu .tbl-foods tbody tr {
+  border: 1px solid #ddd;
 }
-.shop-menu .tbl-wrap td:first-child + td + td + td,
-.shop-menu .tbl-wrap th:first-child + th + th + th {
-  width: 60px;
-  min-width: 60px;
-}
-.shop-menu .tbl-wrap .tbl-body table:hover,
-.shop-menu .tbl-wrap .tbl-body table:active {
+.shop-menu .tbl-foods tbody tr:hover,
+.shop-menu .tbl-foods tbody tr:active {
   background: #fcf8e3;
 }
-.shop-menu .tbl-wrap .tbl-body td {
-  padding: 12px;
+.shop-menu .tbl-foods tbody td {
+  padding: 6px;
 }
-.shop-menu .tbl-wrap .tbl-body td:first-child {
+.shop-menu .tbl-foods tbody td:first-child {
   padding: 0;
 }
-.shop-menu .tbl-wrap .tbl-body td:last-child {
-  position: relative;
-}
-.shop-menu .tbl-wrap .tbl-body td:last-child span {
-  position: absolute;
-  bottom: 6px;
-  right: 18px;
+.shop-menu .tbl-foods tbody td:last-child span {
   padding: 8px 16px;
   display: none;
 }
-.shop-menu .tbl-wrap .tbl-body table:hover td:last-child span {
+.shop-menu .tbl-foods tbody tr:hover td:last-child span {
   display: inline;
 }
-.shop-menu .tbl-wrap .tbl-body img {
+.shop-menu .tbl-foods tbody img {
   width: 92px;
   height: 92px;
 }
-.shop-menu .tbl-wrap .tbl-body p {
+.shop-menu .tbl-foods tbody p {
   margin: 0;
 }
-.shop-menu .tbl-wrap .tbl-body p * {
+.shop-menu .tbl-foods tbody p * {
   display: inline-block;
   text-align: left;
 }
-.shop-menu .tbl-wrap .tbl-body p span {
+.shop-menu .tbl-foods tbody p span {
   width: 3.5em;
   text-align: right;
   margin-right: 4px;
 }
-.shop-menu .tbl-wrap .tbl-body em,
-.shop-menu .tbl-wrap .tbl-body b {
+.shop-menu .tbl-foods tbody em,
+.shop-menu .tbl-foods tbody b {
   font-weight: bold;
 }
-.shop-menu .tbl-wrap em,
-.shop-menu .tbl-wrap i {
+.shop-menu .tbl-foods em,
+.shop-menu .tbl-foods i {
   font-style: normal;
 }
-.shop-menu .tbl-wrap em,
-.shop-menu .tbl-wrap b {
-  width: 5em;
+.shop-menu .tbl-foods em,
+.shop-menu .tbl-foods b {
+  width: 4em;
 }
-.shop-menu .tbl-wrap em {
-  color: #f0ad4e;
+.shop-menu .tbl-foods em {
+  color: #339900;
 }
-.shop-menu .tbl-wrap b {
+.shop-menu .tbl-foods b {
   color: #333333;
 }
-.shop-menu .tbl-wrap i {
+.shop-menu .tbl-foods i {
   text-decoration: line-through;
 }
-.shop-menu .tbl-wrap .ico-ok:before {
+.shop-menu .tbl-foods .ico-ok:before {
   content: '\2714';
 }
-.shop-menu .tbl-wrap .ico-no:before {
+.shop-menu .tbl-foods .ico-no:before {
   content: '—';
 }
-.shop-menu .tbl-wrap .ico-ok,
-.shop-menu .tbl-wrap .ico-no {
+.shop-menu .tbl-foods .ico-ok,
+.shop-menu .tbl-foods .ico-no {
   font-size: 18px;
   font-weight: bold;
 }
-.shop-menu .tbl-wrap .ico-ok {
-  color: #f0ad4e;
+.shop-menu .tbl-foods .ico-ok {
+  color: #339900;
 }
-.shop-menu .tbl-wrap .ico-no {
+.shop-menu .tbl-foods .ico-no {
   color: #999999;
-}
-@media (min-width: 1200px) {
-  .shop-menu .tbl-wrap {
-    width: 1190px;
-  }
-  .shop-menu .tbl-wrap table {
-    float: left;
-    width: 575px;
-    margin-right: 20px;
-  }
-  .shop-menu .tbl-wrap .tbl-head table:last-child {
-    display: table;
-  }
 }
 .account-schema {
   margin-bottom: 3rem;

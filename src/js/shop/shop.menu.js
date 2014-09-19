@@ -12,8 +12,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         parseForm = Hualala.Common.parseForm;
     
     var shopID = params;
-        imgHost = 'http://res.hualala.com/',
-        imgRoot = '/src/img/';
+        imgHost = G.IMAGE_RESOURCE_DOMAIN + '/',
+        imgRoot = G.IMAGE_ROOT + '/';
 
     var classifiedFoods = null,
         foodClass = '',
@@ -26,9 +26,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         $takeawayTag = $foodSearch.find('#takeawayTag'),
         $foodName = $foodSearch.find('#foodName'),
         $chekbox = $foodSearch.find('input[type=checkbox]'),
-        $tblHead = $menu.find('.tbl-head table'),
+        $tblHead = $menu.find('.tbl-foods thead'),
         $foodCount = $menu.find('#foodSearchInfo span'),
-        $foods = $menu.find('.tbl-body');
+        $foods = $menu.find('.tbl-foods tbody');
     
     G.getShopMenu({shopID : shopID}, function (rsp)
     {
@@ -93,8 +93,6 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         foods = filterFoods(args);
         $foodCount.text(foods.length);
         $foods.html(foodTpl({foods: foods}));
-        $tblHead.eq(0).toggleClass('hidden', !foods.length);
-        $tblHead.eq(1).toggleClass('hidden', foods.length < 2);
     }
     
     function filterFoods(args)
@@ -135,14 +133,16 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             if(!food.foodID) continue;
             food.imgSrc = food.imgePath ? imgHost + food.imgePath : imgRoot + 'dino80.png';
             food.discountIco = food.isDiscount == 1 ? 'ico-ok' : 'ico-no';
+            food.takeawayIco = food.takeawayTag > 0 ? 'ico-ok' : 'ico-no';
             food.activeIco = food.foodIsActive == 1 ? 'ico-ok' : 'ico-no';
+            food.takeoutPackagingFee = food.takeoutPackagingFee > 0 ? parseFloat(food.takeoutPackagingFee) : '';
             
             if(food.prePrice == -1 || food.prePrice == food.price)
             {
                 food.prePrice = food.price;
                 food.price = '';
             }
-            if(food.vipPrice == -1 || parseFloat(food.vipPrice) >= parseFloat(food.prePrice))
+            if(food.vipPrice == -1 || food.vipPrice >= food.prePrice)
             {
                 food.vipPrice = '';
             }

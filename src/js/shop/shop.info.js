@@ -143,7 +143,7 @@ S.initInfo = function ($container, pageType, params)
         bv = $form.data('bootstrapValidator');
         
         var $uploadImg = $form.find('#uploadImg');
-        $img = $uploadImg.find('img');
+        $img = $uploadImg.find('img').attr('src', G.IMAGE_ROOT + '/shop_head_img_default.png');
         imagePath = shopInfo.imagePath;
         imagePath && $img.attr('src', imgHost + imagePath);
         

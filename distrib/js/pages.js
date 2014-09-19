@@ -1053,6 +1053,17 @@
 				tagTpl : tagTpl
 			});
 		},
+		// 组装标签
+		mapTags : function (d) {
+			var self = this,
+				tagKeys = 'areaName,cuisineName1,cuisineName2'.split(',');
+			var tags = _.map(tagKeys, function (k) {
+				return $XP(d, k, null);
+			});
+			return _.filter(tags, function (t) {
+				return !IX.isEmpty(t);
+			});
+		},
 		// 格式化渲染数据
 		mapRenderData : function (data) {
 			var self = this;
@@ -1078,7 +1089,8 @@
 						height : 100,
 						quality : 50
 					}),
-					tags : getTags($XP(shop, 'tags', [])),
+					// tags : getTags($XP(shop, 'tags', [])),
+					tags : getTags(self.mapTags(shop)),
 					address : address,
 					slugAddr : slugAddr,
 					tel : $XP(shop, 'tel', ''),
@@ -1531,6 +1543,7 @@ Hualala.Shop.initCreate = function ($wizard)
     
     var $uploadImg = $step1.find('#uploadImg'),
         imagePath = ''; // 门头图图片路径
+    $uploadImg.find('img').attr('src', G.IMAGE_ROOT + '/shop_head_img_default.png');
     // 上传门头图
     $uploadImg.find('button, img').on('click', function()
     {
@@ -1848,7 +1861,7 @@ S.initInfo = function ($container, pageType, params)
         bv = $form.data('bootstrapValidator');
         
         var $uploadImg = $form.find('#uploadImg');
-        $img = $uploadImg.find('img');
+        $img = $uploadImg.find('img').attr('src', G.IMAGE_ROOT + '/shop_head_img_default.png');
         imagePath = shopInfo.imagePath;
         imagePath && $img.attr('src', imgHost + imagePath);
         
@@ -2075,8 +2088,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         parseForm = Hualala.Common.parseForm;
     
     var shopID = params;
-        imgHost = 'http://res.hualala.com/',
-        imgRoot = '../../src/img/';
+        imgHost = G.IMAGE_RESOURCE_DOMAIN + '/',
+        imgRoot = G.IMAGE_ROOT + '/';
 
     var classifiedFoods = null,
         foodClass = '',
@@ -2084,7 +2097,14 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
     
     var foodTpl = Handlebars.compile(Hualala.TplLib.get('tpl_food'));
     var $menu = $(Hualala.TplLib.get('tpl_shop_menu')),
-        $foods = $menu.find('.tbl-body');
+        $foodClass = null,
+        $foodSearch = $menu.find('#foodSearch'),
+        $takeawayTag = $foodSearch.find('#takeawayTag'),
+        $foodName = $foodSearch.find('#foodName'),
+        $chekbox = $foodSearch.find('input[type=checkbox]'),
+        $tblHead = $menu.find('.tbl-foods thead'),
+        $foodCount = $menu.find('#foodSearchInfo span'),
+        $foods = $menu.find('.tbl-foods tbody');
     
     G.getShopMenu({shopID : shopID}, function (rsp)
     {
@@ -2095,20 +2115,62 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         }
         
         classifiedFoods = classifyFoods(rsp.data.records);
-        foods = filterFoods();
-        var $foodClass = $menu.find('#foodClass').append($('<span></span>').text('全部菜品 (' + foods.length + ')'));
+        renderFoods(); 
+        var $foodClassBox = $menu.find('#foodClassBox').append($('<span class="current-food-class"></span>').text('全部菜品 (' + foods.length + ')'));
         
         for(var id in classifiedFoods)
         {
             var category = classifiedFoods[id]; 
-            $('<span></span>').data('id', id).text(category.foodCategoryName + ' (' + category.foods.length + ')').appendTo($foodClass);
+            $('<span></span>').data('id', id).text(category.foodCategoryName + ' (' + category.foods.length + ')').appendTo($foodClassBox);
         }
-        
-        $foods.append(foodTpl({foods: foods}));
-        
+        $foodClass = $foodClassBox.find('span');
         $menu.appendTo($container);
     });
-
+    
+    $menu.on('click', function(e)
+    {
+        var $target = $(e.target);
+        if($target.is('#foodClassBox span'))
+        {
+            $foodClass.removeClass('current-food-class');
+            $target.addClass('current-food-class');
+            foodClass = $target.data('id');
+            $takeawayTag.val('');
+            $foodName.val('');
+            $chekbox.prop('checked', false);
+            renderFoods();
+        }
+        
+        if($target.is('#btnSearchFood'))
+        {
+            var $checked = $chekbox.filter(':checked'),
+                takeawayTag = $.trim($takeawayTag.val()),
+                foodName = $.trim($foodName.val());
+            if(takeawayTag || foodName || $checked.length)
+            {
+                var searchParams = {};
+                if(takeawayTag) searchParams.takeawayTag = takeawayTag;
+                if(foodName) searchParams.foodName = foodName;
+                $checked.each(function ()
+                {
+                    if(this.id == 'isHasImage')
+                        searchParams.isHasImage = '0';
+                    else
+                        searchParams[this.id] = '1';
+                });
+                //console.log(searchParams);
+                renderFoods(searchParams);
+            }
+        }
+    });
+    
+    function renderFoods(args)
+    {
+        foods = filterFoods(args);
+        $foodCount.text(foods.length);
+        $foods.html(foodTpl({foods: foods}));
+    }
+    
     function filterFoods(args)
     {
         var result = [];
@@ -2121,14 +2183,14 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         }
         else
         {
-            result = classifiedFoods[foodCategoryID].foods;
+            result = classifiedFoods[foodClass].foods;
         }
         
         for(p in args)
         {
             result = $.grep(result, function (food)
             {
-                return food[p] == args[p];
+                return p == 'foodName' ? food[p].indexOf(args[p]) > -1 : food[p] == args[p];
             });
         }
         
@@ -2147,14 +2209,16 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             if(!food.foodID) continue;
             food.imgSrc = food.imgePath ? imgHost + food.imgePath : imgRoot + 'dino80.png';
             food.discountIco = food.isDiscount == 1 ? 'ico-ok' : 'ico-no';
+            food.takeawayIco = food.takeawayTag > 0 ? 'ico-ok' : 'ico-no';
             food.activeIco = food.foodIsActive == 1 ? 'ico-ok' : 'ico-no';
+            food.takeoutPackagingFee = food.takeoutPackagingFee > 0 ? parseFloat(food.takeoutPackagingFee) : '';
             
             if(food.prePrice == -1 || food.prePrice == food.price)
             {
                 food.prePrice = food.price;
                 food.price = '';
             }
-            if(food.vipPrice == -1 || food.vipPrice == food.prePrice)
+            if(food.vipPrice == -1 || food.vipPrice >= food.prePrice)
             {
                 food.vipPrice = '';
             }

@@ -80,6 +80,17 @@
 				tagTpl : tagTpl
 			});
 		},
+		// 组装标签
+		mapTags : function (d) {
+			var self = this,
+				tagKeys = 'areaName,cuisineName1,cuisineName2'.split(',');
+			var tags = _.map(tagKeys, function (k) {
+				return $XP(d, k, null);
+			});
+			return _.filter(tags, function (t) {
+				return !IX.isEmpty(t);
+			});
+		},
 		// 格式化渲染数据
 		mapRenderData : function (data) {
 			var self = this;
@@ -105,7 +116,8 @@
 						height : 100,
 						quality : 50
 					}),
-					tags : getTags($XP(shop, 'tags', [])),
+					// tags : getTags($XP(shop, 'tags', [])),
+					tags : getTags(self.mapTags(shop)),
 					address : address,
 					slugAddr : slugAddr,
 					tel : $XP(shop, 'tel', ''),

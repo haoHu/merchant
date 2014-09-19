@@ -111,6 +111,7 @@ Hualala.Shop.initCreate = function ($wizard)
     
     var $uploadImg = $step1.find('#uploadImg'),
         imagePath = ''; // 门头图图片路径
+    $uploadImg.find('img').attr('src', G.IMAGE_ROOT + '/shop_head_img_default.png');
     // 上传门头图
     $uploadImg.find('button, img').on('click', function()
     {

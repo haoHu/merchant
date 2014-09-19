@@ -377,8 +377,13 @@
     }*/
     var uploadImg = function uploadImg(options)
     {
-        var tpl = Hualala.TplLib.get('tpl_site_uploadimg');
-        var $dialog = $(tpl).appendTo('body')
+        var G = Hualala.Global,
+            swfRoot = G.SWF_ROOT + '/';
+        var $tpl = $(Hualala.TplLib.get('tpl_site_uploadimg'));
+        $tpl.attr('data', swfRoot + 'hualalaImageUpload.swf')
+        .find('param[flashvars]').val('swfId=txsc&amp;uploadDataFieldName=upload&amp;uploadSvrURL=http://file.hualala.com/upload&amp;iconsURL=' + swfRoot +'icons&amp;avaQuality=70&amp;minImgFRule=100&amp;saveImgRule=600');
+        
+        var $dialog = $tpl.appendTo('body')
             .modal({backdrop : 'static', keyboard: false});
         
         var defaults = {
