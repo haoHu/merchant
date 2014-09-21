@@ -279,12 +279,12 @@
             '<div class="modal-body">',
                 '<object type="application/x-shockwave-flash" ',
                     'id="hualalaImageUpload" name="hualalaImageUpload" ',
-                    'data="" ',
+                    'data="{{swfSrc}}" ',
                     'width="500" height="375">',
                     '<param name="quality" value="high">',
                     '<param name="allowscriptaccess" value="always">',
                     '<param name="wmode" value="transparent">',
-                    '<param name="flashvars" value="">',
+                    '<param name="flashvars" value="{{args}}">',
                 '</object>',
             '</div>',
         '</div>',
@@ -301,8 +301,8 @@
 
 	// 基础数据表格模版
 	var tpl_base_datagrid = [
-		'<div class="table-responsive">',
-			'<table class="table {{clz}}">',
+		'<div class="table-responsive {{clz}}">',
+			'<table class="table {{tblClz}}">',
 				'<thead>',
 					'<tr>',
 						'{{#each thead}}',
@@ -531,7 +531,7 @@
 					'</ul>',
 				'</div>',
 			'</div>',
-		'</div>',
+            '</div>',
 		'<div class="step-action">',
 			'<button type="button" class="btn btn-default prev-step">上一步</button>',
 			'<button id="nextStep" type="button" class="btn btn-warning">下一步</button>',
@@ -693,7 +693,7 @@
     var tpl_food = [
     '{{#each foods}}',
         '<tr data-id="{{foodID}}" data-cid="{{foodCategoryID}}">',
-            '<td><img src="{{imgSrc}}" /></td>',
+            '<td><img data-original="{{imgSrc}}" src="" /></td>',
             '<td>{{foodName}}</td>',
             '<td>',
             '{{#each units}}',
@@ -1598,14 +1598,21 @@
 	IX.ns("Hualala");
 	var TplLib = Hualala.TplLib;
 	var tpl_order_subnav = [
-		'<div class="navbar-collapse collapse" id="order_navbar">',
-			'<ul class="nav nav-justified nav-pills">',
-				'{{#each items}}',
-				'<li class="{{active}} {{disabled}}">',
-					'<a href="{{path}}" data-page-type="{{name}}">{{label}}</a>',
-				'</li>',
-				'{{/each}}',
-			'</ul>',
+		'<div class="visible-xs-block navbar navbar-default">',
+			'{{#with toggle}}',
+				'{{> toggle}}',
+			'{{/with}}',
+		'</div>',
+		'<div class="nav-list">',
+			'<div class="navbar-collapse collapse" id="order_navbar">',
+				'<ul class="nav nav-justified nav-pills">',
+					'{{#each items}}',
+					'<li class="{{active}} {{disabled}}">',
+						'<a href="{{path}}" data-page-type="{{name}}">{{label}}</a>',
+					'</li>',
+					'{{/each}}',
+				'</ul>',
+			'</div>',
 		'</div>'
 	].join('');
 	TplLib.register('tpl_order_subnav', tpl_order_subnav);
@@ -1660,7 +1667,7 @@
 									'{{#with max}}',
 										// '<div class="col-sm-1 hidden-xs hidden-sm"><span class="to-label">到</span></div>',
 										'<div class="max-input {{clz}}">',
-											// '<span class="to-label">到</span>',
+											'<span class="hidden-xs hidden-sm to-label">--</span>',
 											'<div class="input-group">',
 												'{{#if prefix}}',
 													'<span class="input-group-addon">',

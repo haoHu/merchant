@@ -2,14 +2,21 @@
 	IX.ns("Hualala");
 	var TplLib = Hualala.TplLib;
 	var tpl_order_subnav = [
-		'<div class="navbar-collapse collapse" id="order_navbar">',
-			'<ul class="nav nav-justified nav-pills">',
-				'{{#each items}}',
-				'<li class="{{active}} {{disabled}}">',
-					'<a href="{{path}}" data-page-type="{{name}}">{{label}}</a>',
-				'</li>',
-				'{{/each}}',
-			'</ul>',
+		'<div class="visible-xs-block navbar navbar-default">',
+			'{{#with toggle}}',
+				'{{> toggle}}',
+			'{{/with}}',
+		'</div>',
+		'<div class="nav-list">',
+			'<div class="navbar-collapse collapse" id="order_navbar">',
+				'<ul class="nav nav-justified nav-pills">',
+					'{{#each items}}',
+					'<li class="{{active}} {{disabled}}">',
+						'<a href="{{path}}" data-page-type="{{name}}">{{label}}</a>',
+					'</li>',
+					'{{/each}}',
+				'</ul>',
+			'</div>',
 		'</div>'
 	].join('');
 	TplLib.register('tpl_order_subnav', tpl_order_subnav);
@@ -64,7 +71,7 @@
 									'{{#with max}}',
 										// '<div class="col-sm-1 hidden-xs hidden-sm"><span class="to-label">到</span></div>',
 										'<div class="max-input {{clz}}">',
-											// '<span class="to-label">到</span>',
+											'<span class="hidden-xs hidden-sm to-label">--</span>',
 											'<div class="input-group">',
 												'{{#if prefix}}',
 													'<span class="input-group-addon">',

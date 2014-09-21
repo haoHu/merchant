@@ -130,6 +130,7 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/ui/switch.js",
 					"<%= pkg.srcPath.jsPath %>/ui/wizard.js",
 					"<%= pkg.srcPath.jsPath %>/ui/chosen.jquery.js",
+					"<%= pkg.srcPath.jsPath %>/ui/jquery.lazyload.js",
 					"<%= pkg.srcPath.jsPath %>/ui/wizard.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/ui.js",

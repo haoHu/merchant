@@ -3,8 +3,8 @@
 
 	// 站点导航数据
 	Hualala.TypeDef.SiteNavType = [
-		{name : 'order', label : '订单'},
-		{name : 'account', label : '结算'},
+		{name : 'order', label : '订单报表'},
+		{name : 'account', label : '账户结算'},
 		{name : 'shop', label : '店铺管理'},
 		{name : 'setting', label : '业务设置'},
 		{name : 'user', label : '账号管理'}

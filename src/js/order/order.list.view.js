@@ -153,7 +153,8 @@
 	 */
 	Hualala.Order.mapQueryOrderResultRenderData = function (records) {
 		var self = this;
-		var tblClz = "table-striped table-hover",
+		var clz = "col-md-12",
+			tblClz = "table-striped table-hover",
 			tblHeaders = OrderQueryTableHeaderCfg;
 		var mapColsRenderData = function (row, idx) {
 			var colKeys = _.map(tblHeaders, function (el) {
@@ -174,7 +175,8 @@
 			};
 		});
 		return {
-			clz : tblClz,
+			clz : clz,
+			tblClz : tblClz,
 			thead : tblHeaders,
 			rows : rows
 		};
@@ -190,7 +192,8 @@
 		var pageName = $XP(ctx, 'name');
 		var pagerParams = self.model.getPagerParams();
 		var queryKeys = self.model.queryKeys;
-		var tblClz = "table-striped table-hover",
+		var clz = "col-md-12",
+			tblClz = "table-striped table-hover",
 			tblHeaders = IX.clone(OrderQueryDuringTableHeaderCfg);
 		if (pageName == 'orderQueryDuring') {
 			tblHeaders = _.map(tblHeaders, function (el) {
@@ -222,7 +225,8 @@
 			};
 		});
 		return {
-			clz : tblClz,
+			clz : clz,
+			tblClz : tblClz,
 			thead : tblHeaders,
 			rows : rows
 		};
@@ -234,7 +238,8 @@
 	 */
 	Hualala.Order.mapQueryDishesHotRenderData = function (records) {
 		var self = this;
-		var tblClz = "table-striped table-hover",
+		var clz = "col-md-12",
+			tblClz = "table-striped table-hover",
 			tblHeaders = OrderQueryDishHotTableHeaderCfg;
 		var mapColsRenderData = function (row, idx) {
 			var colKeys = _.map(tblHeaders, function (el) {
@@ -255,7 +260,8 @@
 			};
 		});
 		return {
-			clz : tblClz,
+			clz : clz,
+			tblClz : tblClz,
 			thead : tblHeaders,
 			rows : rows
 		};
@@ -268,7 +274,8 @@
 	 */
 	Hualala.Order.mapQueryUserRenderData = function (records) {
 		var self = this;
-		var tblClz = "table-striped table-hover",
+		var clz = "col-md-12",
+			tblClz = "table-striped table-hover",
 			tblHeaders = OrderQueryUserTableHeaderCfg;
 		var mapColsRenderData = function (row, idx) {
 			var colKeys = _.map(tblHeaders, function (el) {
@@ -289,7 +296,8 @@
 			};
 		});
 		return {
-			clz : tblClz,
+			clz : clz,
+			tblClz : tblClz,
 			thead : tblHeaders,
 			rows : rows
 		};

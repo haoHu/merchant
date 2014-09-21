@@ -268,12 +268,12 @@
             '<div class="modal-body">',
                 '<object type="application/x-shockwave-flash" ',
                     'id="hualalaImageUpload" name="hualalaImageUpload" ',
-                    'data="" ',
+                    'data="{{swfSrc}}" ',
                     'width="500" height="375">',
                     '<param name="quality" value="high">',
                     '<param name="allowscriptaccess" value="always">',
                     '<param name="wmode" value="transparent">',
-                    '<param name="flashvars" value="">',
+                    '<param name="flashvars" value="{{args}}">',
                 '</object>',
             '</div>',
         '</div>',
@@ -290,8 +290,8 @@
 
 	// 基础数据表格模版
 	var tpl_base_datagrid = [
-		'<div class="table-responsive">',
-			'<table class="table {{clz}}">',
+		'<div class="table-responsive {{clz}}">',
+			'<table class="table {{tblClz}}">',
 				'<thead>',
 					'<tr>',
 						'{{#each thead}}',

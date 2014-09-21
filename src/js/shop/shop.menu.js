@@ -17,7 +17,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 
     var classifiedFoods = null,
         foodClass = '',
-        foods = null;
+        foods = null,
+        searchParams = null;
     
     var foodTpl = Handlebars.compile(Hualala.TplLib.get('tpl_food'));
     var $menu = $(Hualala.TplLib.get('tpl_shop_menu')),
@@ -39,7 +40,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         }
         
         classifiedFoods = classifyFoods(rsp.data.records);
-        renderFoods(); 
+        renderFoods(); console.log(foods);
         var $foodClassBox = $menu.find('#foodClassBox').append($('<span class="current-food-class"></span>').text('全部菜品 (' + foods.length + ')'));
         
         for(var id in classifiedFoods)
@@ -62,6 +63,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             $takeawayTag.val('');
             $foodName.val('');
             $chekbox.prop('checked', false);
+            searchParams = null;
             renderFoods();
         }
         
@@ -72,7 +74,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                 foodName = $.trim($foodName.val());
             if(takeawayTag || foodName || $checked.length)
             {
-                var searchParams = {};
+                searchParams = {};
                 if(takeawayTag) searchParams.takeawayTag = takeawayTag;
                 if(foodName) searchParams.foodName = foodName;
                 $checked.each(function ()
@@ -83,19 +85,20 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                         searchParams[this.id] = '1';
                 });
                 //console.log(searchParams);
-                renderFoods(searchParams);
+                renderFoods();
             }
         }
     });
     
-    function renderFoods(args)
+    function renderFoods()
     {
-        foods = filterFoods(args);
+        foods = filterFoods();
         $foodCount.text(foods.length);
         $foods.html(foodTpl({foods: foods}));
+        $foods.find('img').lazyload();
     }
     
-    function filterFoods(args)
+    function filterFoods()
     {
         var result = [];
         if(!foodClass)
@@ -110,11 +113,11 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             result = classifiedFoods[foodClass].foods;
         }
         
-        for(p in args)
+        for(p in searchParams)
         {
             result = $.grep(result, function (food)
             {
-                return p == 'foodName' ? food[p].indexOf(args[p]) > -1 : food[p] == args[p];
+                return p == 'foodName' ? food[p].indexOf(searchParams[p]) > -1 : food[p] == searchParams[p];
             });
         }
         
@@ -126,12 +129,23 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         var result = {};
         for(i = 0, l = foodsData.length; i < l; i++)
         {
-            var food = foodsData[i];
+            var food = foodsData[i], cid = food.foodCategoryID;
             //根据foodCategoryID分类
-            result[food.foodCategoryID] = result[food.foodCategoryID] || {foods: [], foodCategoryName: food.foodCategoryName};
+            result[cid] = result[cid] || {foods: [], foodCategoryName: food.foodCategoryName};
             //某个菜品可能无foodID
             if(!food.foodID) continue;
-            food.imgSrc = food.imgePath ? imgHost + food.imgePath : imgRoot + 'dino80.png';
+            
+            var path = food.imgePath;
+            if(path)
+            {
+                var hwp = food.imageHWP, min = 92,
+                    w = hwp > 1 ? min : Math.round(min / hwp),
+                    h = hwp > 1 ? Math.round(min * hwp) : min;
+                food.imgSrc = imgHost + path.replace(/\.\w+$/, '=' + h + 'x' + w + '$&' + '?quality=70');
+            }
+            else
+                food.imgSrc = imgRoot + 'dino80.png';
+            
             food.discountIco = food.isDiscount == 1 ? 'ico-ok' : 'ico-no';
             food.takeawayIco = food.takeawayTag > 0 ? 'ico-ok' : 'ico-no';
             food.activeIco = food.foodIsActive == 1 ? 'ico-ok' : 'ico-no';
@@ -150,7 +164,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             food.prePrice = food.prePrice || '';
             food.vipPrice = food.vipPrice || '';
             
-            var cfs = result[food.foodCategoryID].foods,
+            var cfs = result[cid].foods,
                 unit = {
                     unit: food.unit ? food.unit + ':' : '',
                     price: food.price ? '￥' + parseFloat(food.price) : '',

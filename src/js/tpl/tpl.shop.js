@@ -167,7 +167,7 @@
 					'</ul>',
 				'</div>',
 			'</div>',
-		'</div>',
+            '</div>',
 		'<div class="step-action">',
 			'<button type="button" class="btn btn-default prev-step">上一步</button>',
 			'<button id="nextStep" type="button" class="btn btn-warning">下一步</button>',
@@ -329,7 +329,7 @@
     var tpl_food = [
     '{{#each foods}}',
         '<tr data-id="{{foodID}}" data-cid="{{foodCategoryID}}">',
-            '<td><img src="{{imgSrc}}" /></td>',
+            '<td><img data-original="{{imgSrc}}" src="" /></td>',
             '<td>{{foodName}}</td>',
             '<td>',
             '{{#each units}}',

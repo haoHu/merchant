@@ -19,10 +19,16 @@
 					label : v.label,
 				};
 			});
-			return {items : navs};
+			return {
+				toggle : {
+					target : '#order_navbar'
+				},
+				items : navs
+			};
 		};
 		var navTpl = Handlebars.compile(Hualala.TplLib.get('tpl_order_subnav'));
-		$body.html('<div class="order-subnav" /><div class="order-body" ><div class="order-query-box"></div><div class="order-result-box"></div></div>');
+		Handlebars.registerPartial("toggle", Hualala.TplLib.get('tpl_site_navbarToggle'));
+		$body.html('<div class="order-subnav clearfix" /><div class="order-body" ><div class="order-query-box"></div><div class="order-result-box"></div></div>');
 		var $navbar = $body.find('.order-subnav'),
 			$pageBody = $body.find('.order-body');
 		$navbar.html(navTpl(mapNavRenderData()));
