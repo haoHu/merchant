@@ -4159,9 +4159,9 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 			formKeys : 'fetchFoodMode,payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
 			operationMode : {
 				// 正餐
-				0 : 'fetchFoodMode,supportCommitToSoftware',
+				0 : 'payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
 				// 快餐
-				1 : 'payMethodAtShop,payBeforeCommit,supportCommitToSoftware'
+				1 : 'fetchFoodMode,supportCommitToSoftware'
 			}
 		}
 		// {id : 42, label : "店内买单", name : "spot_pay"}

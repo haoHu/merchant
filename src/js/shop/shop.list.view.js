@@ -242,19 +242,100 @@
 				tagTpl : tagTpl
 			});
 		},
+		/**
+		 * 获取店铺业务描述信息
+		 * @param  {Int} businessID    业务ID(10:常规预订,11:闪吃,20:外送,21:到店自提,41:店内自助)
+		 * @param  {Int} operationMode 餐厅运营模式 0：正餐；1：正餐
+		 * @param  {Object} businessInfo  业务配置信息
+		 * @return {String}               业务配置描述
+		 */
+		getBusinessDesc : function (businessID, operationMode, businessInfo) {
+			var self = this;
+			var tpl = null, renderKeys = null, params = null, htm = '';
+			switch(businessID) {
+				// 闪吃描述
+				case 11:
+					tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_justeat_desc'));
+					renderKeys = 'servicePeriods,holidayFlag,minAmount,advanceTime,noticeTime,reserveTableTime,reserveTableDesc'.split(',');
+					params = _.map(renderKeys, function (k) {
+						var r = $XP(businessInfo, k, '');
+						switch(k) {
+							case "servicePeriods" :
+								r = '营业时间：' + r.replace(',', '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
+								break;
+							case "holidayFlag" : 
+								r = (r == 0 ? '工作日及节假日开放' : (r == 1 ? '只在节假日开放' : '只在工作日开放')) + ', ';
+								break;
+							case "minAmount" : 
+								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + '元, ');
+								break;
+							case "advanceTime" : 
+								r = IX.isEmpty(r) || r == 0 ? '' : ('顾客需提前' + r + '分钟预订, ');
+								break;
+							case "noticeTime" : 
+								r = IX.isEmpty(r) || r == 0 ? '' : ('订单提前' + r + '分钟通知餐厅, ');
+								break;
+							case "reserveTableTime" : 
+								r = IX.isEmpty(r) || r == 0 ? '' : ('留位' + r + '分钟, ');
+								break;
+							case "reserveTableDesc" : 
+								r = IX.isEmpty(r) ? '' : r;
+								break;
+						}
+						return r;
+					});
+					break;
+				// 店内自助描述
+				case 41:
+					tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_spotorder_desc'));
+					renderKeys = operationMode == 0 ?
+						'isDinner,supportCommitToSoftware,payMethodAtShop,payBeforeCommit'.split(',') :
+						'isDinner,supportCommitToSoftware,fetchFoodMode'.split(',');
+					params = _.map(renderKeys, function (k) {
+						var r = $XP(businessInfo, k, '');
+						switch(k) {
+							case "isDinner":
+								r = operationMode == 0 ? true : false;
+								break;
+							case "supportCommitToSoftware":
+								r = (r == 1 ? '支持' : '不支持') + '下单到餐饮软件, ';
+								break;
+							case "fetchFoodMode":
+								r = '下单后' + (r == 1 ? '凭牌号' : (r == 2 ? '直接' : '凭流水号')) + '在收银台取餐, ';
+								break;
+							case "payMethodAtShop":
+								r = (r == 1 ? '餐前先通过手机结账' : (r == 2 ? '餐后可通过手机结账' : '不能用手机结账')) + ', ';
+								break;
+							case "payBeforeCommit":
+								r = r == 1 ? '支付完成后才能下单, ' : '';
+								break;
+						}
+						return r;
+					});
+					break;
+			}
+			if (businessID == 11 || businessID == 41) {
+				htm = tpl(_.object(renderKeys, params));
+			}
+			return htm;
+		},
 		// 获取店铺业务信息数据
 		getShopBusiness : function (shop) {
+			var self = this;
 			var business = Hualala.TypeDef.ShopBusiness,
 				businessHT = new IX.IListManager(),
 				serviceFeatures = $XP(shop, 'serviceFeatures', ''),
-				businessCfg = $XP(shop, 'revParamJson', {});
+				businessCfg = JSON.parse($XP(shop, 'revParamJson', {}));
 			var ret = null;
 			_.each(business, function (item, i, l) {
 				var id = $XP(item, 'id'), name = $XP(item, 'name')
-					switcherStatus = serviceFeatures.indexOf(name) >= 0 ? 1 : 0;
-				var ret = IX.inherit(item, $XP(businessCfg, 'id'), {
+					switcherStatus = serviceFeatures.indexOf(name) >= 0 ? 1 : 0,
+					businessInfo = $XP(businessCfg, id.toString(), {}),
+					operationMode = $XP(shop, 'operationMode', null);
+				var ret = IX.inherit(item, businessInfo, {
 					switcherStatus : switcherStatus,
-					shopID : $XP(shop, 'shopID')
+					shopID : $XP(shop, 'shopID'),
+					desc : self.getBusinessDesc(id, operationMode, businessInfo)
 				});
 				businessHT.register(name, ret);
 			});
@@ -280,7 +361,7 @@
 					type : name,
 					id : $XP(el, 'id'),
 					open : open,
-					desc : ''
+					desc : $XP(el, 'desc', '')
 				};
 			});
 		},

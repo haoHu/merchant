@@ -405,7 +405,8 @@
 			} else if (IX.nsExisted(this.callServer)) {
 				this.callServer = IX.getNS(this.callServer);
 			}
-			this.formParams = $XP(this.model.get('revParamJson'), this.serviceID);
+			var revParamJson = JSON.parse(this.model.get('revParamJson'));
+			this.formParams = $XP(revParamJson, this.serviceID);
 			this.initModal();
 			this.renderForm();
 			this.bindEvent();

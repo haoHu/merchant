@@ -50,7 +50,7 @@
 			timeShopID : '77867',
 			timeShopName : '',
 			"serviceFeatures": "commonreserve_order,takeaway_order,takeout_order,spot_order,justeat_order",
-			"revParamJson" : {"10":{"advanceTime":"30","minAmount":"0","noticeTime":"30","reserveTableDesc":"342424242423","reserveTableTime":"15"},"11":{"advanceTime":"30","holidayFlag":"0","minAmount":"","noticeTime":"30","reserveTableDesc":"","reserveTableTime":"15","servicePeriods":"1100,1400"},"41":{"fetchFoodMode":"","payBeforeCommit":"1","payMethodAtShop":"0","supportCommitToSoftware":"1"}},
+			"revParamJson" : JSON.stringify({"10":{"advanceTime":"30","minAmount":"0","noticeTime":"30","reserveTableDesc":"342424242423","reserveTableTime":"15"},"11":{"advanceTime":"30","holidayFlag":"0","minAmount":"","noticeTime":"30","reserveTableDesc":"","reserveTableTime":"15","servicePeriods":"1100,1400"},"41":{"fetchFoodMode":"","payBeforeCommit":"1","payMethodAtShop":"0","supportCommitToSoftware":"1"}}),
 			"shopPromotionInfo": "",
 			"shopPromotionType": "1",
 			"shopServiceOptions": "234214321431",

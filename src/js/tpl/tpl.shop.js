@@ -739,4 +739,32 @@
 		'{{/each}}'
 	].join('');
 	TplLib.register('tpl_shop_modal_btns', tpl_shop_modal_btns);
+
+	// 闪吃业务描述
+	var tpl_shop_justeat_desc = [
+		'{{{servicePeriods}}}',
+		'{{{holidayFlag}}}',
+		'{{{minAmount}}}',
+		'{{{advanceTime}}}',
+		'{{{noticeTime}}}',
+		'{{{reserveTableTime}}}',
+		'{{{reserveTableDesc}}}'
+	].join('');
+	TplLib.register('tpl_shop_justeat_desc', tpl_shop_justeat_desc);
+
+	// 店内自助业务描述
+	var tpl_shop_spotorder_desc = [
+
+		'{{#if isDinner}}',
+			// 正餐
+			'{{{supportCommitToSoftware}}}',
+			'{{{fetchFoodMode}}}',
+		'{{else}}',
+			// 快餐
+			'{{{supportCommitToSoftware}}}',
+			'{{{payMethodAtShop}}}',
+			'{{{payBeforeCommit}}}',
+		'{{/if}}'
+	].join('');
+	TplLib.register('tpl_shop_spotorder_desc', tpl_shop_spotorder_desc);
 })(jQuery, window);

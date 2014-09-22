@@ -153,7 +153,7 @@
 			shop.emit('switchBusinessStatus', {
 				name : $XP(params, 'name'),
 				id : $XP(params, 'id'),
-				status : $XP(params, 'state'),
+				status : $XP(params, 'status', 0),
 				failFn : failFn
 			});
 
@@ -221,7 +221,7 @@
 			console.info("Switch Shop [" + self.get('shopID') + "] ServiceFeature: " + self.get('serviceFeatures'));
 			this.switchShopBusinessStatusCallServer({
 				shopID : shopID,
-				serviceFeature : name,
+				serviceFeatures : name,
 				operation : status
 			}, function (res) {
 				if (res.resultcode !== '000') {
@@ -272,8 +272,10 @@
 							failFn();
 						} else {
 							var newData = {};
+							var revParamJson = JSON.parse(self.get('revParamJson'));
+							revParamJson = IX.inherit(revParamJson, newData);
 							newData[serviceID] = params;
-							self.set('revParamJson', IX.inherit(self.get('revParamJson'), newData));
+							self.set('revParamJson', JSON.stringify(revParamJson));
 							successFn();
 							toptip({
 								msg : '配置成功!',
