@@ -109,8 +109,9 @@
 							{
 								label : '查看详情', 
 								link : 'javascript:void(0);', 
-								clz : '', 
-								id : $XP(row, 'orderKey', ''), 
+								clz : 'query-order-detail', 
+								id : $XP(row, 'orderID', ''),
+								key : $XP(row, 'orderKey', ''), 
 								type : ''
 							}
 						]
@@ -155,7 +156,8 @@
 		var self = this;
 		var clz = "col-md-12",
 			tblClz = "table-striped table-hover",
-			tblHeaders = OrderQueryTableHeaderCfg;
+			tblHeaders = OrderQueryTableHeaderCfg,
+			statisticData = self.model.getStatisticData();
 		var mapColsRenderData = function (row, idx) {
 			var colKeys = _.map(tblHeaders, function (el) {
 				return $XP(el, 'key', '');
@@ -174,11 +176,32 @@
 				cols : mapColsRenderData(row, idx)
 			};
 		});
+		var statisticKeys = 'orderTotal,orderRefundAmount,total,shouldSettlementTotal';
+		var ftCols = _.map(statisticKeys.split(','), function (k) {
+			var v = $XP(statisticData, k, 0), rowspan = 1, clz = '', 
+				colspan = k == "orderTotal" ? 3 : 1;
+
+			return {
+				clz : clz,
+				colspan : colspan,
+				rowspan : rowspan,
+				text : v,
+				value : v
+			};
+		});
+		ftCols.unshift({
+			clz : 'title', colspan : '6', rowspan : '1', value : '', text : '共计：'
+		});
+		var tfoot = [{
+			clz : '',
+			cols : ftCols
+		}];
 		return {
 			clz : clz,
 			tblClz : tblClz,
 			thead : tblHeaders,
-			rows : rows
+			rows : rows,
+			tfoot : tfoot
 		};
 	};
 	/**
@@ -194,7 +217,8 @@
 		var queryKeys = self.model.queryKeys;
 		var clz = "col-md-12",
 			tblClz = "table-striped table-hover",
-			tblHeaders = IX.clone(OrderQueryDuringTableHeaderCfg);
+			tblHeaders = IX.clone(OrderQueryDuringTableHeaderCfg),
+			statisticData = self.model.getStatisticData();;
 		if (pageName == 'orderQueryDuring') {
 			tblHeaders = _.map(tblHeaders, function (el) {
 				var key = $XP(el, 'key', '');
@@ -224,11 +248,32 @@
 				cols : mapColsRenderData(row, idx)
 			};
 		});
+		var statisticKeys = 'count,giftAmountTotal,orderTotal,orderWaitTotal,orderRegAmount,orderRefundAmount,total,orderAmount';
+		var ftCols = _.map(statisticKeys.split(','), function (k) {
+			var v = $XP(statisticData, k, 0), rowspan = 1, clz = '', 
+				colspan = 1;
+
+			return {
+				clz : clz,
+				colspan : colspan,
+				rowspan : rowspan,
+				text : v,
+				value : v
+			};
+		});
+		ftCols.unshift({
+			clz : 'title', colspan : '2', rowspan : '1', value : '', text : '共计：'
+		});
+		var tfoot = [{
+			clz : '',
+			cols : ftCols
+		}];
 		return {
 			clz : clz,
 			tblClz : tblClz,
 			thead : tblHeaders,
-			rows : rows
+			rows : rows,
+			tfoot : tfoot
 		};
 	};
 	/**
@@ -295,6 +340,7 @@
 				cols : mapColsRenderData(row, idx)
 			};
 		});
+
 		return {
 			clz : clz,
 			tblClz : tblClz,
@@ -386,6 +432,20 @@
 					pageNo : $XP(params, 'pageNo', 1),
 					pageSize : $XP(params, 'pageSize', 15)
 				}));
+			});
+			self.$resultBox.on('click', 'a.query-order-detail', function (e) {
+				var $btn = $(this),
+					orderKey = $btn.attr('data-key'),
+					orderID = $btn.attr('data-id'),
+					transType = '101';
+				var detail = new Hualala.Account.AccountTransDetailModal({
+					triggerEl : $btn,
+					orderKey : orderKey,
+					orderID : orderID,
+					transType : transType,
+					transID : ''
+				});
+
 			});
 		},
 		mapRenderData : function (records) {

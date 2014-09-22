@@ -21,6 +21,7 @@
 				return ;
 			}
 			this.cities = $XP(cfg, 'cities', []);
+			this.statisticKeys = 'count,foodAmount,giftAmountTotal,orderRefundAmount,orderRegAmount,orderTotal,orderAmount,shouldSettlementTotal,total';
 			this.queryKeys = $XP(cfg, 'queryKeys', []);
 			this.pagerKeys = 'pageCount,totalSize,pageNo,pageSize'.split(',');
 			this.queryParamsKeys = null;
@@ -36,7 +37,8 @@
 			this.cities = cities || this.cities;
 			this.set(IX.inherit({
 				ds_record : new IX.IListManager(),
-				ds_page : new IX.IListManager()
+				ds_page : new IX.IListManager(),
+				ds_statistic : new IX.IListManager(),
 			}, this.hasPager ? {
 				pageCount : 0,
 				totalSize : 0,
@@ -77,6 +79,14 @@
 			});
 			pageHT.register(pageNo, recordIDs);
 		},
+		updateStatisticDataStore : function (data) {
+			var self = this,
+				statisticHT = self.get('ds_statistic');
+			_.each(self.statisticKeys.split(','), function (k) {
+				var v = $XP(data, k, '');
+				statisticHT.register(k, v);
+			});
+		},
 		resetDataStore : function () {
 			this.recordHT.clear();
 			this.pageHT.clear();
@@ -88,6 +98,7 @@
 				if (res.resultcode == '000') {
 					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.page.pageNo'));
 					self.updatePagerParams($XP(res, 'data.page', {}));
+					self.updateStatisticDataStore($XP(res, 'data', {}));
 				} else {
 					toptip({
 						msg : $XP(res, 'resultmsg', ''),
@@ -121,6 +132,15 @@
 				return $XP(el, 'cityID') == cityID;
 			});
 			return m;
+		},
+		getStatisticData : function () {
+			var self = this,
+				statisticHT = self.get('ds_statistic'),
+				ret = {};
+			_.each(self.statisticKeys.split(','), function(k) {
+				ret[k] = statisticHT.get(k);
+			});
+			return ret;
 		}
 	});
 

@@ -315,6 +315,19 @@
 						'</tr>',
 					'{{/each}}',
 				'</tbody>',
+				'<tfoot>',
+					'<tr>',
+						'{{#each tfoot}}',
+							'<tr class="{{clz}}">',
+								'{{#each cols}}',
+									'<td class="{{clz}}" colspan="{{colspan}}" rowspan="{{rowspan}}">',
+										'<p data-value="{{value}}" >{{{text}}}</p>',
+									'</td>',
+								'{{/each}}',
+							'</tr>',
+						'{{/each}}',
+					'</tr>',
+				'</tfoot>',
 			'</table>',
 		'</div>'
 	].join('');
@@ -323,7 +336,7 @@
 	var tpl_base_grid_colbtns = [
 		'<div class="">',
 			'{{#each btns}}',
-				'<a href="{{link}}" class="{{clz}}" data-id="{{id}}" data-type="{{type}}">',
+				'<a href="{{link}}" class="{{clz}}" data-id="{{id}}" data-key="{{key}}" data-type="{{type}}">',
 					'{{{label}}}',
 				'</a>',
 			'{{/each}}',

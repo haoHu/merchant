@@ -487,7 +487,7 @@
 			els = _.map(els, function (el) {
 				var n = $XP(el, 'name'), v = $XP(el, 'value', '');
 				if (n == 'startDate' || n == 'endDate') {
-					v = IX.isEmpty(v) ? '' : IX.Date.getDateByFormat(v, 'yyyyMMddHHmmss');
+					v = IX.isEmpty(v) ? '' : IX.Date.getDateByFormat(v, 'yyyyMMdd');
 					return {
 						name : n,
 						value : v
