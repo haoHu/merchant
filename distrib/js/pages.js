@@ -6074,6 +6074,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				return ;
 			}
 			this.cities = $XP(cfg, 'cities', []);
+			this.statisticKeys = 'count,foodAmount,giftAmountTotal,orderRefundAmount,orderRegAmount,orderTotal,orderAmount,shouldSettlementTotal,total';
 			this.queryKeys = $XP(cfg, 'queryKeys', []);
 			this.pagerKeys = 'pageCount,totalSize,pageNo,pageSize'.split(',');
 			this.queryParamsKeys = null;
@@ -6089,7 +6090,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			this.cities = cities || this.cities;
 			this.set(IX.inherit({
 				ds_record : new IX.IListManager(),
-				ds_page : new IX.IListManager()
+				ds_page : new IX.IListManager(),
+				ds_statistic : new IX.IListManager(),
 			}, this.hasPager ? {
 				pageCount : 0,
 				totalSize : 0,
@@ -6130,6 +6132,14 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			});
 			pageHT.register(pageNo, recordIDs);
 		},
+		updateStatisticDataStore : function (data) {
+			var self = this,
+				statisticHT = self.get('ds_statistic');
+			_.each(self.statisticKeys.split(','), function (k) {
+				var v = $XP(data, k, '');
+				statisticHT.register(k, v);
+			});
+		},
 		resetDataStore : function () {
 			this.recordHT.clear();
 			this.pageHT.clear();
@@ -6141,6 +6151,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				if (res.resultcode == '000') {
 					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.page.pageNo'));
 					self.updatePagerParams($XP(res, 'data.page', {}));
+					self.updateStatisticDataStore($XP(res, 'data', {}));
 				} else {
 					toptip({
 						msg : $XP(res, 'resultmsg', ''),
@@ -6174,6 +6185,15 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				return $XP(el, 'cityID') == cityID;
 			});
 			return m;
+		},
+		getStatisticData : function () {
+			var self = this,
+				statisticHT = self.get('ds_statistic'),
+				ret = {};
+			_.each(self.statisticKeys.split(','), function(k) {
+				ret[k] = statisticHT.get(k);
+			});
+			return ret;
 		}
 	});
 
@@ -6300,8 +6320,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 							{
 								label : '查看详情', 
 								link : 'javascript:void(0);', 
-								clz : '', 
-								id : $XP(row, 'orderKey', ''), 
+								clz : 'query-order-detail', 
+								id : $XP(row, 'orderID', ''),
+								key : $XP(row, 'orderKey', ''), 
 								type : ''
 							}
 						]
@@ -6346,7 +6367,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 		var self = this;
 		var clz = "col-md-12",
 			tblClz = "table-striped table-hover",
-			tblHeaders = OrderQueryTableHeaderCfg;
+			tblHeaders = OrderQueryTableHeaderCfg,
+			statisticData = self.model.getStatisticData();
 		var mapColsRenderData = function (row, idx) {
 			var colKeys = _.map(tblHeaders, function (el) {
 				return $XP(el, 'key', '');
@@ -6365,11 +6387,32 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				cols : mapColsRenderData(row, idx)
 			};
 		});
+		var statisticKeys = 'orderTotal,orderRefundAmount,total,shouldSettlementTotal';
+		var ftCols = _.map(statisticKeys.split(','), function (k) {
+			var v = $XP(statisticData, k, 0), rowspan = 1, clz = '', 
+				colspan = k == "orderTotal" ? 3 : 1;
+
+			return {
+				clz : clz,
+				colspan : colspan,
+				rowspan : rowspan,
+				text : v,
+				value : v
+			};
+		});
+		ftCols.unshift({
+			clz : 'title', colspan : '6', rowspan : '1', value : '', text : '共计：'
+		});
+		var tfoot = [{
+			clz : '',
+			cols : ftCols
+		}];
 		return {
 			clz : clz,
 			tblClz : tblClz,
 			thead : tblHeaders,
-			rows : rows
+			rows : rows,
+			tfoot : tfoot
 		};
 	};
 	/**
@@ -6385,7 +6428,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 		var queryKeys = self.model.queryKeys;
 		var clz = "col-md-12",
 			tblClz = "table-striped table-hover",
-			tblHeaders = IX.clone(OrderQueryDuringTableHeaderCfg);
+			tblHeaders = IX.clone(OrderQueryDuringTableHeaderCfg),
+			statisticData = self.model.getStatisticData();;
 		if (pageName == 'orderQueryDuring') {
 			tblHeaders = _.map(tblHeaders, function (el) {
 				var key = $XP(el, 'key', '');
@@ -6415,11 +6459,32 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				cols : mapColsRenderData(row, idx)
 			};
 		});
+		var statisticKeys = 'count,giftAmountTotal,orderTotal,orderWaitTotal,orderRegAmount,orderRefundAmount,total,orderAmount';
+		var ftCols = _.map(statisticKeys.split(','), function (k) {
+			var v = $XP(statisticData, k, 0), rowspan = 1, clz = '', 
+				colspan = 1;
+
+			return {
+				clz : clz,
+				colspan : colspan,
+				rowspan : rowspan,
+				text : v,
+				value : v
+			};
+		});
+		ftCols.unshift({
+			clz : 'title', colspan : '2', rowspan : '1', value : '', text : '共计：'
+		});
+		var tfoot = [{
+			clz : '',
+			cols : ftCols
+		}];
 		return {
 			clz : clz,
 			tblClz : tblClz,
 			thead : tblHeaders,
-			rows : rows
+			rows : rows,
+			tfoot : tfoot
 		};
 	};
 	/**
@@ -6486,6 +6551,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				cols : mapColsRenderData(row, idx)
 			};
 		});
+
 		return {
 			clz : clz,
 			tblClz : tblClz,
@@ -6577,6 +6643,20 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 					pageNo : $XP(params, 'pageNo', 1),
 					pageSize : $XP(params, 'pageSize', 15)
 				}));
+			});
+			self.$resultBox.on('click', 'a.query-order-detail', function (e) {
+				var $btn = $(this),
+					orderKey = $btn.attr('data-key'),
+					orderID = $btn.attr('data-id'),
+					transType = '101';
+				var detail = new Hualala.Account.AccountTransDetailModal({
+					triggerEl : $btn,
+					orderKey : orderKey,
+					orderID : orderID,
+					transType : transType,
+					transID : ''
+				});
+
 			});
 		},
 		mapRenderData : function (records) {
@@ -7250,7 +7330,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			els = _.map(els, function (el) {
 				var n = $XP(el, 'name'), v = $XP(el, 'value', '');
 				if (n == 'startDate' || n == 'endDate') {
-					v = IX.isEmpty(v) ? '' : IX.Date.getDateByFormat(v, 'yyyyMMddHHmmss');
+					v = IX.isEmpty(v) ? '' : IX.Date.getDateByFormat(v, 'yyyyMMdd');
 					return {
 						name : n,
 						value : v
