@@ -30,6 +30,13 @@
 	].join('');
 	TemplateList.register('tpl_modal_dialog', tpl_modal_dialog);
 
+	var tpl_empty_placeholder = [
+		'<div class="alert alert-warning {{clz}}" role="alert">',
+			'<strong>{{{msg}}}</strong>',
+		'</div>'
+	].join('');
+	TemplateList.register('tpl_empty_placeholder', tpl_empty_placeholder);
+
 	// 页面整体Layout模板
 	var tpl_site_layout = [
 		'<div id="ix_wrapper">',

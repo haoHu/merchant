@@ -104,8 +104,18 @@
 			var renderData = self.mapRenderData(accounts);
 			var listTpl = self.get('listTpl');
 			var html = listTpl(renderData);
+			// self.$list.empty();
+			// self.$list.html(html);
+			self.emptyBar && self.emptyBar.destroy();
 			self.$list.empty();
-			self.$list.html(html);
+			if (accounts.length == 0) {
+				self.emptyBar = new Hualala.UI.EmptyPlaceholder({
+					container : self.$list
+				});
+				self.emptyBar.show();
+			} else {
+				self.$list.html(html);
+			}
 			self.initPager({
 				total : model.get('pageCount'),
 				page : model.get('pageNo'),

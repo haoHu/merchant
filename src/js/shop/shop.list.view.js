@@ -12,6 +12,7 @@
 			this.$list = null;
 			// 分页容器
 			this.$pager = null;
+			this.emptyBar = null;
 			this.loadTemplates();
 		}
 	});
@@ -164,8 +165,17 @@
 			var renderData = self.mapRenderData(shops);
 			var listTpl = self.get('listTpl');
 			var html = listTpl(renderData);
+			self.emptyBar && self.emptyBar.destroy();
 			self.$list.empty();
-			self.$list.html(html);
+			if (shops.length == 0) {
+				self.emptyBar = new Hualala.UI.EmptyPlaceholder({
+					container : self.$list
+				});
+				self.emptyBar.show();
+			} else {
+				self.$list.html(html);
+			}
+			
 			self.initPager({
 				total : model.get('pageCount'),
 				page : model.get('pageNo'),
@@ -188,6 +198,7 @@
 			this.$list = null;
 			// 分页容器
 			this.$pager = null;
+			this.emptyBar = null;
 			this.loadTemplates();
 		}
 	});
@@ -356,8 +367,18 @@
 			var renderData = self.mapRenderData(shops);
 			var listTpl = self.get('listTpl');
 			var html = listTpl(renderData);
+			self.emptyBar && self.emptyBar.destroy();
 			self.$list.empty();
-			self.$list.html(html);
+			if (shops.length == 0) {
+				self.emptyBar = new Hualala.UI.EmptyPlaceholder({
+					container : self.$list
+				});
+				self.emptyBar.show();
+			} else {
+				self.$list.html(html);
+			}
+			
+			
 			self.initPager({
 				total : model.get('pageCount'),
 				page : model.get('pageNo'),

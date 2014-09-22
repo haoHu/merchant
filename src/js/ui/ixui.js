@@ -309,6 +309,41 @@
 	};
 
 	/**
+	 * 搜索结果为空的提示
+	 * @param {Object} cfg {msg, clz, container}
+	 */
+	var EmptyPlaceholder = function (cfg) {
+		var container = $XP(cfg, 'container', $('body')),
+			msg = $XP(cfg, 'msg', '无结果'),
+			clz = $XP(cfg, 'clz', 'text-center');
+		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_empty_placeholder'));
+		var $el = null;
+		var init = function () {
+			var htm = tpl({
+				clz : clz, msg : msg
+			});
+			$el = $(htm).hide();
+			container.append($el);
+		};
+		init();
+		return {
+			el : $el,
+			show : function () {
+				$el && $el.fadeIn(400);
+			},
+			hide : function () {
+				$el && $el.fadeOut(400);
+			},
+			destroy : function () {
+				if ($el) {
+					$el.hide().remove();
+					delete this;
+				}
+			}
+		}
+	};
+
+	/**
 	 * 面包屑控件
 	 * 根据当前页面生成页面层级面包屑
 	 * @param {Object} cfg {container,hideRoot,nodes, clz, clickFn, mapRenderData}
@@ -412,6 +447,7 @@
 	Hualala.UI.ModalDialog = ModalDialog;
 	Hualala.UI.Alert = Alert;
 	Hualala.UI.Confirm = Confirm;
+	Hualala.UI.EmptyPlaceholder = EmptyPlaceholder;
 	Hualala.UI.BreadCrumb = BreadCrumb;
 
     Hualala.UI.uploadImg = uploadImg;
