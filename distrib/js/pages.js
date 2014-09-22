@@ -985,6 +985,7 @@
 			this.$list = null;
 			// 分页容器
 			this.$pager = null;
+			this.emptyBar = null;
 			this.loadTemplates();
 		}
 	});
@@ -1137,8 +1138,17 @@
 			var renderData = self.mapRenderData(shops);
 			var listTpl = self.get('listTpl');
 			var html = listTpl(renderData);
+			self.emptyBar && self.emptyBar.destroy();
 			self.$list.empty();
-			self.$list.html(html);
+			if (shops.length == 0) {
+				self.emptyBar = new Hualala.UI.EmptyPlaceholder({
+					container : self.$list
+				});
+				self.emptyBar.show();
+			} else {
+				self.$list.html(html);
+			}
+			
 			self.initPager({
 				total : model.get('pageCount'),
 				page : model.get('pageNo'),
@@ -1161,6 +1171,7 @@
 			this.$list = null;
 			// 分页容器
 			this.$pager = null;
+			this.emptyBar = null;
 			this.loadTemplates();
 		}
 	});
@@ -1329,8 +1340,18 @@
 			var renderData = self.mapRenderData(shops);
 			var listTpl = self.get('listTpl');
 			var html = listTpl(renderData);
+			self.emptyBar && self.emptyBar.destroy();
 			self.$list.empty();
-			self.$list.html(html);
+			if (shops.length == 0) {
+				self.emptyBar = new Hualala.UI.EmptyPlaceholder({
+					container : self.$list
+				});
+				self.emptyBar.show();
+			} else {
+				self.$list.html(html);
+			}
+			
+			
 			self.initPager({
 				total : model.get('pageCount'),
 				page : model.get('pageNo'),
@@ -3887,8 +3908,18 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			var renderData = self.mapRenderData(accounts);
 			var listTpl = self.get('listTpl');
 			var html = listTpl(renderData);
+			// self.$list.empty();
+			// self.$list.html(html);
+			self.emptyBar && self.emptyBar.destroy();
 			self.$list.empty();
-			self.$list.html(html);
+			if (accounts.length == 0) {
+				self.emptyBar = new Hualala.UI.EmptyPlaceholder({
+					container : self.$list
+				});
+				self.emptyBar.show();
+			} else {
+				self.$list.html(html);
+			}
 			self.initPager({
 				total : model.get('pageCount'),
 				page : model.get('pageNo'),
@@ -4459,6 +4490,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			});
 			return {
 				clz : tblClz,
+				isEmpty : data.length == 0 ? true : false,
+				colCount : tblHeaders.length,
 				thead : tblHeaders,
 				rows : rows
 			};
@@ -4519,6 +4552,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			});
 			return {
 				shopTable : {
+					isEmpty : !data || data.length == 0 ? true : false,
+					colCount : 3,
 					rows : ret
 				}
 			};
@@ -6410,6 +6445,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 		return {
 			clz : clz,
 			tblClz : tblClz,
+			isEmpty : !records || records.length == 0 ? true : false,
+			colCount : tblHeaders.length,
 			thead : tblHeaders,
 			rows : rows,
 			tfoot : tfoot
@@ -6481,6 +6518,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 		}];
 		return {
 			clz : clz,
+			isEmpty : !records || records.length == 0 ? true : false,
+			colCount : tblHeaders.length,
 			tblClz : tblClz,
 			thead : tblHeaders,
 			rows : rows,
@@ -6518,6 +6557,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 		return {
 			clz : clz,
 			tblClz : tblClz,
+			isEmpty : !records || records.length == 0 ? true : false,
+			colCount : tblHeaders.length,
 			thead : tblHeaders,
 			rows : rows
 		};
@@ -6555,6 +6596,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 		return {
 			clz : clz,
 			tblClz : tblClz,
+			isEmpty : !records || records.length == 0 ? true : true,
+			colCount : tblHeaders.length,
 			thead : tblHeaders,
 			rows : rows
 		};
