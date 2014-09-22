@@ -199,6 +199,8 @@
 		return {
 			clz : clz,
 			tblClz : tblClz,
+			isEmpty : !records || records.length == 0 ? true : false,
+			colCount : tblHeaders.length,
 			thead : tblHeaders,
 			rows : rows,
 			tfoot : tfoot
@@ -270,6 +272,8 @@
 		}];
 		return {
 			clz : clz,
+			isEmpty : !records || records.length == 0 ? true : false,
+			colCount : tblHeaders.length,
 			tblClz : tblClz,
 			thead : tblHeaders,
 			rows : rows,
@@ -307,6 +311,8 @@
 		return {
 			clz : clz,
 			tblClz : tblClz,
+			isEmpty : !records || records.length == 0 ? true : false,
+			colCount : tblHeaders.length,
 			thead : tblHeaders,
 			rows : rows
 		};
@@ -344,6 +350,8 @@
 		return {
 			clz : clz,
 			tblClz : tblClz,
+			isEmpty : !records || records.length == 0 ? true : true,
+			colCount : tblHeaders.length,
 			thead : tblHeaders,
 			rows : rows
 		};

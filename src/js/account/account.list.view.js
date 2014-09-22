@@ -676,6 +676,8 @@
 			});
 			return {
 				clz : tblClz,
+				isEmpty : data.length == 0 ? true : false,
+				colCount : tblHeaders.length,
 				thead : tblHeaders,
 				rows : rows
 			};
@@ -736,6 +738,8 @@
 			});
 			return {
 				shopTable : {
+					isEmpty : !data || data.length == 0 ? true : false,
+					colCount : 3,
 					rows : ret
 				}
 			};
