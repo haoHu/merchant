@@ -2,6 +2,7 @@
 	IX.ns("Hualala.Order");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
+	var LoadingModal = Hualala.UI.LoadingModal;
 
 	var OrderListController = Stapes.subclass({
 		/**
@@ -33,6 +34,9 @@
 				model : this.model,
 				container : this.container
 			});
+			this.loadingModal = new LoadingModal({
+				start : 100
+			});
 			this.isReady = true;
 		},
 		hasReady : function () {return this.isReady;},
@@ -51,7 +55,9 @@
 					var self = this;
 					var cbFn = function () {
 						self.view.emit('render');
+						self.loadingModal.hide();
 					};
+					self.loadingModal.show();
 					self.model.load(params, cbFn);
 				}
 			}, this);

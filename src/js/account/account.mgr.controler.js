@@ -2,6 +2,7 @@
 	IX.ns("Hualala.Account");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
+	var LoadingModal = Hualala.UI.LoadingModal;
 	var BaseAccountModel = Hualala.Account.BaseAccountModel;
 
 	/*账户管理控制器*/
@@ -87,6 +88,9 @@
 			var self = this;
 			self.container = $XP(cfg, 'container', null);
 			self.settleUnitID = $XP(cfg, 'settleUnitID', '');
+			self.loadingModal = new LoadingModal({
+				start : 100
+			});
 			if (!this.container || !this.model || !this.view) {
 				throw("Account Transaction Detail Mgr Init Failed!!");
 				return ;
@@ -104,6 +108,7 @@
 						container : self.container,
 						model : model
 					});
+					self.loadingModal.hide();
 				}
 			});
 		},
@@ -113,7 +118,9 @@
 					var self = this;
 					var cbFn = $XP(params, 'cbFn', function () {
 						self.view.emit('render');
+						self.loadingModal.hide();
 					});
+					self.loadingModal.show();
 					this.model.load(params, cbFn);
 				}
 			}, this);
