@@ -100,6 +100,7 @@
 	 * 		hideWithRemove : true,	//隐藏时是否删除
 	 * 		clz : '',			//dialog className
 	 * 		afterRemove : function () {},
+	 * 		afterShow : function () {},
 	 * 		afterHide : function () {},
 	 * 		onBeforeDrag : function () {},
 	 * 		onDragging : function () {},
@@ -126,7 +127,7 @@
             sizeCls: '',
 			afterRemove : IX.emptyFn,
 			afterHide : IX.emptyFn,
-			aftetShow : IX.emptyFn,
+			afterShow : IX.emptyFn,
 			onBeforeDrag : IX.emptyFn,
 			onDragging : IX.emptyFn,
 			onAfterDrag : IX.emptyFn
@@ -171,6 +172,9 @@
 				if ($XP(config, 'hideWithRemove', false)) {
 					$self.remove();
 				}
+			});
+			$self.on('shown.bs.modal', function (e) {
+				$XF(config, 'afterShow')(e);
 			});
 			if (!config.ifDrag || (!config.showTitle && !config.dragHandler)) return;
 			var $handler = $(dragHandler, $self);
@@ -388,6 +392,70 @@
 		};
 	};
 
+	/**
+	 * 加载等待模态窗 
+	 * @param {Object} cfg 
+	 *        @param {jQuery Obj} container 容器默认$('body')
+	 *        @param {String} title 等待描述，默认“努力加载中...”
+	 *        @param {String} modalClz 窗体样式
+	 *        @param {Int} start 进度条开始位置，默认20
+	 *        @param {String} progressClz 进度条样式,默认“progress-bar-warning progress-bar-striped active”
+	 *        @param {Function} afterShow 
+	 *        @param {Function} afterHide 
+	 */
+	var LoadingModal = function (cfg) {
+		var $container = $XP(cfg, 'container', $('body')),
+			title = $XP(cfg, 'msg', "努力加载中..."),
+			modalClz = $XP(cfg, 'modalClz', ''),
+			start = $XP(cfg, 'start', 20),
+			min = $XP(cfg, 'min', 0),
+			max = $XP(cfg, 'max', 100),
+			progressClz = $XP(cfg, 'progressClz', 'progress-bar-warning progress-bar-striped active'),
+			afterShow = $XF(cfg, 'afterShow'),
+			afterHide = $XF(cfg, 'afterHide');
+		var progressTpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_progress'));
+		var percent = Hualala.Common.Math.div(start, Hualala.Common.Math.sub(max, min));
+		var modal = new ModalDialog({
+			id : 'ix_progress_' + IX.id(),
+			clz : 'x-progress',
+			title : title,
+			showTitle : true,
+			showFooter : false,
+			backdrop : 'static',
+			afterHide : afterHide,
+			afterShow : afterShow
+		});
+		var $dialog = modal._.dialog,
+			$header = modal._.header,
+			$body = modal._.body,
+			$footer = modal._.footer;
+		$body.html(progressTpl({
+			progressClz : progressClz,
+			start : start,
+			min : min,
+			max : max,
+			percent : Hualala.Common.Math.multi(Hualala.Common.Math.numberToFixed(percent, 2), 100) + '%'
+		}));
+		return {
+			modal : modal,
+			show : function () {
+				modal.show();
+			},
+			hide : function () {
+				modal.hide();
+			},
+			updateProgress : function (curProgress) {
+				start = curProgress;
+				percent = Hualala.Common.Math.div(start, Hualala.Common.Math.sub(max, min));
+				var s = Hualala.Common.Math.multi(Hualala.Common.Math.numberToFixed(percent, 2), 100) + '%';
+				$body.find('.progress-bar').attr('aria-valuenow', start).css('width', s);
+				$body.find('.progress-bar>span').html(s);
+			}
+		};
+
+
+	};
+
 
 
 
@@ -449,6 +517,7 @@
 	Hualala.UI.Confirm = Confirm;
 	Hualala.UI.EmptyPlaceholder = EmptyPlaceholder;
 	Hualala.UI.BreadCrumb = BreadCrumb;
+	Hualala.UI.LoadingModal = LoadingModal;
 
     Hualala.UI.uploadImg = uploadImg;
 })(jQuery, window);

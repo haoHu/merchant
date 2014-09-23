@@ -2,6 +2,7 @@
 	IX.ns("Hualala.Shop");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
+	var LoadingModal = Hualala.UI.LoadingModal;
 	var ShopListModel = Hualala.Shop.ShopListModel;
 	var ShopListView = Hualala.Shop.ShopListView;
 	var ShopListController = Stapes.subclass({
@@ -34,6 +35,9 @@
 				model : this.model,
 				container : this.container
 			});
+			this.loadingModal = new LoadingModal({
+				start : 100
+			});
 			this.isReady = true;
 		},
 		hasReady : function () {return this.isReady;},
@@ -52,7 +56,9 @@
 					var self = this;
 					var cbFn = function () {
 						self.view.emit('render');
+						self.loadingModal.hide();
 					};
+					self.loadingModal.show();
 					self.model.load(params, cbFn);
 				},
 				// "update:totalSize" : function (v) {
