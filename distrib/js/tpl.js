@@ -370,6 +370,16 @@
 	].join('');
 	TemplateList.register('tpl_base_grid_colbtns', tpl_base_grid_colbtns);
 
+	// 进度条
+	var tpl_site_progress = [
+		'<div class="progress">',
+			'<div class="progress-bar {{progressClz}}" role="progressbar" aria-valuenow="{{start}}" aria-valuemin="{{min}}" aria-valuemax="{{max}}" style="width:{{percent}}" >',
+				'<span class="sr-only">{{percent}}</span>',
+			'</div>',
+		'</div>'
+	].join('');
+	TemplateList.register('tpl_site_progress', tpl_site_progress);
+
 	var TplLib = function () {
 		return {
 			register : function (key, tpl) {

@@ -1460,6 +1460,7 @@
 	IX.ns("Hualala.Shop");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
+	var LoadingModal = Hualala.UI.LoadingModal;
 	var ShopListModel = Hualala.Shop.ShopListModel;
 	var ShopListView = Hualala.Shop.ShopListView;
 	var ShopListController = Stapes.subclass({
@@ -1492,6 +1493,9 @@
 				model : this.model,
 				container : this.container
 			});
+			this.loadingModal = new LoadingModal({
+				start : 100
+			});
 			this.isReady = true;
 		},
 		hasReady : function () {return this.isReady;},
@@ -1510,7 +1514,9 @@
 					var self = this;
 					var cbFn = function () {
 						self.view.emit('render');
+						self.loadingModal.hide();
 					};
+					self.loadingModal.show();
 					self.model.load(params, cbFn);
 				},
 				// "update:totalSize" : function (v) {
@@ -4827,6 +4833,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 	IX.ns("Hualala.Account");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
+	var LoadingModal = Hualala.UI.LoadingModal;
 	var BaseAccountModel = Hualala.Account.BaseAccountModel;
 
 	/*账户管理控制器*/
@@ -4912,6 +4919,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			var self = this;
 			self.container = $XP(cfg, 'container', null);
 			self.settleUnitID = $XP(cfg, 'settleUnitID', '');
+			self.loadingModal = new LoadingModal({
+				start : 100
+			});
 			if (!this.container || !this.model || !this.view) {
 				throw("Account Transaction Detail Mgr Init Failed!!");
 				return ;
@@ -4929,6 +4939,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 						container : self.container,
 						model : model
 					});
+					self.loadingModal.hide();
 				}
 			});
 		},
@@ -4938,7 +4949,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 					var self = this;
 					var cbFn = $XP(params, 'cbFn', function () {
 						self.view.emit('render');
+						self.loadingModal.hide();
 					});
+					self.loadingModal.show();
 					this.model.load(params, cbFn);
 				}
 			}, this);
@@ -6855,6 +6868,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 	IX.ns("Hualala.Order");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
+	var LoadingModal = Hualala.UI.LoadingModal;
 
 	var OrderListController = Stapes.subclass({
 		/**
@@ -6886,6 +6900,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				model : this.model,
 				container : this.container
 			});
+			this.loadingModal = new LoadingModal({
+				start : 100
+			});
 			this.isReady = true;
 		},
 		hasReady : function () {return this.isReady;},
@@ -6904,7 +6921,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 					var self = this;
 					var cbFn = function () {
 						self.view.emit('render');
+						self.loadingModal.hide();
 					};
+					self.loadingModal.show();
 					self.model.load(params, cbFn);
 				}
 			}, this);

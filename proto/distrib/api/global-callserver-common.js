@@ -21,8 +21,12 @@
 		["queryShop", "/shop/query.ajax", "", "POST"],
 		["switchShopStatus", "/shop/status.ajax", "", "POST"],
 		["switchShopServiceFeatureStatus", "/shop/controlServiceFeatures.ajax", "", "POST"],
-		["setJustEatParams", "/shop/justEatParam.ajax", "", "POST"],
-		["setSpotOrderParams", "/shop/spotParam.ajax", "", "POST"],
+		// ["setJustEatParams", "/shop/justEatParam.ajax", "", "POST"],
+		// ["setSpotOrderParams", "/shop/spotParam.ajax", "", "POST"],
+
+		["setJustEatParams", "/shop/shopParam.ajax", "", "POST"],
+		["setSpotOrderParams", "/shop/shopParam.ajax", "", "POST"],
+
 		/*Account Moudle*/
 		["queryAccount", "/fsm/queryFsmSettleUnit.ajax", "", "POST"],
 		["withdrawCash", "/fsm/Withdraw.ajax", "", "POST"],

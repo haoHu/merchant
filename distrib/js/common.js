@@ -3851,12 +3851,12 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		if (start >= 0) {
 			s2 = Number(s1.substr(start + scale + 1, 1));
 			if (s2 >= 5 && num >= 0 || s2 < 5 && num < 0) {
-				a = Math.ceil(s);
+				s = Math.ceil(s);
 			} else {
-				a = Math.floor(s);
+				s = Math.floor(s);
 			}
 		}
-		return Number(a.toString().movePoint(-scale));
+		return Number(s.toString().movePoint(-scale));
 	};
 	IX.ns("Hualala.Common");
 	Hualala.Common.Math = {
