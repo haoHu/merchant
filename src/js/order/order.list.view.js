@@ -350,7 +350,7 @@
 		return {
 			clz : clz,
 			tblClz : tblClz,
-			isEmpty : !records || records.length == 0 ? true : true,
+			isEmpty : !records || records.length == 0 ? true : false,
 			colCount : tblHeaders.length,
 			thead : tblHeaders,
 			rows : rows
