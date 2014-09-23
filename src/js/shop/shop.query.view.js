@@ -28,6 +28,7 @@
 				throw("Init Query View Failed!!");
 				return;
 			}
+			this.keywordLst = null;
 			this.renderLayout();
 			this.bindEvent();
 			this.isReady = true;
@@ -101,7 +102,7 @@
 			this.$container.prepend(this.$queryBox);
 			this.$filter = this.$queryBox.find('.filter');
 			this.$query = this.$queryBox.find('.query');
-
+			this.initShopChosenPanel();
 		},
 		// 生成渲染地区的渲染数据
 		mapFilterData : function (cfg) {
@@ -142,6 +143,35 @@
 			ret.items[focus]['focusClz'] = 'disabled';
 			return ret;
 		},
+		initShopChosenPanel : function () {
+			var self = this;
+			var matcher = (new Pymatch([]));
+			var sections = self.model.getShops();
+			var getMatchedFn = function (searchText) {
+				matcher.setNames(_.map(sections, function (el) {
+					return IX.inherit(el, {
+						name : el.shopName
+					});
+				}));
+				var matchedSections = matcher.match(searchText);
+				var matchedOptions = {};
+				_.each(matchedSections, function (el, i) {
+					matchedOptions[el[0].shopID] = true;
+				});
+				return matchedOptions;
+			};
+			self.$query.find('.navbar-form[role="search"] select').chosen({
+				width : '200px',
+				placeholder_text : "请选择店铺名称",
+				// max_selected_options: 1,
+				no_results_text : "抱歉，没有找到！",
+				allow_single_deselect : true,
+				getMatchedFn : getMatchedFn
+			}).change(function (e) {
+				var $this = $(this);
+				self.keywordLst = $this.val();
+			});
+		},
 		// 渲染filter
 		renderAreaFilter : function (data) {
 			var self = this,
@@ -156,6 +186,7 @@
 			var html = filterTpl(renderData);
 			this.$filter.find('.area').remove();
 			this.$filter.append(html);
+			this.initShopChosenPanel();
 		},
 		// 绑定View层操作
 		bindEvent : function () {
@@ -187,6 +218,10 @@
 				var $btn = $(this);
 				document.location.href = Hualala.PageRoute.createPath('shopCreate');
 			});
+			this.$query.on('click', '.query-btn', function (e) {
+				var $btn = $(this);
+				self.emit('query', self.getQueryParams());
+			});
 		},
 		destroy : function () {
 			this.isReady = false;
@@ -214,7 +249,20 @@
 		// 获取搜索参数
 		getQueryParams : function () {
 			// TODO
-			return {}
+			var self = this;
+			var keywordLst = self.keywordLst || null;
+			var params = self.getFilterParams();
+			var shops = self.model.getShops();
+			if (IX.isEmpty(keywordLst)) {
+				keywordLst = '';
+			} else {
+				keywordLst = $XP(_.find(shops, function (el) {
+					return $XP(el, 'shopID') == keywordLst;
+				}), 'shopName', '');
+			}
+			return IX.inherit(params, {
+				keywordLst : keywordLst
+			});
 		}
 
 	});

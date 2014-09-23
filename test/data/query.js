@@ -88,7 +88,7 @@
 					shops.push(IX.inherit(shopTpl, {
 						shopID : sid + Test.getRandom(100, 10000),
 						shopName : shopTpl.shopName + sidx,
-						py : shopTpl.py + sidx,
+						py : shopTpl.py + ';' + sidx,
 						cityID : cid,
 						cityName : shopTpl.cityName + cidx,
 						areaID : '' + cid + aid,
