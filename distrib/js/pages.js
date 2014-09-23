@@ -958,7 +958,9 @@
 							failFn();
 						} else {
 							var newData = {};
-							var revParamJson = JSON.parse(self.get('revParamJson'));
+							// var revParamJson = JSON.parse(self.get('revParamJson'));
+							var revParamJson = self.get('revParamJson') || null;
+							revParamJson = !revParamJson ? {} : JSON.parse(revParamJson);
 							revParamJson = IX.inherit(revParamJson, newData);
 							newData[serviceID] = params;
 							self.set('revParamJson', JSON.stringify(revParamJson));
@@ -1300,7 +1302,9 @@
 			var business = Hualala.TypeDef.ShopBusiness,
 				businessHT = new IX.IListManager(),
 				serviceFeatures = $XP(shop, 'serviceFeatures', ''),
-				businessCfg = JSON.parse($XP(shop, 'revParamJson', {}));
+				// businessCfg = JSON.parse($XP(shop, 'revParamJson', {})),
+				businessCfg = $XP(shop, 'revParamJson', null);
+			businessCfg = !businessCfg ? {} : JSON.parse(businessCfg)
 			var ret = null;
 			_.each(business, function (item, i, l) {
 				var id = $XP(item, 'id'), name = $XP(item, 'name')
@@ -3204,7 +3208,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			} else if (IX.nsExisted(this.callServer)) {
 				this.callServer = IX.getNS(this.callServer);
 			}
-			var revParamJson = JSON.parse(this.model.get('revParamJson'));
+			// var revParamJson = JSON.parse(this.model.get('revParamJson'));
+			var revParamJson = this.model.get('revParamJson') || null;
+			revParamJson = !revParamJson ? {} : JSON.parse(revParamJson);
 			this.formParams = $XP(revParamJson, this.serviceID);
 			this.initModal();
 			this.renderForm();
