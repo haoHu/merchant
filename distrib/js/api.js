@@ -97,15 +97,16 @@
         ["setShopClientPwd", "/shop/resetPWDforClient.ajax", "", "POST"],
         ["getShopInfo", "/shop/queryShopInfo.ajax", "", "POST"],
         ["getShopMenu", "/shop/queryShopFoodMenu.ajax", "", "POST"],
+        ["updateFood", "/shop/updateFoodNetAttribute.ajax", "", "POST"],
 		["getShopQuerySchema", "/shop/schema.ajax", "", "POST"],
 		["queryShop", "/shop/query.ajax", "", "POST"],
 		["switchShopStatus", "/shop/status.ajax", "", "POST"],
 		["switchShopServiceFeatureStatus", "/shop/controlServiceFeatures.ajax", "", "POST"],
-		// ["setJustEatParams", "/shop/justEatParam.ajax", "", "POST"],
-		// ["setSpotOrderParams", "/shop/spotParam.ajax", "", "POST"],
+		["setJustEatParams", "/shop/justEatParam.ajax", "", "POST"],
+		["setSpotOrderParams", "/shop/spotParam.ajax", "", "POST"],
 
-		["setJustEatParams", "/shop/shopParam.ajax", "", "POST"],
-		["setSpotOrderParams", "/shop/shopParam.ajax", "", "POST"],
+		// ["setJustEatParams", "/shop/shopParam.ajax", "", "POST"],
+		// ["setSpotOrderParams", "/shop/shopParam.ajax", "", "POST"],
 
 		/*Account Moudle*/
 		["queryAccount", "/fsm/queryFsmSettleUnit.ajax", "", "POST"],
@@ -132,6 +133,7 @@
         'getCities', 'getAreas', 'getCuisines',
         'createShop', 'updateShopBaseInfo', 'setShopMap',
         'setShopClientPwd', 'getShopInfo', 'getShopMenu',
+        'updateFood',
 		{
 			name : "loadAppData", 
 			onfail : function (data, cbFn, params) {
@@ -187,6 +189,9 @@
 	};
     Hualala.Global.getShopMenu = function (params, cbFn) {
 		Hualala.Global.commonCallServer("getShopMenu", params, cbFn);
+	};
+    Hualala.Global.updateFood = function (params, cbFn) {
+		Hualala.Global.commonCallServer("updateFood", params, cbFn);
 	};
     
 	Hualala.Global.getShopQuerySchema = function (params, cbFn) {

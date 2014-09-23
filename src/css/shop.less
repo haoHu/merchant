@@ -327,6 +327,66 @@ form.edit-mode, .form.edit-mode
         .ico-no { color: @x-font-color-lightGray }
     }
 }
+#editFood
+{
+    form, #foodPic 
+    { display: inline-block; vertical-align: top }
+    #foodPic 
+    { 
+        margin-top: 12px; text-align: right;
+        img { margin-bottom: 12px; }
+    }
+    form
+    {
+        div { margin-bottom: 12px; }
+        .form-group 
+        { 
+            display: inline-block;
+            small { margin-left: 72px }
+        }
+        span 
+        { display: inline-block; width: 60px; 
+          text-align: right; margin: 6px 12px 6px 0;
+        }
+        label 
+        { 
+            font-weight: normal; font-size: 14px; margin-right: 4px;
+            border: 1px solid #ccc; border-radius: 4px; cursor: pointer;
+            padding: 6px 4px; width: 90px; text-align: center;
+            &.t-l { text-align: left }
+            &.active 
+            { color: #fff; background: #5cb85c; border-color: #4cae4c }
+            input { display: none }
+            img { margin-right: 4px }
+            
+        }
+        input[name=minOrderCount] 
+        { display: inline-block; width: 185px }
+        .taste-list
+        {
+            position: relative;
+            span { position: absolute; left: 0; top: 0 }
+            div { margin-left: 72px }
+        }
+        
+        .ico-food 
+        { font-style: normal; color: #fff; 
+          padding: 2px 4px 3px 4px; margin-right: 4px;
+        }
+        .ico-zhao { background: #db3825 }
+        .ico-jian { background: #fd7e02 }
+        .ico-xin { background: #693 }
+    }
+    @media (min-width: 768px)
+    {
+        .modal-dialog { width: 734px }
+        #foodPic { margin-left: 30px }
+    }
+}
+
+
+
+
 
 
 

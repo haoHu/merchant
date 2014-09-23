@@ -533,7 +533,18 @@
 		fn(rsp);
 	};
 
-
+    /**
+	  * 修改菜品
+	  * @param {Object} params 参数{shopID, foodID, isNew, isRecommend, isSpecialty, isActive, isDiscount, takeawayTag, hotTag, minOrderCount, tasteList, imagePath, imageHWP}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL} 
+      * 服务调用URL: /shop/updateFoodNetAttribute.ajax
+	  */
+	Hualala.Global.updateFood = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {resultcode: '000', resultmsg: ''};
+		fn(rsp);
+	};
 
 	// 订单报表模块
 	/**
