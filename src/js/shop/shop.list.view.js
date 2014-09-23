@@ -325,7 +325,9 @@
 			var business = Hualala.TypeDef.ShopBusiness,
 				businessHT = new IX.IListManager(),
 				serviceFeatures = $XP(shop, 'serviceFeatures', ''),
-				businessCfg = JSON.parse($XP(shop, 'revParamJson', {}));
+				// businessCfg = JSON.parse($XP(shop, 'revParamJson', {})),
+				businessCfg = $XP(shop, 'revParamJson', null);
+			businessCfg = !businessCfg ? {} : JSON.parse(businessCfg)
 			var ret = null;
 			_.each(business, function (item, i, l) {
 				var id = $XP(item, 'id'), name = $XP(item, 'name')

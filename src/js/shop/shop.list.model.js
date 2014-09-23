@@ -272,7 +272,9 @@
 							failFn();
 						} else {
 							var newData = {};
-							var revParamJson = JSON.parse(self.get('revParamJson'));
+							// var revParamJson = JSON.parse(self.get('revParamJson'));
+							var revParamJson = self.get('revParamJson') || null;
+							revParamJson = !revParamJson ? {} : JSON.parse(revParamJson);
 							revParamJson = IX.inherit(revParamJson, newData);
 							newData[serviceID] = params;
 							self.set('revParamJson', JSON.stringify(revParamJson));
