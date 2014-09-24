@@ -325,9 +325,10 @@
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		var res = {resultcode : '000', resultmsg : ''};
 		var data = Test.queryOrderPayDetail;
-		fn(IX.inherit(res, {
-			data : data
-		}));
+		// fn(IX.inherit(res, {
+		// 	data : data
+		// }));
+		fn(IX.inherit(res, data));
 	};
 
 	/**

@@ -276,7 +276,7 @@
 								r = (r == 0 ? '工作日及节假日均开放' : (r == 1 ? '仅节假日开放' : '仅工作日开放')) + ', ';
 								break;
 							case "minAmount" : 
-								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + '元, ');
+								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + Hualala.Constants.CashUnit + ', ');
 								break;
 							case "advanceTime" : 
 								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');

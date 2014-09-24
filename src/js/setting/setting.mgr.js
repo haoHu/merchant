@@ -7,8 +7,8 @@
 			type : 'combo',
 			label : '用户提前预订时间',
 			defaultVal : 0,
-			prefix : '$',
-			surfix : '元',
+			// prefix : '$',
+			// surfix : '元',
 			options : Hualala.TypeDef.MinuteIntervalOptions(),
 			validCfg : {
 				validators : {
@@ -35,7 +35,7 @@
 			type : 'text',
 			label : '最低消费金额',
 			prefix : '￥',
-			surfix : '元',
+			surfix : Hualala.Constants.CashUnit,
 			defaultVal : 0,
 			validCfg : {
 				validators : {
@@ -57,7 +57,7 @@
 			type : 'text',
 			label : '服务费',
 			prefix : '￥',
-			surfix : '元',
+			surfix : Hualala.Constants.CashUnit,
 			defaultVal : 0,
 			validCfg : {
 				validators : {
@@ -76,7 +76,7 @@
 			type : 'text',
 			label : '免服务费菜品金额',
 			prefix : '￥',
-			surfix : '元',
+			surfix : Hualala.Constants.CashUnit,
 			defaultVal : 0,
 			validCfg : {
 				validators : {

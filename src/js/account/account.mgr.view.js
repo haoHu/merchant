@@ -1083,7 +1083,8 @@
 				var fieldCfg = OrderPayDetailElsCfg[key];
 				var mapFn = $XF(fieldCfg, 'mapFn');
 				var cfg = _.pick(fieldCfg, 'label', 'fieldType', 'fields');
-				return mapFn(cfg, $XP(data, 'data', {}));
+				// return mapFn(cfg, $XP(data, 'data', {}));
+				return mapFn(cfg, data);
 			});
 			console.info(fieldsets);
 			var orderSubType = $XP(data, 'data.orderSubType', ''),
@@ -1092,7 +1093,7 @@
 			var printDetail = {
 				label : "订单打印内容",
 				orderSubTypeLabel : orderSubTypeLabel,
-				content : $XP(data, 'data.orderPrnStr', '').replace(/\n/g, '<br/>')
+				content : $XP(data, 'orderPrnStr', '').replace(/\n/g, '<br/>')
 			};
 
 			return {
