@@ -3824,9 +3824,13 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 						params = $XP(cfg, 'params', {}),
 						settleUnitID = self.get('settleUnitID'),
 						failFn = $XF(cfg, 'failFn'),
-						successFn = $XF(cfg, 'successFn');
+						successFn = $XF(cfg, 'successFn'),
+						poundageAmount = self.get('poundageAmount') || 0,
+						poundageMinAmount = self.get('poundageMinAmount') || 0;
 					callServer(IX.inherit(params, {
-						settleUnitID : settleUnitID
+						settleUnitID : settleUnitID,
+						poundageAmount : poundageAmount,
+						poundageMinAmount : poundageMinAmount
 					}), function (res) {
 						if (res.resultcode !== '000') {
 							toptip({
@@ -3920,7 +3924,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 							failFn();
 						} else {
 							toptip({
-								msg : '修改成功!',
+								msg : '添加成功!',
 								type : 'success'
 							});
 							// TODO update View
@@ -4233,7 +4237,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 		},
 		refresh : function () {
 			var self = this;
-			self.render();
+			// self.render();
+			document.location.reload(false);
 		}
 		
 	});
