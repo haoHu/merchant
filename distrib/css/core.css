@@ -2481,34 +2481,27 @@ form.edit-mode .control-label.no-require:before,
 .shop-menu .tbl-foods .ico-no {
   color: #999999;
 }
-#editFood form,
-#editFood #foodPic {
+#editFood .form-food,
+#editFood .food-pic {
   display: inline-block;
   vertical-align: top;
 }
-#editFood #foodPic {
-  margin-top: 12px;
-  text-align: right;
-}
-#editFood #foodPic img {
+#editFood .form-food div {
   margin-bottom: 12px;
 }
-#editFood form div {
-  margin-bottom: 12px;
-}
-#editFood form .form-group {
+#editFood .form-food .form-group {
   display: inline-block;
 }
-#editFood form .form-group small {
+#editFood .form-food .form-group small {
   margin-left: 72px;
 }
-#editFood form span {
+#editFood .form-food span {
   display: inline-block;
   width: 60px;
   text-align: right;
   margin: 6px 12px 6px 0;
 }
-#editFood form label {
+#editFood .form-food label {
   font-weight: normal;
   font-size: 14px;
   margin-right: 4px;
@@ -2519,55 +2512,97 @@ form.edit-mode .control-label.no-require:before,
   width: 90px;
   text-align: center;
 }
-#editFood form label.t-l {
+#editFood .form-food label.t-l {
   text-align: left;
 }
-#editFood form label.active {
+#editFood .form-food label.active {
   color: #fff;
   background: #5cb85c;
   border-color: #4cae4c;
 }
-#editFood form label input {
+#editFood .form-food label input {
   display: none;
 }
-#editFood form label img {
+#editFood .form-food label img {
   margin-right: 4px;
 }
-#editFood form input[name=minOrderCount] {
+#editFood .form-food input[name=minOrderCount] {
   display: inline-block;
   width: 185px;
 }
-#editFood form .taste-list {
+#editFood .form-food .taste-list {
   position: relative;
 }
-#editFood form .taste-list span {
+#editFood .form-food .taste-list span {
   position: absolute;
   left: 0;
   top: 0;
 }
-#editFood form .taste-list div {
+#editFood .form-food .taste-list div {
   margin-left: 72px;
 }
-#editFood form .ico-food {
+#editFood .form-food .ico-food {
   font-style: normal;
   color: #fff;
   padding: 2px 4px 3px 4px;
   margin-right: 4px;
 }
-#editFood form .ico-zhao {
+#editFood .form-food .ico-zhao {
   background: #db3825;
 }
-#editFood form .ico-jian {
+#editFood .form-food .ico-jian {
   background: #fd7e02;
 }
-#editFood form .ico-xin {
+#editFood .form-food .ico-xin {
   background: #669933;
+}
+#editFood .food-pic {
+  margin-top: 12px;
+  text-align: right;
+  position: relative;
+}
+#editFood .food-pic div {
+  position: relative;
+}
+#editFood .food-pic div span {
+  display: none;
+  position: absolute;
+  bottom: 50%;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+}
+#editFood .food-pic input {
+  width: 120px;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  filter: alpha(opacity=0);
+  opacity: 0;
+  cursor: pointer;
+}
+#editFood .food-pic iframe {
+  display: none;
+}
+#editFood .food-pic.loading div {
+  background: #999;
+}
+#editFood .food-pic.loading img {
+  filter: alpha(opacity=50);
+  opacity: 0.5;
+}
+#editFood .food-pic.loading span {
+  display: block;
+}
+#editFood .food-pic.loading a,
+#editFood .food-pic.loading input {
+  display: none;
 }
 @media (min-width: 768px) {
   #editFood .modal-dialog {
     width: 734px;
   }
-  #editFood #foodPic {
+  #editFood .food-pic {
     margin-left: 30px;
   }
 }

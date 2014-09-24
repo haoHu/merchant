@@ -62,12 +62,46 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         $foodClass = $foodClassBox.find('span');
         $menu.appendTo($container);
     });
-    //自定义按钮组相关
-    $(document).on('change', '#editFood input[type=radio]', function ()
+    
+    $(document).on('change', function(e)
     {
-        $(this).closest('div').find('label').removeClass('active')
-        .find('input:checked').parent().addClass('active');
+        var $target = $(e.target);
+        //自定义按钮组相关
+        if($target.is('.form-food input[type=radio]'))
+        {
+            $target.closest('div').find('label').removeClass('active')
+            .find('input:checked').parent().addClass('active');
+        }
+        //修改菜品图片
+        if($target.is('.food-pic input'))
+        {
+            var $foodPic = $('.food-pic');
+            if($target.val())
+            {
+                $foodPic.addClass('loading');
+                previewImg($target[0], $foodPic.find('img'));
+                $foodPic.submit();
+                setTimeout(function()
+                {
+                    $foodPic.removeClass('loading');
+                }, 5000);
+            }
+        }
+        
     });
+    //图片上传本地预览
+    function previewImg(fileInput, $img)
+    {
+        if (fileInput.files && fileInput.files[0])  
+        {
+            var reader = new FileReader();  
+            reader.onload = function(e){
+                $img.attr('src', e.target.result);
+            }    
+            reader.readAsDataURL(fileInput.files[0]);  
+        }  
+    }
+    
     //修改菜品
     $foods.on('click', 'tr', function()
     {
@@ -94,7 +128,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         modalEditFood._.footer.find('.btn-ok').text('保存修改');
         modalEditFood._.footer.find('.btn-close').text('返回');
         //初始化表单验证
-        bv = $editFood.filter('form').bootstrapValidator({
+        bv = $editFood.filter('.form-food').bootstrapValidator({
             fields: {
                 minOrderCount: {
                     validators: {

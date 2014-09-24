@@ -329,14 +329,9 @@ form.edit-mode, .form.edit-mode
 }
 #editFood
 {
-    form, #foodPic 
+    .form-food, .food-pic 
     { display: inline-block; vertical-align: top }
-    #foodPic 
-    { 
-        margin-top: 12px; text-align: right;
-        img { margin-bottom: 12px; }
-    }
-    form
+    .form-food
     {
         div { margin-bottom: 12px; }
         .form-group 
@@ -377,10 +372,34 @@ form.edit-mode, .form.edit-mode
         .ico-jian { background: #fd7e02 }
         .ico-xin { background: #693 }
     }
+    .food-pic 
+    { 
+        margin-top: 12px; text-align: right; position: relative;
+        div
+        { 
+            position: relative; 
+            span
+            { display: none; position: absolute; bottom: 50%; 
+              width: 100%; text-align: center; color: #fff;
+            }
+        }
+        input 
+        { width: 120px; position: absolute; right: 0; bottom: 0;
+          filter: alpha(opacity=0); opacity: 0; cursor: pointer;
+        }
+        iframe { display: none }
+        &.loading
+        {
+            div { background: #999; }
+            img { filter: alpha(opacity=50); opacity: 0.5; }
+            span { display: block; }
+            a, input { display: none }
+        }
+    }
     @media (min-width: 768px)
     {
         .modal-dialog { width: 734px }
-        #foodPic { margin-left: 30px }
+        .food-pic { margin-left: 30px }
     }
 }
 

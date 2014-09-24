@@ -346,7 +346,7 @@
 	TplLib.register('tpl_food', tpl_food);
     
     var tpl_edit_food = [
-    '<form>',
+    '<form class="form-food">',
         '<div>',
             '<span>名称</span>',
             '{{foodName}}',
@@ -443,10 +443,15 @@
             '</div>',
         '</div>',
     '</form>',
-    '<div id="foodPic">',
-        '<img src="{{foodPic}}" alt="菜品图片" width="200px" />',
+    '<form class="food-pic" enctype="multipart/form-data" method="post" target="iframe1" action="">',
+        '<div>',
+            '<img src="{{foodPic}}" alt="菜品图片" width="200px" />',
+            '<span>上传中 . . .</span>',
+        '</div>',
         '<br /><a href="javascript:;">修改图片</a>',
-    '</div>'].join('');
+        '<input type="file" name="foodPicFile" />',
+        '<iframe id="iframe1" name="iframe1"></iframe>',
+    '</form>'].join('');
     TplLib.register('tpl_edit_food', tpl_edit_food);
 
 	var tpl_shop_filter = [
