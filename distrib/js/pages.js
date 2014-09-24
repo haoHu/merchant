@@ -1338,7 +1338,7 @@
 								r = (r == 0 ? '工作日及节假日均开放' : (r == 1 ? '仅节假日开放' : '仅工作日开放')) + ', ';
 								break;
 							case "minAmount" : 
-								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + '元, ');
+								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + Hualala.Constants.CashUnit + ', ');
 								break;
 							case "advanceTime" : 
 								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
@@ -3075,8 +3075,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			type : 'combo',
 			label : '用户提前预订时间',
 			defaultVal : 0,
-			prefix : '$',
-			surfix : '元',
+			// prefix : '$',
+			// surfix : '元',
 			options : Hualala.TypeDef.MinuteIntervalOptions(),
 			validCfg : {
 				validators : {
@@ -3103,7 +3103,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			type : 'text',
 			label : '最低消费金额',
 			prefix : '￥',
-			surfix : '元',
+			surfix : Hualala.Constants.CashUnit,
 			defaultVal : 0,
 			validCfg : {
 				validators : {
@@ -3125,7 +3125,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			type : 'text',
 			label : '服务费',
 			prefix : '￥',
-			surfix : '元',
+			surfix : Hualala.Constants.CashUnit,
 			defaultVal : 0,
 			validCfg : {
 				validators : {
@@ -3144,7 +3144,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			type : 'text',
 			label : '免服务费菜品金额',
 			prefix : '￥',
-			surfix : '元',
+			surfix : Hualala.Constants.CashUnit,
 			defaultVal : 0,
 			validCfg : {
 				validators : {
@@ -6339,7 +6339,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				var fieldCfg = OrderPayDetailElsCfg[key];
 				var mapFn = $XF(fieldCfg, 'mapFn');
 				var cfg = _.pick(fieldCfg, 'label', 'fieldType', 'fields');
-				return mapFn(cfg, $XP(data, 'data', {}));
+				// return mapFn(cfg, $XP(data, 'data', {}));
+				return mapFn(cfg, data);
 			});
 			console.info(fieldsets);
 			var orderSubType = $XP(data, 'data.orderSubType', ''),
@@ -6348,7 +6349,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			var printDetail = {
 				label : "订单打印内容",
 				orderSubTypeLabel : orderSubTypeLabel,
-				content : $XP(data, 'data.orderPrnStr', '').replace(/\n/g, '<br/>')
+				content : $XP(data, 'orderPrnStr', '').replace(/\n/g, '<br/>')
 			};
 
 			return {
