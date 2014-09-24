@@ -53,7 +53,9 @@
 			self.$list.on('click', '.btn[data-href]', function (e) {
 				var $btn = $(this),
 					path = $btn.attr('data-href');
-				document.location.href = path;
+				if (!IX.isEmpty(path)) {
+					document.location.href = path;
+				}
 			});
 			self.$pager.on('page', function (e, pageNo) {
 				var params = self.model.getPagerParams();
