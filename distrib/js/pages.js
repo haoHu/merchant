@@ -559,30 +559,51 @@
 			this.$filter.append(html);
 			this.initShopChosenPanel();
 		},
+		updateFilterCityLayout : function (cityID) {
+			var self = this;
+			var data = null;
+			if (cityID != -1) {
+				data = self.model.getCities(cityID);
+				data = $XP(data[0], 'areaLst', null);
+				data = self.model.getAreas(data);
+				self.renderAreaFilter(data);
+			} else {
+				self.$filter.find('.area').remove();
+			}
+			self.$filter.find('.btn-link[data-city]').removeClass('disabled');
+			self.$filter.find('.btn-link[data-city=' + cityID + ']').addClass('disabled');
+		},
+		updateFilterAreaLayout : function (areaID) {
+			var self = this;
+			self.$filter.find('.btn-link[data-area]').removeClass('disabled');
+			self.$filter.find('.btn-link[data-area=' + areaID + ']').addClass('disabled');
+		},
 		// 绑定View层操作
 		bindEvent : function () {
 			var self = this;
 			this.$filter.on('click', '.btn-link[data-city]', function (e) {
 				var $btn = $(this);
 				var cityID = $btn.attr('data-city');
-				var data = null;
-				if (cityID != -1) {
-					data = self.model.getCities(cityID);
-					data = $XP(data[0], 'areaLst', null);
-					data = self.model.getAreas(data);
-					self.renderAreaFilter(data);
-				} else {
-					self.$filter.find('.area').remove();
-				}
-				self.$filter.find('.btn-link[data-city]').removeClass('disabled');
-				$btn.addClass('disabled');
+				// var data = null;
+				// if (cityID != -1) {
+				// 	data = self.model.getCities(cityID);
+				// 	data = $XP(data[0], 'areaLst', null);
+				// 	data = self.model.getAreas(data);
+				// 	self.renderAreaFilter(data);
+				// } else {
+				// 	self.$filter.find('.area').remove();
+				// }
+				// self.$filter.find('.btn-link[data-city]').removeClass('disabled');
+				// $btn.addClass('disabled');
+				self.updateFilterCityLayout(cityID);
 				self.emit('filter', self.getFilterParams());
 			});
 			this.$filter.on('click', '.btn-link[data-area]', function (e) {
 				var $btn = $(this);
 				var areaID = $btn.attr('data-area');
-				self.$filter.find('.btn-link[data-area]').removeClass('disabled');
-				$btn.addClass('disabled');
+				// self.$filter.find('.btn-link[data-area]').removeClass('disabled');
+				// $btn.addClass('disabled');
+				self.updateFilterAreaLayout(areaID);
 				self.emit('filter', self.getFilterParams());
 			});
 			this.$query.on('click', '.create-shop', function (e) {
@@ -591,6 +612,15 @@
 			});
 			this.$query.on('click', '.query-btn', function (e) {
 				var $btn = $(this);
+				var shopID = self.keywordLst || null,
+					shop = null, cityID, areaID;
+				if (!IX.isEmpty(shopID)) {
+					shop = self.model.getShops(shopID)[0];
+					cityID = $XP(shop, 'cityID', -1);
+					areaID = $XP(shop, 'areaID', -1);
+					self.updateFilterCityLayout(cityID);
+					self.updateFilterAreaLayout(areaID);
+				}
 				self.emit('query', self.getQueryParams());
 			});
 		},
