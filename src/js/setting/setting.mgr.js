@@ -319,15 +319,24 @@
 				}
 			}
 		},
+		checkSpotOrder : {
+			type : 'switcher',
+			label : '支持手机结账',
+			defaultVal : 0,
+			onLabel : '支持',
+			offLabel : '不支持',
+			validCfg : {
+				validators : {}
+			}
+		},
 		payBeforeCommit : {
 			type : 'switcher',
-			label : '支付完成后能下单',
+			label : '支持餐前结账',
 			defaultVal : 1,
 			onLabel : '支持',
 			offLabel : '不支持',
 			validCfg : {
-				validators : {
-				}
+				validators : {}
 			}
 			
 		},
