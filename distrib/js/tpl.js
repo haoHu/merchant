@@ -1276,12 +1276,13 @@
 		'{{#if isDinner}}',
 			// 正餐
 			'{{{supportCommitToSoftware}}}',
-			'{{{fetchFoodMode}}}',
+			// '{{{payMethodAtShop}}}',
+			'{{{checkSpotOrder}}}',
+			'{{{payBeforeCommit}}}',
 		'{{else}}',
 			// 快餐
 			'{{{supportCommitToSoftware}}}',
-			'{{{payMethodAtShop}}}',
-			'{{{payBeforeCommit}}}',
+			'{{{fetchFoodMode}}}',
 		'{{/if}}'
 	].join('');
 	TplLib.register('tpl_shop_spotorder_desc', tpl_shop_spotorder_desc);

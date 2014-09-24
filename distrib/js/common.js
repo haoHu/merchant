@@ -4132,6 +4132,7 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 	 * supportInvoice: 提供发票 int 0：不需要;1:需要（默认）
 	 * supportCommitToSoftware: 支持下单到餐饮软件 0：不支持（默认）；1：支持
 	 * payMethodAtShop: 店内支付方式 int 0：均不支持（默认）；1：直接输入金额付款；2：扫码付款；3：均支持
+	 * checkSpotOrder: 顾客可通过手机结账 int 0: 不支持；1:支持
 	 * payBeforeCommit: 支付完成后才能下单 int 0：不支持（不支持）；1：支持
 	 * fetchFoodMode : 取餐模式 int 0：流水号模式（默认）；1：牌号模式；2：收银台直接取餐
 	 * 
@@ -4156,10 +4157,12 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		},
 		{id : 41, label : "店内自助", name : "spot_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setSpotOrderParams',
-			formKeys : 'fetchFoodMode,payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
+			// formKeys : 'fetchFoodMode,payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
+			formKeys : 'fetchFoodMode,checkSpotOrder,payBeforeCommit,supportCommitToSoftware',
 			operationMode : {
 				// 正餐
-				0 : 'payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
+				// 0 : 'payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
+				0 : 'checkSpotOrder,payBeforeCommit,supportCommitToSoftware',
 				// 快餐
 				1 : 'fetchFoodMode,supportCommitToSoftware'
 			}

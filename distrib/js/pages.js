@@ -1108,7 +1108,9 @@
 			self.$list.on('click', '.btn[data-href]', function (e) {
 				var $btn = $(this),
 					path = $btn.attr('data-href');
-				document.location.href = path;
+				if (!IX.isEmpty(path)) {
+					document.location.href = path;
+				}
 			});
 			self.$pager.on('page', function (e, pageNo) {
 				var params = self.model.getPagerParams();
@@ -1307,6 +1309,13 @@
 		getBusinessDesc : function (businessID, operationMode, businessInfo) {
 			var self = this;
 			var tpl = null, renderKeys = null, params = null, htm = '';
+			var minuteIntervalOpts = Hualala.TypeDef.MinuteIntervalOptions();
+			var getMinutIntervalLabel = function (v) {
+				var m = _.find(minuteIntervalOpts, function (el, i) {
+					return $XP(el, 'value') == v;
+				});
+				return $XP(m, 'label', '');
+			};
 			switch(businessID) {
 				// 闪吃描述
 				case 11:
@@ -1316,25 +1325,25 @@
 						var r = $XP(businessInfo, k, '');
 						switch(k) {
 							case "servicePeriods" :
-								r = '营业时间：' + r.replace(',', '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
+								r = '开放时间段：' + r.replace(',', '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
 								break;
 							case "holidayFlag" : 
-								r = (r == 0 ? '工作日及节假日开放' : (r == 1 ? '只在节假日开放' : '只在工作日开放')) + ', ';
+								r = (r == 0 ? '工作日及节假日均开放' : (r == 1 ? '仅节假日开放' : '仅工作日开放')) + ', ';
 								break;
 							case "minAmount" : 
 								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + '元, ');
 								break;
 							case "advanceTime" : 
-								r = IX.isEmpty(r) || r == 0 ? '' : ('顾客需提前' + r + '分钟预订, ');
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
 								break;
 							case "noticeTime" : 
-								r = IX.isEmpty(r) || r == 0 ? '' : ('订单提前' + r + '分钟通知餐厅, ');
+								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
 								break;
 							case "reserveTableTime" : 
-								r = IX.isEmpty(r) || r == 0 ? '' : ('留位' + r + '分钟, ');
+								r = IX.isEmpty(r) || r == 0 ? '' : ('留位' + getMinutIntervalLabel(r) + ', ');
 								break;
 							case "reserveTableDesc" : 
-								r = IX.isEmpty(r) ? '' : r;
+								r = IX.isEmpty(r) ? '' : r + ',';
 								break;
 						}
 						return r;
@@ -1344,7 +1353,8 @@
 				case 41:
 					tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_spotorder_desc'));
 					renderKeys = operationMode == 0 ?
-						'isDinner,supportCommitToSoftware,payMethodAtShop,payBeforeCommit'.split(',') :
+						// 'isDinner,supportCommitToSoftware,payMethodAtShop,payBeforeCommit'.split(',') :
+						'isDinner,supportCommitToSoftware,checkSpotOrder,payBeforeCommit'.split(',') :
 						'isDinner,supportCommitToSoftware,fetchFoodMode'.split(',');
 					params = _.map(renderKeys, function (k) {
 						var r = $XP(businessInfo, k, '');
@@ -1358,11 +1368,15 @@
 							case "fetchFoodMode":
 								r = '下单后' + (r == 1 ? '凭牌号' : (r == 2 ? '直接' : '凭流水号')) + '在收银台取餐, ';
 								break;
+							case "checkSpotOrder":
+								r = (r == 1 ? '支持' : '不支持') + '顾客通过手机结账, ';
+								break;
 							case "payMethodAtShop":
 								r = (r == 1 ? '餐前先通过手机结账' : (r == 2 ? '餐后可通过手机结账' : '不能用手机结账')) + ', ';
 								break;
 							case "payBeforeCommit":
-								r = r == 1 ? '支付完成后才能下单, ' : '';
+								// r = r == 1 ? '支付完成后才能下单, ' : '';
+								r = (r == 1 ? '餐前' : '餐后') + '结账, ';
 								break;
 						}
 						return r;
@@ -1371,6 +1385,7 @@
 			}
 			if (businessID == 11 || businessID == 41) {
 				htm = tpl(_.object(renderKeys, params));
+				htm = htm.slice(0, htm.lastIndexOf(','));
 			}
 			return htm;
 		},
@@ -3331,15 +3346,24 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				}
 			}
 		},
+		checkSpotOrder : {
+			type : 'switcher',
+			label : '支持手机结账',
+			defaultVal : 0,
+			onLabel : '支持',
+			offLabel : '不支持',
+			validCfg : {
+				validators : {}
+			}
+		},
 		payBeforeCommit : {
 			type : 'switcher',
-			label : '支付完成后能下单',
+			label : '支持餐前结账',
 			defaultVal : 1,
 			onLabel : '支持',
 			offLabel : '不支持',
 			validCfg : {
-				validators : {
-				}
+				validators : {}
 			}
 			
 		},
@@ -4639,7 +4663,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			self.$resultBox.on('click', '.btn[data-href]', function (e) {
 				var $btn = $(this),
 					path = $btn.attr('data-href');
-				document.location.href = path;
+				if (!IX.isEmpty(path)) {
+					document.location.href = path;
+				}
 			});
 			self.$pager.on('page', function (e, pageNo) {
 				var params = self.model.getPagerParams();
