@@ -124,7 +124,8 @@
 		},
 		refresh : function () {
 			var self = this;
-			self.render();
+			// self.render();
+			document.location.reload(false);
 		}
 		
 	});

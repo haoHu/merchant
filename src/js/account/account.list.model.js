@@ -252,7 +252,7 @@
 							failFn();
 						} else {
 							toptip({
-								msg : '修改成功!',
+								msg : '添加成功!',
 								type : 'success'
 							});
 							// TODO update View
