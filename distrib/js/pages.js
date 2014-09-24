@@ -613,15 +613,22 @@
 			this.$query.on('click', '.query-btn', function (e) {
 				var $btn = $(this);
 				var shopID = self.keywordLst || null,
-					shop = null, cityID, areaID;
+					shop = null, cityID = -1, areaID = -1;
 				if (!IX.isEmpty(shopID)) {
 					shop = self.model.getShops(shopID)[0];
 					cityID = $XP(shop, 'cityID', -1);
 					areaID = $XP(shop, 'areaID', -1);
-					self.updateFilterCityLayout(cityID);
-					self.updateFilterAreaLayout(areaID);
 				}
+				self.updateFilterCityLayout(cityID);
+				self.updateFilterAreaLayout(areaID);
 				self.emit('query', self.getQueryParams());
+			});
+			this.$query.on('keyup', '.chosen-container', function (e) {
+				var $this = $(this);
+				if ($this.hasClass('chosen-container-active') && !$this.hasClass('chosen-with-drop')) {
+					$this.find('input').first().trigger('blur.chosen');
+					self.$query.find('.query-btn').trigger('click');
+				}
 			});
 		},
 		destroy : function () {
