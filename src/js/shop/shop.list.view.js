@@ -254,6 +254,13 @@
 		getBusinessDesc : function (businessID, operationMode, businessInfo) {
 			var self = this;
 			var tpl = null, renderKeys = null, params = null, htm = '';
+			var minuteIntervalOpts = Hualala.TypeDef.MinuteIntervalOptions();
+			var getMinutIntervalLabel = function (v) {
+				var m = _.find(minuteIntervalOpts, function (el, i) {
+					return $XP(el, 'value') == v;
+				});
+				return $XP(m, 'label', '');
+			};
 			switch(businessID) {
 				// 闪吃描述
 				case 11:
@@ -272,13 +279,13 @@
 								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + '元, ');
 								break;
 							case "advanceTime" : 
-								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间' : ('顾客需提前' + r + '分钟预订, ');
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
 								break;
 							case "noticeTime" : 
-								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅' : ('订单提前' + r + '分钟通知餐厅, ');
+								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
 								break;
 							case "reserveTableTime" : 
-								r = IX.isEmpty(r) || r == 0 ? '' : ('留位' + r + '分钟, ');
+								r = IX.isEmpty(r) || r == 0 ? '' : ('留位' + getMinutIntervalLabel(r) + ', ');
 								break;
 							case "reserveTableDesc" : 
 								r = IX.isEmpty(r) ? '' : r + ',';
