@@ -520,7 +520,7 @@
 						'{{/if}}',
 					'</div>',
 				'</div>',
-			'<nav>',
+			'</nav>',
 		'</div>',
 
 		/*<div class="shop-query">',
