@@ -152,9 +152,13 @@
 						params = $XP(cfg, 'params', {}),
 						settleUnitID = self.get('settleUnitID'),
 						failFn = $XF(cfg, 'failFn'),
-						successFn = $XF(cfg, 'successFn');
+						successFn = $XF(cfg, 'successFn'),
+						poundageAmount = self.get('poundageAmount') || 0,
+						poundageMinAmount = self.get('poundageMinAmount') || 0;
 					callServer(IX.inherit(params, {
-						settleUnitID : settleUnitID
+						settleUnitID : settleUnitID,
+						poundageAmount : poundageAmount,
+						poundageMinAmount : poundageMinAmount
 					}), function (res) {
 						if (res.resultcode !== '000') {
 							toptip({

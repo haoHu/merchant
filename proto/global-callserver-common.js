@@ -229,7 +229,7 @@
 
 	/**
 	 * 提现操作
-	 * @param  {Object} params 参数{}
+	 * @param  {Object} params 参数{settleUnitID,transAmount,poundageAmount,poundageMinAmount}
 	 * @param  {Function} cbFn   回调函数{resultcode, resultmsg, data}
 	 * @return {NULL}
 	 */

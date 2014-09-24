@@ -146,6 +146,9 @@
 	Hualala.Global.addAccount = function (params, cbFn) {
 		Hualala.Global.commonCallServer("addAccount", params, cbFn);
 	};
+	Hualala.Global.editAccount = function (params, cbFn) {
+		Hualala.Global.commonCallServer("editAccount", params, cbFn);
+	};
 	Hualala.Global.getAccountQueryShop = function (params, cbFn) {
 		Hualala.Global.commonCallServer("getAccountQueryShop", params, cbFn);
 	};
