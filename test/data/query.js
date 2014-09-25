@@ -62,7 +62,7 @@
 			"description": "",
 			"reserveTableInfo": ""
 		};
-	var cityIDs = [1010,1021,1031,1041],
+	var cityIDs = [1010,1021,1031,1041,1051,1061,1071,1081,1091,1110],
 		areaIDs = [10000,20000,30000,40000],
 		shopIDs = [75810,75811,75812,75813,75814,75815];
 	var mapData = function () {

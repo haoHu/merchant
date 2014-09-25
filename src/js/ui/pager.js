@@ -65,7 +65,7 @@
 				var d = page <= vis ? -settings.maxVisible : 0;
 				$pages.not('.next, .prev').each(function (index) {
 					pg = index + 1 + vis + d;
-					$(this).attr('data-pg', pg).toogle(pg <= settings.total)
+					$(this).attr('data-pg', pg).toggle(pg <= settings.total)
 						.find('a').html(pg).attr('href', genHref(pg));
 				});
 				$curPage = $pages.filter('[data-pg=' + page + ']');
