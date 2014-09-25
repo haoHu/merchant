@@ -123,7 +123,7 @@
 		["queryOrderDayDetail", "/shop/queryDayOfReconciliation.ajax", "", "POST"],
 		["queryOrderDuringDetail", "/shop/queryDuringTheBill.ajax", "", "POST"],
 		["queryOrderDishesHot", "/shop/foodStatistic.ajax", "", "POST"],
-		["queryUserOrderStatistic", "/shop/UserOrderStatistic.ajax", "", "POST"],
+		["queryUserOrderStatistic", "/shop/UserOrderStatistic.ajax", "", "POST"]
 
 	]);
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([
