@@ -61,9 +61,9 @@
 				.find('a').attr('href', genHref(pg));
 
 			var $curPage = $pages.filter('[data-pg=' + page + ']');
-			if (!$curPage.not('.next, .prev').length) {
+			if (!$curPage.not('.ix-pager-next, .ix-pager-prev').length) {
 				var d = page <= vis ? -settings.maxVisible : 0;
-				$pages.not('.next, .prev').each(function (index) {
+				$pages.not('.ix-pager-next, .ix-pager-prev').each(function (index) {
 					pg = index + 1 + vis + d;
 					$(this).attr('data-pg', pg).toggle(pg <= settings.total)
 						.find('a').html(pg).attr('href', genHref(pg));
@@ -84,7 +84,7 @@
 				htm.push('<li data-pg="' + c + '"><a href="' + genHref(c) + '">' + c + '</a></li>');
 			}
 			if (settings.total == 0) {
-				htm.push('<li data-pg="' + 1 + '"><a href="' + genHref(c) + '">' + 1 + '</a></li>');
+				htm.push('<li data-pg="' + 1 + '" class="disabled"><a href="' + genHref(c) + '">' + 1 + '</a></li>');
 			}
 			if (settings.next) {
 				pg = settings.leaps && settings.total > settings.maxVisible 
