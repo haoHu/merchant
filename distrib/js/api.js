@@ -86,7 +86,7 @@
 		["genAuthCode", "/getCheckCode.ajax", "", "GET"],
 		["loginCallServer", "/login.ajax", "", "POST"],
 		/*Session Data*/
-		["loadAppData", "/getUserInfo.ajax", "", "GET"],
+		["loadAppData", "/getUserInfo.ajax", "", "POST"],
 		/*Shop Moudle and Shop Setting Moudle*/
         ["getCities", "/shop/queryCity.ajax", "", "POST"],
         ["getAreas", "/shop/queryArea.ajax", "", "POST"],
