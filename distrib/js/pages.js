@@ -4672,7 +4672,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			this.$resultBox = this.$container.find('.query-result');
 			this.$pager = this.$container.find('.page-selection');
 			this.render();
-			this.initPager();
+			// this.initPager();
 			this.initQueryEls();
 			this.bindEvent();
 			this.bindQueryEvent();
@@ -4839,7 +4839,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 					case 'rowControl':
 						var transType = $XP(row, 'transType', ''),
 							transStatus = $XP(row, 'transStatus', '');
-						var hideBtnTransType = "104,199,202,204,205,206,299";
+						var hideBtnTransType = "104,199,202,203,204,205,206,299";
 						r = {
 							type : 'button',
 							btnClz : (hideBtnTransType.indexOf(transType) >= 0 || (transType == "203" && transStatus < 1)) ? 'hidden' : '',
