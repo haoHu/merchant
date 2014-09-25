@@ -6,8 +6,12 @@
 		var $body = $('#ix_wrapper > .ix-body > .container');
 		$body.empty();
 		var mapNavRenderData = function () {
+			var curDateStamp = IX.Date.getDateByFormat(new Hualala.Date((new Date()).getTime() / 1000).toText(), 'yyyyMMdd');
 			var navs = _.map(Hualala.TypeDef.OrderSubNavType, function (v, i, list) {
 				var params = _.map($XP(v, 'pkeys', []), function (v) {
+					if (v == 'startDate' || v == 'endDate') {
+						return curDateStamp;
+					}
 					return '';
 				});
 
