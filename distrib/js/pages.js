@@ -1324,10 +1324,39 @@
 				return $XP(m, 'label', '');
 			};
 			switch(businessID) {
+				// 常规预定点菜
+				case 10:
+					tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_commonreserve_desc'));
+					renderKeys = 'advanceTime,noticeTime,minAmount,reserveTableTime,reserveTableDesc,payMethod'.split(',');
+					params = _.map(renderKeys, function (k) {
+						var r = $XP(businessInfo, k, '');
+						switch(k) {
+							case "advanceTime":
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
+								break;
+							case "noticeTime":
+								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
+								break;
+							case "minAmount":
+								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + Hualala.Constants.CashUnit + ', ');
+								break;
+							case "reserveTableTime":
+								r = IX.isEmpty(r) || r == 0 ? '' : ('留位' + getMinutIntervalLabel(r) + ', ');
+								break;
+							case "reserveTableDesc":
+								r = IX.isEmpty(r) ? '' : r + ',';
+								break;
+							case "payMethod":
+								r = (r == 0 ? '仅支持在线支付' : (r == 1 ? '仅支持线下支付' : '线上及线下支付均支持')) + ', ';
+								break;
+						}
+						return r;
+					});
+					break;
 				// 闪吃描述
 				case 11:
 					tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_justeat_desc'));
-					renderKeys = 'servicePeriods,holidayFlag,minAmount,advanceTime,noticeTime,reserveTableTime,reserveTableDesc'.split(',');
+					renderKeys = 'servicePeriods,holidayFlag,minAmount,advanceTime,noticeTime,reserveTableTime,reserveTableDesc,payMethod'.split(',');
 					params = _.map(renderKeys, function (k) {
 						var r = $XP(businessInfo, k, '');
 						switch(k) {
@@ -1351,6 +1380,9 @@
 								break;
 							case "reserveTableDesc" : 
 								r = IX.isEmpty(r) ? '' : r + ',';
+								break;
+							case "payMethod":
+								r = (r == 0 ? '仅支持在线支付' : (r == 1 ? '仅支持线下支付' : '线上及线下支付均支持')) + ', ';
 								break;
 						}
 						return r;
@@ -1390,7 +1422,7 @@
 					});
 					break;
 			}
-			if (businessID == 11 || businessID == 41) {
+			if (businessID == 11 || businessID == 41 || businessID == 10) {
 				htm = tpl(_.object(renderKeys, params));
 				htm = htm.slice(0, htm.lastIndexOf(','));
 			}
@@ -4263,13 +4295,15 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				var settleUnitID = $XP(account, 'settleUnitID'),
 					hasDefault = $XP(account, 'defaultAccount', 0) == 0 ? false : true,
 					bankInfo = Hualala.Common.mapBankInfo($XP(account, 'bankCode')),
-					bankAccountStr = Hualala.Common.codeMask($XP(account, 'bankAccount', ''), 0, -4);
+					bankAccountStr = Hualala.Common.codeMask($XP(account, 'bankAccount', ''), 0, -4),
+					settleBalance = parseFloat($XP(account, 'settleBalance', 0));
 
 				return {
 					settleUnitID : settleUnitID,
 					hasDefault : hasDefault,
 					settleUnitName : $XP(account, 'settleUnitName', ''),
-					settleBalance : parseFloat($XP(account, 'settleBalance', 0)),
+					disableWithdraw : settleBalance <= 0 ? 'disabled' : '',
+					settleBalance : settleBalance,
 					bankIcon : $XP(bankInfo, 'icon_16', ''),
 					bankComName : $XP(bankInfo, 'name', ''),
 					bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
@@ -5456,14 +5490,17 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			var settleUnitID = model.get('settleUnitID') || '',
 				hasDefault = model.get('defaultAccount') == 0 ? false : true,
 				bankInfo = Hualala.Common.mapBankInfo(model.get('bankCode')),
-				bankAccountStr = Hualala.Common.codeMask((model.get('bankAccount') || ''), 0, -4);
+				bankAccountStr = Hualala.Common.codeMask((model.get('bankAccount') || ''), 0, -4),
+				settleBalance = parseFloat(model.get('settleBalance') || 0),
+				disableWithdraw = settleBalance <= 0 ? 'disabled' : '';
 
 			accountCard = {
 				clz : 'pull-left',
 				settleUnitID : settleUnitID,
 				hasDefault : hasDefault,
 				settleUnitName : model.get('settleUnitName') || '',
-				settleBalance : parseFloat(model.get('settleBalance') || 0),
+				disableWithdraw : disableWithdraw,
+				settleBalance : settleBalance,
 				bankIcon : $XP(bankInfo, 'icon_16', ''),
 				bankComName : $XP(bankInfo, 'name', ''),
 				bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
@@ -5482,6 +5519,10 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 					if ($XP(el, 'act') == 'queryShops') {
 						return IX.inherit(el, {
 							label : $XP(el, 'label', '') + '(' + parseInt(model.get('shopCount') || 0) + ')'
+						});
+					} else if ($XP(el, 'act') == 'withdraw') {
+						return IX.inherit(el, {
+							disableWithdraw : disableWithdraw
 						});
 					}
 					return el;
@@ -5534,16 +5575,16 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 		},
 		settleUnitName : {
 			type : "text",
-			label : "结算主体名称",
+			label : "结算账户名称",
 			defaultVal : "",
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "结算主体名称不能为空"
+						message : "结算账户名称不能为空"
 					},
 					stringLength : {
 						max : 50,
-						message : "结算主体名称不能超过50个字"
+						message : "结算账户名称不能超过50个字"
 					}
 				}
 			}
@@ -5609,7 +5650,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 		},
 		defaultAccount : {
 			type : "switcher",
-			label : "设为默认账户",
+			label : "默认账户",
 			defaultVal : 1,
 			onLabel : "开启",
 			offLabel : "关闭",
@@ -5712,7 +5753,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			this.model = $XP(cfg, 'model', null) || new Hualala.Account.BaseAccountModel();
 			this.parentView = $XP(cfg, 'parentView', null);
 			this.modal = null;
-			this.formKeys = 'receiverType,receiverName,settleUnitName,bankAccount,bankCode,bankName,remark,defaultAccount,receiverLinkman,receiverMobile,receiverEmail'.split(',');
+			this.formKeys = 'settleUnitName,receiverType,receiverName,bankAccount,bankCode,bankName,remark,defaultAccount,receiverLinkman,receiverMobile,receiverEmail'.split(',');
 			this.loadTemplates();
 			this.initModal();
 			this.renderForm();

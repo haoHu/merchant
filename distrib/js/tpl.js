@@ -1291,6 +1291,17 @@
 		'{{/if}}'
 	].join('');
 	TplLib.register('tpl_shop_spotorder_desc', tpl_shop_spotorder_desc);
+
+	// tpl_shop_commonreserve_desc
+	var tpl_shop_commonreserve_desc = [
+		'{{{advanceTime}}}',
+		'{{{noticeTime}}}',
+		'{{{minAmount}}}',
+		'{{{reserveTableTime}}}',
+		'{{{reserveTableDesc}}}',
+		'{{{payMethod}}}'
+	].join('');
+	TplLib.register('tpl_shop_commonreserve_desc', tpl_shop_commonreserve_desc);
 })(jQuery, window);;(function ($, window) {
 	IX.ns("Hualala");
 	var TplLib = Hualala.TplLib;
@@ -1314,7 +1325,7 @@
 					'{{/if}}',
 					'<span class="account-name" title="{{settleUnitName}}">{{settleUnitName}}</span>',
 				'</h4>',
-				'<a href="javascript:void(0);" class="btn btn-success withdraw">提现</a>',
+				'<a href="javascript:void(0);" class="btn btn-success withdraw {{disableWithdraw}}">提现</a>',
 			'</div>',
 			'<div class="panel-body ix-card-body">',
 				'<div class="cash">',
@@ -1335,7 +1346,7 @@
 					'<div class="btn-group pull-right visible-xs-inline-block">',
 						'{{#each acts}}',
 							'{{#if isFirst}}',
-								'<button type="button" class="btn btn-info" data-act="{{act}}">{{label}}</button>',
+								'<button type="button" class="btn btn-info {{disableWithdraw}}" data-act="{{act}}">{{label}}</button>',
 								'<button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">',
 									'<span class="caret"></span>',
 									'<span class="sr-only">Toggle Dropdown</span>',
@@ -1439,7 +1450,7 @@
 			'<div class="account-btns hidden-xs">',
 				'<ul class="nav nav-pills pull-right" role="tablist">',
 					'{{#each acts}}',
-						'<li role="presentation"><a href="javascript:void(0);" class="btn {{clz}}" data-act="{{act}}">{{label}}</a></li>',
+						'<li role="presentation"><a href="javascript:void(0);" class="btn {{clz}} {{disableWithdraw}}" data-act="{{act}}">{{label}}</a></li>',
 					'{{/each}}',
 				'</ul>',
 			'</div>',
