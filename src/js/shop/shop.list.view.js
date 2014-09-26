@@ -262,10 +262,39 @@
 				return $XP(m, 'label', '');
 			};
 			switch(businessID) {
+				// 常规预定点菜
+				case 10:
+					tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_commonreserve_desc'));
+					renderKeys = 'advanceTime,noticeTime,minAmount,reserveTableTime,reserveTableDesc,payMethod'.split(',');
+					params = _.map(renderKeys, function (k) {
+						var r = $XP(businessInfo, k, '');
+						switch(k) {
+							case "advanceTime":
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
+								break;
+							case "noticeTime":
+								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
+								break;
+							case "minAmount":
+								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + Hualala.Constants.CashUnit + ', ');
+								break;
+							case "reserveTableTime":
+								r = IX.isEmpty(r) || r == 0 ? '' : ('留位' + getMinutIntervalLabel(r) + ', ');
+								break;
+							case "reserveTableDesc":
+								r = IX.isEmpty(r) ? '' : r + ',';
+								break;
+							case "payMethod":
+								r = (r == 0 ? '仅支持在线支付' : (r == 1 ? '仅支持线下支付' : '线上及线下支付均支持')) + ', ';
+								break;
+						}
+						return r;
+					});
+					break;
 				// 闪吃描述
 				case 11:
 					tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_justeat_desc'));
-					renderKeys = 'servicePeriods,holidayFlag,minAmount,advanceTime,noticeTime,reserveTableTime,reserveTableDesc'.split(',');
+					renderKeys = 'servicePeriods,holidayFlag,minAmount,advanceTime,noticeTime,reserveTableTime,reserveTableDesc,payMethod'.split(',');
 					params = _.map(renderKeys, function (k) {
 						var r = $XP(businessInfo, k, '');
 						switch(k) {
@@ -289,6 +318,9 @@
 								break;
 							case "reserveTableDesc" : 
 								r = IX.isEmpty(r) ? '' : r + ',';
+								break;
+							case "payMethod":
+								r = (r == 0 ? '仅支持在线支付' : (r == 1 ? '仅支持线下支付' : '线上及线下支付均支持')) + ', ';
 								break;
 						}
 						return r;
@@ -328,7 +360,7 @@
 					});
 					break;
 			}
-			if (businessID == 11 || businessID == 41) {
+			if (businessID == 11 || businessID == 41 || businessID == 10) {
 				htm = tpl(_.object(renderKeys, params));
 				htm = htm.slice(0, htm.lastIndexOf(','));
 			}

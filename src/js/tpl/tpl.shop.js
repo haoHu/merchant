@@ -889,4 +889,15 @@
 		'{{/if}}'
 	].join('');
 	TplLib.register('tpl_shop_spotorder_desc', tpl_shop_spotorder_desc);
+
+	// tpl_shop_commonreserve_desc
+	var tpl_shop_commonreserve_desc = [
+		'{{{advanceTime}}}',
+		'{{{noticeTime}}}',
+		'{{{minAmount}}}',
+		'{{{reserveTableTime}}}',
+		'{{{reserveTableDesc}}}',
+		'{{{payMethod}}}'
+	].join('');
+	TplLib.register('tpl_shop_commonreserve_desc', tpl_shop_commonreserve_desc);
 })(jQuery, window);
