@@ -691,10 +691,12 @@ window.log = ("IXDEBUG" in window)? function(s){
 // Debug 当IXDEBUG为true时，可以进入Debug模式
 IX.Debug = (function () {
 	return {
-		info : ("IXDEBUG" in window) ? function (s) {
-			if (console)
-					console.log(s);
-		} : IX.emptyFn
+		info : function (s) {
+			var fn = !console ? IX.emptyFn : console.log;
+			if ("IXDEBUG" in window && window.IXDEBUG === true) {
+				fn(s);
+			}
+		}
 	};
 })();
 
