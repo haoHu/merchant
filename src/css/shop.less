@@ -271,7 +271,7 @@ form.edit-mode, .form.edit-mode
     #foodSearchInfo { margin-bottom: 12px }
     .tbl-foods
     {
-        width: 100%; min-width: 960px;
+        width: 100%; min-width: 960px; margin-bottom: 50px;
         border: 1px solid #ddd; border-radius: 4px 4px 0 0;
         thead
         {
@@ -320,11 +320,9 @@ form.edit-mode, .form.edit-mode
         b { color: @x-base-font-color }
         
         i { text-decoration: line-through; }
-        .ico-ok:before { content: '\2714'; }
-        .ico-no:before { content: '—'; }
-        .ico-ok, .ico-no { font-size: 18px; font-weight: bold; }
-        .ico-ok { color: #390 }
-        .ico-no { color: @x-font-color-lightGray }
+        .glyphicon-ok, .glyphicon-minus { font-size: 18px; }
+        .glyphicon-ok { color: #390 }
+        .glyphicon-minus { color: @x-font-color-lightGray }
     }
 }
 #editFood

@@ -1,15 +1,14 @@
 (function ($, window) {
 IX.ns('Hualala.Shop');
 
-// 初始化店铺店铺菜品页面
+// 初始化店铺菜品页面
 Hualala.Shop.initMenu = function ($container, pageType, params)
 {
     if(!params) return;
     
     var G = Hualala.Global,
         U = Hualala.UI,
-        topTip = U.TopTip,
-        parseForm = Hualala.Common.parseForm;
+        topTip = U.TopTip;
     
     var shopID = params;
         imgHost = G.IMAGE_RESOURCE_DOMAIN + '/',
@@ -18,11 +17,14 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
     var classifiedFoods = null, //已分类菜品
         foodClass = '', //当菜菜品类别的 foodCategoryID
         foods = null, //当前表格显示的菜品数组
+        current = 0, //页面滚动时渲染foods所在的索引
+        size = 10, // 首次或者滚动加载的food数量
         searchParams = null, //菜品搜索过滤参数
         //修改菜品弹出框里几个 radio 的名称
         foodParams = ['hotTag', 'takeawayTag', 'isDiscount'],
-        food = null, // 当前菜品
+        food = null, //当前菜品
         ef = null; //修改菜品后用于向服务器发送的数据
+        
     //单个菜品模板（菜品表格中的一行）
     var foodTpl = Handlebars.compile(Hualala.TplLib.get('tpl_food')),
         //修改菜品弹出框模板
@@ -62,6 +64,22 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         $foodClass = $foodClassBox.find('span');
         $menu.appendTo($container);
     });
+    //页面滚动时加载更多菜品
+    $(window).on('scroll', function(e)
+    {
+        throttle(scrollFood);
+    });
+    
+    function scrollFood()
+    {
+        var viewBottom = $(window).scrollTop() + $(window).height(),
+            foodsBottom = $foods.offset().top + $foods.height();
+        
+        if(foodsBottom < viewBottom && current < foods.length)
+        {
+            renderFoods();
+        }
+    }
     
     $(document).on('change', function(e)
     {
@@ -97,7 +115,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             var reader = new FileReader();  
             reader.onload = function(e){
                 $img.attr('src', e.target.result);
-            }    
+            }
             reader.readAsDataURL(fileInput.files[0]);  
         }
     }
@@ -199,7 +217,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                 $.extend(food, ef);
                 food.foodIsActive = food.isActive;
                 updateFood(food);
-                renderFoods();
+                $foods.empty();
+                renderFoods(true);
             });
         }
         //点击某个菜品类别渲染对应菜品
@@ -212,6 +231,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             $foodName.val('');
             $chekbox.prop('checked', false);
             searchParams = null;
+            current = 0;
             renderFoods();
         }
         //搜索过滤菜品
@@ -244,16 +264,19 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                 else
                     searchParams[this.id] = '1';
             });
+            current = 0;
             renderFoods();
         }
     }
     
     //渲染菜品
-    function renderFoods()
+    function renderFoods(start)
     {
         foods = filterFoods();
         $foodCount.text(foods.length);
-        $foods.html(foodTpl({foods: foods}));
+        if(current == 0) $foods.empty();
+        $foods.append(foodTpl({foods: foods.slice(start ? 0 : current, current + size)}));
+        current += size;
         $foods.find('img').lazyload();
     }
     //在某个菜品分类下根据foodID查找某个菜品
@@ -357,9 +380,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         else
             food.imgSrc = imgRoot + 'dino80.png';
         
-        food.discountIco = food.isDiscount == 1 ? 'ico-ok' : 'ico-no';
-        food.takeawayIco = food.takeawayTag > 0 ? 'ico-ok' : 'ico-no';
-        food.activeIco = food.foodIsActive == 1 ? 'ico-ok' : 'ico-no';
+        food.discountIco = food.isDiscount == 1 ? 'glyphicon-ok' : 'glyphicon-minus';
+        food.takeawayIco = food.takeawayTag > 0 ? 'glyphicon-ok' : 'glyphicon-minus';
+        food.activeIco = food.foodIsActive == 1 ? 'glyphicon-ok' : 'glyphicon-minus';
     }
     
     //根据对象的一个属性检查某个对象是否在一个对象数组中
@@ -372,6 +395,15 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         return -1;
     }
     
+}
+//将频繁执行的代码延迟执行以提高性能
+function throttle(method, context)
+{
+    clearTimeout(method.tId);
+    method.tId = setTimeout(function()
+    {
+        method.call(context);
+    }, 100);
 }
 
 })(jQuery, window);
