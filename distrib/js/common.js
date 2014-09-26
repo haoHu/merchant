@@ -1321,9 +1321,8 @@ window.log = ("IXDEBUG" in window)? function(s){
 IX.Debug = (function () {
 	return {
 		info : function (s) {
-			var fn = !console ? IX.emptyFn : console.log;
-			if ("IXDEBUG" in window && window.IXDEBUG === true) {
-				fn(s);
+			if ("IXDEBUG" in window && window.IXDEBUG === true && console) {
+				console.log(s);
 			}
 		}
 	};
