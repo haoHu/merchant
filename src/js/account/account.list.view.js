@@ -586,7 +586,8 @@
 				}
 				ret[k] = v;
 			});
-			console.info(ret);
+			IX.Debug.info("DEBUG: Account TransList View Query Form Params : ");
+			IX.Debug.info(ret);
 			return ret;
 		},
 		mapTimeData : function (s) {

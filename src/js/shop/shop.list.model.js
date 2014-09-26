@@ -120,8 +120,8 @@
 			var ret = _.map(shopHT.getByKeys(pageHT.get(pageNo)), function (mShop, i, l) {
 				return mShop.getAll();
 			});
-			console.info("pageData:");
-			console.info(ret);
+			IX.Debug.info("DEBUG: Shop Card List Model PageData : ");
+			IX.Debug.info(ret);
 			return ret;
 		},
 		getShopModelByShopID : function (shopID) {
@@ -176,7 +176,7 @@
 			var self = this,
 				shopID = self.get('shopID');
 			self.set('status', status);
-			console.info("Switch Shop [" + self.get('shopID') + "] status " + status);
+			IX.Debug.info("DEBUG: Base Shop Model [" + self.get('shopID') + "] Status :" + status);
 			this.switchShopStatusCallServer({
 				shopID : shopID,
 				status : status
@@ -218,7 +218,7 @@
 				self.set('serviceFeatures', serviceFeatures.join(','));
 			};
 			setServiceFeature(name, status);
-			console.info("Switch Shop [" + self.get('shopID') + "] ServiceFeature: " + self.get('serviceFeatures'));
+			IX.Debug.info("DEBUG: Switch Shop [" + self.get('shopID') + "] ServiceFeature: " + self.get('serviceFeatures'));
 			this.switchShopBusinessStatusCallServer({
 				shopID : shopID,
 				serviceFeatures : name,

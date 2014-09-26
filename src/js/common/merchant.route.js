@@ -307,9 +307,8 @@
 			var re = $XP(route, 'reg'), initFn = $XF(route, 'init'), handler = null;
 			
 			handler = function (params) {
-				console.info("INFO: Init Page :" + name);
-				console.info("Load Page :" + name);
-				console.info("arguments is :" + params);
+				IX.Debug.info("INFO: Init Page : [" + name + "]");
+				IX.Debug.info("INFO: Page Arguments : [" + params + "]");
 				IX.isFn(cbFn) && cbFn(name, params, initFn);
 				
 				// initFn && initFn.apply(null, [name, params]);

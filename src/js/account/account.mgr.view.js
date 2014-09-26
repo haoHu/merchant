@@ -131,7 +131,6 @@
 			});
 		},
 		editAccount : function ($trigger) {
-			console.info('editAccount');
 			// triggerEl, mode, model, parentView
 			var editAccount = new AccountEditView({
 				triggerEl : $trigger,
@@ -142,7 +141,6 @@
 		},
 		withdraw : function ($trigger) {
 			var self = this;
-			// console.info('withdraw');
 			// 提现操作
 			var modal = new Hualala.Account.WithdrawCashView({
 				triggerEl : $trigger,
@@ -159,10 +157,8 @@
 				model : self.model,
 				parentView : self
 			});
-			console.info('queryShops');
 		},
 		deleteAccount : function () {
-			// console.info('deleteAccount');
 			var self = this;
 			Hualala.UI.Confirm({
 				title : '删除结算账户',
@@ -598,7 +594,8 @@
 				var $form = $(e.target),
 					bv = $form.data('bootstrapValidator');
 				var formParams = self.serializeForm();
-				console.info(formParams);
+				IX.Debug.info("DEBUG: Account Edit View Form Params : ");
+				IX.Debug.info(formParams);
 				self.model.emit(self.mode, {
 					params : formParams,
 					failFn : function () {
@@ -1093,7 +1090,8 @@
 				// return mapFn(cfg, $XP(data, 'data', {}));
 				return mapFn(cfg, data);
 			});
-			console.info(fieldsets);
+			IX.Debug.info("DEBUG: Account TransDetail Modal Order Pay Detail Fieldsets : ");
+			IX.Debug.info(fieldsets);
 			var orderSubType = $XP(data, 'data.orderSubType', ''),
 				orderSubTypeLabel = getOrderSubTypeLabel(orderSubType);
 			orderSubTypeLabel = IX.isEmpty(orderSubTypeLabel) ? '' : '(' + orderSubTypeLabel + ')';
@@ -1181,8 +1179,8 @@
 				var _k = k == 'SUA_TransItemID' ? 'transID' : k;
 				params[k] = self[_k]; 
 			});
-			console.info('queryParams:');
-			console.info(params);
+			IX.Debug.info('DEBUG: Account TransDetail Modal Query Params:');
+			IX.Debug.info(params);
 			return params;
 		}
 	});

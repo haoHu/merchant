@@ -41,8 +41,8 @@
 				return self.get(k);
 			});
 			var params = _.object(self.queryKeys, vals);
-			console.info("Order Query Params is :");
-			console.info(params);
+			IX.Debug.info("DEBUG: Order Query Model Query Params :");
+			IX.Debug.info(params);
 			return params;
 		}
 	});

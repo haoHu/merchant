@@ -51,8 +51,8 @@
 				},
 				query : function (params) {
 					var self = this;
-					console.info('query params:');
-					console.info(params);
+					IX.Debug.info("DEBUG: Shop Query Controller Query Params : ");
+					IX.Debug.info(params);
 					self.resultController && self.resultController.emit('load', IX.inherit(params, {
 						pageNo : 1,
 						pageSize : 15

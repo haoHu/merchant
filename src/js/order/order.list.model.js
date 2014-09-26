@@ -116,8 +116,8 @@
 			var ret = _.map(recordHT.getByKeys(pageHT.get(pageNo)), function (mRecord, i, l) {
 				return mRecord.getAll();
 			});
-			console.info("pageData");
-			console.info(ret);
+			IX.Debug.info("DEBUG: Order Query Result Model PageData");
+			IX.Debug.info(ret);
 			return ret;
 		},
 		getRecordModelByID : function (id) {

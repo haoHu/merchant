@@ -41,8 +41,8 @@
 				query : function (params) {
 					var self = this;
 					var cities = self.model.getCities();
-					console.info('query params:');
-					console.info(params);
+					IX.Debug.info('DEBUG: Order Query Controller Query Params:');
+					IX.Debug.info(params);
 					self.resultController && self.resultController.emit('load', {
 						params : IX.inherit(params, {
 							pageNo : 1,

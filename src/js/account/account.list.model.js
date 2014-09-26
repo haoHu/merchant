@@ -104,8 +104,8 @@
 			var ret = _.map(accountHT.getByKeys(pageHT.get(pageNo)), function (mAccount) {
 				return mAccount.getAll();
 			});
-			console.info("pageData :");
-			console.info(ret);
+			IX.Debug.info("DEBUG: Account List Model PageData :");
+			IX.Debug.info(ret);
 			return ret;
 		},
 		getAccountModelByID : function (accountID) {
@@ -333,8 +333,8 @@
 			var ret = _.map(transHT.getByKeys(pageHT.get(pageNo)), function (mTrans) {
 				return mTrans.getAll();
 			});
-			console.info("pageData :");
-			console.info(ret);
+			IX.Debug.info("DEBUG: Account TransList Model PageData :");
+			IX.Debug.info(ret);
 			return ret;
 		},
 		getModelByID : function (transID) {

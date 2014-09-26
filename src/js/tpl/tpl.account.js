@@ -360,7 +360,7 @@
 
 	var tpl_orderpay_detail = [
 		'<div class="row order-detail">',
-			'<div class="col-xs-7 col-sm-7 col-md-8 col-lg-9">',
+			'<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">',
 				'{{#each fieldsets}}',
 					'{{log label}}',
 					'{{#chkFieldType fieldType type="list"}}',
@@ -413,14 +413,15 @@
 					'{{/chkFieldType}}',
 				'{{/each}}',
 			'</div>',
-			'<div class="col-xs-5 col-sm-5 col-md-4 col-lg-3">',
-				'{{#with printDetail}}',
-					'<h5>{{label}}{{{orderSubTypeLabel}}}</h5>',
-					'<p>',
-						'{{{content}}}',
-					'</p>',
-				'{{/with}}',
-			'</div>',
+			// Modify: 根据最新指示，订单打印内容屏蔽掉
+			// '<div class="col-xs-5 col-sm-5 col-md-4 col-lg-3">',
+			// 	'{{#with printDetail}}',
+			// 		'<h5>{{label}}{{{orderSubTypeLabel}}}</h5>',
+			// 		'<p>',
+			// 			'{{{content}}}',
+			// 		'</p>',
+			// 	'{{/with}}',
+			// '</div>',
 		'</div>'
 	].join('');
 	TplLib.register('tpl_orderpay_detail', tpl_orderpay_detail);

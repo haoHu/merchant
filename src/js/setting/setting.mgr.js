@@ -522,7 +522,8 @@
 				var $form = $(e.target),
 					bv = $form.data('bootstrapValidator');
 				var formParams = self.serializeForm();
-				console.info(formParams);
+				IX.Debug.info("DEBUG: Shop Business Service Edit View Form Params : ");
+				IX.Debug.info(formParams);
 				self.model.emit('setServiceParams', {
 					callServer : self.callServer,
 					params : formParams,
@@ -585,7 +586,8 @@
 						});
 					}
 				});
-			console.info(formEls);
+			IX.Debug.info("DEBUG: Shop Business Service Edit View Form Elements : ");
+			IX.Debug.info(formEls);
 			return formEls;
 		},
 		// 渲染表单

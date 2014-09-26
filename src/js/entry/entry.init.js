@@ -180,8 +180,8 @@
 					bv = $form.data('bootstrapValidator'),
 					params = getFormData();
 				// TODO AJAX Submit Login Form
-				console.info('login params : ');
-				console.info(params);
+				IX.Debug.info('INFO: Login Params : ');
+				IX.Debug.info(params);
 				
 				callServer(params, function (res) {
 					if (res.resultcode == 000) {
