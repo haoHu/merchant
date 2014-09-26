@@ -99,7 +99,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                 $img.attr('src', e.target.result);
             }    
             reader.readAsDataURL(fileInput.files[0]);  
-        }  
+        }
     }
     
     //修改菜品
@@ -217,26 +217,37 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         //搜索过滤菜品
         if($target.is('#btnSearchFood'))
         {
-            var $checked = $chekbox.filter(':checked'),
-                takeawayTag = $.trim($takeawayTag.val()),
-                foodName = $.trim($foodName.val());
-            if(takeawayTag || foodName || $checked.length)
-            {
-                searchParams = {};
-                if(takeawayTag) searchParams.takeawayTag = takeawayTag;
-                if(foodName) searchParams.foodName = foodName;
-                $checked.each(function ()
-                {
-                    if(this.id == 'isHasImage')
-                        searchParams.isHasImage = '0';
-                    else
-                        searchParams[this.id] = '1';
-                });
-                renderFoods();
-            }
+            searchFood();
         }
         
     });
+    
+    $foodName.on('keypress', function(e)
+    {
+        e.keyCode == 13 && searchFood();
+    });
+    
+    function searchFood()
+    {
+        var $checked = $chekbox.filter(':checked'),
+            takeawayTag = $.trim($takeawayTag.val()),
+            foodName = $.trim($foodName.val());
+        if(takeawayTag || foodName || $checked.length)
+        {
+            searchParams = {};
+            if(takeawayTag) searchParams.takeawayTag = takeawayTag;
+            if(foodName) searchParams.foodName = foodName;
+            $checked.each(function ()
+            {
+                if(this.id == 'isHasImage')
+                    searchParams.isHasImage = '0';
+                else
+                    searchParams[this.id] = '1';
+            });
+            renderFoods();
+        }
+    }
+    
     //渲染菜品
     function renderFoods()
     {
