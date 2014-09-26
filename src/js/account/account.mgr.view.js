@@ -267,16 +267,16 @@
 		},
 		settleUnitName : {
 			type : "text",
-			label : "结算主体名称",
+			label : "结算账户名称",
 			defaultVal : "",
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "结算主体名称不能为空"
+						message : "结算账户名称不能为空"
 					},
 					stringLength : {
 						max : 50,
-						message : "结算主体名称不能超过50个字"
+						message : "结算账户名称不能超过50个字"
 					}
 				}
 			}
@@ -342,7 +342,7 @@
 		},
 		defaultAccount : {
 			type : "switcher",
-			label : "设为默认账户",
+			label : "默认账户",
 			defaultVal : 1,
 			onLabel : "开启",
 			offLabel : "关闭",
@@ -445,7 +445,7 @@
 			this.model = $XP(cfg, 'model', null) || new Hualala.Account.BaseAccountModel();
 			this.parentView = $XP(cfg, 'parentView', null);
 			this.modal = null;
-			this.formKeys = 'receiverType,receiverName,settleUnitName,bankAccount,bankCode,bankName,remark,defaultAccount,receiverLinkman,receiverMobile,receiverEmail'.split(',');
+			this.formKeys = 'settleUnitName,receiverType,receiverName,bankAccount,bankCode,bankName,remark,defaultAccount,receiverLinkman,receiverMobile,receiverEmail'.split(',');
 			this.loadTemplates();
 			this.initModal();
 			this.renderForm();
