@@ -191,8 +191,8 @@
 					bv = $form.data('bootstrapValidator'),
 					params = getFormData();
 				// TODO AJAX Submit Login Form
-				console.info('login params : ');
-				console.info(params);
+				IX.Debug.info('INFO: Login Params : ');
+				IX.Debug.info(params);
 				
 				callServer(params, function (res) {
 					if (res.resultcode == 000) {
@@ -728,8 +728,8 @@
 				},
 				query : function (params) {
 					var self = this;
-					console.info('query params:');
-					console.info(params);
+					IX.Debug.info("DEBUG: Shop Query Controller Query Params : ");
+					IX.Debug.info(params);
 					self.resultController && self.resultController.emit('load', IX.inherit(params, {
 						pageNo : 1,
 						pageSize : 15
@@ -891,8 +891,8 @@
 			var ret = _.map(shopHT.getByKeys(pageHT.get(pageNo)), function (mShop, i, l) {
 				return mShop.getAll();
 			});
-			console.info("pageData:");
-			console.info(ret);
+			IX.Debug.info("DEBUG: Shop Card List Model PageData : ");
+			IX.Debug.info(ret);
 			return ret;
 		},
 		getShopModelByShopID : function (shopID) {
@@ -947,7 +947,7 @@
 			var self = this,
 				shopID = self.get('shopID');
 			self.set('status', status);
-			console.info("Switch Shop [" + self.get('shopID') + "] status " + status);
+			IX.Debug.info("DEBUG: Base Shop Model [" + self.get('shopID') + "] Status :" + status);
 			this.switchShopStatusCallServer({
 				shopID : shopID,
 				status : status
@@ -989,7 +989,7 @@
 				self.set('serviceFeatures', serviceFeatures.join(','));
 			};
 			setServiceFeature(name, status);
-			console.info("Switch Shop [" + self.get('shopID') + "] ServiceFeature: " + self.get('serviceFeatures'));
+			IX.Debug.info("DEBUG: Switch Shop [" + self.get('shopID') + "] ServiceFeature: " + self.get('serviceFeatures'));
 			this.switchShopBusinessStatusCallServer({
 				shopID : shopID,
 				serviceFeatures : name,
@@ -2323,15 +2323,14 @@ function getSelectText($select)
 ;(function ($, window) {
 IX.ns('Hualala.Shop');
 
-// 初始化店铺店铺菜品页面
+// 初始化店铺菜品页面
 Hualala.Shop.initMenu = function ($container, pageType, params)
 {
     if(!params) return;
     
     var G = Hualala.Global,
         U = Hualala.UI,
-        topTip = U.TopTip,
-        parseForm = Hualala.Common.parseForm;
+        topTip = U.TopTip;
     
     var shopID = params;
         imgHost = G.IMAGE_RESOURCE_DOMAIN + '/',
@@ -2340,11 +2339,14 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
     var classifiedFoods = null, //已分类菜品
         foodClass = '', //当菜菜品类别的 foodCategoryID
         foods = null, //当前表格显示的菜品数组
+        current = 0, //页面滚动时渲染foods所在的索引
+        size = 10, // 首次或者滚动加载的food数量
         searchParams = null, //菜品搜索过滤参数
         //修改菜品弹出框里几个 radio 的名称
         foodParams = ['hotTag', 'takeawayTag', 'isDiscount'],
-        food = null, // 当前菜品
+        food = null, //当前菜品
         ef = null; //修改菜品后用于向服务器发送的数据
+        
     //单个菜品模板（菜品表格中的一行）
     var foodTpl = Handlebars.compile(Hualala.TplLib.get('tpl_food')),
         //修改菜品弹出框模板
@@ -2384,6 +2386,22 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         $foodClass = $foodClassBox.find('span');
         $menu.appendTo($container);
     });
+    //页面滚动时加载更多菜品
+    $(window).on('scroll', function(e)
+    {
+        throttle(scrollFood);
+    });
+    
+    function scrollFood()
+    {
+        var viewBottom = $(window).scrollTop() + $(window).height(),
+            foodsBottom = $foods.offset().top + $foods.height();
+        
+        if(foodsBottom < viewBottom && current < foods.length)
+        {
+            renderFoods();
+        }
+    }
     
     $(document).on('change', function(e)
     {
@@ -2419,7 +2437,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             var reader = new FileReader();  
             reader.onload = function(e){
                 $img.attr('src', e.target.result);
-            }    
+            }
             reader.readAsDataURL(fileInput.files[0]);  
         }
     }
@@ -2521,7 +2539,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                 $.extend(food, ef);
                 food.foodIsActive = food.isActive;
                 updateFood(food);
-                renderFoods();
+                $foods.empty();
+                renderFoods(true);
             });
         }
         //点击某个菜品类别渲染对应菜品
@@ -2534,6 +2553,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             $foodName.val('');
             $chekbox.prop('checked', false);
             searchParams = null;
+            current = 0;
             renderFoods();
         }
         //搜索过滤菜品
@@ -2566,16 +2586,19 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                 else
                     searchParams[this.id] = '1';
             });
+            current = 0;
             renderFoods();
         }
     }
     
     //渲染菜品
-    function renderFoods()
+    function renderFoods(start)
     {
         foods = filterFoods();
         $foodCount.text(foods.length);
-        $foods.html(foodTpl({foods: foods}));
+        if(current == 0) $foods.empty();
+        $foods.append(foodTpl({foods: foods.slice(start ? 0 : current, current + size)}));
+        current += size;
         $foods.find('img').lazyload();
     }
     //在某个菜品分类下根据foodID查找某个菜品
@@ -2679,9 +2702,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         else
             food.imgSrc = imgRoot + 'dino80.png';
         
-        food.discountIco = food.isDiscount == 1 ? 'ico-ok' : 'ico-no';
-        food.takeawayIco = food.takeawayTag > 0 ? 'ico-ok' : 'ico-no';
-        food.activeIco = food.foodIsActive == 1 ? 'ico-ok' : 'ico-no';
+        food.discountIco = food.isDiscount == 1 ? 'glyphicon-ok' : 'glyphicon-minus';
+        food.takeawayIco = food.takeawayTag > 0 ? 'glyphicon-ok' : 'glyphicon-minus';
+        food.activeIco = food.foodIsActive == 1 ? 'glyphicon-ok' : 'glyphicon-minus';
     }
     
     //根据对象的一个属性检查某个对象是否在一个对象数组中
@@ -2694,6 +2717,15 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         return -1;
     }
     
+}
+//将频繁执行的代码延迟执行以提高性能
+function throttle(method, context)
+{
+    clearTimeout(method.tId);
+    method.tId = setTimeout(function()
+    {
+        method.call(context);
+    }, 100);
 }
 
 })(jQuery, window);
@@ -3633,7 +3665,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				var $form = $(e.target),
 					bv = $form.data('bootstrapValidator');
 				var formParams = self.serializeForm();
-				console.info(formParams);
+				IX.Debug.info("DEBUG: Shop Business Service Edit View Form Params : ");
+				IX.Debug.info(formParams);
 				self.model.emit('setServiceParams', {
 					callServer : self.callServer,
 					params : formParams,
@@ -3696,7 +3729,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 						});
 					}
 				});
-			console.info(formEls);
+			IX.Debug.info("DEBUG: Shop Business Service Edit View Form Elements : ");
+			IX.Debug.info(formEls);
 			return formEls;
 		},
 		// 渲染表单
@@ -3884,8 +3918,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			var ret = _.map(accountHT.getByKeys(pageHT.get(pageNo)), function (mAccount) {
 				return mAccount.getAll();
 			});
-			console.info("pageData :");
-			console.info(ret);
+			IX.Debug.info("DEBUG: Account List Model PageData :");
+			IX.Debug.info(ret);
 			return ret;
 		},
 		getAccountModelByID : function (accountID) {
@@ -4113,8 +4147,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			var ret = _.map(transHT.getByKeys(pageHT.get(pageNo)), function (mTrans) {
 				return mTrans.getAll();
 			});
-			console.info("pageData :");
-			console.info(ret);
+			IX.Debug.info("DEBUG: Account TransList Model PageData :");
+			IX.Debug.info(ret);
 			return ret;
 		},
 		getModelByID : function (transID) {
@@ -4807,7 +4841,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				}
 				ret[k] = v;
 			});
-			console.info(ret);
+			IX.Debug.info("DEBUG: Account TransList View Query Form Params : ");
+			IX.Debug.info(ret);
 			return ret;
 		},
 		mapTimeData : function (s) {
@@ -5074,8 +5109,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				},
 				query : function (params) {
 					var self = this;
-					console.info('query params:');
-					console.info(params);
+					IX.Debug.info('DEBUG: Account Query Shops Params:');
+					IX.Debug.info(params);
 					self.resultController && self.resultController.emit('load', IX.inherit(params, {
 						pageNo : 1,
 						pageSize : 15
@@ -5432,7 +5467,6 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			});
 		},
 		editAccount : function ($trigger) {
-			console.info('editAccount');
 			// triggerEl, mode, model, parentView
 			var editAccount = new AccountEditView({
 				triggerEl : $trigger,
@@ -5443,7 +5477,6 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 		},
 		withdraw : function ($trigger) {
 			var self = this;
-			// console.info('withdraw');
 			// 提现操作
 			var modal = new Hualala.Account.WithdrawCashView({
 				triggerEl : $trigger,
@@ -5460,10 +5493,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				model : self.model,
 				parentView : self
 			});
-			console.info('queryShops');
 		},
 		deleteAccount : function () {
-			// console.info('deleteAccount');
 			var self = this;
 			Hualala.UI.Confirm({
 				title : '删除结算账户',
@@ -5899,7 +5930,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				var $form = $(e.target),
 					bv = $form.data('bootstrapValidator');
 				var formParams = self.serializeForm();
-				console.info(formParams);
+				IX.Debug.info("DEBUG: Account Edit View Form Params : ");
+				IX.Debug.info(formParams);
 				self.model.emit(self.mode, {
 					params : formParams,
 					failFn : function () {
@@ -6394,7 +6426,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				// return mapFn(cfg, $XP(data, 'data', {}));
 				return mapFn(cfg, data);
 			});
-			console.info(fieldsets);
+			IX.Debug.info("DEBUG: Account TransDetail Modal Order Pay Detail Fieldsets : ");
+			IX.Debug.info(fieldsets);
 			var orderSubType = $XP(data, 'data.orderSubType', ''),
 				orderSubTypeLabel = getOrderSubTypeLabel(orderSubType);
 			orderSubTypeLabel = IX.isEmpty(orderSubTypeLabel) ? '' : '(' + orderSubTypeLabel + ')';
@@ -6482,8 +6515,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				var _k = k == 'SUA_TransItemID' ? 'transID' : k;
 				params[k] = self[_k]; 
 			});
-			console.info('queryParams:');
-			console.info(params);
+			IX.Debug.info('DEBUG: Account TransDetail Modal Query Params:');
+			IX.Debug.info(params);
 			return params;
 		}
 	});
@@ -6641,8 +6674,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			var ret = _.map(recordHT.getByKeys(pageHT.get(pageNo)), function (mRecord, i, l) {
 				return mRecord.getAll();
 			});
-			console.info("pageData");
-			console.info(ret);
+			IX.Debug.info("DEBUG: Order Query Result Model PageData");
+			IX.Debug.info(ret);
 			return ret;
 		},
 		getRecordModelByID : function (id) {
@@ -7320,8 +7353,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				return self.get(k);
 			});
 			var params = _.object(self.queryKeys, vals);
-			console.info("Order Query Params is :");
-			console.info(params);
+			IX.Debug.info("DEBUG: Order Query Model Query Params :");
+			IX.Debug.info(params);
 			return params;
 		}
 	});
@@ -7875,8 +7908,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 				query : function (params) {
 					var self = this;
 					var cities = self.model.getCities();
-					console.info('query params:');
-					console.info(params);
+					IX.Debug.info('DEBUG: Order Query Controller Query Params:');
+					IX.Debug.info(params);
 					self.resultController && self.resultController.emit('load', {
 						params : IX.inherit(params, {
 							pageNo : 1,
@@ -8754,9 +8787,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
 			var re = $XP(route, 'reg'), initFn = $XF(route, 'init'), handler = null;
 			
 			handler = function (params) {
-				console.info("INFO: Init Page :" + name);
-				console.info("Load Page :" + name);
-				console.info("arguments is :" + params);
+				IX.Debug.info("INFO: Init Page : [" + name + "]");
+				IX.Debug.info("INFO: Page Arguments : [" + params + "]");
 				IX.isFn(cbFn) && cbFn(name, params, initFn);
 				
 				// initFn && initFn.apply(null, [name, params]);

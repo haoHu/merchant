@@ -1317,6 +1317,16 @@ window.log = ("IXDEBUG" in window)? function(s){
 		console.log(s);
 } : IX.emptyFn;
 
+// Debug 当IXDEBUG为true时，可以进入Debug模式
+IX.Debug = (function () {
+	return {
+		info : ("IXDEBUG" in window) ? function (s) {
+			if (console)
+					console.log(s);
+		} : IX.emptyFn
+	};
+})();
+
 //////////////////////////////////////////////////// TEST-Utils finished////////
 
 /**
