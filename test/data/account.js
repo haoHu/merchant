@@ -40,13 +40,14 @@
 		var banks = Hualala.TypeDef.BankOptions;
 		for (var i = 0; i < total; i++) {
 			var bank = banks[Test.getRandom(0, banks.length - 1)];
+			var settleBalance = Test.getRandom(0, 10000) / 100
 			var account = IX.inherit(accountTpl, {
 					defaultAccount : Test.getRandom(0, 10) > 5 ? 1 : 0,
 					shopCount : Test.getRandom(0, 100),
 					settleUnitID : IX.UUID.generate(),
 					settleUnitName : $XP(accountTpl, 'settleUnitName') + Test.getRandom(0, 1000),
 					settleIncomTotal : Test.getRandom(0, 10000000) / 100,
-					settleBalance : Test.getRandom(0, 10000) / 100,
+					settleBalance : Test.getRandom(0, 10) < 5 ? (-1 * settleBalance) : settleBalance,
 					bankCode : bank['value'],
 					bankAccount : $XP(accountTpl, 'bankAccount').slice(0, -4) + Test.getRandom(0, 9000),
 					bankName : bank['label'] + $XP(accountTpl, 'bankName'),

@@ -162,6 +162,22 @@
 			resultmsg : "状态切换失败"
 		}));	
 	};
+
+	/**
+	 * 常规订座点菜业务配置参数
+	 * @param {Object} params 参数{shopID, orderType, strType, advanceTime, noticeTime, reserveTableTime,reserveTableDesc,minAmount,payMethod}
+	 * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	 */
+	Hualala.Global.CommonReserveParams = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var random = Test.getRandom(1, 10);
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(IX.inherit(res, {
+			// resultcode : random > 5 ? random * 100 : '000',
+			resultmsg : "参数配置失败"
+		}));
+	};
+
 	/**
 	 * 设置闪吃业务配置参数
 	 * @param {Object} params 参数 {shopID, orderType, strType, advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,openDays,servicePeriods,reserveTableTime,reserveTableDesc,submitSMSTemplateID,checkSMSTemplateID,payMethod,supportInvoice}

@@ -189,14 +189,17 @@
 			var settleUnitID = model.get('settleUnitID') || '',
 				hasDefault = model.get('defaultAccount') == 0 ? false : true,
 				bankInfo = Hualala.Common.mapBankInfo(model.get('bankCode')),
-				bankAccountStr = Hualala.Common.codeMask((model.get('bankAccount') || ''), 0, -4);
+				bankAccountStr = Hualala.Common.codeMask((model.get('bankAccount') || ''), 0, -4),
+				settleBalance = parseFloat(model.get('settleBalance') || 0),
+				disableWithdraw = settleBalance <= 0 ? 'disabled' : '';
 
 			accountCard = {
 				clz : 'pull-left',
 				settleUnitID : settleUnitID,
 				hasDefault : hasDefault,
 				settleUnitName : model.get('settleUnitName') || '',
-				settleBalance : parseFloat(model.get('settleBalance') || 0),
+				disableWithdraw : disableWithdraw,
+				settleBalance : settleBalance,
 				bankIcon : $XP(bankInfo, 'icon_16', ''),
 				bankComName : $XP(bankInfo, 'name', ''),
 				bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
@@ -215,6 +218,10 @@
 					if ($XP(el, 'act') == 'queryShops') {
 						return IX.inherit(el, {
 							label : $XP(el, 'label', '') + '(' + parseInt(model.get('shopCount') || 0) + ')'
+						});
+					} else if ($XP(el, 'act') == 'withdraw') {
+						return IX.inherit(el, {
+							disableWithdraw : disableWithdraw
 						});
 					}
 					return el;

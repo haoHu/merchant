@@ -74,13 +74,15 @@
 				var settleUnitID = $XP(account, 'settleUnitID'),
 					hasDefault = $XP(account, 'defaultAccount', 0) == 0 ? false : true,
 					bankInfo = Hualala.Common.mapBankInfo($XP(account, 'bankCode')),
-					bankAccountStr = Hualala.Common.codeMask($XP(account, 'bankAccount', ''), 0, -4);
+					bankAccountStr = Hualala.Common.codeMask($XP(account, 'bankAccount', ''), 0, -4),
+					settleBalance = parseFloat($XP(account, 'settleBalance', 0));
 
 				return {
 					settleUnitID : settleUnitID,
 					hasDefault : hasDefault,
 					settleUnitName : $XP(account, 'settleUnitName', ''),
-					settleBalance : parseFloat($XP(account, 'settleBalance', 0)),
+					disableWithdraw : settleBalance <= 0 ? 'disabled' : '',
+					settleBalance : settleBalance,
 					bankIcon : $XP(bankInfo, 'icon_16', ''),
 					bankComName : $XP(bankInfo, 'name', ''),
 					bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
