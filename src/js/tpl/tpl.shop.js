@@ -336,10 +336,10 @@
 				'<p><span>{{unit}}</span><em>{{vipPrice}}</em><b>{{prePrice}}</b><i>{{price}}</i></p>',
 			'{{/each}}',
 			'</td>',
-			'<td class="{{discountIco}}"></td>',
-			'<td class="{{takeawayIco}}"></td>',
+			'<td><span class="glyphicon {{discountIco}}"></span></td>',
+			'<td><span class="glyphicon {{takeawayIco}}"></span></td>',
 			'<td><b>{{takeoutPackagingFee}}</b></td>',
-			'<td class="{{activeIco}}"></td>',
+			'<td><span class="glyphicon {{activeIco}}"></span></td>',
 			'<td><span class="label label-default">修改</span></td>',
 		'</tr>',
 	'{{/each}}'].join('');
