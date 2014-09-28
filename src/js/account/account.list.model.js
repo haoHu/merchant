@@ -366,8 +366,8 @@
 			this.origShops = [];
 			// 数据是否已经加载完毕
 			this.isReady = false;
-			this.callServer = Hualala.Global.getShopQuerySchema;
-			// this.callServer = Hualala.Global.getAccountQueryShop;
+			// this.callServer = Hualala.Global.getShopQuerySchema;
+			this.callServer = Hualala.Global.getAccountQueryShop;
 		}
 	});
 
