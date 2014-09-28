@@ -2406,6 +2406,11 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
     $(document).on('change', function(e)
     {
         var $target = $(e.target);
+        //菜品过滤筛选
+        if($target.is('#foodSearch select, #foodSearch input[type=checkbox]'))
+        {
+            searchFood();
+        }
         //自定义按钮组相关
         if($target.is('.form-food input[type=radio]'))
         {
@@ -2564,11 +2569,11 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         
     });
     
-    $foodName.on('keypress', function(e)
+    $foodName.on('keydown', function(e)
     {
         e.keyCode == 13 && searchFood();
     });
-    
+    //过滤筛选菜品UI
     function searchFood()
     {
         var $checked = $chekbox.filter(':checked'),
@@ -2586,9 +2591,13 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                 else
                     searchParams[this.id] = '1';
             });
-            current = 0;
-            renderFoods();
         }
+        else
+        {
+            searchParams = null;
+        }
+        current = 0;
+        renderFoods();
     }
     
     //渲染菜品
