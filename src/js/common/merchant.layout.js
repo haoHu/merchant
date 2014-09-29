@@ -44,7 +44,7 @@
 				desc : 'FireFox是Mozilla推出的现代浏览器，全面支持HTML5，CSS3标准的特性。访问页面速度更快，更具安全性。'
 			},
 			{
-				href : '',
+				href : 'http://ie.sogou.com/',
 				icon : 'icon-sogou',
 				name : '搜狗浏览器',
 				desc : '搜狗浏览器是搜狐公司推出的双核告诉浏览器--可以切换为全球最快的Webkit内核(Chrome浏览器)同时也可以切换为使用最普遍的IE内核(IE浏览器)，保证良好的兼容性的同时极大的提升网页的浏览速度。'
