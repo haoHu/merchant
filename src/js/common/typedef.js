@@ -214,7 +214,7 @@
 	Hualala.TypeDef.ShopBusiness = [
 		{
 			id : 10, label : "订座点菜", name : "commonreserve_order", businessIsSupported : true, 
-			callServer : 'Hualala.Global.CommonReserveParams',
+			callServer : 'Hualala.Global.setCommonReserveParams',
 			formKeys : 'advanceTime,noticeTime,minAmount,reserveTableTime,reserveTableDesc,payMethod'
 		},
 		{id : 11, label : "闪吃", name : "justeat_order", businessIsSupported : true,

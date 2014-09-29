@@ -168,7 +168,7 @@
 	 * @param {Object} params 参数{shopID, orderType, strType, advanceTime, noticeTime, reserveTableTime,reserveTableDesc,minAmount,payMethod}
 	 * @param {Function} cbFn   回调函数{resultcode, resultmsg}
 	 */
-	Hualala.Global.CommonReserveParams = function (params, cbFn) {
+	Hualala.Global.setCommonReserveParams = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		var random = Test.getRandom(1, 10);
 		var res = {resultcode : '000', resultmsg : ''};
