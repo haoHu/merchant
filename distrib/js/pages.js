@@ -5662,7 +5662,7 @@ function throttle(method, context)
 			type : "text",
 			label : "转账分行",
 			defaultVal : "",
-			prefix : '<span class="icon-CMB-16"></span>',
+			prefix : '<span class="bank-name-icon icon-CMB-16"></span>',
 			validCfg : {
 				validators : {
 					notEmpty : {
@@ -5798,6 +5798,7 @@ function throttle(method, context)
 			this.initModal();
 			this.renderForm();
 			this.bindEvent();
+			this.resetBankCode();
 			this.emit('show');
 		}
 	});
@@ -5928,6 +5929,19 @@ function throttle(method, context)
 					bv.validate();
 				}
 			});
+			self.modal._.body.find('form [name=bankCode]').on('change', function (e) {
+				var $combo = $(this),
+					$bankNameIcon = self.modal._.body.find('form .bank-name-icon'),
+					val = $combo.val();
+				$bankNameIcon.trigger('change', val);
+			});
+			self.modal._.body.find('form .bank-name-icon').on('change', function (e, v) {
+				var $bankNameIcon = $(this);
+				var bankInfo = Hualala.Common.mapBankInfo(v);
+				IX.Debug.info("DEBUG: Account Bank Info : ");
+				IX.Debug.info(bankInfo);
+				$bankNameIcon.removeClass().addClass('bank-name-icon ' + $XP(bankInfo, 'icon_16', ''));
+			});
 			self.modal._.body.find('form').bootstrapValidator({
 				trigger : 'blur',
 				fields : fvOpts
@@ -5953,6 +5967,11 @@ function throttle(method, context)
 					}
 				});
 			});
+		},
+		resetBankCode : function () {
+			var self = this;
+			var bankCode = self.modal._.body.find('form [name=bankCode]').val();
+			self.modal._.body.find('form .bank-name-icon').trigger('change', bankCode);
 		},
 		initSwitcher : function (selector) {
 			var self = this;
