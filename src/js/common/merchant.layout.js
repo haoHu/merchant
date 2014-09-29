@@ -29,7 +29,7 @@
 				href : 'http://www.microsoft.com/zh-cn/download/internet-explorer-10-details.aspx',
 				icon : 'icon-ie10',
 				name : 'IE10',
-				desc : 'IE10浏览器是微软公司在2011年推出的IE9的下一代浏览器，在IE9的基础上增强了CSS3解析及硬件加速功能，并支持了HTML5'
+				desc : 'IE10浏览器是微软公司在2011年推出的IE9的下一代浏览器，在IE9的基础上增强了CSS3解析及硬件加速功能，并支持了HTML5。'
 			},
 			{
 				href : 'http://www.google.cn/intl/zh-CN/chrome/',
@@ -37,14 +37,14 @@
 				name : 'Chrome',
 				desc : 'Chrome浏览器是由著名的搜索引擎巨头--谷歌(google)公司推出的现代浏览器，访问网页速度更快，稳定性更强，更具安全性，使用界面更加简洁有效，并完全支持HTML5，CSS3标准的特性。'
 			},
-			// {
-			// 	href : '',
-			// 	icon : 'icon-firefox',
-			// 	name : 'Firefox',
-			// 	desc : 'FireFox是Mozilla推出的现代浏览器，完全支持HTML5，CSS3标准的特性。'
-			// },
 			{
-				href : '',
+				href : 'http://www.firefox.com.cn/download/',
+				icon : 'icon-firefox',
+				name : 'Firefox',
+				desc : 'FireFox是Mozilla推出的现代浏览器，全面支持HTML5，CSS3标准的特性。访问页面速度更快，更具安全性。'
+			},
+			{
+				href : 'http://ie.sogou.com/',
 				icon : 'icon-sogou',
 				name : '搜狗浏览器',
 				desc : '搜狗浏览器是搜狐公司推出的双核告诉浏览器--可以切换为全球最快的Webkit内核(Chrome浏览器)同时也可以切换为使用最普遍的IE内核(IE浏览器)，保证良好的兼容性的同时极大的提升网页的浏览速度。'

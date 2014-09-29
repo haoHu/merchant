@@ -144,7 +144,7 @@
 						'<ul class="media-list">',
 						'{{#each items}}',
 							'<li class="media">',
-								'<a class="pull-left" href="{{href}}">',
+								'<a class="pull-left" href="{{href}}" target="_blank">',
 									// '<img src="{{icon}}" alt="{{name}}" width="64" height="64" />',
 									'<span class="{{icon}}" alt="{{name}}" ></span>',
 								'</a>',

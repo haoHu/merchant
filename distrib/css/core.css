@@ -99,35 +99,35 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -144px -468px;
+  background-position: -288px -452px;
 }
 .icon-CMB-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -144px -468px;
+  background-position: -288px -452px;
 }
 .icon-CMB-48 {
   vertical-align: middle;
   width: 50px;
   height: 50px;
   /*width: 48px; height:48px;*/
-  background-position: -168px -272px;
+  background-position: -224px -256px;
 }
 .icon-CMB-32 {
   vertical-align: middle;
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: -200px -120px;
+  background-position: -200px -80px;
 }
 .icon-CMB-16 {
   vertical-align: middle;
   width: 18px;
   height: 18px;
   /*width: 16px; height:16px;*/
-  background-position: -96px -24px;
+  background-position: -96px -48px;
 }
 .icon-CMB-0 {
   vertical-align: middle;
@@ -139,28 +139,28 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -360px -396px;
+  background-position: -480px 0px;
 }
 .icon-CBC-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -360px -396px;
+  background-position: -480px 0px;
 }
 .icon-CBC-48 {
   vertical-align: middle;
   width: 50px;
   height: 50px;
   /*width: 48px; height:48px;*/
-  background-position: -224px -216px;
+  background-position: -224px -200px;
 }
 .icon-CBC-32 {
   vertical-align: middle;
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: -160px -80px;
+  background-position: -160px -40px;
 }
 .icon-CBC-16 {
   vertical-align: middle;
@@ -179,35 +179,35 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -216px -468px;
+  background-position: -360px -452px;
 }
 .icon-BC-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -216px -468px;
+  background-position: -360px -452px;
 }
 .icon-BC-48 {
   vertical-align: middle;
   width: 50px;
   height: 50px;
   /*width: 48px; height:48px;*/
-  background-position: -224px -272px;
+  background-position: -280px -256px;
 }
 .icon-BC-32 {
   vertical-align: middle;
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: 0px -176px;
+  background-position: -200px -120px;
 }
 .icon-BC-16 {
   vertical-align: middle;
   width: 18px;
   height: 18px;
   /*width: 16px; height:16px;*/
-  background-position: -96px -48px;
+  background-position: -96px -72px;
 }
 .icon-BC-0 {
   vertical-align: middle;
@@ -219,14 +219,14 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -492px -144px;
+  background-position: -480px -216px;
 }
 .icon-ABC-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -492px -144px;
+  background-position: -480px -216px;
 }
 .icon-ABC-48 {
   vertical-align: middle;
@@ -240,7 +240,7 @@ h6 {
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: -80px -136px;
+  background-position: 0px -160px;
 }
 .icon-ABC-16 {
   vertical-align: middle;
@@ -259,14 +259,14 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -420px -144px;
+  background-position: -408px -216px;
 }
 .icon-ICBC-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -420px -144px;
+  background-position: -408px -216px;
 }
 .icon-ICBC-48 {
   vertical-align: middle;
@@ -299,35 +299,35 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -72px -468px;
+  background-position: -216px -452px;
 }
 .icon-PSBC-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -72px -468px;
+  background-position: -216px -452px;
 }
 .icon-PSBC-48 {
   vertical-align: middle;
   width: 50px;
   height: 50px;
   /*width: 48px; height:48px;*/
-  background-position: -112px -272px;
+  background-position: -168px -256px;
 }
 .icon-PSBC-32 {
   vertical-align: middle;
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: -200px -80px;
+  background-position: -200px -40px;
 }
 .icon-PSBC-16 {
   vertical-align: middle;
   width: 18px;
   height: 18px;
   /*width: 16px; height:16px;*/
-  background-position: -96px 0px;
+  background-position: -96px -24px;
 }
 .icon-PSBC-0 {
   vertical-align: middle;
@@ -339,14 +339,14 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -420px -216px;
+  background-position: -408px -288px;
 }
 .icon-CEBB-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -420px -216px;
+  background-position: -408px -288px;
 }
 .icon-CEBB-48 {
   vertical-align: middle;
@@ -360,7 +360,7 @@ h6 {
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: 0px -96px;
+  background-position: -120px -80px;
 }
 .icon-CEBB-16 {
   vertical-align: middle;
@@ -379,28 +379,28 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -420px -288px;
+  background-position: 0px -380px;
 }
 .icon-CGB-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -420px -288px;
+  background-position: 0px -380px;
 }
 .icon-CGB-48 {
   vertical-align: middle;
   width: 50px;
   height: 50px;
   /*width: 48px; height:48px;*/
-  background-position: 0px -216px;
+  background-position: 0px -200px;
 }
 .icon-CGB-32 {
   vertical-align: middle;
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: -40px -96px;
+  background-position: 0px -120px;
 }
 .icon-CGB-16 {
   vertical-align: middle;
@@ -419,14 +419,14 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -492px -72px;
+  background-position: -480px -144px;
 }
 .icon-CMBC-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -492px -72px;
+  background-position: -480px -144px;
 }
 .icon-CMBC-48 {
   vertical-align: middle;
@@ -440,7 +440,7 @@ h6 {
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: -40px -136px;
+  background-position: -160px -120px;
 }
 .icon-CMBC-16 {
   vertical-align: middle;
@@ -459,28 +459,28 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: 0px -396px;
+  background-position: -72px -380px;
 }
 .icon-CDB-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: 0px -396px;
+  background-position: -72px -380px;
 }
 .icon-CDB-48 {
   vertical-align: middle;
   width: 50px;
   height: 50px;
   /*width: 48px; height:48px;*/
-  background-position: -56px -216px;
+  background-position: -56px -200px;
 }
 .icon-CDB-32 {
   vertical-align: middle;
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: -80px -96px;
+  background-position: -40px -120px;
 }
 .icon-CDB-16 {
   vertical-align: middle;
@@ -494,19 +494,59 @@ h6 {
   width: 2px;
   height: 2px;
 }
+.icon-CIB-80 {
+  vertical-align: middle;
+  width: 82px;
+  height: 82px;
+  /*width: 64px; height:64px;*/
+  background-position: -144px -452px;
+}
+.icon-CIB-64 {
+  vertical-align: middle;
+  width: 66px;
+  height: 66px;
+  /*width: 64px; height:64px;*/
+  background-position: -144px -452px;
+}
+.icon-CIB-48 {
+  vertical-align: middle;
+  width: 50px;
+  height: 50px;
+  /*width: 48px; height:48px;*/
+  background-position: -112px -256px;
+}
+.icon-CIB-32 {
+  vertical-align: middle;
+  width: 34px;
+  height: 34px;
+  /*width: 32px; height:32px;*/
+  background-position: -200px 0px;
+}
+.icon-CIB-16 {
+  vertical-align: middle;
+  width: 18px;
+  height: 18px;
+  /*width: 16px; height:16px;*/
+  background-position: -96px 0px;
+}
+.icon-CIB-0 {
+  vertical-align: middle;
+  width: 2px;
+  height: 2px;
+}
 .icon-BCM-80 {
   vertical-align: middle;
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -492px 0px;
+  background-position: -480px -72px;
 }
 .icon-BCM-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -492px 0px;
+  background-position: -480px -72px;
 }
 .icon-BCM-48 {
   vertical-align: middle;
@@ -520,7 +560,7 @@ h6 {
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: 0px -136px;
+  background-position: -160px -80px;
 }
 .icon-BCM-16 {
   vertical-align: middle;
@@ -539,28 +579,28 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -72px -396px;
+  background-position: -144px -380px;
 }
 .icon-HXB-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -72px -396px;
+  background-position: -144px -380px;
 }
 .icon-HXB-48 {
   vertical-align: middle;
   width: 50px;
   height: 50px;
   /*width: 48px; height:48px;*/
-  background-position: -112px -216px;
+  background-position: -112px -200px;
 }
 .icon-HXB-32 {
   vertical-align: middle;
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: -160px 0px;
+  background-position: -120px -120px;
 }
 .icon-HXB-16 {
   vertical-align: middle;
@@ -579,14 +619,14 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -492px -216px;
+  background-position: -480px -288px;
 }
 .icon-SPDB-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -492px -216px;
+  background-position: -480px -288px;
 }
 .icon-SPDB-48 {
   vertical-align: middle;
@@ -600,7 +640,7 @@ h6 {
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: -120px -136px;
+  background-position: -40px -160px;
 }
 .icon-SPDB-16 {
   vertical-align: middle;
@@ -619,28 +659,28 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -144px -396px;
+  background-position: -216px -380px;
 }
 .icon-HSBC-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -144px -396px;
+  background-position: -216px -380px;
 }
 .icon-HSBC-48 {
   vertical-align: middle;
   width: 50px;
   height: 50px;
   /*width: 48px; height:48px;*/
-  background-position: -168px -216px;
+  background-position: -168px -200px;
 }
 .icon-HSBC-32 {
   vertical-align: middle;
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: -160px -40px;
+  background-position: -160px 0px;
 }
 .icon-HSBC-16 {
   vertical-align: middle;
@@ -659,28 +699,28 @@ h6 {
   width: 82px;
   height: 82px;
   /*width: 64px; height:64px;*/
-  background-position: -492px -288px;
+  background-position: -480px -360px;
 }
 .icon-Other-64 {
   vertical-align: middle;
   width: 66px;
   height: 66px;
   /*width: 64px; height:64px;*/
-  background-position: -492px -288px;
+  background-position: -480px -360px;
 }
 .icon-Other-48 {
   vertical-align: middle;
   width: 50px;
   height: 50px;
   /*width: 48px; height:48px;*/
-  background-position: 0px -272px;
+  background-position: 0px -256px;
 }
 .icon-Other-32 {
   vertical-align: middle;
   width: 34px;
   height: 34px;
   /*width: 32px; height:32px;*/
-  background-position: -160px -136px;
+  background-position: -80px -160px;
 }
 .icon-Other-16 {
   vertical-align: middle;
@@ -1051,27 +1091,27 @@ body.login .panel-login #login_sub {
 }
 #ix_wrapper .ix-body .home-page .brick-item .icon-home {
   /*width: 60px; height:60px;*/
-  background-position: -352px -68px;
+  background-position: -68px -312px;
 }
 #ix_wrapper .ix-body .home-page .brick-item .icon-pay {
   /*width: 60px; height:60px;*/
-  background-position: -352px -204px;
+  background-position: -204px -312px;
 }
 #ix_wrapper .ix-body .home-page .brick-item .icon-order {
   /*width: 60px; height:60px;*/
-  background-position: -352px -136px;
+  background-position: -136px -312px;
 }
 #ix_wrapper .ix-body .home-page .brick-item .icon-download {
   /*width: 60px; height:60px;*/
-  background-position: -352px 0px;
+  background-position: 0px -312px;
 }
 #ix_wrapper .ix-body .home-page .brick-item .icon-lock {
   /*width: 60px; height:60px;*/
-  background-position: 0px -328px;
+  background-position: -272px -312px;
 }
 #ix_wrapper .ix-body .home-page .brick-item .icon-setting {
   /*width: 60px; height:60px;*/
-  background-position: -68px -328px;
+  background-position: -340px -312px;
 }
 #ix_wrapper .ix-body .home-page .brick-item.disabled {
   background-color: #eee!important;
@@ -1187,19 +1227,23 @@ body.login .panel-login #login_sub {
 }
 #ix_wrapper .support-box .media .icon-ie9 {
   /*width: 64px; height:64px;*/
-  background-position: -288px -396px;
+  background-position: -360px -380px;
 }
 #ix_wrapper .support-box .media .icon-ie10 {
   /*width: 64px; height:64px;*/
-  background-position: -216px -396px;
+  background-position: -288px -380px;
 }
 #ix_wrapper .support-box .media .icon-chrome {
   /*width: 64px; height:64px;*/
-  background-position: -420px -72px;
+  background-position: -408px -72px;
+}
+#ix_wrapper .support-box .media .icon-firefox {
+  /*width: 64px; height:64px;*/
+  background-position: -408px -144px;
 }
 #ix_wrapper .support-box .media .icon-sogou {
   /*width: 64px; height:64px;*/
-  background-position: 0px -468px;
+  background-position: -72px -452px;
 }
 .site-toptip {
   position: fixed;
@@ -2288,7 +2332,7 @@ body.login .panel-login #login_sub {
 .shop-list-item .icon-justeat_order {
   display: inline-block;
   /*width: 32px; height:32px;*/
-  background-position: -200px 0px;
+  background-position: -120px -160px;
   width: 32px;
   height: 32px;
   vertical-align: middle;
@@ -2297,7 +2341,7 @@ body.login .panel-login #login_sub {
 .shop-list-item .icon-spot_order {
   display: inline-block;
   /*width: 32px; height:32px;*/
-  background-position: -120px -96px;
+  background-position: -80px -120px;
   width: 32px;
   height: 32px;
   vertical-align: middle;

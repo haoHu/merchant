@@ -100,6 +100,13 @@ Hualala.Global.setJustEatParams = function (params, cbFn) {}
 Hualala.Global.setSpotOrderParams = function (params, cbFn) {}
 
 /**
+ * 常规订座点菜业务配置参数
+ * @param {Object} params 参数{shopID, orderType, strType, advanceTime, noticeTime, reserveTableTime,reserveTableDesc,minAmount,payMethod}
+ * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+ */
+Hualala.Global.setCommonReserveParams = function (params, cbFn) {};
+
+/**
  * 获取结算账户信息
  * @param  {Object} params 参数{}
  * @param  {Function} cbFn   回调函数{resultcode, resultmsg, data}

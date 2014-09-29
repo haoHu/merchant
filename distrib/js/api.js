@@ -104,6 +104,7 @@
 		["switchShopServiceFeatureStatus", "/shop/controlServiceFeatures.ajax", "", "POST"],
 		["setJustEatParams", "/shop/justEatParam.ajax", "", "POST"],
 		["setSpotOrderParams", "/shop/spotParam.ajax", "", "POST"],
+		["setCommonReserveParams", "/shop/commonreserveParam.ajax", "", "POST"],
 
 		// ["setJustEatParams", "/shop/shopParam.ajax", "", "POST"],
 		// ["setSpotOrderParams", "/shop/shopParam.ajax", "", "POST"],
@@ -129,7 +130,7 @@
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([
 		"genAuthCode", "loginCallServer", "getShopQuerySchema", 
 		"queryShop", "switchShopStatus", "switchShopServiceFeatureStatus", 
-		"setJustEatParams", "setSpotOrderParams", 
+		"setJustEatParams", "setSpotOrderParams", "setCommonReserveParams",
         'getCities', 'getAreas', 'getCuisines',
         'createShop', 'updateShopBaseInfo', 'setShopMap',
         'setShopClientPwd', 'getShopInfo', 'getShopMenu',
@@ -211,6 +212,9 @@
 	};
 	Hualala.Global.setSpotOrderParams = function (params, cbFn) {
 		Hualala.Global.commonCallServer("setSpotOrderParams", params, cbFn);
+	};
+	Hualala.Global.setCommonReserveParams = function (params, cbFn) {
+		Hualala.Global.commonCallServer("setCommonReserveParams", params, cbFn);
 	};
 
 	/*Account Moudle CallServer*/
