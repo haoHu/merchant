@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    <title></title>
+    <link rel="stylesheet" href="../../dep/bootstrap/css/bootstrap.css" />
+    <!--<link rel="stylesheet" href="../../src/js/bootgrid/css/bootgrid.css" />-->
+    <!-- Include DatePicker Stylesheet -->
+  <link href="../../src/js/datepicker/css/datetimepicker.css" rel="stylesheet">
+
+  <!-- Include TimePicker Stylesheet -->
+  <link href="../../src/js/timepicker/css/timepicker.css" rel="stylesheet">
+
+  <!-- Include Validator Stylesheet -->
+  <link href="../../src/js/validator/css/validator.css" rel="stylesheet">
+
+  
+
+  <!-- Include Site Stylesheet -->
+  <link href="../../src/css/core.less" rel="stylesheet/less" type="text/css" />
+  <script src="../../tool/less-1.4.2.min.js"></script>
+    <style type="text/css">
+        body { padding: 50px 0 }
+        .container { padding: 0 }
+        .shop-menu .panel { padding: 15px }
+        .food-class span 
+        { cursor: pointer; display: inline-block; 
+          margin-right: 30px; line-height: 30px;
+        }
+        .food-search select, .food-search label { margin-right: 30px; }
+        .food-search input[type=checkbox] { margin: 0; vertical-align: middle }
+        .search-box .glyphicon-search 
+        { top: 0; font-size: 20px; }
+        .search-box .glyphicon-search:active { background: #fff }
+        #foodSearchInfo { margin-bottom: 12px }
+        .tbl-wrap table { width: 100%; border: 1px solid #ddd; border-top: none }
+        .tbl-head table { border-top: 1px solid #ddd }
+        .tbl-head table:first-child { display: none }
+        .tbl-wrap th, .tbl-wrap td 
+        { width: 92px; min-width: 92px; line-height: 1.8;
+          text-align: center; font-size: 12px; 
+        }
+        .tbl-wrap td:first-child+td+td, .tbl-wrap th:first-child+th+th
+        { width: auto; min-width: 220px }
+        .tbl-wrap td:first-child+td+td+td, .tbl-wrap th:first-child+th+th+th
+        { width: 60px; min-width: 60px }
+        .tbl-head th { padding: 15px; }
+        .tbl-body table:hover, .tbl-body table:active
+        { background: #fcf8e3 }
+        .tbl-body td { padding: 12px; }
+        .tbl-body td:first-child { padding: 0 }
+        .tbl-body td:last-child { position: relative }
+        .tbl-body td:last-child span 
+        { position: absolute; bottom: 6px; right: 18px;
+          padding: 8px 16px; display: none
+        }
+        .tbl-body table:hover td:last-child span { display: inline; }
+        
+        .tbl-wrap .ico-ok:before
+        { content: '\2714'; }
+        .tbl-wrap .ico-no:before
+        { content: '—'; }
+        .tbl-wrap .ico-ok, .tbl-wrap .ico-no
+        { font-size: 18px; font-weight: bold; }
+        
+        @media (min-width: 1200px)
+        {
+            .tbl-wrap-out { width: 1170px; margin: 0 auto; overflow: hidden; border: 0px solid blue }
+            .tbl-wrap { width: 1190px; }
+            .tbl-wrap table
+            { float: left; width: 575px; margin-right: 20px; }
+            .tbl-head table:first-child { display: table }
+        }
+        .tbl-body img { width: 92px; height: 92px }
+        .tbl-body p { margin: 0; text-align: left }
+        .tbl-body p * { display: inline-block;  }
+        .tbl-body p span { width: 3.5em; text-align: right }
+        .tbl-body em, .tbl-body b { width: 5em; }
+        
+    </style>
+</head>
+
+<body>
+<div class="container">
+<div id="shopMenu" class="shop-menu">
+    <div id="foodClass" class="panel panel-default food-class">
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+        <span>菜品分类1 (10)</span>
+    </div>
+    <form id="foodSearch" class="panel panel-default form-inline food-search">
+        <div class="form-group">
+            <select id="takeawayTag" class="form-control">
+                <option value="">全部菜品</option>
+                <option value="0">堂食菜品</option>
+                <option value="1">外卖菜品</option>
+            </select>
+            <label><input type="checkbox" id="isSpecialty" value=""/> 招牌</label>
+            <label><input type="checkbox" id="isRecommend" /> 推荐</label>
+            <label><input type="checkbox" id="isNew" /> 新品</label>
+            <label><input type="checkbox" id="isSetFood" /> 套餐</label>
+            <label><input type="checkbox" id="isDiscount" /> 打折</label>
+            <label><input type="checkbox" id="isActive" /> 启用菜品</label>
+            <label><input type="checkbox" id="isHasImage" /> 无图</label>
+            <span class="input-group search-box">
+                <select id="foodName" class="form-control chosen-select-no-results"  style="width:200px;">
+
+                </select>
+                <span class="input-group-addon glyphicon glyphicon-search" title="搜索"></span>
+            </span>
+        </div>
+    </form>
+    <div id="foodSearchInfo">相关结果 (<span>10</span>)</div>
+    
+    <div class="tbl-wrap">
+        <div class="tbl-head">
+            <table>
+                <tr>
+                    <th>上传图片</th>
+                    <th>名称</th>
+                    <th>规格及单价 (<em>会员价</em><b>售价</b><span>原价</span>)</th>
+                    <th>打折</th>
+                    <th>是否在售</th>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <th>上传图片</th>
+                    <th>名称</th>
+                    <th>规格及单价 (<em>会员价</em><b>售价</b><i>原价</i>)</th>
+                    <th>打折</th>
+                    <th>是否在售</th>
+                </tr>
+            </table>
+        </div>
+
+        <div class="tbl-body">
+            <table>
+                <tr>
+                    <td><img src="001.jpg" alt="" /></td>
+                    <td>农家小炒肉</td>
+                    <td>
+                        <p><span>大大份:</span><em>￥50.88</em><b>￥50</b><i>￥50</i></p>
+                        <p><span>份:</span><em>￥30</em><b>￥30</b><i>￥30</i></p>
+                        <p><span>小份:</span><em>￥20</em><b>￥20</b><i>￥20</i></p>
+                    </td>
+                    <td class="ico-no"></td>
+                    <td class="ico-ok">
+                        <span class="label label-default">修改</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+    
+</div>
+</div>
+
+<!-- <script src="../../test/data/foods.js"></script>
+<script src="../../dep/jquery/jquery-1.11.1.js"></script>
+<script src="../../dep/bootstrap/js/bootstrap.js"></script>
+<script src="../../src/js/bootgrid/bootgrid.js"></script>
+<script src="../../src/js/dep/handlebars/handlebars-v1.3.0.js"></script> -->
+
+    <script src="../../src/js/dep/jquery/jquery-1.11.1.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="../../src/js/dep/bootstrap/js/bootstrap.js"></script>
+
+    <!-- Include underscore lib -->
+    <script src="../../src/js/dep/underscore/underscore.js"></script>
+    <!-- Include handlebars -->
+    <script src="../../src/js/dep/handlebars/handlebars-v1.3.0.js"></script>
+
+    <!-- Include DatePicker -->
+    <script src="../../src/js/datepicker/datetimepicker.js"></script>
+    <script src="../../src/js/datepicker/local/datetimepicker.zh-CN.js"></script>
+    
+    
+    <!-- Include TimePicker -->
+    <script src="../../src/js/timepicker/timepicker.js"></script>
+
+    <!-- Include Validator -->
+    <script src="../../src/js/validator/validator.js"></script>
+    <script src="../../src/js/validator/local/validator.zh-CN.js"></script>
+
+    <!-- Include Common Lib Files for Hualala Shop Site -->
+    <!-- Include Stapes.js -->
+    <script src="../../src/js/common/stapes.js"></script>
+    <!-- <script src="../src/js/common/numeric.js"></script> -->
+    <!--<script src="../../src/js/common/math.js"></script>-->
+    <!-- Include ixutils.js -->
+    <script src="../../src/js/common/ixutils.js"></script>
+
+    <!-- Include commonFn.js -->
+    <script src="../../src/js/common/commonFn.js"></script>
+    <!-- Include Constants Defined (datatype.js,typedef.js) -->
+    <script src="../../src/js/common/typedef.js"></script>
+    <script src="../../src/js/common/datatype.js"></script>
+
+    <!-- Include router.js -->
+    <script src="../../src/js/common/router.js"></script>
+
+    <!-- Include PYMather -->
+    <script src="../../src/js/pymatch/pymatch.js"></script>
+    <script src="../../src/js/common/matcher.js"></script>
+    
+    <!-- 百度地图API -->
+    <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.3"></script>
+    
+
+    <!-- Include callServer and test data JS -->
+    <script type="text/javascript" src="../test.js"></script>
+    <script type="text/javascript" src="../global-const.js"></script>
+    <script type="text/javascript" src="../global-url.js"></script>
+    <script type="text/javascript" src="../global-callserver-common.js"></script>
+    
+    <!-- Include Template Lib js -->
+    <script src="../../src/js/tpl/tpl.lib.js"></script>
+    <script src="../../src/js/tpl/tpl.shop.js"></script>
+    <script src="../../src/js/tpl/tpl.account.js"></script>
+    <script src="../../src/js/tpl/tpl.order.js"></script>
+    <!-- Include IXUI js -->
+    <script src="../../src/js/ui/ixui.js"></script>
+    <script src="../../src/js/ui/pager.js"></script>
+    <script src="../../src/js/ui/jquery.lazyload.js"></script>
+    <!-- <script src="../src/js/ui/modal.js"></script> -->
+    
+    <script src="../../src/js/ui/switch.js"></script>
+    <script src="../../src/js/ui/chosen.jquery.js"></script>
+    <!-- Include wizard -->
+    <script src="../../src/js/ui/wizard.js"></script>
+
+    
+
+    <!-- Include Hualala Entry module -->
+    <script src="../../src/js/entry/entry.init.js"></script>
+
+    <!-- Include Hualala Shop module -->
+    <script src="../../src/js/shop/shop.query.model.js"></script>
+    <script src="../../src/js/shop/shop.query.view.js"></script>
+    <script src="../../src/js/shop/shop.query.controler.js"></script>
+    <!-- 地图控件 -->
+    <script src="../../src/js/shop/shop.map.js"></script>
+
+    <script src="../../src/js/shop/shop.list.model.js"></script>
+    <script src="../../src/js/shop/shop.list.view.js"></script>
+    <script src="../../src/js/shop/shop.list.controler.js"></script>
+    <script src="../../src/js/shop/shop.init.js"></script>
+
+    <!-- Include Hualala Shop Create -->
+    <script src="../../src/js/shop/shop.create.js"></script>
+    <!-- Include Hualala Shop Info -->
+    <script src="../../src/js/shop/shop.info.js"></script>
+    <!-- Include Hualala Shop Menu -->
+    <script src="../../src/js/shop/shop.menu.js"></script>
+
+    <!-- Include Hualala Setting module -->
+    <script src="../../src/js/setting/setting.mgr.js"></script>
+    <script src="../../src/js/setting/setting.init.js"></script>
+
+    <!-- Include Hualala Account module -->
+    <script src="../../src/js/account/account.list.model.js"></script>
+    <script src="../../src/js/account/account.list.view.js"></script>
+    <script src="../../src/js/account/account.list.controler.js"></script>
+    <script src="../../src/js/account/account.mgr.controler.js"></script>
+    <script src="../../src/js/account/account.mgr.view.js"></script>
+    <script src="../../src/js/account/account.init.js"></script>
+
+
+  <!-- Include Hualala Order module -->
+    <script src="../../src/js/order/order.list.model.js"></script>
+    <script src="../../src/js/order/order.list.view.js"></script>
+    <script src="../../src/js/order/order.list.controler.js"></script>
+    <script src="../../src/js/order/order.query.model.js"></script>
+    <script src="../../src/js/order/order.query.view.js"></script>
+    <script src="../../src/js/order/order.query.controler.js"></script>
+    <script src="../../src/js/order/order.init.js"></script>
+    
+
+    <!-- Include Hualala init -->
+    
+    <script src="../../src/js/common/merchant.layout.js"></script>
+    <script src="../../src/js/common/merchant.init.js"></script>
+    <script src="../../src/js/common/merchant.route.js"></script>
+<script src="../../test/data/foods.js"></script>
+
+<script type="text/javascript">
+var imgHost = 'http://res.hualala.com/',
+    imgRoot = '../../src/img/';
+
+var classifiedFoods = classifyFoods(Test.foodsData.data.records),
+    foodClass = '',
+    foods = filterFoods();
+//console.log(foods);
+var initFoodsOpts = function () {
+    var foods = $XP(Test.foodsData, 'data.records', []),
+        grp = _.groupBy(foods, 'foodCategoryID');
+    var tpl = [
+        '<option value=""></option>',
+        '{{#each optGrp}}',
+            '<optgroup label="{{name}}">',
+                '{{#each items}}',
+                    '<option value="{{code}}">{{name}}</option>',
+                '{{/each}}',
+            '</optgroup>',
+        '{{/each}}',
+    ].join(',');
+    tpl = Handlebars.compile(tpl);
+    var renderData = _.map(grp, function (el, k) {
+        var name = $XP(el[0], 'foodCategoryName', '');
+        var items = _.map(el, function (f) {
+            return {
+                code : $XP(f, 'foodID', ''),
+                name : $XP(f, 'foodName', '')
+            };
+        });
+        return {
+            name : name,
+            items : items
+        }
+    });
+    $('#foodName').html(tpl({
+        optGrp : renderData
+    }));
+};
+initFoodsOpts();
+initFoodChosen();
+function initFoodChosen() 
+{
+    var matcher = (new Pymatch([]));
+    var sections = foods;
+    var getMatchedFn = function (searchText) {
+        matcher.setNames(_.map(sections, function (el) {
+            return IX.inherit(el, {
+                name : el.foodName
+            });
+        }));
+        var matchedSections = matcher.match(searchText);
+        var matchedOptions = {};
+        _.each(matchedSections, function (el, i) {
+            matchedOptions[el[0].foodID] = true;
+        });
+        return matchedOptions;
+    };
+    $('#foodName').chosen({
+        width : '200px',
+        placeholder_text : "选择或输入菜品名称",
+        // max_selected_options: 1,
+        no_results_text : "抱歉，没有找到！",
+        allow_single_deselect : true,
+        getMatchedFn : getMatchedFn
+    }).change(function (e) {
+        //var $this = $(this);
+        //self.keywordLst = $this.val();
+    });
+}
+
+//
+function filterFoods(args)
+{
+    var result = [];
+    if(!foodClass)
+    {
+        for(var foodCategoryID in classifiedFoods)
+        {
+            result.push.apply(result, classifiedFoods[foodCategoryID].foods);
+        }
+    }
+    else
+    {
+        result = classifiedFoods[foodClass].foods;
+    }
+    
+    for(p in args)
+    {
+        result = $.grep(result, function (food)
+        {
+            return food[p] == args[p];
+        });
+    }
+    
+    return result;
+}
+//将菜品分类
+function classifyFoods(foodsData)
+{
+    var result = {};
+    for(i = 0, l = foodsData.length; i < l; i++)
+    {
+        var food = foodsData[i];
+        //根据foodCategoryID分类
+        result[food.foodCategoryID] = result[food.foodCategoryID] || {foods: [], foodCategoryName: food.foodCategoryName};
+        //某个菜品可能无foodID
+        if(!food.foodID) continue;
+        food.imgSrc = food.imgePath ? imgHost + food.imgePath : imgRoot + 'dino80.png';
+        food.discountIco = food.isDiscount == 1 ? 'ico-ok' : 'ico-no';
+        food.activeIco = food.foodIsActive == 1 ? 'ico-ok' : 'ico-no';
+        if(food.prePrice == '-1' || food.prePrice == food.price)
+        {
+            food.prePrice = food.price;
+            food.price = '';
+        }
+        if(food.vipPrice == '-1' || food.vipPrice == food.prePrice)
+        {
+            food.vipPrice = '';
+        }
+        var cfs = result[food.foodCategoryID].foods,
+            unit = {
+                unit: food.unit + ': ',
+                price: food.price ? '￥' + parseFloat(food.price) : '',
+                prePrice: '￥' + parseFloat(food.prePrice),
+                vipPrice: food.vipPrice ? '￥' + parseFloat(food.vipPrice) : ''
+            },
+            idx = inAarry(cfs, food, 'foodID');
+        
+        if(idx == -1)
+        {
+            food.units = [unit];
+            cfs.push(food);
+        }
+        else
+        {//将相同foodID的菜品按照规格合并
+            cfs[idx].units.push(unit);
+        }
+        
+    }
+    return result;
+}
+//根据对象的一个属性检查某个对象是否在一个对象数组中
+function inAarry(arr, obj, key)
+{
+    for(var i = 0, l = arr.length; i < l; i++)
+    {
+        if(arr[i][key] == obj[key]) return i;
+    }
+    return -1;
+}
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
