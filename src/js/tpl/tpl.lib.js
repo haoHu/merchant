@@ -99,11 +99,11 @@
 				'<li class="{{active}} {{disabled}}">',
 					'<a href="{{path}}" data-page-type="{{name}}">{{label}}</a>',
 				'</li>',
-				// <li class="active"><a href="#">店铺管理</a></li>
-				// <li class=""><a href="#about">结算</a></li>
-				// <li><a href="#contact">订单</a></li>
-				// <li><a href="#contact">业务设置</a></li>
-				// <li><a href="#contact">帐号管理</a></li>
+				// <li class="active"><a href="#">店铺管理</a></li>',
+				// <li class=""><a href="#about">结算</a></li>',
+				// <li><a href="#contact">订单</a></li>',
+				// <li><a href="#contact">业务设置</a></li>',
+				// <li><a href="#contact">帐号管理</a></li>',
 				'{{/each}}',
 			'</ul>',
 		'</div>'
@@ -369,6 +369,89 @@
 		'</div>'
 	].join('');
 	TemplateList.register('tpl_site_progress', tpl_site_progress);
+
+	// 关于我们
+	var tpl_site_about = [
+		'<div class="ix-body about-us">',
+			'<div class="banner">',
+				'<div class="jumbotron ">',
+					'<div class="container">',
+						'<p>随时随地管门店<br/>品牌扩张更方便</p>',
+						'<div class="ad-pic"></div>',
+					'</div>',
+				'</div>',
+			'</div>',
+			'<div class="container desc">',
+				'<h3>关于哗啦啦商户中心</h3>',
+				'<p>北京多来点信息技术有限公司是GOZAP集团旗下的一家专注于餐饮O2O领域的移动互联网公司。公司产品“哗啦啦”是一款以改善消费者用餐体验及提升餐饮商户经营效率为目标的移动互联网产品，它可以为消费者提供点菜、闪吃、买单等功能。<br/>',
+					'公司创始人及管理团队有着餐饮信息化及互联网行业近10年从业经验，致力于将哗啦啦打造成为国内餐饮O2O第一品牌。',
+				'</p>',
+			'</div>',
+		'</div>',
+	].join('');
+	TemplateList.register('tpl_site_about', tpl_site_about);
+
+	// 联系我们
+	var tpl_site_contact = [
+		'<div class="ix-body contact-us">',
+			'<div class="banner">',
+				'<div class="jumbotron">',
+					'<div class="container">',
+						'<h1>成长·共赢</h1>',
+						'<p>加入我们见证成功</p>',
+						'<div class="ad-pic"></div>',
+					'</div>',
+				'</div>',
+			'</div>',
+			'<div class="container desc">',
+				'<h3>联系我们</h3>',
+				'<address>',
+					'北京多来点信息技术有限公司（北京总部）<br/>',
+					'服务热线:4006-527-557<br/>',
+					'地址：北京市西城区西直门西环广场（凯德Mall）T1-22层<br/>',
+					'邮编：100044<br/>',
+					'电话：(86)010-58302536，38<br/>',
+					'传真：(86)010-58302583<br/>',
+					'mail: info@hualala.com<br/>',
+				'</address>',
+				'<address>',
+					'北京多来点信息技术有限公司（上海分公司）<br/>',
+					'地址：上海市徐汇区凯旋路3500号华苑大厦1幢27E<br/>',
+					'邮编：200030<br/>',
+					'电话：(86)021-64148077，78，79<br/>',
+					'传真：(86)021-64148079转803<br/>',
+					'mail: info@hualala.com<br/>',
+				'</address>',
+			'</div>',
+		'</div>'
+	].join('');
+	TemplateList.register('tpl_site_contact', tpl_site_contact);
+
+	// 下载客户端
+	var tpl_client_download = [
+		'<div class="ix-body download">',
+			'<div class="banner">',
+				'<div class="jumbotron ">',
+					'<div class="container">',
+						'<h1>连接云端与餐饮软件</h1>',
+						'<p>下载PC端管理店内更快更方便</p>',
+						'<div class="ad-pic"></div>',
+					'</div>',
+				'</div>',
+			'</div>',
+			'<div class="container desc">',
+				'<h3>下载PC端代理程序</h3>',
+				'<p>',
+					'哗啦啦代理程序用于建立哗啦啦云端与餐饮软件之间的连接，能够将店铺的菜单及桌台状态实时同步到哗啦啦云端，也可将顾客手机提交的订单下单到餐饮软件。<br/>',
+					'<a title="{{title}}" class="btn btn-success btn-lg" href="{{href}}">立即下载</a>',
+				'</p>',
+			'</div>',
+		'</div>'
+	].join('');
+	TemplateList.register('tpl_client_download', tpl_client_download);
+	
+
+
 
 	var TplLib = function () {
 		return {

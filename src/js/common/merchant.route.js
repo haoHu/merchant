@@ -168,10 +168,11 @@
 		},
 
 		// 账号管理页面
-		{
-			name : "user", path : "/#user", reg : /user$/, bodyClz : "",
-			PageInitiator : "Hualala.User.UserListInit", parentName : "main", label : "账号管理"
-		},
+		// Note: 先屏蔽，第二版本开启
+		// {
+		// 	name : "user", path : "/#user", reg : /user$/, bodyClz : "",
+		// 	PageInitiator : "Hualala.User.UserListInit", parentName : "main", label : "账号管理"
+		// },
 
 		// 订单报表页面
 		{

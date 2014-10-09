@@ -7,7 +7,8 @@
 		{name : 'account', label : '账户结算'},
 		{name : 'shop', label : '店铺管理'},
 		{name : 'setting', label : '业务设置'},
-		{name : 'user', label : '账号管理'}
+		// Note：先屏蔽，第二版本开启
+		// {name : 'user', label : '账号管理'}
 	];
 
 	Hualala.TypeDef.OrderSubNavType = [

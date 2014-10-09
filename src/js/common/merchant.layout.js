@@ -5,8 +5,9 @@
 		{name : 'order', title : '订单', label : '报表.菜品排行', brickClz : 'home-brick-md-3', itemClz : 'brick-item', icon : 'icon-order'},
 		{name : 'shop', title : '店铺管理', label : '开店.信息.菜谱', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-home'},
 		{name : 'pcclient', title : '下载哗啦啦', label : '', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-download'},
-		{name : 'user', title : '账号管理', label : '账号.权限', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-lock'},
-		{name : 'setting', title : '业务设置', label : '开通业务.业务参数', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-setting'}
+		// Note: 先屏蔽这个模块， 第二版本开启
+		{name : 'user', title : '账号管理', label : '账号.权限', brickClz : 'home-brick-md-1 hidden', itemClz : 'brick-item', icon : 'icon-lock'},
+		{name : 'setting', title : '业务设置', label : '开通业务.业务参数', brickClz : 'home-brick-md-3', itemClz : 'brick-item', icon : 'icon-setting'}
 	];
 	function isSupportedBrowser () {
 		var bd = Hualala.Common.Browser;
@@ -79,10 +80,10 @@
 				logo : Hualala.Global.getDefaultImage('logo'),
 			},
 			footer = {
-				// aboutPath : Hualala.PageRoute.createPath("about") || '#',
-				// contactPath : Hualala.PageRoute.createPath("contact") || '#',
-				aboutPath : Hualala.Global.getAboutUsUrl() || '#',
-				contactPath : Hualala.Global.getContactUsUrl() || '#',
+				aboutPath : Hualala.PageRoute.createPath("about") || '#',
+				contactPath : Hualala.PageRoute.createPath("contact") || '#',
+				// aboutPath : Hualala.Global.getAboutUsUrl() || '#',
+				// contactPath : Hualala.Global.getContactUsUrl() || '#',
 				gozapLogo : Hualala.Global.getDefaultImage('gozap')
 			};
 			return {
@@ -208,11 +209,41 @@
 		Hualala.Entry.initLogin($loginBox);
 	}
 
+	function initAboutPage (pageType, params) {
+		var $body = $('#ix_wrapper > .ix-body');
+		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_about'));
+		var $page = $(tpl());
+		$page.replaceAll($body);
+	}
+
+	function initContactPage (pageType, params) {
+		var $body = $('#ix_wrapper > .ix-body');
+		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_contact'));
+		var $page = $(tpl());
+		$page.replaceAll($body);
+	}
+
+	function initPCClientDownloadPage () {
+		var $body = $('#ix_wrapper > .ix-body');
+		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_client_download'));
+		var sessionData = Hualala.getSessionData();
+
+		var $page = $(tpl({
+			href : $XP(sessionData, 'pcClient.downloadClientAddress', '#'),
+			title : $XP(sessionData, 'pcClient.version', ''),
+		}));
+		$page.replaceAll($body);
+	}
+
 
 	Hualala.Common.LoginInit = initLoginPage;
 	Hualala.Common.initPageLayout = initPageLayout;
 	Hualala.Common.initSiteNavBar = initSiteNavBar;
 	Hualala.Common.HomePageInit = initHomePage;
+	Hualala.Common.AboutInit = initAboutPage;
+	Hualala.Common.ContactInit = initContactPage;
+	Hualala.Common.PCClientDownloadInit = initPCClientDownloadPage;
+	
 
 	Hualala.Common.IndexInit = function () {
 		document.location.href = Hualala.PageRoute.createPath("main");
