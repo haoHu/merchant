@@ -3944,11 +3944,13 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		{name : 'account', label : '账户结算'},
 		{name : 'shop', label : '店铺管理'},
 		{name : 'setting', label : '业务设置'},
-		{name : 'user', label : '账号管理'}
+		// Note：先屏蔽，第二版本开启
+		// {name : 'user', label : '账号管理'}
 	];
 
 	Hualala.TypeDef.OrderSubNavType = [
-		{name : 'order', label : '概览', pkeys : []},
+		// Note：先屏蔽，第二版本开放
+		// {name : 'order', label : '概览', pkeys : []},
 		{name : 'orderQuery', label : '订单查询', pkeys : ['startDate','endDate','cityID','shopID','orderStatus','userMobile','orderID','s_orderTotal','e_orderTotal']},
 		{name : 'orderQueryDay', label : '订单日汇总', pkeys : ['startDate','endDate','cityID','shopID','orderStatus']},
 		{name : 'orderQueryDuring', label : '订单期间汇总', pkeys : ['startDate','endDate','cityID','shopID','orderStatus']},

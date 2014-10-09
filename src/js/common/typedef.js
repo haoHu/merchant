@@ -12,7 +12,8 @@
 	];
 
 	Hualala.TypeDef.OrderSubNavType = [
-		{name : 'order', label : '概览', pkeys : []},
+		// Note：先屏蔽，第二版本开放
+		// {name : 'order', label : '概览', pkeys : []},
 		{name : 'orderQuery', label : '订单查询', pkeys : ['startDate','endDate','cityID','shopID','orderStatus','userMobile','orderID','s_orderTotal','e_orderTotal']},
 		{name : 'orderQueryDay', label : '订单日汇总', pkeys : ['startDate','endDate','cityID','shopID','orderStatus']},
 		{name : 'orderQueryDuring', label : '订单期间汇总', pkeys : ['startDate','endDate','cityID','shopID','orderStatus']},

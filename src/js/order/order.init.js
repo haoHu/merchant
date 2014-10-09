@@ -42,7 +42,17 @@
 		var ctx = Hualala.PageRoute.getPageContextByPath();
 		var $body = $('#ix_wrapper > .ix-body > .container');
 		initOrderPageLayout();
-
+		// Note: 暂时屏蔽概览页面，第二版将开启
+		var curDateStamp = IX.Date.getDateByFormat(new Hualala.Date((new Date()).getTime() / 1000).toText(), 'yyyyMMdd');
+		var pageCfg = _.find(Hualala.TypeDef.OrderSubNavType, function (el) {return el.name == 'orderQuery'}),
+			pkeys = $XP(pageCfg, 'pkeys', []);
+		pkeys = _.map(pkeys, function (v) {
+			if (v == 'startDate' || v == 'endDate') {
+				return curDateStamp;
+			}
+			return '';
+		});
+		document.location.href = Hualala.PageRoute.createPath('orderQuery', pkeys);
 	};
 	/*订单查询页面*/
 	var initQueryOrderPage = function () {
