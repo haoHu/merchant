@@ -86,7 +86,7 @@
 			'</div>',
 			// Footer
              // @NOTE: 开发阶段隐藏页脚
-			'<div class="ix-footer navbar-fixed-bottom hidden">',
+			'<div class="ix-footer navbar-fixed-bottom ">',
 				'<div class="container">',
 					'<p class="links">',
 						'<a href="{{footer.aboutPath}}">关于哗啦啦商户中心</a>',
@@ -704,17 +704,17 @@
 				'<label><input type="checkbox" id="isDiscount" /> 打折</label>',
 				'<label><input type="checkbox" id="foodIsActive" /> 启用菜品</label>',
 				'<label><input type="checkbox" id="isHasImage" /> 无图</label>',
-				'<span class="input-group search-box">',
-					'<input type="text" id="foodName" placeholder="输入菜品名称" class="form-control" />',
-					'<span id="btnSearchFood" class="input-group-addon glyphicon glyphicon-search" title="搜索"></span>',
-				'</span>',
+				//'<span class="input-group search-box">',
+					'<select id="foodName" class="form-control"></select>',
+					//'<span id="btnSearchFood" class="input-group-addon glyphicon glyphicon-search" title="搜索"></span>',
+				//'</span>',
 			'</div>',
 		'</form>',
 		'<div id="foodSearchInfo">相关结果 (<span></span>)</div>',
 		'<table class="tbl-foods">',
 			'<thead>',
 				'<tr>',
-					'<th width="92px">上传图片</th>',
+					'<th width="92px">菜品图片</th>',
 					'<th width="120px">名称</th>',
 					'<th>规格及单价 (<em>会员价</em><b>售价</b><span>原价</span>)</th>',
 					'<th width="">打折</th>',
@@ -728,6 +728,18 @@
 		'</table>',
 	'</div>'].join('');
 	TplLib.register('tpl_shop_menu', tpl_shop_menu);
+    
+    var tpl_food_name = [
+        '<option value=""></option>',
+        '{{#each classifiedFoods}}',
+            '<optgroup label="{{foodCategoryName}}">',
+                '{{#each foods}}',
+                    '<option value="{{foodID}}">{{foodName}}</option>',
+                '{{/each}}',
+            '</optgroup>',
+        '{{/each}}',
+    ].join(',');
+    TplLib.register('tpl_food_name', tpl_food_name);
 	
 	var tpl_food = [
 	'{{#each foods}}',
@@ -846,7 +858,7 @@
             '</div>',
         '</div>',
     '</form>',
-    '<form class="food-pic" enctype="multipart/form-data" method="post" target="iframe1" action="">',
+    '<form class="food-pic" enctype="multipart/form-data" method="post" target="iframe1" action="/imgUpload.action">',
         '<div>',
             '<img src="{{foodPic}}" alt="菜品图片" width="200px" />',
             '<span>上传中 . . .</span>',

@@ -50,7 +50,9 @@
 		["fileUpload", "/api/disk_files"],
 		["fileDownload", "/files/{id}/download"],
 
-		["logout", "/logout"]
+		["logout", "/logout"],
+		["about", "/about"],
+		["contact", "/contact"]
 
 	]);
 

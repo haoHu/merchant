@@ -1676,7 +1676,204 @@
 		}
 	});
 	Hualala.Shop.ShopListController = ShopListController;
-})(jQuery, window);;(function ($, window) {
+})(jQuery, window);;
+;(function($) 
+{
+	var defaults = {
+            data : {
+                isSearchMap: false,
+                keyword: '',
+                shopName: '',
+                tel: '',
+                address: '',
+                city: '',
+                area: '',
+                lng: '',
+                lat: ''
+            },
+            searchBox: '.search-box',
+            mapResult: '.map-result',
+            //mapContainer: '#shopMap',
+            mapCanvasId: 'mapCanvas',
+            load: function() { },
+            serach: function() { }
+        };
+	function ShopMap(options)
+    {
+        this.cfg = $.extend({}, defaults, options);
+        //this.$shopMap = $(mapContainer);
+        this.sContent = '';
+        this.$searchBox = $(this.cfg.searchBox);
+        this.$mapResult = $(this.cfg.mapResult);
+        this.map = '';
+        this.searchArea = true;
+        this.mapPoint = {};
+        
+    }
+	ShopMap.prototype = 
+    {
+        init: function()
+        {
+            var self = this,
+                markerTrick = false,
+                mapParams = self.cfg.data;
+            self.map = new BMap.Map(self.cfg.mapCanvasId);
+            //添加默认缩放平移控件
+            self.map.addControl(new BMap.NavigationControl());
+            self.map.enableScrollWheelZoom();
+            self.sContent = [
+                '<dl class="map-shop-info">',
+                    '<dt>' + mapParams.shopName + '</dt>',
+                    '<dd>',
+                        '<p><span>电话：</span>' + mapParams.tel + '</p>',
+                        '<p><span>地址：</span>' + mapParams.address + '</p>',
+                    '</dd>',
+                '</dl>'
+            ].join('');
+            
+            self[(mapParams.isSearchMap || !mapParams.lng || !mapParams.lat ? 'search' : 'load') + 'Map'](mapParams);
+            
+            if(self.$searchBox[0])
+            {
+                var $keyword = self.$searchBox.find('.map-keyword'),
+                    $searchBtn = self.$searchBox.find('.map-search-btn'),
+                    searchParams = $.extend({}, self.cfg.data);
+                $searchBtn.on('click', function ()
+                {
+                    searchParams.keyword = $.trim($keyword.val());
+                    self.searchMap(searchParams);
+                });
+            }
+            
+            
+            return this;
+        },
+        loadMap: function(data)
+        {
+            var self = this;
+            data = data || self.self.cfg.data;
+            self.map.centerAndZoom(new BMap.Point(data.lng, data.lat), 14);
+            self.map.enableScrollWheelZoom();
+
+            var marker = new BMap.Marker(new BMap.Point(data.lng, data.lat), 
+                {
+                    enableMassClear: true,
+                    raiseOnDrag: true
+                });
+            marker.enableDragging();
+            self.map.addOverlay(marker);
+            marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
+           /* map.addEventListener("click", function(e){
+                if(!(e.overlay)){
+                    map.clearOverlays();
+                    marker.show();
+                    map.addOverlay(marker);
+                    marker.setPosition(e.point);
+                    setResult(e.point.lng, e.point.lat);
+                }
+            });*/
+            marker.addEventListener("click", function(e)
+            {
+                 marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
+            });
+            marker.addEventListener("dragend", function(e)
+            {
+                self.setResult(e.point.lng, e.point.lat);
+            });
+            self.setResult(data.lng, data.lat);
+        },
+        searchMap : function (data)
+        {
+            var self = this;
+            data = data || self.cfg.data;
+            //self.map.centerAndZoom(new BMap.Point(116.404, 39.915), 14);
+            //self.map.enableScrollWheelZoom();
+                
+            var local = new BMap.LocalSearch(self.map, {
+                renderOptions: {map: self.map},
+                pageCapacity: 1,
+                onInfoHtmlSet : function (poi) {
+                    poi.marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
+                    //target.openInfoWindow(infoWindow);
+                },
+                onMarkersSet : function (poi) {
+                    //console.info(poi.marker.infoWindow);
+                }
+            });
+            local.search(data.keyword || data.address || data.area || data.city);
+
+            local.setSearchCompleteCallback(function(results)
+            {
+                if(local.getStatus() !== BMAP_STATUS_SUCCESS)
+                {
+                    if(self.searchArea)
+                    {
+                        local.search(data.area);
+                        self.searchArea = false;
+                    } else
+                    {
+                        local.search(data.city);
+                    }
+                } else 
+                {
+                    //marker.hide();
+                }
+            });
+            local.setMarkersSetCallback(function(pois)
+            {
+                for(var i = pois.length; i--;)
+                {
+                    var marker = pois[i].marker;
+                    marker.enableDragging();
+                    self.setResult(marker.point.lng, marker.point.lat);
+                    //var mapParams = {
+                    //  width : 250,     // 信息窗口宽度
+                    //  height: 100,     // 信息窗口高度
+                    //  title : "Hello"  // 信息窗口标题
+                    //}
+                    //var infoWindow = new BMap.InfoWindow("World", mapParams);  // 创建信息窗口对象
+                    //map.openInfoWindow(infoWindow,point); //开启信息窗口
+                    marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
+                    marker.addEventListener("click", function(e)
+                    {
+                       // markerTrick = true;
+                        var pos = this.getPosition();
+                        self.setResult(pos.lng, pos.lat);
+                    });
+                    marker.addEventListener("dragend", function(e)
+                    {
+                        self.setResult(e.point.lng, e.point.lat);
+                    });
+                }
+            });
+            
+        },
+         /*
+         * setResult : 定义得到标注经纬度后的操作
+         * 请修改此函数以满足您的需求
+         * lng: 标注的经度
+         * lat: 标注的纬度
+         */
+        setResult: function (lng, lat)
+        {
+            var self = this;
+            self.mapPoint = { lng: lng, lat: lat };
+            self.$mapResult[0] && self.$mapResult.html('您店铺的经度：' + lng + '    纬度： ' + lat);
+        }
+	}
+    IX.ns("Hualala.Shop");
+    Hualala.Shop.map = function(options) 
+    { 
+        return new ShopMap(options).init(); 
+    };
+}(jQuery));
+
+
+
+
+
+
+;(function ($, window) {
 IX.ns('Hualala.Shop');
 var G = Hualala.Global,
     U = Hualala.UI,
@@ -1742,7 +1939,7 @@ Hualala.Shop.initCreate = function ($wizard)
                 validators: {
                     notEmpty: { message: '店铺地址不能为空' },
                     stringLength: {
-                        min: 6,
+                        min: 2,
                         max: 100,
                         message: '地址长度必须在6到100个字符之间'
                     }
@@ -1968,8 +2165,7 @@ var G = Hualala.Global,
     U = Hualala.UI,
     S = Hualala.Shop,
     topTip = U.TopTip,
-    parseForm = Hualala.Common.parseForm,
-    initMap = Hualala.Shop.map;
+    parseForm = Hualala.Common.parseForm;
 // 初始化店铺店铺详情页面
 S.initInfo = function ($container, pageType, params)
 {
@@ -2060,7 +2256,7 @@ S.initInfo = function ($container, pageType, params)
                     validators: {
                         notEmpty: { message: '店铺地址不能为空' },
                         stringLength: {
-                            min: 6,
+                            min: 2,
                             max: 100,
                             message: '地址长度必须在6到100个字符之间'
                         }
@@ -2111,7 +2307,7 @@ S.initInfo = function ($container, pageType, params)
         imagePath = shopInfo.imagePath;
         imagePath && $img.attr('src', imgHost + imagePath);
         
-        map = initMap({data: {
+        map = S.map({data: {
             isSearchMap: false,
             shopName: shopInfo.shopName,
             tel: shopInfo.tel,
@@ -2144,7 +2340,7 @@ S.initInfo = function ($container, pageType, params)
             {
                 var coords = map.mapPoint,
                     formData = parseForm($form);
-                map = initMap({data: {
+                map = S.map({data: {
                     isSearchMap: false,
                     shopName: formData.shopName,
                     tel: formData.tel,
@@ -2384,8 +2580,43 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             $('<span></span>').data('id', id).text(category.foodCategoryName + ' (' + category.foods.length + ')').appendTo($foodClassBox);
         }
         $foodClass = $foodClassBox.find('span');
+        
+        var foodNameTpl = Handlebars.compile(Hualala.TplLib.get('tpl_food_name'));
+        $foodName.html(foodNameTpl({classifiedFoods: classifiedFoods}));
+        initFoodChosen();
         $menu.appendTo($container);
     });
+    
+    function initFoodChosen() 
+    {
+        var matcher = (new Pymatch([]));
+        var sections = foods;
+        var getMatchedFn = function (searchText) {
+            matcher.setNames(_.map(sections, function (el) {
+                return IX.inherit(el, {
+                    name : el.foodName
+                });
+            }));
+            var matchedSections = matcher.match(searchText);
+            var matchedOptions = {};
+            _.each(matchedSections, function (el, i) {
+                matchedOptions[el[0].foodID] = true;
+            });
+            return matchedOptions;
+        };
+        $foodName.chosen({
+            width : '200px',
+            placeholder_text : "选择或输入菜品名称",
+            // max_selected_options: 1,
+            no_results_text : "抱歉，没有相关菜品！",
+            allow_single_deselect : true,
+            getMatchedFn : getMatchedFn
+        }).change(function()
+        {
+            searchFood();
+        });
+    }
+    
     //页面滚动时加载更多菜品
     $(window).on('scroll', function(e)
     {
@@ -2407,7 +2638,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
     {
         var $target = $(e.target);
         //菜品过滤筛选
-        if($target.is('#foodSearch select, #foodSearch input[type=checkbox]'))
+        if($target.is('#takeawayTag , #foodSearch input[type=checkbox]'))
         {
             searchFood();
         }
@@ -2420,20 +2651,41 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         //修改菜品图片
         if($target.is('.food-pic input'))
         {
-            var $foodPic = $('.food-pic');
+            var $foodPic = $editFood.filter('.food-pic');
             if($target.val())
             {
                 $foodPic.addClass('loading');
                 previewImg($target[0], $foodPic.find('img'));
                 $foodPic.submit();
-                setTimeout(function()
-                {
-                    $foodPic.removeClass('loading');
-                }, 5000);
             }
         }
         
     });
+    
+    top.imgCallback = function(rsp)
+    {
+        var $foodPic = $editFood.filter('.food-pic');
+        var json = $.parseJSON(rsp),
+            status = json.status;
+        if(status == 'success')
+        {
+            var url = json.url,
+                imageHWP = json.imageHWP || '';
+            ef.imgePath = url;
+            if(imageHWP) ef.imageHWP = imageHWP;
+            if(!FileReader)
+            {
+                $foodPic.find('img').attr('src', imgHost + url.replace(/\.\w+$/, (imageHWP ? '=200x' + Math.round(200 * imageHWP) : '') + '$&?quality=70'));
+            }
+        }
+        else
+        {
+            topTip({msg: status + '：菜品图片上传失败'});
+        }
+        $foodPic.removeClass('loading');
+        $('#imgResponse').remove();
+    }
+    
     //图片上传本地预览
     function previewImg(fileInput, $img)
     {
@@ -2454,9 +2706,10 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         food = findFood($this.data('cid'), $this.data('id'));
         //菜品图标：招、荐、新
         var foodIcos = ['isSpecialty', 'isRecommend', 'isNew'],
-            path = food.imgePath;
+            path = food.imgePath,
+            imageHWP = food.imageHWP;
         
-        food.foodPic = path ? imgHost + path + '?quality=70' : imgRoot + 'food_bg.png';
+        food.foodPic = path ? imgHost + path.replace(/\.\w+$/, (imageHWP ? '=200x' + Math.round(200 * food.imageHWP) : '') + '$&?quality=70') : imgRoot + 'food_bg.png';
         //辣度
         food.hotTag1 = imgRoot + 'hottag1.png';
         food.hotTag2 = imgRoot + 'hottag2.png';
@@ -2562,28 +2815,28 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             renderFoods();
         }
         //搜索过滤菜品
-        if($target.is('#btnSearchFood'))
+        /*if($target.is('#btnSearchFood'))
         {
             searchFood();
-        }
+        }*/
         
     });
     
-    $foodName.on('keydown', function(e)
+    /*$foodName.on('keydown', function(e)
     {
         e.keyCode == 13 && searchFood();
-    });
+    });*/
     //过滤筛选菜品UI
     function searchFood()
     {
         var $checked = $chekbox.filter(':checked'),
             takeawayTag = $.trim($takeawayTag.val()),
-            foodName = $.trim($foodName.val());
-        if(takeawayTag || foodName || $checked.length)
+            foodID = $.trim($foodName.val());
+        if(takeawayTag || foodID || $checked.length)
         {
             searchParams = {};
             if(takeawayTag) searchParams.takeawayTag = takeawayTag;
-            if(foodName) searchParams.foodName = foodName;
+            if(foodID) searchParams.foodID = foodID;
             $checked.each(function ()
             {
                 if(this.id == 'isHasImage')
@@ -2640,7 +2893,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         {
             result = $.grep(result, function (food)
             {
-                return p == 'foodName' ? food[p].indexOf(searchParams[p]) > -1 : food[p] == searchParams[p];
+                return food[p] == searchParams[p];
             });
         }
         
@@ -2706,7 +2959,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             var hwp = food.imageHWP, min = 92,
                 w = hwp > 1 ? min : Math.round(min / hwp),
                 h = hwp > 1 ? Math.round(min * hwp) : min;
-            food.imgSrc = imgHost + path.replace(/\.\w+$/, '=' + h + 'x' + w + '$&' + '?quality=70');
+            food.imgSrc = imgHost + path.replace(/\.\w+$/, (hwp ? '=' + w + 'x' + h : '') + '$&?quality=70');
         }
         else
             food.imgSrc = imgRoot + 'dino80.png';
@@ -2742,203 +2995,6 @@ function throttle(method, context)
 
 
 
-
-
-
-
-
-
-;
-;(function($) 
-{
-	var defaults = {
-            data : {
-                isSearchMap: false,
-                keyword: '',
-                shopName: '',
-                tel: '',
-                address: '',
-                city: '',
-                area: '',
-                lng: '',
-                lat: ''
-            },
-            searchBox: '.search-box',
-            mapResult: '.map-result',
-            //mapContainer: '#shopMap',
-            mapCanvasId: 'mapCanvas',
-            load: function() { },
-            serach: function() { }
-        };
-	function ShopMap(options)
-    {
-        this.cfg = $.extend({}, defaults, options);
-        //this.$shopMap = $(mapContainer);
-        this.sContent = '';
-        this.$searchBox = $(this.cfg.searchBox);
-        this.$mapResult = $(this.cfg.mapResult);
-        this.map = '';
-        this.searchArea = true;
-        this.mapPoint = {};
-        
-    }
-	ShopMap.prototype = 
-    {
-        init: function()
-        {
-            var self = this,
-                markerTrick = false,
-                mapParams = self.cfg.data;
-            self.map = new BMap.Map(self.cfg.mapCanvasId);
-            //添加默认缩放平移控件
-            self.map.addControl(new BMap.NavigationControl());
-            self.map.enableScrollWheelZoom();
-            self.sContent = [
-                '<dl class="map-shop-info">',
-                    '<dt>' + mapParams.shopName + '</dt>',
-                    '<dd>',
-                        '<p><span>电话：</span>' + mapParams.tel + '</p>',
-                        '<p><span>地址：</span>' + mapParams.address + '</p>',
-                    '</dd>',
-                '</dl>'
-            ].join('');
-            
-            self[(mapParams.isSearchMap || !mapParams.lng || !mapParams.lat ? 'search' : 'load') + 'Map'](mapParams);
-            
-            if(self.$searchBox[0])
-            {
-                var $keyword = self.$searchBox.find('.map-keyword'),
-                    $searchBtn = self.$searchBox.find('.map-search-btn'),
-                    searchParams = $.extend({}, self.cfg.data);
-                $searchBtn.on('click', function ()
-                {
-                    searchParams.keyword = $.trim($keyword.val());
-                    self.searchMap(searchParams);
-                });
-            }
-            
-            
-            return this;
-        },
-        loadMap: function(data)
-        {
-            var self = this;
-            data = data || self.self.cfg.data;
-            self.map.centerAndZoom(new BMap.Point(data.lng, data.lat), 14);
-            self.map.enableScrollWheelZoom();
-
-            var marker = new BMap.Marker(new BMap.Point(data.lng, data.lat), 
-                {
-                    enableMassClear: true,
-                    raiseOnDrag: true
-                });
-            marker.enableDragging();
-            self.map.addOverlay(marker);
-            marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
-           /* map.addEventListener("click", function(e){
-                if(!(e.overlay)){
-                    map.clearOverlays();
-                    marker.show();
-                    map.addOverlay(marker);
-                    marker.setPosition(e.point);
-                    setResult(e.point.lng, e.point.lat);
-                }
-            });*/
-            marker.addEventListener("click", function(e)
-            {
-                 marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
-            });
-            marker.addEventListener("dragend", function(e)
-            {
-                self.setResult(e.point.lng, e.point.lat);
-            });
-            self.setResult(data.lng, data.lat);
-        },
-        searchMap : function (data)
-        {
-            var self = this;
-            data = data || self.cfg.data;
-            //self.map.centerAndZoom(new BMap.Point(116.404, 39.915), 14);
-            //self.map.enableScrollWheelZoom();
-                
-            var local = new BMap.LocalSearch(self.map, {
-                renderOptions: {map: self.map},
-                pageCapacity: 1,
-                onInfoHtmlSet : function (poi) {
-                    poi.marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
-                    //target.openInfoWindow(infoWindow);
-                },
-                onMarkersSet : function (poi) {
-                    //console.info(poi.marker.infoWindow);
-                }
-            });
-            local.search(data.keyword || data.address || data.area || data.city);
-
-            local.setSearchCompleteCallback(function(results)
-            {
-                if(local.getStatus() !== BMAP_STATUS_SUCCESS)
-                {
-                    if(self.searchArea)
-                    {
-                        local.search(data.area);
-                        self.searchArea = false;
-                    } else
-                    {
-                        local.search(data.city);
-                    }
-                } else 
-                {
-                    //marker.hide();
-                }
-            });
-            local.setMarkersSetCallback(function(pois)
-            {
-                for(var i = pois.length; i--;)
-                {
-                    var marker = pois[i].marker;
-                    marker.enableDragging();
-                    self.setResult(marker.point.lng, marker.point.lat);
-                    //var mapParams = {
-                    //  width : 250,     // 信息窗口宽度
-                    //  height: 100,     // 信息窗口高度
-                    //  title : "Hello"  // 信息窗口标题
-                    //}
-                    //var infoWindow = new BMap.InfoWindow("World", mapParams);  // 创建信息窗口对象
-                    //map.openInfoWindow(infoWindow,point); //开启信息窗口
-                    marker.openInfoWindow(new BMap.InfoWindow(self.sContent));
-                    marker.addEventListener("click", function(e)
-                    {
-                       // markerTrick = true;
-                        var pos = this.getPosition();
-                        self.setResult(pos.lng, pos.lat);
-                    });
-                    marker.addEventListener("dragend", function(e)
-                    {
-                        self.setResult(e.point.lng, e.point.lat);
-                    });
-                }
-            });
-            
-        },
-         /*
-         * setResult : 定义得到标注经纬度后的操作
-         * 请修改此函数以满足您的需求
-         * lng: 标注的经度
-         * lat: 标注的纬度
-         */
-        setResult: function (lng, lat)
-        {
-            var self = this;
-            self.mapPoint = { lng: lng, lat: lat };
-            self.$mapResult[0] && self.$mapResult.html('您店铺的经度：' + lng + '    纬度： ' + lat);
-        }
-	}
-    IX.ns("Hualala.Shop");
-    Hualala.Shop.map = function(options) 
-    { 
-        return new ShopMap(options).init(); 
-    };
-}(jQuery));
 
 
 
@@ -8269,8 +8325,10 @@ function throttle(method, context)
 				logo : Hualala.Global.getDefaultImage('logo'),
 			},
 			footer = {
-				aboutPath : Hualala.PageRoute.createPath("about") || '#',
-				contactPath : Hualala.PageRoute.createPath("contact") || '#',
+				// aboutPath : Hualala.PageRoute.createPath("about") || '#',
+				// contactPath : Hualala.PageRoute.createPath("contact") || '#',
+				aboutPath : Hualala.Global.getAboutUsUrl() || '#',
+				contactPath : Hualala.Global.getContactUsUrl() || '#',
 				gozapLogo : Hualala.Global.getDefaultImage('gozap')
 			};
 			return {

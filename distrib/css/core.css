@@ -1245,6 +1245,130 @@ body.login .panel-login #login_sub {
   /*width: 64px; height:64px;*/
   background-position: -72px -491px;
 }
+#ix_wrapper .banner .jumbotron {
+  position: relative;
+  padding: 0;
+}
+#ix_wrapper .banner .jumbotron > .container {
+  position: relative;
+  height: 394px;
+  padding-top: 0px;
+}
+#ix_wrapper .banner .jumbotron > .container h1,
+#ix_wrapper .banner .jumbotron > .container p {
+  position: absolute;
+  font-size: 56px;
+  font-size: 4.66666667rem;
+  font-weight: 400;
+}
+#ix_wrapper .banner .jumbotron .ad-pic {
+  position: absolute;
+}
+#ix_wrapper .about-us,
+#ix_wrapper .contact-us,
+#ix_wrapper .download {
+  margin-top: 120px;
+}
+#ix_wrapper .about-us .desc,
+#ix_wrapper .contact-us .desc,
+#ix_wrapper .download .desc {
+  padding-top: 30px;
+}
+#ix_wrapper .about-us .desc h3,
+#ix_wrapper .contact-us .desc h3,
+#ix_wrapper .download .desc h3 {
+  margin-bottom: 32px;
+  font-size: 18px;
+  font-size: 1.5rem;
+  color: #787878;
+  font-weight: 700;
+}
+#ix_wrapper .about-us .desc p,
+#ix_wrapper .contact-us .desc p,
+#ix_wrapper .download .desc p,
+#ix_wrapper .about-us .desc address,
+#ix_wrapper .contact-us .desc address,
+#ix_wrapper .download .desc address {
+  margin-bottom: 3rem;
+  color: #333333;
+  font-size: 14px;
+  font-size: 1.16666667rem;
+  line-height: 24px;
+  font-weight: 400;
+}
+#ix_wrapper .about-us .desc .btn-success,
+#ix_wrapper .contact-us .desc .btn-success,
+#ix_wrapper .download .desc .btn-success {
+  margin-top: 2rem;
+  padding: 15px 80px;
+  font-size: 32px;
+  font-size: 2.66666667rem;
+}
+#ix_wrapper .about-us .jumbotron {
+  background: #008fd5;
+}
+#ix_wrapper .about-us .jumbotron > .container p {
+  left: 0;
+  top: 0;
+  margin-left: 90px;
+  margin-top: 110px;
+  font-size: 56px;
+  font-size: 4.66666667rem;
+  font-weight: 400;
+  color: #fff;
+}
+#ix_wrapper .about-us .jumbotron .ad-pic {
+  right: 90px;
+  bottom: 0;
+  width: 551px;
+  height: 367px;
+  background: url("../img/about_bg.png") no-repeat 0 0 transparent;
+}
+#ix_wrapper .contact-us .jumbotron {
+  background: #ffcc00;
+}
+#ix_wrapper .contact-us .jumbotron > .container h1,
+#ix_wrapper .contact-us .jumbotron > .container p {
+  position: absolute;
+  left: 650px;
+  top: 125px;
+  font-size: 56px;
+  font-size: 4.66666667rem;
+  color: #633d21;
+}
+#ix_wrapper .contact-us .jumbotron > .container p {
+  font-size: 36px;
+  font-size: 3rem;
+  top: 206px;
+}
+#ix_wrapper .contact-us .jumbotron .ad-pic {
+  left: 120px;
+  bottom: 0;
+  width: 511px;
+  height: 367px;
+  background: url("../img/contact_us.png") no-repeat 0 0 transparent;
+}
+#ix_wrapper .download .jumbotron > .container h1,
+#ix_wrapper .download .jumbotron > .container p {
+  position: absolute;
+  left: 120px;
+  top: 125px;
+  font-size: 56px;
+  font-size: 4.66666667rem;
+  color: #633d21;
+}
+#ix_wrapper .download .jumbotron > .container p {
+  font-size: 36px;
+  font-size: 3rem;
+  top: 206px;
+}
+#ix_wrapper .download .jumbotron .ad-pic {
+  right: 40px;
+  bottom: 20px;
+  width: 511px;
+  height: 367px;
+  background: url("../img/pc_download.png") no-repeat 0 0 transparent;
+}
 .site-toptip {
   position: fixed;
   z-index: 99999;
@@ -2329,26 +2453,23 @@ body.login .panel-login #login_sub {
 .shop-list-item .shop-business p {
   line-height: 24px;
 }
-.shop-list-item .icon-commonreserve_order,
-.shop-list-item .icon-justeat_order,
-.shop-list-item .icon-spot_order {
+.shop-list-item .icon-justeat_order {
   display: inline-block;
+  /*width: 32px; height:32px;*/
+  background-position: -160px -160px;
   width: 32px;
   height: 32px;
   vertical-align: middle;
   margin-right: 1.5rem;
 }
-.shop-list-item .icon-commonreserve_order {
-  /*width: 32px; height:32px;*/
-  background-position: -120px -40px;
-}
-.shop-list-item .icon-justeat_order {
-  /*width: 32px; height:32px;*/
-  background-position: -160px -160px;
-}
 .shop-list-item .icon-spot_order {
+  display: inline-block;
   /*width: 32px; height:32px;*/
   background-position: -120px -120px;
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  margin-right: 1.5rem;
 }
 .shop-service-form .input-group-addon {
   /*.x-adjust-leading-to(2, 12px, 2px);*/
@@ -2636,17 +2757,14 @@ form.edit-mode .control-label.no-require:before,
 }
 .shop-menu .food-search select,
 .shop-menu .food-search label,
-.shop-menu .food-search .input-group {
+.shop-menu .food-search .chosen-container {
   margin: 0 30px 15px 0;
   font-weight: normal;
   vertical-align: middle;
 }
-.shop-menu .food-search input[type=checkbox] {
+.shop-menu .food-search input {
   margin: 0;
   vertical-align: middle;
-}
-.shop-menu .food-search .input-group {
-  margin-right: 0;
 }
 .shop-menu #foodSearchInfo {
   margin-bottom: 12px;
@@ -2658,9 +2776,9 @@ form.edit-mode .control-label.no-require:before,
   border: 1px solid #ddd;
   border-radius: 4px 4px 0 0;
   /*td:first-child+td+td, th:first-child+th+th
-		{ width: auto; min-width: 220px }
-		td:first-child+td+td+td, th:first-child+th+th+th
-		{ width: 60px; min-width: 60px }*/
+        { width: auto; min-width: 220px }
+        td:first-child+td+td+td, th:first-child+th+th+th
+        { width: 60px; min-width: 60px }*/
 }
 .shop-menu .tbl-foods thead th {
   padding: 15px;
@@ -2809,7 +2927,9 @@ form.edit-mode .control-label.no-require:before,
 #editFood .form-food .ico-food {
   font-style: normal;
   color: #fff;
-  padding: 2px 4px 3px 4px;
+  line-height: 1;
+  display: inline-block;
+  padding: 3px;
   margin-right: 4px;
 }
 #editFood .form-food .ico-zhao {
