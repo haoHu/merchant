@@ -62,8 +62,43 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             $('<span></span>').data('id', id).text(category.foodCategoryName + ' (' + category.foods.length + ')').appendTo($foodClassBox);
         }
         $foodClass = $foodClassBox.find('span');
+        
+        var foodNameTpl = Handlebars.compile(Hualala.TplLib.get('tpl_food_name'));
+        $foodName.html(foodNameTpl({classifiedFoods: classifiedFoods}));
+        initFoodChosen();
         $menu.appendTo($container);
     });
+    
+    function initFoodChosen() 
+    {
+        var matcher = (new Pymatch([]));
+        var sections = foods;
+        var getMatchedFn = function (searchText) {
+            matcher.setNames(_.map(sections, function (el) {
+                return IX.inherit(el, {
+                    name : el.foodName
+                });
+            }));
+            var matchedSections = matcher.match(searchText);
+            var matchedOptions = {};
+            _.each(matchedSections, function (el, i) {
+                matchedOptions[el[0].foodID] = true;
+            });
+            return matchedOptions;
+        };
+        $foodName.chosen({
+            width : '200px',
+            placeholder_text : "选择或输入菜品名称",
+            // max_selected_options: 1,
+            no_results_text : "抱歉，没有相关菜品！",
+            allow_single_deselect : true,
+            getMatchedFn : getMatchedFn
+        }).change(function()
+        {
+            searchFood();
+        });
+    }
+    
     //页面滚动时加载更多菜品
     $(window).on('scroll', function(e)
     {
@@ -85,7 +120,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
     {
         var $target = $(e.target);
         //菜品过滤筛选
-        if($target.is('#foodSearch select, #foodSearch input[type=checkbox]'))
+        if($target.is('#takeawayTag , #foodSearch input[type=checkbox]'))
         {
             searchFood();
         }
@@ -98,20 +133,41 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         //修改菜品图片
         if($target.is('.food-pic input'))
         {
-            var $foodPic = $('.food-pic');
+            var $foodPic = $editFood.filter('.food-pic');
             if($target.val())
             {
                 $foodPic.addClass('loading');
                 previewImg($target[0], $foodPic.find('img'));
                 $foodPic.submit();
-                setTimeout(function()
-                {
-                    $foodPic.removeClass('loading');
-                }, 5000);
             }
         }
         
     });
+    
+    top.imgCallback = function(rsp)
+    {
+        var $foodPic = $editFood.filter('.food-pic');
+        var json = $.parseJSON(rsp),
+            status = json.status;
+        if(status == 'success')
+        {
+            var url = json.url,
+                imageHWP = json.imageHWP || '';
+            ef.imgePath = url;
+            if(imageHWP) ef.imageHWP = imageHWP;
+            if(!FileReader)
+            {
+                $foodPic.find('img').attr('src', imgHost + url.replace(/\.\w+$/, (imageHWP ? '=200x' + Math.round(200 * imageHWP) : '') + '$&?quality=70'));
+            }
+        }
+        else
+        {
+            topTip({msg: status + '：菜品图片上传失败'});
+        }
+        $foodPic.removeClass('loading');
+        $('#imgResponse').remove();
+    }
+    
     //图片上传本地预览
     function previewImg(fileInput, $img)
     {
@@ -132,9 +188,10 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         food = findFood($this.data('cid'), $this.data('id'));
         //菜品图标：招、荐、新
         var foodIcos = ['isSpecialty', 'isRecommend', 'isNew'],
-            path = food.imgePath;
+            path = food.imgePath,
+            imageHWP = food.imageHWP;
         
-        food.foodPic = path ? imgHost + path + '?quality=70' : imgRoot + 'food_bg.png';
+        food.foodPic = path ? imgHost + path.replace(/\.\w+$/, (imageHWP ? '=200x' + Math.round(200 * food.imageHWP) : '') + '$&?quality=70') : imgRoot + 'food_bg.png';
         //辣度
         food.hotTag1 = imgRoot + 'hottag1.png';
         food.hotTag2 = imgRoot + 'hottag2.png';
@@ -240,28 +297,28 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             renderFoods();
         }
         //搜索过滤菜品
-        if($target.is('#btnSearchFood'))
+        /*if($target.is('#btnSearchFood'))
         {
             searchFood();
-        }
+        }*/
         
     });
     
-    $foodName.on('keydown', function(e)
+    /*$foodName.on('keydown', function(e)
     {
         e.keyCode == 13 && searchFood();
-    });
+    });*/
     //过滤筛选菜品UI
     function searchFood()
     {
         var $checked = $chekbox.filter(':checked'),
             takeawayTag = $.trim($takeawayTag.val()),
-            foodName = $.trim($foodName.val());
-        if(takeawayTag || foodName || $checked.length)
+            foodID = $.trim($foodName.val());
+        if(takeawayTag || foodID || $checked.length)
         {
             searchParams = {};
             if(takeawayTag) searchParams.takeawayTag = takeawayTag;
-            if(foodName) searchParams.foodName = foodName;
+            if(foodID) searchParams.foodID = foodID;
             $checked.each(function ()
             {
                 if(this.id == 'isHasImage')
@@ -318,7 +375,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         {
             result = $.grep(result, function (food)
             {
-                return p == 'foodName' ? food[p].indexOf(searchParams[p]) > -1 : food[p] == searchParams[p];
+                return food[p] == searchParams[p];
             });
         }
         
@@ -384,7 +441,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             var hwp = food.imageHWP, min = 92,
                 w = hwp > 1 ? min : Math.round(min / hwp),
                 h = hwp > 1 ? Math.round(min * hwp) : min;
-            food.imgSrc = imgHost + path.replace(/\.\w+$/, '=' + h + 'x' + w + '$&' + '?quality=70');
+            food.imgSrc = imgHost + path.replace(/\.\w+$/, (hwp ? '=' + w + 'x' + h : '') + '$&?quality=70');
         }
         else
             food.imgSrc = imgRoot + 'dino80.png';

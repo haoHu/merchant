@@ -64,7 +64,7 @@ Hualala.Shop.initCreate = function ($wizard)
                 validators: {
                     notEmpty: { message: '店铺地址不能为空' },
                     stringLength: {
-                        min: 6,
+                        min: 2,
                         max: 100,
                         message: '地址长度必须在6到100个字符之间'
                     }

@@ -472,7 +472,7 @@
         var G = Hualala.Global,
             swfRoot = G.SWF_ROOT + '/',
             swfSrc = swfRoot + 'hualalaImageUpload.swf',
-            args = 'swfId=txsc&amp;uploadDataFieldName=upload&amp;uploadSvrURL=http://file.hualala.com/upload&amp;iconsURL=' + swfRoot +'icons&amp;avaQuality=70&amp;minImgFRule=100&amp;saveImgRule=600';
+            args = 'swfId=txsc&uploadDataFieldName=upload&uploadSvrURL=http://file.hualala.com/upload&iconsURL=' + swfRoot +'icons&avaQuality=70&minImgFRule=100&saveImgRule=600';
             
         var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_uploadimg')),
             $tpl = $(tpl({swfSrc: swfSrc, args: args}));

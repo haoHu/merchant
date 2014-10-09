@@ -50,42 +50,42 @@
 		// 退出
 		{name : "logout", path : "/logout.htm", reg : null},
 		// 登陆
-		{name : "login", path : "/login.htm", reg : null},
+		// {name : "login", path : "/login.htm", reg : null},
 
 		// home page主页
-		{name : "main", path : "/#home", reg : /home$/},
+		// {name : "main", path : "/#home", reg : /home$/},
 
 		// 店铺管理主页		
-		{name : "shop", path : "/#shop", reg : /shop$/},
+		// {name : "shop", path : "/#shop", reg : /shop$/},
 		// 创建店铺
-		{name : "shopCreate", path : "/#shop/create", reg : /shop\/create$/},
+		// {name : "shopCreate", path : "/#shop/create", reg : /shop\/create$/},
 		// 店铺信息管理
-		{name : "shopInfo", path : "/#shop/{id}/info", reg : /shop\/(.*)\/info$/},
+		// {name : "shopInfo", path : "/#shop/{id}/info", reg : /shop\/(.*)\/info$/},
 		// 店铺菜单管理
-		{name : "shopMenu", path : "/#shop/{id}/menu", reg : /shop\/(.*)\/menu$/},
+		// {name : "shopMenu", path : "/#shop/{id}/menu", reg : /shop\/(.*)\/menu$/},
 
 		// 店铺功能设置页面
-		{name : "setting", path : "/#setting", reg : /setting$/},
+		// {name : "setting", path : "/#setting", reg : /setting$/},
 
 		// 结算账户页面
-		{name : "account", path : "/#account", reg : /account$/},
+		// {name : "account", path : "/#account", reg : /account$/},
 		// 结算账户详情设置页面
-		{name : "accountDetail", path : "/#account/{id}/detail", reg : /account\/(.*)\/detail$/},
+		// {name : "accountDetail", path : "/#account/{id}/detail", reg : /account\/(.*)\/detail$/},
 
 		// 账号管理页面
-		{name : "user", path : "/#user", reg : /user$/},
+		// {name : "user", path : "/#user", reg : /user$/},
 
 		// 订单报表页面
-		{name : "order", path : "/#order", reg : /order$/},
+		// {name : "order", path : "/#order", reg : /order$/},
 
 		// PC客户端下载页面
-		{name : "pcclient", path : "/#download", reg : /download$/},
+		// {name : "pcclient", path : "/#download", reg : /download$/},
 
 		// 关于商户中心
-		{name : "about", path : "/#about", reg : /about$/},
+		{name : "about", path : "/about.htm", reg : null},
 
 		// 联系我们
-		{name : "contact", path : "/#contact", reg : /contact$/}
+		{name : "contact", path : "/contact.htm", reg : null}
 	];
 	// 设置URL Map
 	urlEngine.mappingUrls(_.union([
@@ -121,8 +121,19 @@
 		return urlEngine.genUrl("login");
 	};
 
+	// get logout page url
 	Hualala.Global.getLogoutJumpToUrl = function () {
 		return urlEngine.genUrl("logout");
+	};
+
+	// get about us url
+	Hualala.Global.getAboutUsUrl = function () {
+		return urlEngine.genUrl("about");
+	};
+
+	// get contact us url
+	Hualala.Global.getContactUsUrl = function () {
+		return urlEngine.genUrl("contact");
 	};
 
 	// get pcClient Download page url

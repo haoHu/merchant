@@ -75,7 +75,7 @@
 			'</div>',
 			// Footer
              // @NOTE: 开发阶段隐藏页脚
-			'<div class="ix-footer navbar-fixed-bottom hidden">',
+			'<div class="ix-footer navbar-fixed-bottom ">',
 				'<div class="container">',
 					'<p class="links">',
 						'<a href="{{footer.aboutPath}}">关于哗啦啦商户中心</a>',

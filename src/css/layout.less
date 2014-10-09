@@ -310,3 +310,55 @@ body.login {
 		.icon-sogou {.x-icon-64_sogou();}
 	}
 }
+
+// Statistic Page About，Contact
+#ix_wrapper {
+	@about-bg : #008fd5;
+	@contact-bg : #fc0;
+	.banner {
+		.jumbotron {position : relative; padding : 0;}
+		.jumbotron > .container {
+			position: relative; height : 394px; padding-top : 0px;
+			h1, p {position : absolute; .x-font-size(56px); font-weight: 400; }
+		}
+		.jumbotron .ad-pic {position : absolute;}
+	}
+	.about-us, .contact-us, .download {
+		margin-top : 120px;
+		.desc {
+			padding-top : 30px;
+			h3 {margin-bottom : 32px; .x-font-size(18px); color : @x-font-color-midGray; font-weight: 700;}
+			p, address {margin-bottom : 3rem; color : @x-base-font-color; .x-font-size(14px); .x-adjust-leading-to(2, 12px); font-weight: 400; }
+			.btn-success {margin-top: 2rem; padding : 15px 80px; .x-font-size(32px);}
+		}
+	}
+	.about-us {
+		.jumbotron {
+			background: @about-bg;
+			> .container {
+				p {left : 0; top : 0; margin-left : 90px; margin-top : 110px; .x-font-size(56px); font-weight: 400; color : #fff;}
+			}
+			.ad-pic {right : 90px; bottom : 0; .x-area-size(551px, 367px); background : url("../img/about_bg.png") no-repeat 0 0 transparent;}
+		}
+	}
+	.contact-us {
+		.jumbotron {
+			background: @contact-bg;
+			> .container {
+				h1, p {position : absolute; left : 650px; top : 125px; .x-font-size(56px); color : darken(#89552E, 10%);}
+				p {.x-font-size(36px); top : 206px;}
+			}
+			.ad-pic {left : 120px; bottom : 0; .x-area-size(511px, 367px); background : url("../img/contact_us.png") no-repeat 0 0 transparent;}
+		}
+	}
+	.download {
+		.jumbotron {
+			> .container {
+				h1, p {position : absolute; left : 120px; top : 125px; .x-font-size(56px); color : darken(#89552E, 10%);}
+				p {.x-font-size(36px); top : 206px;}
+			}
+			.ad-pic {right : 40px; bottom : 20px; .x-area-size(511px, 367px); background : url("../img/pc_download.png") no-repeat 0 0 transparent;}
+		}
+	}
+}
+

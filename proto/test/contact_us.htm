@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="UTF-8">
+		<!--IE=edge表示强制使用IE最新内核,
+			chrome=1表示当遇到chrome浏览器安装了针对IE6,7,8等的插件，就使用chrome内核来进行渲染
+		-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<!--针对360浏览器这种双核浏览器，我们通过meta标签设置，让浏览器强制以webkit内核进行渲染-->
+		<meta name="renderer" content="webkit">
+		<!--针对移动设备触摸屏设置-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>哗啦啦商户管理系统</title>
+
+		<!--bootstrap 样式主文件-->
+		<link href="../../src/js/dep/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+	<!-- Include DatePicker Stylesheet -->
+	<link href="../../src/js/datepicker/css/datetimepicker.css" rel="stylesheet">
+
+	<!-- Include TimePicker Stylesheet -->
+	<link href="../../src/js/timepicker/css/timepicker.css" rel="stylesheet">
+
+	<!-- Include Validator Stylesheet -->
+	<link href="../../src/js/validator/css/validator.css" rel="stylesheet">
+
+	
+
+	<!-- Include Site Stylesheet -->
+	<link href="../../src/css/core.less" rel="stylesheet/less" type="text/css" />
+	<script src="../../tool/less-1.4.2.min.js"></script>
+	<script>
+		window.IXDEBUG = true;
+	</script>
+
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="../../src/js/dep/html5shiv/html5shiv.js"></script>
+			<script src="../../src/js/dep/Respond/respond.matchmedia.addListener.src.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+		<div id="ix_wrapper">
+			<div class="navbar navbar-default navbar-fixed-top ix-header" role="navigation">
+				<div class="header-line clearfix">
+					<div class="container">
+						<div class="hidden-xs pull-left">
+							<a href="../proto/#download" target="_blank"><span class="icon-pcclient"></span>哗啦啦PC客户端</a>
+							<a href="http://www.hualala.com" target="_blank"><span class="icon-jumpsite"></span>访问哗啦啦网站</a>
+						</div>
+						<div class="pull-right">
+							<span class="hello">Hi</span><span class="user">temp1,</span><a class="logout" href="/proto/logout.htm">退出</a>
+						</div>
+					</div>
+				</div>
+				<div class="container">
+					<div class="navbar-header">
+						<a class="navbar-brand logo" href="../proto/#home" title="哗啦啦商户中心"><img alt="哗啦啦商户中心" src="../../src/img/logo.png"></a>
+						<h1 class="ix-group-brand">豆捞坊</h1>
+					</div>
+				</div>
+			</div>
+			<div class="ix-body contact-us">
+				<div class="banner">
+					<div class="jumbotron">
+						<div class="container">
+							<h1>成长·共赢</h1>
+							<p>加入我们见证成功</p>
+							<div class="ad-pic"></div>
+						</div>
+					</div>
+				</div>
+				<div class="container desc">
+					<h3>联系我们</h3>
+					<address>
+						北京多来点信息技术有限公司（北京总部）<br/>
+						服务热线:4006-527-557<br/>
+						地址：北京市西城区西直门西环广场（凯德Mall）T1-22层<br/>
+						邮编：100044<br/>
+						电话：(86)010-58302536，38<br/>
+						传真：(86)010-58302583<br/>
+						mail: info@hualala.com<br/>
+					</address>
+					<address>
+						北京多来点信息技术有限公司（上海分公司）<br/>
+						地址：上海市徐汇区凯旋路3500号华苑大厦1幢27E<br/>
+						邮编：200030<br/>
+						电话：(86)021-64148077，78，79<br/>
+						传真：(86)021-64148079转803<br/>
+						mail: info@hualala.com<br/>
+					</address>
+				</div>
+			</div>
+			<div class="ix-footer navbar-fixed-bottom ">
+				<div class="container">
+					<p class="links">
+						<a href="/proto/about.htm">关于哗啦啦商户中心</a>
+						<a href="/proto/contact.htm">联系我们</a>
+					</p>
+					<p class="copyright"><img alt="Gozap" src="../src/img/gozap.png"><span class="">&nbsp;旗下网站&nbsp;©&nbsp;2014&nbsp;hualala.com&nbsp;京IPC备14019284号-3</span></p>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+		
+		<!--jQuery (necessary for Bootstrap's JavaScript plugins and merchant project)-->
+		<script src="../../src/js/dep/jquery/jquery-1.11.1.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="../../src/js/dep/bootstrap/js/bootstrap.js"></script>
+
+		<!-- Include underscore lib -->
+		<script src="../../src/js/dep/underscore/underscore.js"></script>
+		<!-- Include handlebars -->
+		<script src="../../src/js/dep/handlebars/handlebars-v1.3.0.js"></script>
+
+		<!-- Include DatePicker -->
+		<script src="../../src/js/datepicker/datetimepicker.js"></script>
+		<script src="../../src/js/datepicker/local/datetimepicker.zh-CN.js"></script>
+		
+		
+		<!-- Include TimePicker -->
+		<script src="../../src/js/timepicker/timepicker.js"></script>
+
+		<!-- Include Validator -->
+		<script src="../../src/js/validator/validator.js"></script>
+		<script src="../../src/js/validator/local/validator.zh-CN.js"></script>
+
+		<!-- Include Common Lib Files for Hualala Shop Site -->
+		<!-- Include Stapes.js -->
+		<script src="../../src/js/common/stapes.js"></script>
+		<!-- <script src="../../src/js/common/numeric.js"></script> -->
+		<script src="../../src/js/common/math.js"></script>
+		<!-- Include ixutils.js -->
+		<script src="../../src/js/common/ixutils.js"></script>
+
+		<!-- Include commonFn.js -->
+		<script src="../../src/js/common/commonFn.js"></script>
+		<!-- Include Constants Defined (datatype.js,typedef.js) -->
+		<script src="../../src/js/common/typedef.js"></script>
+		<script src="../../src/js/common/datatype.js"></script>
+
+		<!-- Include router.js -->
+		<script src="../../src/js/common/router.js"></script>
+
+		<!-- Include PYMather -->
+		<script src="../../src/js/pymatch/pymatch.js"></script>
+		<script src="../../src/js/common/matcher.js"></script>
+		
+		<!-- 百度地图API -->
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.3"></script>
+		
+
+		<!-- Include callServer and test data JS -->
+		<script type="text/javascript" src="../test.js"></script>
+		<script type="text/javascript" src="../global-const.js"></script>
+		<script type="text/javascript" src="../global-url.js"></script>
+		<script type="text/javascript" src="../global-callserver-common.js"></script>
+		
+		<!-- Include Template Lib js -->
+		<script src="../../src/js/tpl/tpl.lib.js"></script>
+		<script src="../../src/js/tpl/tpl.shop.js"></script>
+		<script src="../../src/js/tpl/tpl.account.js"></script>
+		<script src="../../src/js/tpl/tpl.order.js"></script>
+		<!-- Include IXUI js -->
+		<script src="../../src/js/ui/ixui.js"></script>
+		<script src="../../src/js/ui/pager.js"></script>
+		<script src="../../src/js/ui/jquery.lazyload.js"></script>
+		<!-- <script src="../../src/js/ui/modal.js"></script> -->
+		
+		<script src="../../src/js/ui/switch.js"></script>
+		<script src="../../src/js/ui/chosen.jquery.js"></script>
+		<!-- Include wizard -->
+		<script src="../../src/js/ui/wizard.js"></script>
+
+		
+
+		<!-- Include Hualala Entry module -->
+		<script src="../../src/js/entry/entry.init.js"></script>
+
+		<!-- Include Hualala Shop module -->
+		<script src="../../src/js/shop/shop.query.model.js"></script>
+		<script src="../../src/js/shop/shop.query.view.js"></script>
+		<script src="../../src/js/shop/shop.query.controler.js"></script>
+		<!-- 地图控件 -->
+		<script src="../../src/js/shop/shop.map.js"></script>
+
+		<script src="../../src/js/shop/shop.list.model.js"></script>
+		<script src="../../src/js/shop/shop.list.view.js"></script>
+		<script src="../../src/js/shop/shop.list.controler.js"></script>
+		<script src="../../src/js/shop/shop.init.js"></script>
+
+		<!-- Include Hualala Shop Create -->
+		<script src="../../src/js/shop/shop.create.js"></script>
+		<!-- Include Hualala Shop Info -->
+		<script src="../../src/js/shop/shop.info.js"></script>
+		<!-- Include Hualala Shop Menu -->
+		<script src="../../src/js/shop/shop.menu.js"></script>
+
+		<!-- Include Hualala Setting module -->
+		<script src="../../src/js/setting/setting.mgr.js"></script>
+		<script src="../../src/js/setting/setting.init.js"></script>
+
+		<!-- Include Hualala Account module -->
+		<script src="../../src/js/account/account.list.model.js"></script>
+		<script src="../../src/js/account/account.list.view.js"></script>
+		<script src="../../src/js/account/account.list.controler.js"></script>
+		<script src="../../src/js/account/account.mgr.controler.js"></script>
+		<script src="../../src/js/account/account.mgr.view.js"></script>
+		<script src="../../src/js/account/account.init.js"></script>
+
+
+	<!-- Include Hualala Order module -->
+		<script src="../../src/js/order/order.list.model.js"></script>
+		<script src="../../src/js/order/order.list.view.js"></script>
+		<script src="../../src/js/order/order.list.controler.js"></script>
+		<script src="../../src/js/order/order.query.model.js"></script>
+		<script src="../../src/js/order/order.query.view.js"></script>
+		<script src="../../src/js/order/order.query.controler.js"></script>
+		<script src="../../src/js/order/order.init.js"></script>
+		
+
+		<!-- Include Hualala init -->
+		
+		<script src="../../src/js/common/merchant.layout.js"></script>
+		<script src="../../src/js/common/merchant.init.js"></script>
+		<script src="../../src/js/common/merchant.route.js"></script>
+
+		<script type="text/javascript">
+			// Test.readyToTest(function(){
+			// 	Hualala.init();
+			// });
+		</script>
+	</body>
+</html>

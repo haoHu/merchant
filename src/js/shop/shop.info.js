@@ -4,8 +4,7 @@ var G = Hualala.Global,
     U = Hualala.UI,
     S = Hualala.Shop,
     topTip = U.TopTip,
-    parseForm = Hualala.Common.parseForm,
-    initMap = Hualala.Shop.map;
+    parseForm = Hualala.Common.parseForm;
 // 初始化店铺店铺详情页面
 S.initInfo = function ($container, pageType, params)
 {
@@ -96,7 +95,7 @@ S.initInfo = function ($container, pageType, params)
                     validators: {
                         notEmpty: { message: '店铺地址不能为空' },
                         stringLength: {
-                            min: 6,
+                            min: 2,
                             max: 100,
                             message: '地址长度必须在6到100个字符之间'
                         }
@@ -147,7 +146,7 @@ S.initInfo = function ($container, pageType, params)
         imagePath = shopInfo.imagePath;
         imagePath && $img.attr('src', imgHost + imagePath);
         
-        map = initMap({data: {
+        map = S.map({data: {
             isSearchMap: false,
             shopName: shopInfo.shopName,
             tel: shopInfo.tel,
@@ -180,7 +179,7 @@ S.initInfo = function ($container, pageType, params)
             {
                 var coords = map.mapPoint,
                     formData = parseForm($form);
-                map = initMap({data: {
+                map = S.map({data: {
                     isSearchMap: false,
                     shopName: formData.shopName,
                     tel: formData.tel,

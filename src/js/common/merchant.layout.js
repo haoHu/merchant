@@ -79,8 +79,10 @@
 				logo : Hualala.Global.getDefaultImage('logo'),
 			},
 			footer = {
-				aboutPath : Hualala.PageRoute.createPath("about") || '#',
-				contactPath : Hualala.PageRoute.createPath("contact") || '#',
+				// aboutPath : Hualala.PageRoute.createPath("about") || '#',
+				// contactPath : Hualala.PageRoute.createPath("contact") || '#',
+				aboutPath : Hualala.Global.getAboutUsUrl() || '#',
+				contactPath : Hualala.Global.getContactUsUrl() || '#',
 				gozapLogo : Hualala.Global.getDefaultImage('gozap')
 			};
 			return {
