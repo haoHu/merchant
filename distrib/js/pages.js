@@ -2678,7 +2678,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         {
             var url = json.url,
                 imageHWP = json.imageHWP || '';
-            ef.imgePath = url;
+            ef.imagePath = url;
             if(imageHWP) ef.imageHWP = imageHWP;
             if(!FileReader)
             {
@@ -2802,6 +2802,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                 
                 modalEditFood.hide();
                 $.extend(food, ef);
+                if(ef.imagePath) food.imgePath = ef.imagePath;
                 food.foodIsActive = food.isActive;
                 updateFood(food);
                 $foods.empty();

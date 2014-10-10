@@ -1,4 +1,5 @@
 .account-schema {
+	*margin-bottom : 36px;
 	margin-bottom : 3rem;
 	.bank-card {width : 288px;}
 	.account-btns {
@@ -13,9 +14,9 @@
 }
 
 .account-detail {
-	> h4 { margin-bottom : 1.5rem; .x-font-size(16px); color : @x-font-color-midGray; font-weight: 700;}
+	> h4 { *margin-bottom : 18px; margin-bottom : 1.5rem; .x-font-size(16px); color : @x-font-color-midGray; font-weight: 700;}
 	.query-form {
-		padding-top : 1.5rem; margin-bottom:10px;
+		*padding-top : 18px; padding-top : 1.5rem; margin-bottom:10px;
 		// .form-group {margin-bottom : 5px}
 		.section {
 			position : relative;
@@ -33,19 +34,19 @@
 }
 
 .account-modal {
-	h5 {margin-bottom : 1rem;}
+	h5 {*margin-bottom : 12px; margin-bottom : 1rem;}
 	.settle-detail, .customer-detail {
 		margin-bottom : 20px;
 		.detail-item label {text-align: right;}
 		.detail-tiem span {text-align: left;}
 	}
 	.order-detail {
-		h5 {.x-adjust-leading-to(2, 1rem); border-bottom : 1px solid #ddd; margin-bottom: .5rem;}
-		> div > .row {margin-bottom: 1rem;}
+		h5 {.x-adjust-leading-to(2, 1rem); border-bottom : 1px solid #ddd; *margin-bottom : 6px; margin-bottom: .5rem;}
+		> div > .row {*margin-bottom : 12px; margin-bottom: 1rem;}
 		.detail-item {
-			.x-adjust-leading-to(1.5, 1rem); margin-bottom : .5rem;
+			.x-adjust-leading-to(1.5, 1rem); *margin-bottom : 6px; margin-bottom : .5rem;
 			> label {font-weight: 700;}
-			> span {padding-left : .5rem;}
+			> span {*padding-left : 6px; padding-left : .5rem;}
 		}
 	}
 }

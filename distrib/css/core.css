@@ -857,18 +857,19 @@ body.login .panel-login #login_sub {
 }
 .ix-header .header-line a {
   display: inline-block;
-  margin-right: 2rem;
+  margin-right: 24px;
   color: #333333;
 }
 .ix-header .header-line .hello,
 .ix-header .header-line .user {
   display: inline-block;
-  margin-right: .3rem;
+  margin-right: 4px;
   color: #787878;
   font-weight: 700;
 }
 .ix-header .ix-group-brand {
   float: left;
+  font-size: 18px;
   font-size: 1.5rem;
   font-weight: bold;
   line-height: 1.5em;
@@ -880,7 +881,7 @@ body.login .panel-login #login_sub {
   background-position: -72px -48px;
   width: 18px;
   height: 18px;
-  margin-right: 0.5rem;
+  margin-right: 6px;
   vertical-align: -4px;
 }
 .ix-header .icon-jumpsite {
@@ -888,7 +889,7 @@ body.login .panel-login #login_sub {
   background-position: -24px 0px;
   width: 16px;
   height: 16px;
-  margin-right: 0.5rem;
+  margin-right: 6px;
   vertical-align: -4px;
 }
 .ix-header .logo {
@@ -922,7 +923,7 @@ body.login .panel-login #login_sub {
 }
 .ix-header .links a {
   display: inline-block;
-  margin-right: 2rem;
+  margin-right: 24px;
 }
 .navbar-toggle .icon-bar {
   background-image: none;
@@ -977,11 +978,11 @@ body.login .panel-login #login_sub {
 .ix-footer .links a,
 .ix-footer .copyright a {
   display: inline-block;
-  margin-right: 2.5rem;
+  margin-right: 30px;
   color: #89552E;
 }
 .ix-footer .copyright {
-  padding-top: 1.5rem;
+  padding-top: 18px;
 }
 #ix_wrapper .ix-body .login-box {
   padding: 35px 0px;
@@ -1008,7 +1009,7 @@ body.login .panel-login #login_sub {
   display: inline-block;
   vertical-align: middle;
   margin: 0;
-  margin-top: .5rem;
+  margin-top: 6px;
 }
 #ix_wrapper .ix-body .home-page {
   width: 100%;
@@ -1174,10 +1175,10 @@ body.login .panel-login #login_sub {
 #ix_wrapper .ix-body .home-page .format p {
   position: relative;
   display: block;
-  margin-left: 1rem;
+  margin-left: 12px;
 }
 #ix_wrapper .ix-body .home-page .format h3 {
-  margin-top: 1rem;
+  margin-top: 12px;
 }
 #ix_wrapper .ix-body .home-page .home-brick-md-1 .format {
   display: block;
@@ -1313,7 +1314,7 @@ body.login .panel-login #login_sub {
 #ix_wrapper .about-us .desc address,
 #ix_wrapper .contact-us .desc address,
 #ix_wrapper .download .desc address {
-  margin-bottom: 3rem;
+  margin-bottom: 36px;
   color: #333333;
   font-size: 14px;
   font-size: 1.16666667rem;
@@ -1323,7 +1324,7 @@ body.login .panel-login #login_sub {
 #ix_wrapper .about-us .desc .btn-success,
 #ix_wrapper .contact-us .desc .btn-success,
 #ix_wrapper .download .desc .btn-success {
-  margin-top: 2rem;
+  margin-top: 24px;
   padding: 15px 80px;
   font-size: 32px;
   font-size: 2.66666667rem;
@@ -1395,7 +1396,7 @@ body.login .panel-login #login_sub {
 }
 /*表单校验样式*/
 .form-feedback-out .has-feedback .form-control {
-  padding-right: 1rem;
+  padding-right: 12px;
 }
 .form-feedback-out .has-feedback .form-control-feedback {
   right: -17px;
@@ -1580,6 +1581,7 @@ body.login .panel-login #login_sub {
   font-size: 1rem;
 }
 .bank-card .ix-card-header > .panel-title > .label {
+  *margin-right: 6px;
   margin-right: .5rem;
 }
 .bank-card .ix-card-header > .panel-title .account-name {
@@ -1595,11 +1597,11 @@ body.login .panel-login #login_sub {
 }
 .bank-card .withdraw {
   position: absolute;
-  right: .5rem;
-  top: .5rem;
-  height: 2rem;
+  right: 6px;
+  top: 6px;
+  height: 24px;
   line-height: 1.5rem;
-  padding: 3px 1rem;
+  padding: 3px 12px;
   font-weight: 700;
   -webkit-border-radius: 20px;
   -moz-border-radius: 20px;
@@ -1609,7 +1611,7 @@ body.login .panel-login #login_sub {
   color: #fff;
 }
 .bank-card .cash {
-  padding-top: 1rem;
+  padding-top: 12px;
   font-weight: 700;
   vertical-align: middle;
   line-height: 3rem;
@@ -1617,7 +1619,7 @@ body.login .panel-login #login_sub {
 .bank-card .cash > strong,
 .bank-card .cash > span {
   display: inline-block;
-  margin-right: 1rem;
+  margin-right: 12px;
   line-height: 28px;
   vertical-align: middle;
   font-size: 28px;
@@ -1632,7 +1634,7 @@ body.login .panel-login #login_sub {
   vertical-align: bottom;
 }
 .bank-card .bank {
-  padding-top: 1.5rem;
+  padding-top: 18px;
   font-size: 12px;
   font-size: 1rem;
   line-height: 18px;
@@ -1660,7 +1662,7 @@ body.login .panel-login #login_sub {
   padding: 0px 15px 0;
 }
 .bank-card .ix-card-footer .btn-link {
-  margin-right: -1rem;
+  margin-right: -12px;
   font-size: 12px;
   font-size: 1rem;
 }
@@ -1710,12 +1712,12 @@ body.login .panel-login #login_sub {
 .shop-card address,
 .shop-card .phone {
   line-height: 18px;
-  margin-bottom: .5rem;
+  margin-bottom: 6px;
   width: 228px;
   color: #787878;
 }
 .shop-card address {
-  height: 3rem;
+  height: 36px;
 }
 .shop-card .tags {
   line-height: 2.5rem;
@@ -1732,13 +1734,13 @@ body.login .panel-login #login_sub {
 }
 .shop-card .tags .label {
   vertical-align: middle;
-  margin-right: .5rem;
+  margin-right: 6px;
   color: #fff;
 }
 .shop-card .btns {
   *zoom: 1;
-  margin-bottom: 1.1rem;
-  margin-top: 1rem;
+  margin-bottom: 12px;
+  margin-top: 12px;
 }
 .shop-card .btns:before,
 .shop-card .btns:after {
@@ -1749,7 +1751,7 @@ body.login .panel-login #login_sub {
   clear: both;
 }
 .shop-card .btns .btn {
-  margin-right: .5rem;
+  margin-right: 6px;
   color: #333333;
   font-weight: bold;
 }
@@ -1764,7 +1766,7 @@ body.login .panel-login #login_sub {
   color: #333333;
 }
 .shop-card .ix-card-footer .bootstrap-switch {
-  margin-top: .5rem;
+  margin-top: 6px;
 }
 .bootstrap-switch {
   display: inline-block;
@@ -2358,16 +2360,16 @@ body.login .panel-login #login_sub {
 .shop-query .filter .city,
 .shop-query .filter .area {
   display: block;
-  padding-left: 4rem;
+  padding-left: 48px;
   font-size: 0px;
   font-size: 0rem;
 }
 .shop-query .filter .city > .label,
 .shop-query .filter .area > .label {
   display: inline-block;
-  width: 4rem;
-  margin-left: -4rem;
-  padding: .5rem;
+  width: 48px;
+  margin-left: -48px;
+  padding: 6px;
   vertical-align: middle;
   color: #787878;
   font-size: 12px;
@@ -2413,7 +2415,7 @@ body.login .panel-login #login_sub {
 }
 .shop-query .query .create-shop {
   max-width: 130px;
-  margin-left: 1.5rem;
+  margin-left: 18px;
   margin: 8px 0;
 }
 .shop-query .query .chosen-container .chosen-single {
@@ -2436,13 +2438,13 @@ body.login .panel-login #login_sub {
 }
 .shop-list-item {
   border-bottom: 1px solid #e7e7e7;
-  margin-bottom: 1.5rem;
+  margin-bottom: 18px;
   font-size: 12px;
   font-size: 1rem;
   color: #787878;
 }
 .shop-list-item .shop-base-info {
-  margin-bottom: 1.2rem;
+  margin-bottom: 14px;
 }
 .shop-list-item .shop-base-info h4 {
   font-size: 14px;
@@ -2462,15 +2464,19 @@ body.login .panel-login #login_sub {
 .shop-list-item .shop-base-info .account .account-name {
   vertical-align: middle;
 }
+.shop-list-item .switcher-wrapper {
+  width: 100%;
+  text-align: right;
+}
 .shop-list-item .switcher-wrapper > lable {
   font-weight: bold;
   color: #787878;
 }
 .shop-list-item .shop-business {
-  margin-bottom: 1.8rem;
+  margin-bottom: 22px;
 }
 .shop-list-item .shop-business h4 {
-  padding-left: 2.5rem;
+  padding-left: 30px;
   font-size: 12px;
   font-size: 1rem;
   color: #333333;
@@ -2491,7 +2497,7 @@ body.login .panel-login #login_sub {
   width: 32px;
   height: 32px;
   vertical-align: middle;
-  margin-right: 1.5rem;
+  margin-right: 18px;
 }
 .shop-list-item .icon-commonreserve_order {
   /*width: 32px; height:32px;*/
@@ -3023,6 +3029,7 @@ form.edit-mode .control-label.no-require:before,
   }
 }
 .account-schema {
+  *margin-bottom: 36px;
   margin-bottom: 3rem;
 }
 .account-schema .bank-card {
@@ -3047,6 +3054,7 @@ form.edit-mode .control-label.no-require:before,
   }
 }
 .account-detail > h4 {
+  *margin-bottom: 18px;
   margin-bottom: 1.5rem;
   font-size: 16px;
   font-size: 1.33333333rem;
@@ -3054,6 +3062,7 @@ form.edit-mode .control-label.no-require:before,
   font-weight: 700;
 }
 .account-detail .query-form {
+  *padding-top: 18px;
   padding-top: 1.5rem;
   margin-bottom: 10px;
 }
@@ -3080,6 +3089,7 @@ form.edit-mode .control-label.no-require:before,
   }
 }
 .account-modal h5 {
+  *margin-bottom: 12px;
   margin-bottom: 1rem;
 }
 .account-modal .settle-detail,
@@ -3097,19 +3107,23 @@ form.edit-mode .control-label.no-require:before,
 .account-modal .order-detail h5 {
   line-height: 2rem;
   border-bottom: 1px solid #ddd;
+  *margin-bottom: 6px;
   margin-bottom: .5rem;
 }
 .account-modal .order-detail > div > .row {
+  *margin-bottom: 12px;
   margin-bottom: 1rem;
 }
 .account-modal .order-detail .detail-item {
   line-height: 1.5rem;
+  *margin-bottom: 6px;
   margin-bottom: .5rem;
 }
 .account-modal .order-detail .detail-item > label {
   font-weight: 700;
 }
 .account-modal .order-detail .detail-item > span {
+  *padding-left: 6px;
   padding-left: .5rem;
 }
 @media (max-width: 767px) {

@@ -26,7 +26,7 @@
 	.x-border-radius(10px);
 	.ix-card-header > .panel-title {
 		.x-font-size(12px); 
-		& > .label {margin-right : .5rem;}
+		& > .label {*margin-right : 6px; margin-right : .5rem;}
 		.account-name {.x-font-size(14px); font-weight: 700; vertical-align: middle;}
 	}
 	.ix-card-header > .panel-title, .bank, .shops {
@@ -34,19 +34,19 @@
 	}
 	
 	.withdraw {
-		position : absolute; right : .5rem; top : .5rem; height : 2rem; .x-adjust-leading-to(1.5, 1rem); padding : 3px 1rem;
+		position : absolute; right : 6px; top : 6px; height : 24px; .x-adjust-leading-to(1.5, 1rem); padding : 3px 12px;
 		font-weight: 700; .x-border-radius(20px); color : #fff;
 	}
 	.cash {
-		padding-top:1rem; font-weight: 700; vertical-align: middle; .x-adjust-leading-to(1.5, 2rem);
+		padding-top:12px; font-weight: 700; vertical-align: middle; .x-adjust-leading-to(1.5, 2rem);
 		& > strong, & > span {
-			.x-inlineblock(); margin-right:1rem; .x-adjust-leading-to(2, 14px); vertical-align: middle; .x-font-size(28px);
+			.x-inlineblock(); margin-right:12px; .x-adjust-leading-to(2, 14px); vertical-align: middle; .x-font-size(28px);
 		}
 		& > strong { color : @x-base-font-color;}
 		& > span {.x-font-size(16px);vertical-align : bottom;}
 	}
 	.bank {
-		padding-top:1.5rem; .x-font-size(12px); .x-adjust-leading-to(1.5, 12px);
+		padding-top:18px; .x-font-size(12px); .x-adjust-leading-to(1.5, 12px);
 		.name, .num {.x-inlineblock(); vertical-align: middle;.x-font-size(12px);}
 		.name {margin:0 3px;}
 		.num > span {vertical-align: middle;}
@@ -56,7 +56,7 @@
 	}
 	.ix-card-footer {
 		padding : 0px 15px 0;
-		.btn-link {margin-right : -1rem; .x-font-size(12px);}
+		.btn-link {margin-right : -12px; .x-font-size(12px);}
 	}
 
 	// 添加账户的卡片样式
@@ -81,28 +81,28 @@
 	img.media-object {.x-area-size(100px, 100px);}
 	
 	.tags, address, .phone {
-		.x-adjust-leading-to(1.5, 12px); margin-bottom : .5rem; width : @text-width;
+		.x-adjust-leading-to(1.5, 12px); margin-bottom : 6px; width : @text-width;
 		color : @x-font-color-midGray;
 	}
 
 	address {
-		height : 3rem; 
+		height : 36px; 
 	}
 
 	.tags {
 		.x-adjust-leading-to(2.5, 1rem); min-height:1.5rem; .x-text-ellipsis(@text-width); color : #fff;
-		.label {vertical-align: middle; margin-right : .5rem; color : #fff;}
+		.label {vertical-align: middle; margin-right : 6px; color : #fff;}
 	}
 	.btns {
-		.x-clearfix(); margin-bottom : 1.1rem; margin-top : 1rem;
-		.btn {margin-right : .5rem; color : @x-base-font-color; font-weight: bold;}
+		.x-clearfix(); margin-bottom : 12px; margin-top : 12px;
+		.btn {margin-right : 6px; color : @x-base-font-color; font-weight: bold;}
 	}
 	
 	.ix-card-footer {
 		border-top-color : #ddd; .x-adjust-leading-to(4, 12px, 10px);
 		.bootstrap-switch {.x-float(right);}
 		label {color : @x-base-font-color;}
-		.bootstrap-switch {margin-top : .5rem;}
+		.bootstrap-switch {margin-top : 6px;}
 	}
 	
 }
