@@ -27,7 +27,7 @@
 			$self.data('settings') || {}, 
 			options || {});
 
-		if (settings.total < 0 ) {
+		if (settings.total <= 0 ) {
 			return this;
 		}
 		// 所有页码全部显示
@@ -83,9 +83,9 @@
 			for (var c = 1; c <= Math.min(settings.total, settings.maxVisible); c++) {
 				htm.push('<li data-pg="' + c + '"><a href="' + genHref(c) + '">' + c + '</a></li>');
 			}
-			if (settings.total == 0) {
-				htm.push('<li data-pg="' + 1 + '" class="disabled"><a href="' + genHref(c) + '">' + 1 + '</a></li>');
-			}
+			// if (settings.total == 0) {
+			// 	htm.push('<li data-pg="' + 1 + '" class="disabled"><a href="' + genHref(c) + '">' + 1 + '</a></li>');
+			// }
 			if (settings.next) {
 				pg = settings.leaps && settings.total > settings.maxVisible 
 					? Math.min(settings.maxVisible + 1, settings.total) : 2;
