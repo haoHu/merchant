@@ -947,7 +947,7 @@
             '<span>上传中 . . .</span>',
         '</div>',
         '<br /><a href="javascript:;">修改图片</a>',
-        '<input type="file" name="foodPicFile" />',
+        '<input type="file" name="myFile" />',
         '<iframe id="iframe1" name="iframe1"></iframe>',
     '</form>'].join('');
     TplLib.register('tpl_edit_food', tpl_edit_food);
