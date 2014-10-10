@@ -2477,23 +2477,26 @@ body.login .panel-login #login_sub {
 .shop-list-item .shop-business p {
   line-height: 24px;
 }
-.shop-list-item .icon-justeat_order {
+.shop-list-item .icon-commonreserve_order,
+.shop-list-item .icon-justeat_order,
+.shop-list-item .icon-spot_order {
   display: inline-block;
-  /*width: 32px; height:32px;*/
-  background-position: -160px -160px;
   width: 32px;
   height: 32px;
   vertical-align: middle;
   margin-right: 1.5rem;
 }
+.shop-list-item .icon-commonreserve_order {
+  /*width: 32px; height:32px;*/
+  background-position: -120px -40px;
+}
+.shop-list-item .icon-justeat_order {
+  /*width: 32px; height:32px;*/
+  background-position: -160px -160px;
+}
 .shop-list-item .icon-spot_order {
-  display: inline-block;
   /*width: 32px; height:32px;*/
   background-position: -120px -120px;
-  width: 32px;
-  height: 32px;
-  vertical-align: middle;
-  margin-right: 1.5rem;
 }
 .shop-service-form .input-group-addon {
   /*.x-adjust-leading-to(2, 12px, 2px);*/
@@ -2781,14 +2784,17 @@ form.edit-mode .control-label.no-require:before,
 }
 .shop-menu .food-search select,
 .shop-menu .food-search label,
-.shop-menu .food-search .chosen-container {
+.shop-menu .food-search .input-group {
   margin: 0 30px 15px 0;
   font-weight: normal;
   vertical-align: middle;
 }
-.shop-menu .food-search input {
+.shop-menu .food-search input[type=checkbox] {
   margin: 0;
   vertical-align: middle;
+}
+.shop-menu .food-search .input-group {
+  margin-right: 0;
 }
 .shop-menu #foodSearchInfo {
   margin-bottom: 12px;
@@ -2800,9 +2806,9 @@ form.edit-mode .control-label.no-require:before,
   border: 1px solid #ddd;
   border-radius: 4px 4px 0 0;
   /*td:first-child+td+td, th:first-child+th+th
-        { width: auto; min-width: 220px }
-        td:first-child+td+td+td, th:first-child+th+th+th
-        { width: 60px; min-width: 60px }*/
+		{ width: auto; min-width: 220px }
+		td:first-child+td+td+td, th:first-child+th+th+th
+		{ width: 60px; min-width: 60px }*/
 }
 .shop-menu .tbl-foods thead th {
   padding: 15px;
