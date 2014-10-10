@@ -259,7 +259,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "收款单位/姓名不能为空"
+						message : "请输入收款单位/姓名"
 					},
 					stringLength : {
 						max : 20,
@@ -275,7 +275,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "结算账户名称不能为空"
+						message : "请输入结算账户名称"
 					},
 					stringLength : {
 						max : 50,
@@ -291,7 +291,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "转账账号不能为空"
+						message : "请输入转账账号"
 					},
 					stringLength : {
 						max : 30,
@@ -308,7 +308,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "转账银行不能为空"
+						message : "请选择转账银行"
 					}
 				}
 			}
@@ -321,7 +321,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "转账分行不能为空"
+						message : "请输入转账分行名称"
 					},
 					stringLength : {
 						max : 40,
@@ -361,7 +361,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "姓名不能为空"
+						message : "请输入姓名"
 					},
 					stringLength : {
 						max : 20,
@@ -378,11 +378,11 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "手机不能为空"
+						message : "请输入手机号"
 					},
 					stringLength : {
 						max : 30,
-						message : "手机不能超过30个字符"
+						message : "手机不能超过30个字"
 					}
 				}
 			}
@@ -396,7 +396,7 @@
 				validators : {
 					stringLength : {
 						max : 50,
-						message : "邮箱不能超过30个字符"
+						message : "邮箱不能超过30个字"
 					}
 				}
 			}

@@ -7,7 +7,7 @@
 			field : {
 				validators : {
 					notEmpty : {
-						message : "集团主账号不能为空"
+						message : "请输入集团主账号"
 					}
 				}
 			}
@@ -29,7 +29,7 @@
 			field : {
 				validators : {
 					notEmpty : {
-						message : "密码不能为空"
+						message : "请输入登陆密码"
 					},
 					callback : {
 						callback : function (val, validator, $field) {
@@ -54,7 +54,7 @@
 			field : {
 				validators : {
 					notEmpty : {
-						message : "验证码不能为空"
+						message : "请输入验证码"
 					}/*,
 					callback : function (val, validator, $field) {
 						if (val != $('[name=auth_code]').val()) {

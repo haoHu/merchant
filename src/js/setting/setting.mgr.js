@@ -13,7 +13,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "用户提前预订时间不能为空"
+						message : "请输入用户提前预订时间"
 					}
 				}
 			}
@@ -26,7 +26,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "订单提前通知时间不能为空"
+						message : "请输入订单提前通知时间"
 					}
 				}
 			}
@@ -40,7 +40,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "最低消费金额不能为空"
+						message : "请输入最低消费金额"
 					},
 					numeric : {
 						message: "最低消费金额必须为数字"
@@ -99,7 +99,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "节假日开放不能为空"
+						message : "请选择节假日开放类型"
 					}
 				}
 			}
@@ -112,7 +112,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "开放服务天数不能为空"
+						message : "请输入开放服务天数"
 					},
 					digits : {
 						message: "开放服务天数必须为数字"
@@ -136,7 +136,7 @@
 					group : '.min-input',
 					validators : {
 						notEmpty : {
-							message : "起始时间不能为空"
+							message : "请输入起始时间"
 						}
 					}
 				}
@@ -149,7 +149,7 @@
 					group : '.max-input',
 					validators : {
 						notEmpty : {
-							message : "结束时间不能为空"
+							message : "请输入结束时间"
 						}
 					}
 				}
@@ -163,7 +163,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "留位时间不能为空"
+						message : "请选择留位时间"
 					},
 					numeric : {
 						message: "留位时间必须为数字"
@@ -203,7 +203,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "预计送餐所需时间不能为空"
+						message : "请输入预计送餐所需时间"
 					},
 					numeric : {
 						message: "预计送餐所需时间必须为数字"
@@ -224,7 +224,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "送餐范围不能为空"
+						message : "请输入送餐范围"
 					},
 					numeric : {
 						message: "送餐范围必须为数字"
@@ -266,7 +266,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "可选支付方式不能为空"
+						message : "请选择可选支付方式"
 					}
 				}
 			}
@@ -314,7 +314,7 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "店内支付方式不能为空"
+						message : "请选择店内支付方式"
 					}
 				}
 			}

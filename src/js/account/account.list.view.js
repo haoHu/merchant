@@ -250,7 +250,7 @@
 					transAmount : {
 						validators : {
 							notEmpty : {
-								message : "提现金额不能为空"
+								message : "请输入提现金额"
 							},
 							numeric : {
 								message: "提现金额必须为数字"

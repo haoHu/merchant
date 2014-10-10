@@ -1264,6 +1264,30 @@ body.login .panel-login #login_sub {
 #ix_wrapper .banner .jumbotron .ad-pic {
   position: absolute;
 }
+#ix_wrapper .banner .jumbotron .ad-pic.animation {
+  -webkit-animation: fadeInDown 1s .2s ease both;
+  -moz-animation: fadeInDown 1s .2s ease both;
+}
+@-webkit-keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    -webkit-transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+  }
+}
+@-moz-keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    -moz-transform: translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    -moz-transform: translateY(0);
+  }
+}
 #ix_wrapper .about-us,
 #ix_wrapper .contact-us,
 #ix_wrapper .download {

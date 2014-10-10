@@ -18,7 +18,7 @@
 			field : {
 				validators : {
 					notEmpty : {
-						message : "集团主账号不能为空"
+						message : "请输入集团主账号"
 					}
 				}
 			}
@@ -40,7 +40,7 @@
 			field : {
 				validators : {
 					notEmpty : {
-						message : "密码不能为空"
+						message : "请输入登陆密码"
 					},
 					callback : {
 						callback : function (val, validator, $field) {
@@ -65,7 +65,7 @@
 			field : {
 				validators : {
 					notEmpty : {
-						message : "验证码不能为空"
+						message : "请输入验证码"
 					}/*,
 					callback : function (val, validator, $field) {
 						if (val != $('[name=auth_code]').val()) {
@@ -3221,7 +3221,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "用户提前预订时间不能为空"
+						message : "请输入用户提前预订时间"
 					}
 				}
 			}
@@ -3234,7 +3234,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "订单提前通知时间不能为空"
+						message : "请输入订单提前通知时间"
 					}
 				}
 			}
@@ -3248,7 +3248,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "最低消费金额不能为空"
+						message : "请输入最低消费金额"
 					},
 					numeric : {
 						message: "最低消费金额必须为数字"
@@ -3307,7 +3307,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "节假日开放不能为空"
+						message : "请选择节假日开放类型"
 					}
 				}
 			}
@@ -3320,7 +3320,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "开放服务天数不能为空"
+						message : "请输入开放服务天数"
 					},
 					digits : {
 						message: "开放服务天数必须为数字"
@@ -3344,7 +3344,7 @@ function throttle(method, context)
 					group : '.min-input',
 					validators : {
 						notEmpty : {
-							message : "起始时间不能为空"
+							message : "请输入起始时间"
 						}
 					}
 				}
@@ -3357,7 +3357,7 @@ function throttle(method, context)
 					group : '.max-input',
 					validators : {
 						notEmpty : {
-							message : "结束时间不能为空"
+							message : "请输入结束时间"
 						}
 					}
 				}
@@ -3371,7 +3371,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "留位时间不能为空"
+						message : "请选择留位时间"
 					},
 					numeric : {
 						message: "留位时间必须为数字"
@@ -3411,7 +3411,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "预计送餐所需时间不能为空"
+						message : "请输入预计送餐所需时间"
 					},
 					numeric : {
 						message: "预计送餐所需时间必须为数字"
@@ -3432,7 +3432,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "送餐范围不能为空"
+						message : "请输入送餐范围"
 					},
 					numeric : {
 						message: "送餐范围必须为数字"
@@ -3474,7 +3474,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "可选支付方式不能为空"
+						message : "请选择可选支付方式"
 					}
 				}
 			}
@@ -3522,7 +3522,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "店内支付方式不能为空"
+						message : "请选择店内支付方式"
 					}
 				}
 			}
@@ -4570,7 +4570,7 @@ function throttle(method, context)
 					transAmount : {
 						validators : {
 							notEmpty : {
-								message : "提现金额不能为空"
+								message : "请输入提现金额"
 							},
 							numeric : {
 								message: "提现金额必须为数字"
@@ -5660,7 +5660,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "收款单位/姓名不能为空"
+						message : "请输入收款单位/姓名"
 					},
 					stringLength : {
 						max : 20,
@@ -5676,7 +5676,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "结算账户名称不能为空"
+						message : "请输入结算账户名称"
 					},
 					stringLength : {
 						max : 50,
@@ -5692,7 +5692,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "转账账号不能为空"
+						message : "请输入转账账号"
 					},
 					stringLength : {
 						max : 30,
@@ -5709,7 +5709,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "转账银行不能为空"
+						message : "请选择转账银行"
 					}
 				}
 			}
@@ -5722,7 +5722,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "转账分行不能为空"
+						message : "请输入转账分行名称"
 					},
 					stringLength : {
 						max : 40,
@@ -5762,7 +5762,7 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "姓名不能为空"
+						message : "请输入姓名"
 					},
 					stringLength : {
 						max : 20,
@@ -5779,11 +5779,11 @@ function throttle(method, context)
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "手机不能为空"
+						message : "请输入手机号"
 					},
 					stringLength : {
 						max : 30,
-						message : "手机不能超过30个字符"
+						message : "手机不能超过30个字"
 					}
 				}
 			}
@@ -5797,7 +5797,7 @@ function throttle(method, context)
 				validators : {
 					stringLength : {
 						max : 50,
-						message : "邮箱不能超过30个字符"
+						message : "邮箱不能超过30个字"
 					}
 				}
 			}
