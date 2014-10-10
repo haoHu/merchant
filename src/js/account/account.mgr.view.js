@@ -104,6 +104,7 @@
 		bindEvent : function () {
 			var self = this;
 			self.$schema.on('click', '.btn.withdraw', function (e) {
+				if ($(this).hasClass('disabled')) return;
 				self.withdraw($(this));
 			});
 			self.$schema.on('click', '[data-act]', function (e) {
@@ -532,7 +533,7 @@
 				tpl = self.get('layoutTpl'),
 				btnTpl = self.get('btnTpl'),
 				htm = tpl({
-					formClz : 'account-form',
+					formClz : 'account-form form-feedback-out',
 					items : renderData
 				});
 			self.modal._.body.html(htm);

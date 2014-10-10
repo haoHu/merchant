@@ -41,6 +41,7 @@
 			self.$list.on('click', '.btn.withdraw', function (e) {
 				var $btn = $(this);
 				var settleAccountID = $btn.parents('.bank-card').attr('data-id');
+				if ($btn.hasClass('disabled')) return;
 				// 提现操作
 				var modal = new WithdrawCashView({
 					triggerEl : $btn,
@@ -199,7 +200,7 @@
 				});
 			return {
 				accountInfo : accountInfo,
-				formClz : 'account-withdraw-form',
+				formClz : 'account-withdraw-form form-feedback-out',
 				labelClz : 'col-sm-4 control-label',
 				clz : 'col-sm-7',
 				id : 'transAmount',

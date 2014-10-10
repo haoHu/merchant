@@ -211,6 +211,13 @@
 				var bv = $container.data('bootstrapValidator');
 				bv.validate();
 			});
+			$container.delegate('.form-control[tabIndex]', 'keyup', function (e) {
+				if (e.keyCode != 13) return;
+				var $this = $(this),
+					el = $('.form-control[tabIndex=' + (parseInt($this.attr('tabIndex')) + 1) + ']');
+				$this.blur();
+				(el.length > 0 && !el.is(".btn")) ? el.focus() : $container.find('#login_sub').trigger('click');
+			});
 		};
 
 		initLoginForm();
@@ -3806,7 +3813,7 @@ function throttle(method, context)
 				tpl = self.get('layoutTpl'),
 				btnTpl = self.get('btnTpl'),
 				htm = tpl({
-					formClz : 'shop-service-form',
+					formClz : 'shop-service-form form-feedback-out',
 					items : renderData
 				});
 			self.modal._.body.html(htm);
@@ -4361,6 +4368,7 @@ function throttle(method, context)
 			self.$list.on('click', '.btn.withdraw', function (e) {
 				var $btn = $(this);
 				var settleAccountID = $btn.parents('.bank-card').attr('data-id');
+				if ($btn.hasClass('disabled')) return;
 				// 提现操作
 				var modal = new WithdrawCashView({
 					triggerEl : $btn,
@@ -4519,7 +4527,7 @@ function throttle(method, context)
 				});
 			return {
 				accountInfo : accountInfo,
-				formClz : 'account-withdraw-form',
+				formClz : 'account-withdraw-form form-feedback-out',
 				labelClz : 'col-sm-4 control-label',
 				clz : 'col-sm-7',
 				id : 'transAmount',
@@ -5505,6 +5513,7 @@ function throttle(method, context)
 		bindEvent : function () {
 			var self = this;
 			self.$schema.on('click', '.btn.withdraw', function (e) {
+				if ($(this).hasClass('disabled')) return;
 				self.withdraw($(this));
 			});
 			self.$schema.on('click', '[data-act]', function (e) {
@@ -5933,7 +5942,7 @@ function throttle(method, context)
 				tpl = self.get('layoutTpl'),
 				btnTpl = self.get('btnTpl'),
 				htm = tpl({
-					formClz : 'account-form',
+					formClz : 'account-form form-feedback-out',
 					items : renderData
 				});
 			self.modal._.body.html(htm);

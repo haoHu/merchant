@@ -598,7 +598,7 @@
 				tpl = self.get('layoutTpl'),
 				btnTpl = self.get('btnTpl'),
 				htm = tpl({
-					formClz : 'shop-service-form',
+					formClz : 'shop-service-form form-feedback-out',
 					items : renderData
 				});
 			self.modal._.body.html(htm);

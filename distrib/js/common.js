@@ -3943,7 +3943,7 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		{name : 'order', label : '订单报表'},
 		{name : 'account', label : '账户结算'},
 		{name : 'shop', label : '店铺管理'},
-		{name : 'setting', label : '业务设置'},
+		{name : 'setting', label : '业务设置'}
 		// Note：先屏蔽，第二版本开启
 		// {name : 'user', label : '账号管理'}
 	];

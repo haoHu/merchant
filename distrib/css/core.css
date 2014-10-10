@@ -1393,6 +1393,13 @@ body.login .panel-login #login_sub {
   height: 367px;
   background: url("../img/pc_download.png") no-repeat 0 0 transparent;
 }
+/*表单校验样式*/
+.form-feedback-out .has-feedback .form-control {
+  padding-right: 1rem;
+}
+.form-feedback-out .has-feedback .form-control-feedback {
+  right: -17px;
+}
 .site-toptip {
   position: fixed;
   z-index: 99999;
@@ -2512,9 +2519,6 @@ body.login .panel-login #login_sub {
 .shop-service-form .section .has-feedback .form-control {
   padding-right: 0;
 }
-.shop-service-form .has-feedback .form-control-feedback {
-  right: -17px;
-}
 .mr25 {
   margin-right: 25px;
 }
@@ -2784,17 +2788,14 @@ form.edit-mode .control-label.no-require:before,
 }
 .shop-menu .food-search select,
 .shop-menu .food-search label,
-.shop-menu .food-search .input-group {
+.shop-menu .food-search .chosen-container {
   margin: 0 30px 15px 0;
   font-weight: normal;
   vertical-align: middle;
 }
-.shop-menu .food-search input[type=checkbox] {
+.shop-menu .food-search input {
   margin: 0;
   vertical-align: middle;
-}
-.shop-menu .food-search .input-group {
-  margin-right: 0;
 }
 .shop-menu #foodSearchInfo {
   margin-bottom: 12px;

@@ -200,6 +200,13 @@
 				var bv = $container.data('bootstrapValidator');
 				bv.validate();
 			});
+			$container.delegate('.form-control[tabIndex]', 'keyup', function (e) {
+				if (e.keyCode != 13) return;
+				var $this = $(this),
+					el = $('.form-control[tabIndex=' + (parseInt($this.attr('tabIndex')) + 1) + ']');
+				$this.blur();
+				(el.length > 0 && !el.is(".btn")) ? el.focus() : $container.find('#login_sub').trigger('click');
+			});
 		};
 
 		initLoginForm();
