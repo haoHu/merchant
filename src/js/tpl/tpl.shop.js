@@ -265,7 +265,7 @@
 			'</div>',
 		'</div>',
 		'<div id="uploadImg" class="col-sm-6 col-lg-3 t-r">',
-			'<img class="mb-12" src="/src/img/shop_head_img_default.png" alt="餐厅门头图" width="200" height="200" /><br />',
+			'<img class="mb-12" src="" alt="餐厅门头图" width="200" height="200" /><br />',
 			'<a href="javascript:;">修改门头图</a>',
 		'</div>',
 		'<div class="col-sm-6 col-lg-3">',
@@ -341,7 +341,7 @@
 	var tpl_food = [
 	'{{#each foods}}',
 		'<tr data-id="{{foodID}}" data-cid="{{foodCategoryID}}">',
-			'<td><img data-original="{{imgSrc}}" src="" /></td>',
+			'<td><img data-original="{{imgSrc}}" src="{{imgSrc}}" /></td>',
 			'<td>{{foodName}}</td>',
 			'<td>',
 			'{{#each units}}',

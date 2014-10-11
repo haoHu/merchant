@@ -102,7 +102,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
     //页面滚动时加载更多菜品
     $(window).on('scroll', function(e)
     {
-        throttle(scrollFood);
+        if(foods) throttle(scrollFood);
+        //if(foods) scrollFood();
     });
     
     function scrollFood()
@@ -188,10 +189,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         food = findFood($this.data('cid'), $this.data('id'));
         //菜品图标：招、荐、新
         var foodIcos = ['isSpecialty', 'isRecommend', 'isNew'],
-            path = food.imgePath,
-            imageHWP = food.imageHWP;
+            path = food.imgePath;
         
-        food.foodPic = path ? imgHost + path.replace(/\.\w+$/, (imageHWP ? '=200x' + Math.round(200 * food.imageHWP) : '') + '$&?quality=70') : imgRoot + 'food_bg.png';
+        food.foodPic = path ? imgHost + path + '?quality=70' : imgRoot + 'food_bg.png';
         //辣度
         food.hotTag1 = imgRoot + 'hottag1.png';
         food.hotTag2 = imgRoot + 'hottag2.png';
@@ -344,7 +344,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         if(current == 0) $foods.empty();
         $foods.append(foodTpl({foods: foods.slice(start ? 0 : current, current + size)}));
         current += size;
-        $foods.find('img').lazyload();
+        //$foods.find('img').lazyload();
     }
     //在某个菜品分类下根据foodID查找某个菜品
     function findFood(cid, id)
