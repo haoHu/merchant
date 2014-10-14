@@ -38,7 +38,7 @@
 								return {
 									valid : false,
 									message : '密码长度必须在' + min + '位到' + max + '位之间'
-								}
+								};
 							}
 							return {
 								valid : true

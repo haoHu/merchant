@@ -45,8 +45,8 @@ h6 {
 /*for font icons*/
 @font-face {
   font-family: "hllicons";
-  src: url("../font/hllicons.eot");
-  src: url("../font/hllicons.eot?#iefix") format("embeded-opentype"), url("../font/hllicons.woff") format("woff"), url("../font/hllicons.ttf") format("truetype"), url("../font/hllicons.svg#glyphicons-halflingsregular") format("svg");
+  src: url("../font/hllicons.eot?t=6a990b8e");
+  src: url("../font/hllicons.eot?t=6a990b8e#iefix") format("embeded-opentype"), url("../font/hllicons.woff?t=bd6c2e1d") format("woff"), url("../font/hllicons.ttf?t=8fe892e5") format("truetype"), url("../font/hllicons.svg?t=6b898b3d#glyphicons-halflingsregular") format("svg");
   font-weight: normal;
   font-style: normal;
 }
@@ -84,14 +84,14 @@ h6 {
 [class^="pic-"],
 [class*=" pic-"],
 .pic {
-  background: url("../img/picmap.png") no-repeat;
+  background: url("../img/picmap.png?t=56d764b2") no-repeat;
   display: inline-block;
 }
 /*for icon elements*/
 [class^="icon-"],
 [class*=" icon-"],
 .icon {
-  background: url("../img/ixicon.png") no-repeat;
+  background: url("../img/ixicon.png?t=9b4ce33e") no-repeat;
   display: inline-block;
 }
 .icon-CMB-80 {
@@ -1347,7 +1347,7 @@ body.login .panel-login #login_sub {
   bottom: 0;
   width: 551px;
   height: 367px;
-  background: url("../img/about_bg.png") no-repeat 0 0 transparent;
+  background: url("../img/about_bg.png?t=41eb87b4") no-repeat 0 0 transparent;
 }
 #ix_wrapper .contact-us .jumbotron {
   background: #ffcc00;
@@ -1371,7 +1371,7 @@ body.login .panel-login #login_sub {
   bottom: 0;
   width: 511px;
   height: 367px;
-  background: url("../img/contact_us.png") no-repeat 0 0 transparent;
+  background: url("../img/contact_us.png?t=f3b2aea2") no-repeat 0 0 transparent;
 }
 #ix_wrapper .download .jumbotron > .container h1,
 #ix_wrapper .download .jumbotron > .container p {
@@ -1392,7 +1392,7 @@ body.login .panel-login #login_sub {
   bottom: 20px;
   width: 511px;
   height: 367px;
-  background: url("../img/pc_download.png") no-repeat 0 0 transparent;
+  background: url("../img/pc_download.png?t=e9623fdf") no-repeat 0 0 transparent;
 }
 /*表单校验样式*/
 .form-feedback-out .has-feedback .form-control {
@@ -2050,10 +2050,10 @@ body.login .panel-login #login_sub {
   bottom: 0;
 }
 .chosen-container .chosen-results-scroll-down span {
-  background: url("../img/chosen-sprite.png") no-repeat -4px -3px;
+  background: url("../img/chosen-sprite.png?t=25b9acb1") no-repeat -4px -3px;
 }
 .chosen-container .chosen-results-scroll-up span {
-  background: url("../img/chosen-sprite.png") no-repeat -22px -3px;
+  background: url("../img/chosen-sprite.png?t=25b9acb1") no-repeat -22px -3px;
 }
 .chosen-container-single .chosen-single {
   background-color: #ffffff;
@@ -2085,7 +2085,7 @@ body.login .panel-login #login_sub {
   white-space: nowrap;
 }
 .chosen-container-single .chosen-single abbr {
-  background: url("../img/chosen-sprite.png") right top no-repeat;
+  background: url("../img/chosen-sprite.png?t=25b9acb1") right top no-repeat;
   display: block;
   font-size: 1px;
   height: 10px;
@@ -2109,7 +2109,7 @@ body.login .panel-login #login_sub {
   width: 18px;
 }
 .chosen-container-single .chosen-single div b {
-  background: url("../img/chosen-sprite.png") no-repeat 0 7px;
+  background: url("../img/chosen-sprite.png?t=25b9acb1") no-repeat 0 7px;
   display: block;
   height: 100%;
   width: 100%;
@@ -2125,7 +2125,7 @@ body.login .panel-login #login_sub {
   z-index: 1000;
 }
 .chosen-container-single .chosen-search input[type="text"] {
-  background: url("../img/chosen-sprite.png") no-repeat 100% -20px, #ffffff;
+  background: url("../img/chosen-sprite.png?t=25b9acb1") no-repeat 100% -20px, #ffffff;
   border: 1px solid #cccccc;
   border-top-right-radius: 4px;
   border-top-left-radius: 4px;
@@ -2213,7 +2213,7 @@ body.login .panel-login #login_sub {
   position: relative;
 }
 .chosen-container-multi .chosen-choices .search-choice .search-choice-close {
-  background: url("../img/chosen-sprite.png") right top no-repeat;
+  background: url("../img/chosen-sprite.png?t=25b9acb1") right top no-repeat;
   display: block;
   font-size: 1px;
   height: 10px;
@@ -2336,7 +2336,7 @@ body.login .panel-login #login_sub {
   border-right: none;
 }
 .chosen-rtl .chosen-search input[type="text"] {
-  background: url("../img/chosen-sprite.png") no-repeat -28px -20px, #ffffff;
+  background: url("../img/chosen-sprite.png?t=25b9acb1") no-repeat -28px -20px, #ffffff;
   direction: rtl;
   padding: 4px 5px 4px 20px;
 }
@@ -2348,7 +2348,7 @@ body.login .panel-login #login_sub {
   .chosen-container-multi .chosen-choices .search-choice .search-choice-close,
   .chosen-container .chosen-results-scroll-down span,
   .chosen-container .chosen-results-scroll-up span {
-    background-image: url("../img/chosen-sprite@2x.png") !important;
+    background-image: url("../img/chosen-sprite@2x.png?t=cb0d09c9") !important;
     background-size: 52px 37px !important;
     background-repeat: no-repeat !important;
   }

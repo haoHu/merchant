@@ -235,10 +235,12 @@ module.exports = function (grunt) {
 			},
 			production : {
 				options : {
-					beautify : {
-						width : 80,
-						beautify : true
-					}
+					sourceMap : false,
+					sourceMapIncludeSources : false
+					// beautify : {
+					// 	width : 80,
+					// 	beautify : true
+					// }
 				},
 				files : {
 					// "<%= pkg.destPath.jsPath %>/dep/html5shiv.min.js" : [
@@ -275,22 +277,33 @@ module.exports = function (grunt) {
 			}
 		},
 		// 拷贝文件
+		// 将合并压缩好的js文件拷贝到后端工程asset目录下
+		// 将压缩好的css文件拷贝到后端工程asset目录下
+		// 将所有图片等静态资源拷贝到后端工程asset目录下
 		copy : {
-			// 拷贝图片资源，字体文件资源, html文件以及测试用文件到destrib目录下
-			test : {
+			material2MD5 : {
+				// font,swf,img
 				files : [
-					{
-						expand : true,
-						cwd : "<%= pkg.srcPath.imgPath %>/",
-						src : ["**"],
-						dest : "<%= pkg.destPath.imgPath %>/",
-						filter : "isFile"
-					},
 					{
 						expand : true,
 						cwd : "<%= pkg.srcPath.fontPath %>/",
 						src : ["*.*"],
 						dest : "<%= pkg.destPath.fontPath %>/",
+						filter : "isFile"
+
+					},
+					{
+						expand : true,
+						cwd : "<%= pkg.srcPath.swfPath %>/",
+						src : ["**"],
+						dest : "<%= pkg.destPath.swfPath %>/",
+						filter : 'isFile'
+					},
+					{
+						expand : true,
+						cwd : "<%= pkg.srcPath.imgPath %>/",
+						src : ["**"],
+						dest : "<%= pkg.destPath.imgPath %>/",
 						filter : 'isFile'
 					},
 					{
@@ -300,52 +313,25 @@ module.exports = function (grunt) {
 						dest : "<%= pkg.destPath.path %>/fonts/",
 						filter : "isFile"
 					},
-					// {
-					// 	expand : true,
-					// 	cwd : "<%= pkg.protoPath.distribPath %>/",
-					// 	src : ['*.*'],
-					// 	dest : "<%= pkg.destPath.protoPath %>/",
-					// 	filter : 'isFile'
-					// },
 					{
 						expand : true,
-						cwd : "<%= pkg.srcPath.swfPath %>/",
-						src : ["**"],
-						dest : "<%= pkg.destPath.swfPath %>/",
-						filter : 'isFile'
+						cwd : "<%= pkg.protoPath.distribPath %>/",
+						src : ["*.jsp"],
+						dest : "<%= pkg.destPath.protoPath %>/",
+						filter : "isFile"
 					}
 				]
 			},
-			// 将合并和压缩的css，js文件，图片，字体文件拷贝到后端工程的asset下,供开发调试使用
-			development : {
+			material : {
+				// font,swf,img
 				files : [
-					{
-						expand : true,
-						cwd : "<%= pkg.destPath.jsPath %>/",
-						src : ["**"],
-						dest : "<%= pkg.distribPath.jsPath %>/",
-						filter : 'isFile'
-					},
-					{
-						expand : true,
-						cwd : "<%= pkg.destPath.cssPath %>/",
-						src : ["*.css"],
-						dest : "<%= pkg.distribPath.cssPath %>/",
-						filter : "isFile"
-					},
 					{
 						expand : true,
 						cwd : "<%= pkg.srcPath.fontPath %>/",
 						src : ["*.*"],
 						dest : "<%= pkg.distribPath.fontPath %>/",
 						filter : "isFile"
-					},
-					{
-						expand : true,
-						cwd : "<%= pkg.srcPath.jsPath %>/dep/bootstrap/fonts/",
-						src : ["*.*"],
-						dest : "<%= pkg.distribPath.path %>/fonts/",
-						filter : "isFile"
+
 					},
 					{
 						expand : true,
@@ -363,15 +349,15 @@ module.exports = function (grunt) {
 					},
 					{
 						expand : true,
-						cwd : "<%= pkg.protoPath.distribPath %>",
-						src : ["*.htm"],
-						dest : "<%= pkg.distribPath.pagePath %>/",
-						filter : 'isFile'
+						cwd : "<%= pkg.srcPath.jsPath %>/dep/bootstrap/fonts/",
+						src : ["*.*"],
+						dest : "<%= pkg.distribPath.path %>/fonts/",
+						filter : "isFile"
 					}
 				]
 			},
-			// 将合并和压缩的css，js文件，图片，字体文件拷贝到后端工程的asset下,供发布线上使用
-			production : {
+			js : {
+				// js
 				files : [
 					{
 						expand : true,
@@ -379,48 +365,39 @@ module.exports = function (grunt) {
 						src : ["**"],
 						dest : "<%= pkg.distribPath.jsPath %>/",
 						filter : 'isFile'
-					},
+					}
+				]
+			},
+			css : {
+				// css
+				files : [
 					{
 						expand : true,
 						cwd : "<%= pkg.destPath.cssPath %>/",
 						src : ["*.css"],
 						dest : "<%= pkg.distribPath.cssPath %>/",
 						filter : "isFile"
-					},
-					{
-						expand : true,
-						cwd : "<%= pkg.srcPath.fontsPath %>/",
-						src : ["*.*"],
-						dest : "<%= pkg.distribPath.fontsPath %>/",
-						filter : "isFile"
-					},
-					{
-						expand : true,
-						cwd : "<%= pkg.srcPath.jsPath %>/dep/bootstrap/fonts/",
-						src : ["*.*"],
-						dest : "<%= pkg.distribPath.path %>/fonts/",
-						filter : "isFile"
-					},
-					{
-						expand : true,
-						cwd : "<%= pkg.srcPath.swfPath %>/",
-						src : ["**"],
-						dest : "<%= pkg.distribPath.swfPath %>/",
-						filter : 'isFile'
-					},
-					{
-						expand : true,
-						cwd : "<%= pkg.srcPath.imgPath %>/",
-						src : ["**"],
-						dest : "<%= pkg.distribPath.imgPath %>/",
-						filter : 'isFile'
 					}
 				]
+			},
+			htm : {
+				expand : true,
+				cwd : "<%= pkg.protoPath.distribPath %>",
+				src : ["*.htm"],
+				dest : "<%= pkg.distribPath.pagePath %>/",
+				filter : 'isFile'
+			},
+			jsp : {
+				expand : true,
+				cwd : "<%= pkg.destPath.protoPath %>",
+				src : ["*.jsp"],
+				dest : "<%= pkg.distribPath.path %>/../",
+				filter : 'isFile'
 			}
 		}
 	});
 
-	// 插件加载声明
+	// 插件加载
 	grunt.loadNpmTasks("grunt-contrib-less");
 	grunt.loadNpmTasks("grunt-contrib-cssmin");
 	grunt.loadNpmTasks("grunt-contrib-concat");
@@ -429,11 +406,77 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks("grunt-contrib-copy");
 
-	// 定义任务组合
-	grunt.registerTask("test", ["less", "cssmin", "jshint", "concat", "copy:test"]);
-	grunt.registerTask("deploy.development", ["less", "cssmin", "jshint", "concat", "uglify:development", "copy:development"]);
-	grunt.registerTask("deploy.production", ["less", "cssmin", "jshint", "concat", "uglify:production", "copy:production"]);
+	// 定义任务
+	grunt.registerTask("compileLess", ["less", "copy:material2MD5"]);
+
+	grunt.registerTask("addMaterialMD5", "Add material MD5 tag", function () {
+		var done = this.async(),
+			exec = require('child_process').exec,
+			child;
+		child = exec('python material_timestamp.py', {
+			cwd : './'
+		}, function (error, stdout, stderr) {
+			if (error !== null) {
+				grunt.log.error('exec error:' + error);
+				done(false);
+				return;
+			}
+			grunt.log.ok("Material MD5 tag has been added!");
+			grunt.log.ok(stdout);
+			done(true);
 
 
+		});
+	});
+	grunt.registerTask("addReferenceMD5", "Add reference file MD5 tag", function () {
+		var done = this.async(),
+			exec = require('child_process').exec,
+			child;
+		child = exec('python reference_timestamp.py', {
+			cwd : './'
+		}, function (error, stdout, stderr) {
+			if (error !== null) {
+				grunt.log.error('exec error:' + error);
+				done(false);
+				return;
+			}
+			grunt.log.ok("Reference file MD5 tag has been added!");
+			grunt.log.ok(stdout);
+			done(true);
+		});
+	});
 
+	grunt.registerTask("build", "build source code ", function (ver) {
+		this.requires(["compileLess", "addMaterialMD5"]);
+		if (ver == 'development') {
+			// grunt.task.run(["cssmin", "jshint", "concat", "uglify:development", "copy:material", "copy:js", "copy:css", "copy:htm"]);
+			grunt.task.run(["cssmin", "jshint", "concat", "uglify:development"]);
+			grunt.task.run("addReferenceMD5");
+			grunt.task.run(["copy:material", "copy:js", "copy:css", "copy:htm", "copy:jsp"]);
+		} else if (ver == 'production') {
+			grunt.task.run(["cssmin", "jshint", "concat", "uglify:production"]);
+			grunt.task.run("addReferenceMD5");
+			grunt.task.run(["copy:material", "copy:js", "copy:css", "copy:htm", "copy:jsp"]);
+		}
+	});
+
+	grunt.registerTask("deploy.development", "Build Frontend Project for develop", function () {
+		// 编译Less文件生成css文件，
+		// 将静态资源文件拷贝到指定目录，用于生成静态资源引用的hash特征戳
+		grunt.log.writeln("Begin compile Less files, and copy material files!");
+		grunt.task.run("compileLess");
+		// 为静态资源引用生成MD5特征戳
+		grunt.task.run("addMaterialMD5");
+		grunt.task.run("build:development");
+	});
+
+	grunt.registerTask("deploy.production", "Build Frontend Project for production", function () {
+		// 编译Less文件生成css文件，
+		// 将静态资源文件拷贝到指定目录，用于生成静态资源引用的hash特征戳
+		grunt.log.writeln("Begin compile Less files, and copy material files!");
+		grunt.task.run("compileLess");
+		// 为静态资源引用生成MD5特征戳
+		grunt.task.run("addMaterialMD5");
+		grunt.task.run("build:production");
+	});
 };
