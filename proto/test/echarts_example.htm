@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="UTF-8">
+		<!--IE=edge表示强制使用IE最新内核,
+			chrome=1表示当遇到chrome浏览器安装了针对IE6,7,8等的插件，就使用chrome内核来进行渲染
+		-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<!--针对360浏览器这种双核浏览器，我们通过meta标签设置，让浏览器强制以webkit内核进行渲染-->
+		<meta name="renderer" content="webkit">
+		<!--针对移动设备触摸屏设置-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>哗啦啦商户管理系统</title>
+
+		<!--bootstrap 样式主文件-->
+		<link href="../../src/js/dep/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+	<!-- Include DatePicker Stylesheet -->
+	<link href="../../src/js/datepicker/css/datetimepicker.css" rel="stylesheet">
+
+	<!-- Include TimePicker Stylesheet -->
+	<link href="../../src/js/timepicker/css/timepicker.css" rel="stylesheet">
+
+	<!-- Include Validator Stylesheet -->
+	<link href="../../src/js/validator/css/validator.css" rel="stylesheet">
+
+	
+
+	<!-- Include Site Stylesheet -->
+	<link href="../../src/css/core.less" rel="stylesheet/less" type="text/css" />
+	<script src="../../tool/less-1.4.2.min.js"></script>
+	<script>
+		window.IXDEBUG = true;
+	</script>
+
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="../../src/js/dep/html5shiv/html5shiv.js"></script>
+			<script src="../../src/js/dep/Respond/respond.matchmedia.addListener.src.js"></script>
+		<![endif]-->
+	</head>
+	<body>
+		<div id="ix_wrapper">
+			<div class="navbar navbar-default navbar-fixed-top ix-header" role="navigation">
+				<div class="header-line clearfix">
+					<div class="container">
+						<div class="hidden-xs pull-left">
+							<a href="../proto/#download" target="_blank"><span class="icon-pcclient"></span>哗啦啦PC客户端</a>
+							<a href="http://www.hualala.com" target="_blank"><span class="icon-jumpsite"></span>访问哗啦啦网站</a>
+						</div>
+						<div class="pull-right">
+							<span class="hello">Hi</span><span class="user">temp1,</span><a class="logout" href="/proto/logout.htm">退出</a>
+						</div>
+					</div>
+				</div>
+				<div class="container">
+					<div class="navbar-header">
+						<a class="navbar-brand logo" href="../proto/#home" title="哗啦啦商户中心"><img alt="哗啦啦商户中心" src="../../src/img/logo.png"></a>
+						<h1 class="ix-group-brand">豆捞坊</h1>
+					</div>
+				</div>
+			</div>
+			<div class="ix-body">
+				<div class="container">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-info">
+								<div class="panel-heading">店铺日订单统计</div>
+								<div class="panel-body">
+									<div id="order_dayly_sales">
+										<div class="filter-form form-horizontal" role="form">
+											<div class="form-group">
+												<label for="" class="control-label col-sm-1">
+													店铺
+												</label>
+												<div class="col-sm-4">
+													<div class="chosen-shop"></div>
+												</div>
+												<label for="" class="control-label col-sm-1">
+													日期
+												</label>
+												<div class="col-sm-4">
+													<input type="text" class="form-control" data-type=datetimepicker placeholer="选择日期"/>
+												</div>
+												<div class="col-sm-2">
+													<button class="btn btn-success btn-block">统计</button>
+												</div>
+											</div>
+											
+										</div>
+										<div class="chart"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="panel panel-info">
+								<div class="panel-heading">店铺期间订单统计</div>
+								<div class="panel-body">
+									<div id="order_during_sales">
+										<div class="filter-form form-horizontal" role="form">
+											<div class="form-group">
+												<label for="" class="control-label col-sm-1">
+													店铺
+												</label>
+												<div class="col-sm-10">
+													<div class="chosen-shop"></div>
+												</div>
+												<label for="" class="control-label col-sm-2">
+													开始日期
+												</label>
+												<div class="col-sm-3">
+													<input type="text" class="form-control" data-type=datetimepicker placeholer="选择日期" data-id="begin"/>
+												</div>
+												<label for="" class="control-label col-sm-2">
+													结束日期
+												</label>
+												<div class="col-sm-3">
+													<input type="text" class="form-control" data-type=datetimepicker placeholer="选择日期" data-id="end"/>
+												</div>
+												<div class="col-sm-2">
+													<button class="btn btn-success btn-block">统计</button>
+												</div>
+											</div>
+										</div>
+										<div class="chart"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-12">
+							<div class="panel panel-info">
+								<div class="panel-heading">菜品日销量统计</div>
+								<div class="panel-body">
+									<div id="food_dayly_sales">
+										<div class="filter-form form-horizontal" role="form"></div>
+										<div class="chart"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="ix-footer navbar-fixed-bottom ">
+				<div class="container">
+					<p class="links">
+						<a href="/proto/about.htm">关于哗啦啦商户中心</a>
+						<a href="/proto/contact.htm">联系我们</a>
+					</p>
+					<p class="copyright"><img alt="Gozap" src="../src/img/gozap.png"><span class="">&nbsp;旗下网站&nbsp;©&nbsp;2014&nbsp;hualala.com&nbsp;京IPC备14019284号-3</span></p>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+		
+		<!--jQuery (necessary for Bootstrap's JavaScript plugins and merchant project)-->
+		<script src="../../src/js/dep/jquery/jquery-1.11.1.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="../../src/js/dep/bootstrap/js/bootstrap.js"></script>
+
+		<!-- Include underscore lib -->
+		<script src="../../src/js/dep/underscore/underscore.js"></script>
+		<!-- Include handlebars -->
+		<script src="../../src/js/dep/handlebars/handlebars-v1.3.0.js"></script>
+
+		<!-- Include DatePicker -->
+		<script src="../../src/js/datepicker/datetimepicker.js"></script>
+		<script src="../../src/js/datepicker/local/datetimepicker.zh-CN.js"></script>
+		
+		
+		<!-- Include TimePicker -->
+		<script src="../../src/js/timepicker/timepicker.js"></script>
+
+		<!-- Include Validator -->
+		<script src="../../src/js/validator/validator.js"></script>
+		<script src="../../src/js/validator/local/validator.zh-CN.js"></script>
+
+		<!-- Include Common Lib Files for Hualala Shop Site -->
+		<!-- Include Stapes.js -->
+		<script src="../../src/js/common/stapes.js"></script>
+		<!-- <script src="../../src/js/common/numeric.js"></script> -->
+		<script src="../../src/js/common/math.js"></script>
+		<!-- Include ixutils.js -->
+		<script src="../../src/js/common/ixutils.js"></script>
+
+		<!-- Include commonFn.js -->
+		<script src="../../src/js/common/commonFn.js"></script>
+		<!-- Include Constants Defined (datatype.js,typedef.js) -->
+		<script src="../../src/js/common/typedef.js"></script>
+		<script src="../../src/js/common/datatype.js"></script>
+
+		<!-- Include router.js -->
+		<script src="../../src/js/common/router.js"></script>
+
+		<!-- Include PYMather -->
+		<script src="../../src/js/pymatch/pymatch.js"></script>
+		<script src="../../src/js/common/matcher.js"></script>
+		
+		<!-- 百度地图API -->
+		<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.3"></script>
+		
+
+		<!-- Include callServer and test data JS -->
+		<script type="text/javascript" src="../test.js"></script>
+		<script type="text/javascript" src="../global-const.js"></script>
+		<script type="text/javascript" src="../global-url.js"></script>
+		<script type="text/javascript" src="../global-callserver-common.js"></script>
+		
+		<!-- Include Template Lib js -->
+		<script src="../../src/js/tpl/tpl.lib.js"></script>
+		<script src="../../src/js/tpl/tpl.shop.js"></script>
+		<script src="../../src/js/tpl/tpl.account.js"></script>
+		<script src="../../src/js/tpl/tpl.order.js"></script>
+		<!-- Include IXUI js -->
+		<script src="../../src/js/ui/ixui.js"></script>
+		<script src="../../src/js/ui/pager.js"></script>
+		<script src="../../src/js/ui/jquery.lazyload.js"></script>
+		<!-- <script src="../../src/js/ui/modal.js"></script> -->
+		
+		<script src="../../src/js/ui/switch.js"></script>
+		<script src="../../src/js/ui/chosen.jquery.js"></script>
+		<!-- Include wizard -->
+		<script src="../../src/js/ui/wizard.js"></script>
+
+		
+
+		<!-- Include Hualala Entry module -->
+		<script src="../../src/js/entry/entry.init.js"></script>
+
+		<!-- Include Hualala Shop module -->
+		<script src="../../src/js/shop/shop.query.model.js"></script>
+		<script src="../../src/js/shop/shop.query.view.js"></script>
+		<script src="../../src/js/shop/shop.query.controler.js"></script>
+		<!-- 地图控件 -->
+		<script src="../../src/js/shop/shop.map.js"></script>
+
+		<script src="../../src/js/shop/shop.list.model.js"></script>
+		<script src="../../src/js/shop/shop.list.view.js"></script>
+		<script src="../../src/js/shop/shop.list.controler.js"></script>
+		<script src="../../src/js/shop/shop.init.js"></script>
+
+		<!-- Include Hualala Shop Create -->
+		<script src="../../src/js/shop/shop.create.js"></script>
+		<!-- Include Hualala Shop Info -->
+		<script src="../../src/js/shop/shop.info.js"></script>
+		<!-- Include Hualala Shop Menu -->
+		<script src="../../src/js/shop/shop.menu.js"></script>
+
+		<!-- Include Hualala Setting module -->
+		<script src="../../src/js/setting/setting.mgr.js"></script>
+		<script src="../../src/js/setting/setting.init.js"></script>
+
+		<!-- Include Hualala Account module -->
+		<script src="../../src/js/account/account.list.model.js"></script>
+		<script src="../../src/js/account/account.list.view.js"></script>
+		<script src="../../src/js/account/account.list.controler.js"></script>
+		<script src="../../src/js/account/account.mgr.controler.js"></script>
+		<script src="../../src/js/account/account.mgr.view.js"></script>
+		<script src="../../src/js/account/account.init.js"></script>
+
+
+	<!-- Include Hualala Order module -->
+		<script src="../../src/js/order/order.list.model.js"></script>
+		<script src="../../src/js/order/order.list.view.js"></script>
+		<script src="../../src/js/order/order.list.controler.js"></script>
+		<script src="../../src/js/order/order.query.model.js"></script>
+		<script src="../../src/js/order/order.query.view.js"></script>
+		<script src="../../src/js/order/order.query.controler.js"></script>
+		<script src="../../src/js/order/order.init.js"></script>
+		
+
+		<!-- Include Hualala init -->
+		
+		<script src="../../src/js/common/merchant.layout.js"></script>
+		<script src="../../src/js/common/merchant.init.js"></script>
+		<script src="../../src/js/common/merchant.route.js"></script>
+
+		<script>
+
+
+
+			window.testShopData = JSON.parse('{"data":{"areas":[{"areaID":"1021180000","areaName":"浦东新区","py":"pu;dong;xin;qu;;pdxq;","cityID":"1021","areaCount":"2"},{"areaID":"1021420000","areaName":"嘉定区","py":"jia;ding;qu;;jdq;","cityID":"1021","areaCount":"2"},{"areaID":"1021270000","areaName":"闸北区","py":"zha;bei;qu;;zbq;","cityID":"1021","areaCount":"2"},{"areaID":"1021150000","areaName":"闵行区","py":"min;xing;qu;;mxq;","cityID":"1021","areaCount":"1"},{"areaID":"1021210000","areaName":"黄浦区","py":"huang;pu;qu;;hpq;","cityID":"1021","areaCount":"3"},{"areaID":"1021120000","areaName":"长宁区","py":"zhang;ning;qu;;znq;","cityID":"1021","areaCount":"3"},{"areaID":"1010210000","areaName":"丰台区","py":"feng;tai;qu;;ftq;","cityID":"1010","areaCount":"1"},{"areaID":"1021360000","areaName":"宝山区","py":"bao;shan;qu;;bsq;","cityID":"1021","areaCount":"1"},{"areaID":"1010030000","areaName":"朝阳区","py":"chao;yang;qu;;cyq;","cityID":"1010","areaCount":"25"},{"areaID":"1021060000","areaName":"徐汇区","py":"xu;hui;qu;;xhq;","cityID":"1021","areaCount":"1"},{"areaID":"1010120000","areaName":"海淀区","py":"hai;dian;qu;;hdq;","cityID":"1010","areaCount":"3"},{"areaID":"1010060000","areaName":"西城区","py":"xi;cheng;qu;;xcq;","cityID":"1010","areaCount":"4"},{"areaID":"1010090000","areaName":"东城区","py":"dong;cheng;qu;;dcq;","cityID":"1010","areaCount":"4"},{"areaID":"1021090000","areaName":"静安区","py":"jing;an;qu;;jaq;","cityID":"1021","areaCount":"2"},{"areaID":"1021240000","areaName":"普陀区","py":"pu;tuo;qu;;ptq;","cityID":"1021","areaCount":"1"},{"areaID":"1021330000","areaName":"杨浦区","py":"yang;pu;qu;;ypq;","cityID":"1021","areaCount":"1"},{"areaID":"1021030000","areaName":"卢湾区","py":"lu;wan;qu;;lwq;","cityID":"1021","areaCount":"4"},{"areaID":"1010270000","areaName":"大兴区","py":"da;xing;qu;;dxq;","cityID":"1010","areaCount":"1"},{"areaID":"1010360000","areaName":"近郊","py":"jin;jiao;;jj;","cityID":"1010","areaCount":"2"}],"cities":[{"py":"shang;hai;sh;","cityID":"1021","cityName":"上海","cityCount":"23"},{"py":"bei;jing;bj;","cityID":"1010","cityName":"北京","cityCount":"40"}],"shops":[{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10102106","cityName":"北京","tel":"010-59716881","browseMonth":"6","mapLongitudeValue":"116.378948","description":"aaaaaaaaaaaaaaaaaaaaa","areaID":"1010030000","openingHours":"11:00-23:00","status":"6","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.917527","cityShopCount":"42","cuisineName2":"","cuisineName1":"茶餐厅","markBuilding":"大悦城","mapLatitudeValue":"39.917527","browseWeek":"0","browseTotal":"15372","PCCL":"80","shopID":"77875","shopName":"豆捞坊(西单店)","PCCH":"90","operationMode":"0","openingTimeIDTag":"0","menuShopID":"77876","orderCountTotal":"478","promotShopID":"77875","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(西单店) | 西城区 西单北大街131号大悦城7F-02 | 茶餐厅 | 国贸","metroInfo":"","busInfo":"22; 46; 47; 83; 102; 105; 109; 204内环; 204外环; 603; 604; 626; 690","serviceFeatures":"takeout_order,takeaway_order,spot_pay,commonreserve_order,justeat_order,","menuVersionNo":"20141014134046","totalValue":"4.37","shopLoginName":"sbj_dlf_xdd","orderCountRecent":"3","settleID":"6","shopCode":"","areaName":"朝阳区","py":"dou;lao;fang;xi;dan;dian;dlf;xdd","address":"西城区 西单北大街131号大悦城7F-02","openingDate":"20120412","timeShopID":"0","mapLongitudeValueBaiDu":"116.378948","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"10101809","cuisineID1":"10103600","cityName":"北京","tel":"010-67172156","browseMonth":"7","mapLongitudeValue":"116.4263294","description":"","areaID":"1010090000","openingHours":"11:00-22:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.904341","cityShopCount":"42","cuisineName2":"上海菜","cuisineName1":"火锅","markBuilding":"国瑞购物中心","mapLatitudeValue":"39.904341","browseWeek":"1","browseTotal":"7536","PCCL":"80","shopID":"77876","shopName":"豆捞坊(西单店3)","PCCH":"90","operationMode":"0","openingTimeIDTag":"0","menuShopID":"0","orderCountTotal":"333","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(西单店3) | 北京市西城区西单 | 火锅 | 上海菜 | 国瑞购物中心","metroInfo":"","busInfo":"8、12、23、25、39、41、43、57、60、106、108、116、525、610、684、685","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,","menuVersionNo":"20141009132244","totalValue":"4.51","shopLoginName":"sbj_dlf_cwd","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"东城区","py":"dou;lao;fang;xi;dan;dian;3;dlf;xdd3","address":"北京市西城区西单","openingDate":"20120412","timeShopID":"77876","mapLongitudeValueBaiDu":"116.4263294","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10103600","cityName":"北京","tel":"010-84098371","browseMonth":"130","mapLongitudeValue":"116.432548","description":"","areaID":"1010090000","openingHours":"10:00-22:00","status":"1","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.94667","cityShopCount":"42","cuisineName2":"","cuisineName1":"火锅","markBuilding":"来福士购物广场","mapLatitudeValue":"39.940722","browseWeek":"85","browseTotal":"7555","PCCL":"80","shopID":"77877","shopName":"豆捞坊(东直门店)","PCCH":"90","operationMode":"0","openingTimeIDTag":"0","menuShopID":"0","orderCountTotal":"517","promotShopID":"77877","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(东直门店) | 东城区东直门南大街1号来福士购物广场5F-03号 | 火锅 | 来福士","metroInfo":"","busInfo":"18、24、44、75、106、107、117、123、401、413、416、606、614、623、635","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,spot_order,spot_pay,","menuVersionNo":"20141016090746","totalValue":"4.87","shopLoginName":"sbj_dlf_dzmd","orderCountRecent":"49","settleID":"6","shopCode":"","areaName":"东城区","py":"dou;lao;fang;dong;zhi;men;dian;dlf;dzmd","address":"东城区东直门南大街1号来福士购物广场5F-03号","openingDate":"20120412","timeShopID":"77877","mapLongitudeValueBaiDu":"116.4390479","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"10101200","cuisineID1":"10103600","cityName":"北京","tel":"010-51722761","browseMonth":"34","mapLongitudeValue":"116.313114","description":"","areaID":"1010120000","openingHours":"11:00-22:00","status":"1","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.9893835","cityShopCount":"42","cuisineName2":"湘菜","cuisineName1":"火锅","markBuilding":"中关村","mapLatitudeValue":"39.983434","browseWeek":"19","browseTotal":"6715","PCCL":"80","shopID":"77878","shopName":"豆捞坊(中关村店)","PCCH":"90","operationMode":"0","openingTimeIDTag":"0","menuShopID":"77878","orderCountTotal":"677","promotShopID":"77878","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(中关村店) | 海淀区中关村大街15号中关村广场步行街 | 火锅 | 湘菜 | 中关村广场购物中心","metroInfo":"4号线海淀黄庄","busInfo":"320 332 355 365 608 614 ","serviceFeatures":"takeaway_order,takeout_order,spot_pay,spot_order,justeat_order,commonreserve_order,","menuVersionNo":"20141009173606","totalValue":"4.68","shopLoginName":"sbj_dlf_zgcd","orderCountRecent":"16","settleID":"6","shopCode":"","areaName":"海淀区","py":"dou;lao;fang;zhong;guan;cun;dian;dlf;zgcd","address":"海淀区中关村大街15号中关村广场步行街","openingDate":"20120412","timeShopID":"77878","mapLongitudeValueBaiDu":"116.3196513","lAStSettleTime":"0"},{"settleName":"豆捞坊上海总公司","cuisineID2":"10103606","cuisineID1":"10103600","cityName":"北京","tel":"010-12345678","browseMonth":"69","mapLongitudeValue":"116.37289","description":"","areaID":"1010060000","openingHours":"11:00-22:00","status":"1","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.915728","cityShopCount":"42","cuisineName2":"其他火锅","cuisineName1":"火锅","markBuilding":"","mapLatitudeValue":"39.909259","browseWeek":"69","browseTotal":"130","PCCL":"50","shopID":"77880","shopName":"豆捞坊(君太店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"77880","orderCountTotal":"38","promotShopID":"77880","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"豆捞坊(君太店) | 西城区西单北大街133号君太百货B1F-A07号 | 火锅 | 其他火锅 | 西单","metroInfo":"","busInfo":"","serviceFeatures":"takeaway_order,takeout_order,spot_order,justeat_order,commonreserve_order,","menuVersionNo":"20141013214607","totalValue":"3.00","shopLoginName":"sbj_dlf_jtd","orderCountRecent":"25","settleID":"29","shopCode":"","areaName":"西城区","py":"dou;lao;fang;jun;tai;dian;dlf;jtd","address":"西城区西单北大街133号君太百货B1F-A07号","openingDate":"0","timeShopID":"77880","mapLongitudeValueBaiDu":"116.379538","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-63619977","browseMonth":"0","mapLongitudeValue":"121.474843","description":"","areaID":"1021210000","openingHours":"11:00-22:00","status":"0","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.240568","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"百联世茂广场","mapLatitudeValue":"31.234747","browseWeek":"0","browseTotal":"1289","PCCL":"89","shopID":"759210","shopName":"豆捞坊(人民广场店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"38","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(人民广场店) | 黄浦区南京东路819号百联世茂8楼 | 火锅 | 人民广场","metroInfo":"","busInfo":"地铁一二八号线 584 583 隧道三线。。。 451 581 20 921 37 49 167 46 108","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_order,spot_pay,","menuVersionNo":"20140813170858","totalValue":"4.75","shopLoginName":"ssh_dlf_rmgcd","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"黄浦区","py":"dou;lao;fang;ren;min;guang;chang;dian;dlf;rmgcd","address":"黄浦区南京东路819号百联世茂8楼","openingDate":"0","timeShopID":"759818","mapLongitudeValueBaiDu":"121.481859","lAStSettleTime":"0"},{"settleName":"豆捞坊上海安亭店","cuisineID2":"0","cuisineID1":"10212706","cityName":"上海","tel":"021-58361886","browseMonth":"0","mapLongitudeValue":"121.518952","description":"","areaID":"1021180000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.234206","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"","mapLatitudeValue":"31.228381","browseWeek":"0","browseTotal":"3968","PCCL":"55","shopID":"759732","shopName":"豆捞坊(浦东店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"46","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(浦东店) | 浦东新区张杨路601号浦东国际美食城9楼(近南泉北路) | 火锅 | 八佰伴","metroInfo":"","busInfo":"119、130、338、339、545、583、584、630、775、783、787、792、955、961、977、980、981、983、995隧道四线、东川线、沪合线、申江线、地铁2号线东昌路站、4号、6号线世纪大道站 九号线商城路站","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,spot_pay,spot_order,justeat_order,","menuVersionNo":"20140813170858","totalValue":"4.25","shopLoginName":"ssh_dlf_pdd","orderCountRecent":"0","settleID":"30","shopCode":"","areaName":"浦东新区","py":"dou;lao;fang;pu;dong;dian;dlf;pdd","address":"浦东新区张杨路601号浦东国际美食城9楼(近南泉北路)","openingDate":"0","timeShopID":"759818","mapLongitudeValueBaiDu":"121.52557","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-58361777","browseMonth":"0","mapLongitudeValue":"121.38588","description":"","areaID":"1021150000","openingHours":"11:00-22:00 ","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.114045","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"仲盛世界商城","mapLatitudeValue":"31.125848","browseWeek":"0","browseTotal":"1121","PCCL":"89","shopID":"759818","shopName":"豆捞坊(莘庄店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"44","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(莘庄店) | 闵行区都市路5001号仲盛世界商城4楼(近莘庄地铁站南广场) | 火锅 | 仲盛商业中心","metroInfo":"","busInfo":"轨道交通1号线 5号线,莘闵线，闵行1路，759路","serviceFeatures":"takeaway_order,takeout_order,spot_pay,spot_order,commonreserve_order,justeat_order,","menuVersionNo":"20140813170858","totalValue":"4.00","shopLoginName":"ssh_dlf_xzd","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"闵行区","py":"dou;lao;fang;xin;zhuang;dian;dlf;xzd","address":"闵行区都市路5001号仲盛世界商城4楼(近莘庄地铁站南广场)","openingDate":"0","timeShopID":"759818","mapLongitudeValueBaiDu":"121.394514","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-62785777","browseMonth":"0","mapLongitudeValue":"121.393518","description":"","areaID":"1021120000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.200291","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"家乐福对面","mapLatitudeValue":"31.195549","browseWeek":"0","browseTotal":"491","PCCL":"89","shopID":"759819","shopName":"豆捞坊(古北店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"17","promotShopID":"759819","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(古北店) | 长宁区水城南路37号万科广场北3楼 | 火锅 | 家乐福古北店","metroInfo":"","busInfo":"可乘坐57，925，911，936，709，945，938，748，上朱线，806等至水城路站下","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,spot_order,spot_pay,","menuVersionNo":"20140813170858","totalValue":"5.00","shopLoginName":"ssh_dlf_gbd","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"长宁区","py":"dou;lao;fang;gu;bei;dian;dlf;gbd","address":"长宁区水城南路37号万科广场北3楼","openingDate":"0","timeShopID":"759818","mapLongitudeValueBaiDu":"121.40014","lAStSettleTime":"0"},{"settleName":"豆捞坊上海安亭店","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-54249977","browseMonth":"0","mapLongitudeValue":"121.441973","description":"","areaID":"1021060000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.197197","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"哈尼广场","mapLatitudeValue":"31.190979","browseWeek":"0","browseTotal":"2668","PCCL":"89","shopID":"759820","shopName":"豆捞坊(徐汇店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"77878","orderCountTotal":"30","promotShopID":"77878","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(徐汇店) | 徐汇区天钥桥路214号哈尼美食广场4-5楼 | 火锅 | 徐家汇","metroInfo":"","busInfo":"地铁一号线，九号线徐家汇站下，从美罗城出口出来；四号线上海体育场下来","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20141013181813","totalValue":"4.50","shopLoginName":"ssh_dlf_xhd","orderCountRecent":"0","settleID":"30","shopCode":"","areaName":"徐汇区","py":"dou;lao;fang;xu;hui;dian;dlf;xhd","address":"徐汇区天钥桥路214号哈尼美食广场4-5楼","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"121.44832","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-62883737","browseMonth":"0","mapLongitudeValue":"121.454458","description":"","areaID":"1021090000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.234465","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"金鹰国际购物广场","mapLatitudeValue":"31.229573","browseWeek":"0","browseTotal":"674","PCCL":"89","shopID":"759821","shopName":"豆捞坊(南京西路店)","PCCH":"0","operationMode":"1","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"13","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(南京西路店) | 静安区陕西北路278号金鹰百货6楼 | 火锅 | 南京西路","metroInfo":"","busInfo":"地铁2号，公交20、21、23、24、935、939","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,","menuVersionNo":"20140813170858","totalValue":"4.33","shopLoginName":"ssh_dlf_njxld","orderCountRecent":"0","settleID":"29","shopCode":"","areaName":"静安区","py":"dou;lao;fang;nan;jing;xi;lu;dian;dlf;njxld","address":"静安区陕西北路278号金鹰百货6楼","openingDate":"0","timeShopID":"759821","mapLongitudeValueBaiDu":"121.46135","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-63516877","browseMonth":"0","mapLongitudeValue":"121.484585","description":"","areaID":"1021210000","openingHours":"11:00-22:00","status":"0","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.243064","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"宏伊国际广场","mapLatitudeValue":"31.237458","browseWeek":"0","browseTotal":"1631","PCCL":"89","shopID":"759822","shopName":"豆捞坊(南京东路店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"0","orderCountTotal":"13","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(南京东路店) | 黄浦区南京东路299号宏伊国际广场5楼 | 火锅 | 宏伊广场","metroInfo":"","busInfo":"14、17、20、49、64、66、66区间、220、19、15、167、921、801、929、2号线、10号线南京东路","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20130607161337","totalValue":"3.50","shopLoginName":"ssh_dlf_njdld","orderCountRecent":"0","settleID":"29","shopCode":"","areaName":"黄浦区","py":"dou;lao;fang;nan;jing;dong;lu;dian;dlf;njdld","address":"黄浦区南京东路299号宏伊国际广场5楼","openingDate":"0","timeShopID":"759822","mapLongitudeValueBaiDu":"121.491171","lAStSettleTime":"0"},{"settleName":"豆捞坊上海百乐门店","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-63869977","browseMonth":"0","mapLongitudeValue":"121.480889","description":"","areaID":"1021210000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.232879","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"汇通大厦","mapLatitudeValue":"31.227128","browseWeek":"0","browseTotal":"524","PCCL":"89","shopID":"759823","shopName":"豆捞坊(金陵东路店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"9","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(金陵东路店) | 黄浦区金陵东路569号汇通大厦303 | 火锅 | 黄浦区","metroInfo":"","busInfo":"26/隧道八线/123/123区间西藏路站，934/48普安路站，地铁8号线大世界站，932路","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140813170858","totalValue":"4.00","shopLoginName":"ssh_dlf_jldld","orderCountRecent":"0","settleID":"32","shopCode":"","areaName":"黄浦区","py":"dou;lao;fang;jin;ling;dong;lu;dian;dlf;jldld","address":"黄浦区金陵东路569号汇通大厦303","openingDate":"0","timeShopID":"759823","mapLongitudeValueBaiDu":"121.487532","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-36397577","browseMonth":"0","mapLongitudeValue":"121.472161","description":"","areaID":"1021270000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.24858","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"大悦城","mapLatitudeValue":"31.242783","browseWeek":"0","browseTotal":"604","PCCL":"89","shopID":"759824","shopName":"豆捞坊(大悦城店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"16","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(大悦城店) | 闸北区西藏北路166号大悦城801-05室 | 火锅 | 大悦城","metroInfo":"","busInfo":"公交：46、916、新川专线、518、108、802、18、952、隧道三线西藏北路海宁路下；地铁8号线曲阜路下","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140813170858","totalValue":"4.00","shopLoginName":"ssh_dlf_dycd","orderCountRecent":"0","settleID":"29","shopCode":"","areaName":"闸北区","py":"dou;lao;fang;da;yue;cheng;dian;dlf;dycd","address":"闸北区西藏北路166号大悦城801-05室","openingDate":"0","timeShopID":"759818","mapLongitudeValueBaiDu":"121.478391","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-54658777","browseMonth":"0","mapLongitudeValue":"121.444631","description":"","areaID":"1021090000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.228881","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"静安寺","mapLatitudeValue":"31.223151","browseWeek":"0","browseTotal":"547","PCCL":"89","shopID":"759825","shopName":"豆捞坊(百乐门店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"7","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(百乐门店) | 静安区南京西路1728号百乐门8楼 | 火锅 | 南京西路","metroInfo":"","busInfo":"15/40/45/48/49/71/93/94/127/830/925/927/936，地铁7号线静安寺站 地铁2号线静安寺站 9号出口","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140813170858","totalValue":"5.00","shopLoginName":"ssh_dlf_blm","orderCountRecent":"0","settleID":"32","shopCode":"","areaName":"静安区","py":"dou;lao;fang;bai;le;men;dian;dlf;blmd","address":"静安区南京西路1728号百乐门8楼","openingDate":"0","timeShopID":"759825","mapLongitudeValueBaiDu":"121.450995","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-31315225","browseMonth":"0","mapLongitudeValue":"121.441262","description":"","areaID":"1021240000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.249066","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"调频壹广场","mapLatitudeValue":"31.243022","browseWeek":"0","browseTotal":"566","PCCL":"88","shopID":"759826","shopName":"豆捞坊(长寿店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"14","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(长寿店) | 普陀区长寿路155号调频壹广场4楼 | 火锅 | 调频壹","metroInfo":"","busInfo":"轨道交通七号线长寿路站，公交13、19、24、36、63、68、105、112、138、206、223、304、319、738、768、830、837、922、941、948、966路","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140813170858","totalValue":"4.67","shopLoginName":"ssh_dlf_csd","orderCountRecent":"0","settleID":"29","shopCode":"","areaName":"普陀区","py":"dou;lao;fang;zhang;shou;dian;dlf;zsd","address":"普陀区长寿路155号调频壹广场4楼","openingDate":"0","timeShopID":"759826","mapLongitudeValueBaiDu":"121.447619","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-52186066","browseMonth":"0","mapLongitudeValue":"121.370087","description":"","areaID":"1021120000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.214345","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"百联西郊","mapLatitudeValue":"31.211627","browseWeek":"0","browseTotal":"711","PCCL":"88","shopID":"759827","shopName":"豆捞坊(百联西郊店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"14","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(百联西郊店) | 长宁区仙霞西路88号百联西郊购物中心2楼 | 火锅 | 西郊百联","metroInfo":"","busInfo":"88路、54路、836路、地铁二号线、91路","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140813170858","totalValue":"5.00","shopLoginName":"ssh_dlf_blxjd","orderCountRecent":"0","settleID":"29","shopCode":"","areaName":"长宁区","py":"dou;lao;fang;bai;lian;xi;jiao;dian;dlf;blxjd","address":"长宁区仙霞西路88号百联西郊购物中心2楼","openingDate":"0","timeShopID":"759827","mapLongitudeValueBaiDu":"121.376037","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-62116277","browseMonth":"0","mapLongitudeValue":"121.416628","description":"","areaID":"1021120000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.22464","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"","mapLatitudeValue":"31.219445","browseWeek":"0","browseTotal":"2562","PCCL":"89","shopID":"759828","shopName":"豆捞坊(中山公园店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"47","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(中山公园店) | 长宁区长宁路1018号龙之梦购物中心8-9楼 | 火锅 | 龙之梦","metroInfo":"","busInfo":"轨道2、3、4号线中山公园站 机场六线 73 20 921 922 939 67 946 765 941 947 96 776 825 54 919 13 737 754 69","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140813170858","totalValue":"4.75","shopLoginName":"ssh_dlf_zsgyd","orderCountRecent":"0","settleID":"29","shopCode":"","areaName":"长宁区","py":"dou;lao;fang;zhong;shan;gong;yuan;dian;dlf;zsgyd","address":"长宁区长宁路1018号龙之梦购物中心8-9楼","openingDate":"0","timeShopID":"759828","mapLongitudeValueBaiDu":"121.42274","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-60767167","browseMonth":"0","mapLongitudeValue":"121.326828","description":"","areaID":"1021420000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.247037","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"","mapLatitudeValue":"31.241536","browseWeek":"0","browseTotal":"862","PCCL":"89","shopID":"759830","shopName":"豆捞坊(江桥万达店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"25","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(江桥万达店) | 嘉定区鹤友路366号江桥万达3楼 | 火锅 | 江桥","metroInfo":"","busInfo":"173，安虹线，江桥二路，江桥一路，121,158","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140813170858","totalValue":"4.40","shopLoginName":"ssh_dlf_jqwdd","orderCountRecent":"0","settleID":"29","shopCode":"","areaName":"嘉定区","py":"dou;lao;fang;jiang;qiao;wan;da;dian;dlf;jqwdd","address":"嘉定区鹤友路366号江桥万达3楼","openingDate":"0","timeShopID":"759830","mapLongitudeValueBaiDu":"121.333078","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-20233477","browseMonth":"0","mapLongitudeValue":"121.579403","description":"","areaID":"1021180000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.262474","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"","mapLatitudeValue":"31.255904","browseWeek":"0","browseTotal":"1871","PCCL":"88","shopID":"759831","shopName":"豆捞坊(金桥店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"79","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(金桥店) | 浦东新区张杨路3611号金桥国际商业广场3座3楼(近金桥路) | 火锅 | 金桥","metroInfo":"","busInfo":"地铁6号线（金桥路站）、公交130、638、791、874、991、993、大桥四线、施崂线、778、金桥4路、573、618、新川线（金桥路博山东路）、59","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140813170858","totalValue":"4.55","shopLoginName":"ssh_dlf_jqd","orderCountRecent":"0","settleID":"29","shopCode":"","areaName":"浦东新区","py":"dou;lao;fang;jin;qiao;dian;dlf;jqd","address":"浦东新区张杨路3611号金桥国际商业广场3座3楼(近金桥路)","openingDate":"0","timeShopID":"759831","mapLongitudeValueBaiDu":"121.586813","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-55669177","browseMonth":"0","mapLongitudeValue":"121.514776","description":"","areaID":"1021330000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.305722","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"","mapLatitudeValue":"31.301252","browseWeek":"0","browseTotal":"2383","PCCL":"89","shopID":"759832","shopName":"豆捞坊(五角场店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"38","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(五角场店) | 杨浦区邯郸路600号万达广场第一食品4楼 | 火锅 | 万达广场","metroInfo":"","busInfo":"8、55、61、99、133、139、168、453、538、713、749、812、819、850、910、937、942、991 854、405、406 、大桥5线、机场4线","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140813170858","totalValue":"3.72","shopLoginName":"ssh_dlf_wjcd","orderCountRecent":"0","settleID":"29","shopCode":"","areaName":"杨浦区","py":"dou;lao;fang;wu;jiao;chang;dian;dlf;wjcd","address":"杨浦区邯郸路600号万达广场第一食品4楼","openingDate":"0","timeShopID":"759818","mapLongitudeValueBaiDu":"121.520106","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-63175777","browseMonth":"0","mapLongitudeValue":"121.48849","description":"","areaID":"1021360000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.306354","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"庙行镇","mapLatitudeValue":"31.298281","browseWeek":"0","browseTotal":"863","PCCL":"89","shopID":"759833","shopName":"豆捞坊(宝山万达店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"21","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(宝山万达店) | 宝山区纪念路988号 | 火锅 | 通河新村地铁站","metroInfo":"","busInfo":"地铁1号线共康路站","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140813170858","totalValue":"5.00","shopLoginName":"ssh_dlf_bswdd","orderCountRecent":"0","settleID":"29","shopCode":"","areaName":"宝山区","py":"dou;lao;fang;bao;shan;wan;da;dian;dlf;bswdd","address":"宝山区纪念路988号","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"121.519676","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212706","cityName":"上海","tel":"021-69503757","browseMonth":"0","mapLongitudeValue":"121.161488","description":"","areaID":"1021420000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.29425","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"","mapLatitudeValue":"31.288465","browseWeek":"0","browseTotal":"582","PCCL":"106","shopID":"759834","shopName":"豆捞坊(安亭店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"4","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(安亭店) | 嘉定区墨玉南路1055号嘉亭荟城市生活广场2A412号铺(近安亭地铁站) | 火锅 | 安亭","metroInfo":"","busInfo":"地铁11号线安亭站","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140813170858","totalValue":"3.00","shopLoginName":"ssh_dlf_atd","orderCountRecent":"0","settleID":"30","shopCode":"","areaName":"嘉定区","py":"dou;lao;fang;an;ting;dian;dlf;atd","address":"嘉定区墨玉南路1055号嘉亭荟城市生活广场2A412号铺(近安亭地铁站)","openingDate":"0","timeShopID":"759834","mapLongitudeValueBaiDu":"121.167266","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212700","cityName":"上海","tel":"021-33870277","browseMonth":"0","mapLongitudeValue":"121.452398","description":"","areaID":"1021270000","openingHours":"11:00-22:00","status":"1","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.27974","cityShopCount":"23","cuisineName2":"","cuisineName1":"火锅","markBuilding":"大宁国际","mapLatitudeValue":"31.27525","browseWeek":"0","browseTotal":"1045","PCCL":"89","shopID":"759835","shopName":"豆捞坊(大宁店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"0","menuShopID":"759210","orderCountTotal":"27","promotShopID":"759210","groupID":"5","stopInfo":"","sortIndex":"1000","keywordLst":"豆捞坊(大宁店) | 闸北区共和新路1978号大宁国际9栋3楼 | 火锅 | 大宁国际","metroInfo":"","busInfo":"46路，916路，518路，722路，95路，地铁一号线（延长路站、马戏城站）","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,spot_pay,justeat_order,spot_order,","menuVersionNo":"20140813170858","totalValue":"5.00","shopLoginName":"ssh_dlf_dnd","orderCountRecent":"0","settleID":"29","shopCode":"","areaName":"闸北区","py":"dou;lao;fang;da;ning;dian;dlf;dnd","address":"闸北区共和新路1978号大宁国际9栋3楼","openingDate":"0","timeShopID":"759835","mapLongitudeValueBaiDu":"121.460023","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"10100900","cuisineID1":"10100900","cityName":"北京","tel":"010-58363333","browseMonth":"0","mapLongitudeValue":"116.441014","description":"","areaID":"1010090000","openingHours":"11:00-23:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.949657","cityShopCount":"42","cuisineName2":"川菜","cuisineName1":"川菜","markBuilding":"","mapLatitudeValue":"39.949657","browseWeek":"0","browseTotal":"1","PCCL":"80","shopID":"22000029","shopName":"东直门","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"东直门 | 东直门香河园小区 | 川菜 | 川菜 | 东四十条地铁站","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20130814113550","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"东城区","py":"dong;zhi;men;dzm;","address":"东直门香河园小区","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.441014","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10100909","cityName":"北京","tel":"123456789","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"11:00-23:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"","cuisineName1":"烤鱼","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"4","PCCL":"100","shopID":"22000030","shopName":"豆捞坊测试店铺","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"豆捞坊测试店铺 | 方式的法律&%‘’“” | 烤鱼 | 杰座大厦","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20130802104443","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"dou;lao;fang;ce;shi;dian;pu;dlfcsdp;","address":"方式的法律&%‘’“”","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"10101200","cuisineID1":"10100903","cityName":"北京","tel":"010-7863322","browseMonth":"0","mapLongitudeValue":"116.457342","description":"","areaID":"1010030000","openingHours":"11:00-23:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.922182","cityShopCount":"42","cuisineName2":"湘菜","cuisineName1":"川菜","markBuilding":"","mapLatitudeValue":"39.922182","browseWeek":"0","browseTotal":"5","PCCL":"100","shopID":"76022275","shopName":"测试店铺","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"测试店铺 | 世贸天阶 | 川菜 | 湘菜 | 世贸天阶","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"朝阳区","py":"ce;shi;dian;pu;csdp;","address":"世贸天阶","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.457342","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"10100303","cuisineID1":"10100303","cityName":"北京","tel":"111111","browseMonth":"0","mapLongitudeValue":"116.233876","description":"","areaID":"1010360000","openingHours":"06:00-23:00","status":"1","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"40.229034","cityShopCount":"42","cuisineName2":"家常菜","cuisineName1":"家常菜","markBuilding":"医院","mapLatitudeValue":"40.229034","browseWeek":"0","browseTotal":"19","PCCL":"50","shopID":"76022278","shopName":"昌平店","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"76022278","orderCountTotal":"0","promotShopID":"76022278","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"昌平店 | 昌平区中心街道 | 家常菜 | 家常菜 | 近郊其它","metroInfo":"地铁2号线","busInfo":"301,311","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20131227181853","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"近郊","py":"chang;ping;dian;cpd;","address":"昌平区中心街道","openingDate":"0","timeShopID":"76022278","mapLongitudeValueBaiDu":"116.233876","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10100303","cityName":"北京","tel":"010-5258955","browseMonth":"0","mapLongitudeValue":"116.523241","description":"优雅","areaID":"1010030000","openingHours":"11:00-22:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.929762","cityShopCount":"42","cuisineName2":"","cuisineName1":"家常菜","markBuilding":"十里堡","mapLatitudeValue":"39.929762","browseWeek":"0","browseTotal":"8","PCCL":"68","shopID":"76022290","shopName":"青年餐厅(青年路店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"充足","sortIndex":"999999","keywordLst":"青年餐厅(青年路店) | 朝阳区朝阳北路103号金泰国益大厦2楼 | 家常菜 | 朝阳区","metroInfo":"2号线","busInfo":"58 65  55路","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140108173030","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"朝阳区","py":"qing;nian;can;ting;qing;nian;lu;dian;qnct;qnld","address":"朝阳区朝阳北路103号金泰国益大厦2楼","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.523241","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10100303","cityName":"北京","tel":"010-8954757","browseMonth":"0","mapLongitudeValue":"116.421992","description":"","areaID":"1010120000","openingHours":"11:00-22:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"40.065949","cityShopCount":"42","cuisineName2":"","cuisineName1":"家常菜","markBuilding":"天通苑","mapLatitudeValue":"40.065949","browseWeek":"0","browseTotal":"0","PCCL":"69","shopID":"76022291","shopName":"青年餐厅(龙德店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"76022290","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"充足","sortIndex":"999999","keywordLst":"青年餐厅(龙德店) | 昌平区立汤路186号龙德广场5楼F525号 | 家常菜 | 海淀区","metroInfo":"13号线","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"海淀区","py":"qing;nian;can;ting;long;de;dian;qnct;ldd","address":"昌平区立汤路186号龙德广场5楼F525号","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.421992","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10100303","cityName":"北京","tel":"010-85847502","browseMonth":"0","mapLongitudeValue":"116.380906","description":"","areaID":"1010060000","openingHours":"11:00-22:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.895304","cityShopCount":"42","cuisineName2":"","cuisineName1":"家常菜","markBuilding":"菜市口","mapLatitudeValue":"39.895304","browseWeek":"0","browseTotal":"0","PCCL":"53","shopID":"76022292","shopName":"青年餐厅(陶然亭店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"76022290","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"充足","sortIndex":"999999","keywordLst":"青年餐厅(陶然亭店) | 西城区陶然亭路口B39号 | 家常菜 | 菜市口","metroInfo":"2号线菜市口","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"西城区","py":"qing;nian;can;ting;tao;ran;ting;dian;qnct;trtd","address":"西城区陶然亭路口B39号","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.380906","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10100303","cityName":"北京","tel":"010-88597452","browseMonth":"0","mapLongitudeValue":"116.322918","description":"","areaID":"1010210000","openingHours":"11:00-22:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.888122","cityShopCount":"42","cuisineName2":"","cuisineName1":"家常菜","markBuilding":"丽泽桥","mapLatitudeValue":"39.888122","browseWeek":"0","browseTotal":"0","PCCL":"62","shopID":"76022293","shopName":"青年餐厅(六里桥店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"76022290","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"充足","sortIndex":"999999","keywordLst":"青年餐厅(六里桥店) | 丰台区华源1街4号楼 | 家常菜 | 六里桥/丽泽桥","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"丰台区","py":"qing;nian;can;ting;liu;li;qiao;dian;qnct;llqd","address":"丰台区华源1街4号楼","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.322918","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10100303","cityName":"北京","tel":"010-5648748","browseMonth":"0","mapLongitudeValue":"116.505789","description":"","areaID":"1010270000","openingHours":"11:00-22:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.794217","cityShopCount":"42","cuisineName2":"","cuisineName1":"家常菜","markBuilding":"亦庄","mapLatitudeValue":"39.794217","browseWeek":"0","browseTotal":"3","PCCL":"58","shopID":"76022295","shopName":"丽江龙记斑鱼庄（亦庄店）","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"充足","sortIndex":"999999","keywordLst":"丽江龙记斑鱼庄（亦庄店） | 大兴区亦庄山水开发区 | 家常菜 | 亦庄","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140109111705","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"大兴区","py":"li;jiang;long;ji;ban;yu;zhuang;yi;zhuang;dian;ljljbyz;yzd","address":"大兴区亦庄山水开发区","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.505789","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"10100300","cuisineID1":"10100300","cityName":"北京","tel":"010-12345677","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"11:00-22:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"北京菜","cuisineName1":"北京菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"0","shopID":"76022298","shopName":"哗啦啦演示22","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"哗啦啦演示22 | 西直门 | 北京菜 | 北京菜 | 朝阳区","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"hua;la;la;yan;shi;2;2;hllys22;","address":"西直门","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"10100303","cuisineID1":"10100300","cityName":"北京","tel":"010-12345677","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"09:00-11:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"家常菜","cuisineName1":"北京菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"0","shopID":"76022299","shopName":"哗啦啦演示","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"哗啦啦演示 | 西直门 | 北京菜 | 家常菜 | 朝阳区","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140506194722","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"hua;la;la;yan;shi;hllys;","address":"西直门","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10100300","cityName":"北京","tel":"010-1223456","browseMonth":"0","mapLongitudeValue":"116.361442","description":"","areaID":"1010030000","openingHours":"08:00-13:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.946436","cityShopCount":"42","cuisineName2":"","cuisineName1":"北京菜","markBuilding":"","mapLatitudeValue":"39.946436","browseWeek":"0","browseTotal":"0","PCCL":"0","shopID":"76022300","shopName":"哗啦啦测试22","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"哗啦啦测试22 | 西直门 | 北京菜 | 朝阳区","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"朝阳区","py":"hua;la;la;ce;shi;2;2;hllcs22;","address":"西直门","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.361442","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"10100303","cuisineID1":"10100300","cityName":"北京","tel":"134422323434","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"11:00-23:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"家常菜","cuisineName1":"北京菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"30","shopID":"76022315","shopName":"北京测试电批","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"北京测试电批 | 北京 | 北京菜 | 家常菜 | 国贸","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"bei;jing;ce;shi;dian;pi;bjcsdp;","address":"北京","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"10211800","cuisineID1":"10211800","cityName":"上海","tel":"13671268301","browseMonth":"0","mapLongitudeValue":"121.714004","description":"333","areaID":"1021030000","openingHours":"12:00-15:59","status":"0","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"31.202831","cityShopCount":"23","cuisineName2":"新疆/清真","cuisineName1":"新疆/清真","markBuilding":"四方达范德萨","mapLatitudeValue":"31.202831","browseWeek":"0","browseTotal":"2","PCCL":"12","shopID":"76022317","shopName":"eqe","PCCH":"0","operationMode":"1","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"222","sortIndex":"999999","keywordLst":"eqe | 上海浦东新区川沙 | 新疆/清真 | 新疆/清真 | 黄陂南路地铁站","metroInfo":"地方撒发达","busInfo":"的发发大才","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"卢湾区","py":"e;q;e;eqe;","address":"上海浦东新区川沙","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"121.714004","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"10101500","cuisineID1":"10101800","cityName":"北京","tel":"13671268301","browseMonth":"0","mapLongitudeValue":"116.382001","description":"","areaID":"1010030000","openingHours":"11:00-23:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.913329","cityShopCount":"42","cuisineName2":"湖北菜","cuisineName1":"江浙菜","markBuilding":"","mapLatitudeValue":"39.913329","browseWeek":"0","browseTotal":"0","PCCL":"30","shopID":"76022321","shopName":"cesd","PCCH":"0","operationMode":"1","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"cesd | 西单 | 江浙菜 | 湖北菜 | 国贸","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"朝阳区","py":"c;e;s;d;cesd;","address":"西单","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.382001","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"10100600","cuisineID1":"10100906","cityName":"北京","tel":"13671268301","browseMonth":"0","mapLongitudeValue":"116.467524","description":"","areaID":"1010030000","openingHours":"11:00-23:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.914319","cityShopCount":"42","cuisineName2":"鲁菜","cuisineName1":"香锅","markBuilding":"","mapLatitudeValue":"39.914319","browseWeek":"0","browseTotal":"0","PCCL":"40","shopID":"76022322","shopName":"cesascd","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"cesascd | ces | 香锅 | 鲁菜 | 国贸","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"朝阳区","py":"c;e;s;a;s;c;d;cesascd;","address":"ces","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.467524","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"10101803","cuisineID1":"10101806","cityName":"北京","tel":"13671268301","browseMonth":"0","mapLongitudeValue":"116.382001","description":"","areaID":"1010030000","openingHours":"13:00-16:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.913329","cityShopCount":"42","cuisineName2":"淮扬菜","cuisineName1":"浙江菜","markBuilding":"","mapLatitudeValue":"39.913329","browseWeek":"0","browseTotal":"0","PCCL":"40","shopID":"76022323","shopName":"rerwq","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"rerwq | 西单 | 浙江菜 | 淮扬菜 | 三里屯village","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"朝阳区","py":"r;e;r;w;q;rerwq;","address":"西单","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.382001","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"10210909","cuisineID1":"10211500","cityName":"上海","tel":"13671268301","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1021030000","openingHours":"11:00-23:00","status":"0","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"23","cuisineName2":"茶餐厅","cuisineName1":"台湾菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"40","shopID":"76022325","shopName":"测试","PCCH":"0","operationMode":"1","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"测试 | 西单 | 台湾菜 | 茶餐厅 | 打浦桥","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"卢湾区","py":"ce;shi;cs;","address":"西单","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"豆捞坊上海总公司","cuisineID2":"10210909","cuisineID1":"10211500","cityName":"上海","tel":"13671268301","browseMonth":"0","mapLongitudeValue":"116.382001","description":"","areaID":"1021030000","openingHours":"11:00-23:00","status":"0","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.913329","cityShopCount":"23","cuisineName2":"茶餐厅","cuisineName1":"台湾菜","markBuilding":"","mapLatitudeValue":"39.913329","browseWeek":"0","browseTotal":"0","PCCL":"40","shopID":"76022326","shopName":"测试","PCCH":"0","operationMode":"1","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"测试 | 西单 | 台湾菜 | 茶餐厅 | 打浦桥","metroInfo":"","busInfo":"","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"29","shopCode":"","areaName":"卢湾区","py":"ce;shi;cs;","address":"西单","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.382001","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"10102103","cuisineID1":"10100303","cityName":"北京","tel":"010-88889999","browseMonth":"0","mapLongitudeValue":"116.352008","description":"高大上","areaID":"1010060000","openingHours":"09:00-20:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.946017","cityShopCount":"42","cuisineName2":"粤菜","cuisineName1":"家常菜","markBuilding":"北京展览馆","mapLatitudeValue":"39.946017","browseWeek":"0","browseTotal":"0","PCCL":"60","shopID":"76022336","shopName":"胡小胖私房菜","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"车位充足","sortIndex":"999999","keywordLst":"胡小胖私房菜 | 西直门天字一号 | 家常菜 | 粤菜 | 北京展览馆","metroInfo":"2号线A口出","busInfo":"运通105北展下车","serviceFeatures":"commonreserve_order,takeaway_order,takeout_order,justeat_order,spot_pay,spot_order","menuVersionNo":"20140717150329","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"西城区","py":"hu;xiao;pang;si;fang;cai;hxpsfc;","address":"西直门天字一号","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.352008","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"10100300","cuisineID1":"10100300","cityName":"北京","tel":"010-23913312","browseMonth":"5","mapLongitudeValue":"116.359338","description":"","areaID":"1010030000","openingHours":"10:30-22:00","status":"1","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.947126","cityShopCount":"42","cuisineName2":"北京菜","cuisineName1":"北京菜","markBuilding":"","mapLatitudeValue":"39.947126","browseWeek":"5","browseTotal":"5","PCCL":"150","shopID":"76022337","shopName":"豆捞坊(西直门店)","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"77877","orderCountTotal":"0","promotShopID":"77877","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"豆捞坊(西直门店) | 西环广场 | 北京菜 | 北京菜 | 国贸","metroInfo":"","busInfo":"","serviceFeatures":"takeaway_order,takeout_order,justeat_order,commonreserve_order,spot_order,spot_pay,","menuVersionNo":"20141016090746","totalValue":"0.00","shopLoginName":"7565","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"朝阳区","py":"dou;lao;fang;xi;zhi;men;dian;dlf;xzmd","address":"西环广场","openingDate":"0","timeShopID":"76022337","mapLongitudeValueBaiDu":"116.359338","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10100303","cityName":"北京","tel":"010-23345786","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010120000","openingHours":"10:00-20:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"","cuisineName1":"家常菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"20","shopID":"76022351","shopName":"所发生的发顺丰","PCCH":"0","operationMode":"1","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"所发生的发顺丰 | 北京市海淀区中关村 | 家常菜 | 中关村","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"海淀区","py":"suo;fa;sheng;de;fa;shun;feng;sfsdfsf;","address":"北京市海淀区中关村","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10100300","cityName":"北京","tel":"010-123456778","browseMonth":"0","mapLongitudeValue":"116.421885","description":"","areaID":"1010090000","openingHours":"08:00-23:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.938574","cityShopCount":"42","cuisineName2":"","cuisineName1":"北京菜","markBuilding":"","mapLatitudeValue":"39.938574","browseWeek":"0","browseTotal":"0","PCCL":"16","shopID":"76022352","shopName":"111111","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"111111 | 北京市东城区 | 北京菜 | 东四十条地铁站","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"东城区","py":"1;1;1;1;1;1;111111;","address":"北京市东城区","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.421885","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10101500","cityName":"北京","tel":"2222222222","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"11:11-22:22","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"","cuisineName1":"湖北菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"22","shopID":"76022353","shopName":"11111","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"11111 | 22222222 | 湖北菜 | 三里屯village","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"1;1;1;1;1;11111;","address":"22222222","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10101809","cityName":"北京","tel":"010-12345678","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"01:00-21:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"","cuisineName1":"上海菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"0","shopID":"76022355","shopName":"sss","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"sss | 22 | 上海菜 | 秀水街","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"s;s;s;sss;","address":"22","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10101500","cityName":"北京","tel":"010-12345678","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"01:00-21:00","status":"1","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"","cuisineName1":"湖北菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"1","shopID":"76022356","shopName":"fdsasdf","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"fdsasdf | 1221312312 | 湖北菜 | 永安里地铁站","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"f;d;s;a;s;d;f;fdsasdf;","address":"1221312312","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10101800","cityName":"北京","tel":"010-55521158211-54","browseMonth":"1","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"08:30-23:00","status":"1","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"","cuisineName1":"江浙菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"1","browseTotal":"1","PCCL":"20","shopID":"76022357","shopName":"豆捞坊西直门店","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"76022357","orderCountTotal":"1","promotShopID":"76022357","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"豆捞坊西直门店 | beijiskjjkkjskjkjhjkhjk | 江浙菜 | 汉威大厦","metroInfo":"","busInfo":"","serviceFeatures":",commonreserve_order,spot_order,spot_pay,","menuVersionNo":"20141013190509","totalValue":"0.00","shopLoginName":"22222","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"dou;lao;fang;xi;zhi;men;dian;dlfxzmd;","address":"beijiskjjkkjskjkjhjkhjk","openingDate":"0","timeShopID":"76022357","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10101500","cityName":"北京","tel":"2222222222","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"11:11-22:22","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"","cuisineName1":"湖北菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"22","shopID":"76022358","shopName":"111111","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"11111|22222222|湖北菜|三里屯village","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"1;1;1;1;1;1;111111;","address":"22222222","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10100900","cityName":"北京","tel":"18500209170","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"20:00-23:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"","cuisineName1":"川菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"20","shopID":"76022359","shopName":"测试","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"测试 | 测试 | 川菜 | 国贸","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"ce;shi;cs;","address":"测试","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10102103","cityName":"北京","tel":"1367","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"11:00-23:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"","cuisineName1":"粤菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"10","shopID":"76022360","shopName":"ce","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"ce | cew | 粤菜 | 朝阳区","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"c;e;ce;","address":"cew","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10103609","cityName":"北京","tel":"1367","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"11:00-23:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"","cuisineName1":"羊蝎子","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"30","shopID":"76022363","shopName":"ces","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"ces | cxew | 羊蝎子 | 贵友大厦","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"c;e;s;ces;","address":"cxew","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10101500","cityName":"北京","tel":"2222222222","browseMonth":"0","mapLongitudeValue":"116.4263294","description":"","areaID":"1010030000","openingHours":"11:11-22:22","status":"1","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.904341","cityShopCount":"42","cuisineName2":"","cuisineName1":"湖北菜","markBuilding":"","mapLatitudeValue":"39.904341","browseWeek":"0","browseTotal":"0","PCCL":"22","shopID":"76022365","shopName":"11111","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"11111 | 22222222 | 湖北菜 | 三里屯village","metroInfo":"","busInfo":"","serviceFeatures":",justeat_order,","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"1;1;1;1;1;11111;","address":"22222222","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.4263294","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10102103","cityName":"北京","tel":"010-6666666","browseMonth":"0","mapLongitudeValue":"116.361442","description":"","areaID":"1010030000","openingHours":"08:30-21:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.946436","cityShopCount":"42","cuisineName2":"","cuisineName1":"粤菜","markBuilding":"凯德Mall","mapLatitudeValue":"39.946436","browseWeek":"0","browseTotal":"0","PCCL":"50","shopID":"76022368","shopName":"龙门客栈","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"龙门客栈 | 西直门 | 粤菜 | 京广中心","metroInfo":"地铁4号线","busInfo":"","serviceFeatures":"","menuVersionNo":"20140909171304","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"朝阳区","py":"long;men;ke;zhan;lmkz;","address":"西直门","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.361442","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"10100300","cuisineID1":"10100300","cityName":"北京","tel":"13671268301","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"11:00-12:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"北京菜","cuisineName1":"北京菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"10","shopID":"76022369","shopName":"ce","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"ce | 哗啦啦 | 北京菜 | 北京菜 | 朝阳区","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"c;e;ce;","address":"哗啦啦","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"10100300","cuisineID1":"10100300","cityName":"北京","tel":"13671268301","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1010030000","openingHours":"11:00-12:00","status":"1","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"42","cuisineName2":"åäº¬è","cuisineName1":"åäº¬è","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"10","shopID":"76022370","shopName":"ce","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"ce | åå¦å¦ | åäº¬è | åäº¬è | æé³åº","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"c;e;ce;","address":"åå¦å¦","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"10103603","cuisineID1":"10103606","cityName":"北京","tel":"13322222222","browseMonth":"0","mapLongitudeValue":"116.35931","description":"","areaID":"1010060000","openingHours":"08:30-22:30","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.945142","cityShopCount":"42","cuisineName2":"涮羊肉","cuisineName1":"其他火锅","markBuilding":"","mapLatitudeValue":"39.945142","browseWeek":"0","browseTotal":"0","PCCL":"70","shopID":"76022373","shopName":"豆捞坊体验店1","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"豆捞坊体验店1 | 北京西直门嘉茂大厦6层 | 其他火锅 | 涮羊肉 | 西直门地铁站","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"西城区","py":"dou;lao;fang;ti;yan;dian;1;dlftyd1;","address":"北京西直门嘉茂大厦6层","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.35931","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"10105421","cuisineID1":"10106318","cityName":"北京","tel":"15001228445","browseMonth":"0","mapLongitudeValue":"116.349284","description":"","areaID":"1010030000","openingHours":"08:30-08:30","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"39.736528","cityShopCount":"42","cuisineName2":"其他西餐","cuisineName1":"创意菜","markBuilding":"","mapLatitudeValue":"39.736528","browseWeek":"0","browseTotal":"0","PCCL":"12","shopID":"76022375","shopName":"哈哈","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"哈哈 | 银河soho大厦 | 创意菜 | 其他西餐 | 国贸","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"朝阳区","py":"ha;ha;hh;","address":"银河soho大厦","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.349284","lAStSettleTime":"0"},{"settleName":"","cuisineID2":"0","cuisineID1":"10212400","cityName":"上海","tel":"15990223445","browseMonth":"0","mapLongitudeValue":"0.0","description":"","areaID":"1021030000","openingHours":"08:30-21:30","status":"0","cityID":"1021","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"0.0","cityShopCount":"23","cuisineName2":"","cuisineName1":"素菜","markBuilding":"","mapLatitudeValue":"0.0","browseWeek":"0","browseTotal":"0","PCCL":"23","shopID":"76022376","shopName":"qwe","PCCH":"0","operationMode":"0","openingTimeIDTag":"20","menuShopID":"76022376","orderCountTotal":"0","promotShopID":"76022376","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"qwe | 1234we | 素菜 | 日月光中心广场","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"0","shopCode":"","areaName":"卢湾区","py":"q;w;e;qwe;","address":"1234we","openingDate":"0","timeShopID":"76022376","mapLongitudeValueBaiDu":"0.0","lAStSettleTime":"0"},{"settleName":"豆捞坊北京公司","cuisineID2":"0","cuisineID1":"10105418","cityName":"北京","tel":"010-80414205","browseMonth":"0","mapLongitudeValue":"116.728229","description":"","areaID":"1010360000","openingHours":"10:00-02:00","status":"0","cityID":"1010","atmosphere":"","tableInfo":"","mapLatitudeValueBaiDu":"40.154951","cityShopCount":"42","cuisineName2":"","cuisineName1":"西式简餐","markBuilding":"","mapLatitudeValue":"40.154951","browseWeek":"0","browseTotal":"0","PCCL":"84","shopID":"76022378","shopName":"Laker’s(罗马湖店)","PCCH":"0","operationMode":"2","openingTimeIDTag":"20","menuShopID":"0","orderCountTotal":"0","promotShopID":"0","groupID":"5","stopInfo":"","sortIndex":"999999","keywordLst":"Laker’s(罗马湖店) | 顺义区 顺义区罗马湖北路 | 西式简餐 | 顺义","metroInfo":"","busInfo":"","serviceFeatures":"","menuVersionNo":"","totalValue":"0.00","shopLoginName":"","orderCountRecent":"0","settleID":"6","shopCode":"","areaName":"近郊","py":"L;a;k;e;r;’;s;luo;ma;hu;dian;Laker’s;lmhd","address":"顺义区 顺义区罗马湖北路","openingDate":"0","timeShopID":"0","mapLongitudeValueBaiDu":"116.728229","lAStSettleTime":"0"}]},"resultcode":"000","resultmsg": ""}');
+
+			window.testDate = [
+				'2014-10-01', 
+				'2014-10-02', '2014-10-03', '2014-10-04', '2014-10-05', '2014-10-06', '2014-10-07', '2014-10-08', '2014-10-09', '2014-10-10'
+			];
+
+			window.chartIDs = 'order_dayly_sales,order_during_sales,food_dayly_sales'.split(',');
+
+			window.shopHT = new IX.IListManager();
+			window.cityHT = new IX.IListManager();
+			_.each(testShopData.data.shops, function (shop) {
+				shopHT.register($XP(shop, 'shopID', ''), shop);
+			});
+			_.each(testShopData.data.cities, function (city) {
+				shopHT.register($XP(city, 'cityID', ''), city);
+			});
+
+
+			window.chosenShopTpl = [
+				'<select class="chosen-select-no-results" multiple  style="width:390px;">',
+					'<option value=""></option>',
+					'{{#each optGrp}}',
+						'<optgroup label="{{name}}">',
+							'{{#each items}}',
+								'<option value="{{code}}">{{name}}</option>',
+							'{{/each}}',
+						'</optgroup>',
+					'{{/each}}',
+				'</select>',
+			].join('');
+		</script>
+
+		<script type="text/javascript">
+			$(document).ready(function () {
+				var tpl = Handlebars.compile(chosenShopTpl);
+				var shops = $XP(testShopData, 'data.shops', []),
+					cities = $XP(testShopData, 'data.cities', []);
+				var getRandom = function (n, m) {
+					var c = m - n + 1;
+					return Math.floor(Math.random() * c + n);
+				};
+				var chosenOpts = [];
+				var initShopChosenPanel = function ($panel) {
+					var matcher = (new Pymatch([]));
+					var sections = shops;
+					var getMatchedFn = function (searchText) {
+						matcher.setNames(_.map(sections, function (el) {
+							return IX.inherit(el, {
+								name : el.shopName
+							});
+						}));
+						var matchedSections = matcher.match(searchText);
+						var matchedOptions = {};
+						_.each(matchedSections, function (el, i) {
+							matchedOptions[el[0].shopID] = true;
+						});
+						return matchedOptions;
+					};
+					$panel.find('select').chosen({
+						width : '390px',
+						placeholder_text : "请选择店铺名称",
+						// max_selected_options: 1,
+						no_results_text : "抱歉，没有找到！",
+						allow_single_deselect : false,
+						getMatchedFn : getMatchedFn
+					}).change(function (e) {
+						
+					});
+				};
+				_.each(cities, function (city, i, l) {
+					var cityName = $XP(city, 'cityName', ''),
+						cityID = $XP(city, 'cityID', '');
+					var _shops = _.filter(shops, function (shop, j, l) {
+						return $XP(shop, 'cityID') == cityID;
+					});
+					chosenOpts.push({
+						name : cityName,
+						items : _.map(_shops, function (shop, i, l) {
+							return {
+								code : $XP(shop, 'shopID'),
+								name : $XP(shop, 'shopName')
+							};
+						})
+					});
+				});
+				var getChartOrigData = function (shopIDs, date) {
+					var data = _.map(shopIDs, function (shopID) {
+						var shop = shopHT.get(shopID),
+							count = getRandom(100, 10000);
+						return {
+							orderCount : count,
+							shopName : $XP(shop, 'shopName'),
+							shopID : $XP(shop, 'shopID')
+						};
+					});
+					data.push({
+						orderCount : getRandom(1000, 10000),
+						shopName : '其他',
+						shopID : 'other_shop'
+					});
+					return data;
+				};
+				var calcDuringDays = function (start, end) {
+					var s = new Date(start + ' 00:00:00'), e = new Date(end + ' 00:00:00');
+					var d = e - s, p = Hualala.Constants.SecondsOfHour * 1000 * 24;
+					var c = parseInt(Hualala.Common.Math.div(d, p)) + 1;
+					var ret = [];
+					for (var i = 0; i < c; i++) {
+						var v = new Date(s.getTime() + p * i);
+						var o = new Hualala.Date(v.getTime() / 1000);
+						ret.push({
+							date : v,
+							format : IX.Date.getDateByFormat(o.toText(), 'yyyy-MM-dd')
+						});
+					}
+					return ret;
+				};
+				var getChartDuringOrigData = function (shopIDs, start, end) {
+					var duringDays = calcDuringDays(start, end);
+					var timePoints = _.map(duringDays, function (el) {return $XP(el, 'format', '')});
+					var legend = _.map(shopIDs, function (shopID) {
+							var shop = shopHT.get(shopID);
+							return $XP(shop, 'shopName', '');
+						}),
+						dataMap = [];
+					var xAxisLengend = [];
+					_.each(shopIDs, function (shopID) {
+						var shop = shopHT.get(shopID),
+							shopName = $XP(shop, 'shopName', ''),
+							cityID = $XP(shop, 'cityID', ''),
+							cityName = $XP(shop, 'cityName', '');
+						if (!_.find(xAxisLengend, function (el) {return el == cityName;})) {
+							xAxisLengend.push(cityName);
+						}
+					});
+					_.each(duringDays, function (d) {
+						var data = _.map(shopIDs, function (shopID) {
+							var shop = shopHT.get(shopID),
+								shopName = $XP(shop, 'shopName', ''),
+								// 成本、销售额
+								count = [getRandom(100, 50000), getRandom(100, 50000)];
+							return {id : shopID, name : shopName, costs : Math.min(count[0], count[1]), sales : Math.max(count[0], count[1])};
+						});
+						dataMap.push({
+							costs : _.map(data, function (el) {return $XP(el, 'costs', 0)}),
+							sales : _.map(data, function (el) {return $XP(el, 'sales', 0)})
+						});
+					});
+					var mapOptions = function (data, legend) {
+						var title = "订单统计",
+							subtext = "店与店之间的成本与销售额统计",
+							tooltip = {"trigger": "axis"},
+							
+							toolbox = {
+								show : true,
+								orient : 'vertical',
+								x : 'right',
+								y : 'center'
+							};
+						return _.map(data, function (rec, idx) {
+							if (idx == 0) {
+								return {
+									title : {text : title, subtext : subtext},
+									tooltip : tooltip,
+									legend : {
+										x : 'right',
+										data : ["成本", "销售额"]
+									},
+									toolbox : toolbox,
+									calculable : true,
+									grid : {y : 80, y2 : 100},
+									yAxis : [
+										{
+											type : 'value', name : '元'
+										}
+									],
+									xAxis : [
+										{
+											'type' : 'category',
+											'axisLabel' : {interval : 0},
+											data : _.map(legend, function (el, i) {
+												return i % 2 !== 0 ? ('\n' + el) : el
+											})
+										}
+									],
+									series : [
+										{
+											type : 'bar', name : '成本',
+											data : dataMap[idx]['costs']
+										},
+										{
+											type : 'bar', name : '销售额',
+											data : dataMap[idx]['sales']
+										}
+									]
+								}
+							} else {
+								return {
+									series : [
+										{
+											type : 'bar', name : '成本',
+											data : dataMap[idx]['costs']
+										},
+										{
+											type : 'bar', name : '销售额',
+											data : dataMap[idx]['sales']
+										}
+									]
+								};
+							}
+						});
+					};
+
+					var option = {
+						timeline : {
+							data : timePoints,
+							autoPlay : true,
+							playInterval : 2000
+						},
+						options : mapOptions(dataMap, legend)
+						// options : [
+						// 	{
+						// 		title : {
+						// 			"text" : "订单统计",
+						// 			"subtext" : "店与店之间的销售统计"
+						// 		},
+						// 		tooltip : {"trigger": "axis"},
+						// 		legend : {
+						// 			x : 'right',
+						// 			data : ["成本", "销售额"]
+						// 		},
+						// 		toolbox : {
+						// 			show : true,
+						// 			orient : 'vertical',
+						// 			x : 'right',
+						// 			y : 'center'
+						// 		},
+						// 		calculable : true,
+						// 		grid : {y : 80, y2 : 100},
+						// 		yAxis : [
+						// 			{
+						// 				type : 'value', name : '元'
+						// 			}
+						// 		],
+						// 		xAxis : [
+						// 			{
+						// 				'type' : 'category',
+						// 				'axisLabel' : {interval : 0},
+						// 				data : legend
+						// 			}
+						// 		],
+						// 		series : [
+						// 			{
+						// 				type : 'bar', name : '成本',
+						// 				data : [1000, 2000, 3000]
+						// 			},
+						// 			{
+						// 				type : 'bar', name : '销售额',
+						// 				data : [5000, 12000, 15000]
+						// 			}
+						// 		]
+						// 	},
+						// 	{
+						// 		series : [
+						// 			{
+						// 				type : 'bar', name : '成本',
+						// 				data : [1000, 2000, 3000]
+						// 			},
+						// 			{
+						// 				type : 'bar', name : '销售额',
+						// 				data : [5000, 12000, 15000]
+						// 			}
+						// 		]
+						// 	}
+						// ]
+
+					};
+					return option;
+				};
+				var drawOrderDaylyChart = function (shopIDs, date, $box) {
+					var chartData = getChartOrigData(shopIDs, date);
+					var calcChartData = function (origData) {
+						var total = 0;
+						_.each(origData, function (el) {
+							total = Hualala.Common.Math.add(total, $XP(el, 'orderCount', 0));
+						});
+						return _.map(origData, function (el) {
+							return IX.inherit(el, {
+								// value : Math.round(Hualala.Common.Math.div($XP(el, 'orderCount', 0), total) * 100),
+								value : $XP(el, 'orderCount', 0),
+								name : $XP(el, 'shopName', '')
+							});
+						});
+					};
+					var option = {
+						// 图标标题配置
+						title : {
+							text : "南丁格尔玫瑰图",
+							subtext : "订单日统计",
+							x : "center"
+						},
+						// 气泡提示配置
+						tooltip : {
+							trigger : "item",
+							formatter : "{a}<br/>{b}:{c} ({d}%)"
+							// formatter : function () {
+							// 	console.info(arguments)
+							// }
+						},
+						// 图例配置
+						legend : {
+							x : 'center',
+							y : 'bottom',
+							data : _.map(chartData, function (el) {
+								return $XP(el, 'shopName');
+							})
+						},
+						toolbox : {
+							show : true,
+							feature : {
+								mark : {show : true},
+								dataView : {show : true, readOnly : true},
+								restore : {show : true},
+								saveAsImage : {show : true}
+							}
+						},
+						calculable : true,
+						series : [
+							{
+								name : "半径模式",
+								type : "pie",
+								radius : [20, 120],
+								center : ['25%', 200],
+								roseType : 'radius',
+								itemStyle : {
+									normal : {
+										label : {show : true},
+										labelLine : {show : true}
+									},
+									emphasis : {
+										label : {show : true},
+										labelLine : {show : true}
+									}
+								},
+								data : calcChartData(chartData)
+							},
+							{
+								name : "面积模式",
+								type : "pie",
+								radius : [30, 130],
+								center : ['75%', 200],
+								roseType : 'area',
+								data : calcChartData(chartData)
+							}
+						]
+					};
+					IX.Net.loadJsFiles(['../../src/js/dep/echarts/echarts-plain.js'], function () {
+						var $chart = $box.find('.chart');
+						$chart.css({height : '500px'});
+						var oChart = echarts.init($chart[0]);
+						oChart.setOption(option);
+					});
+				};
+				var drawOrderDuringChart = function (shopIDs, date, $box) {
+					var start = date[0], end = date[1],
+						chartData = getChartDuringOrigData(shopIDs, start, end, $box);
+					var $chart = $box.find('.chart');
+					$chart.css({height : '500px'});
+					var oChart = echarts.init($chart[0]);
+					oChart.setOption(chartData);
+				};
+				var bindEvent = function ($box, id) {
+					$box.delegate('.btn-success', 'click', function (e) {
+						var $shops = $box.find('select'),
+							$datePicker = $box.find(':text[data-type=datetimepicker]');
+
+						var shopIDs = $shops.val(),
+							date = [];
+						$datePicker.each(function (i, el) {
+							date.push($(el).val());
+						});
+						console.info($shops.val());
+						console.info($datePicker.val());
+						var eChartLoadedFn = function () {
+							if (id == 'order_dayly_sales') {
+								drawOrderDaylyChart(shopIDs, date[0], $box);
+							} else if (id == 'order_during_sales') {
+								drawOrderDuringChart(shopIDs, date, $box);
+							}
+						};
+						if (!IX.nsExisted('echarts')) {
+							IX.Net.loadJsFiles(['../../src/js/dep/echarts/echarts-plain.js'], eChartLoadedFn);
+						} else {
+							eChartLoadedFn();
+						}
+						return false;
+					});
+				};
+				_.each(chartIDs, function (id) {
+					var $box = $('#' + id),
+						$chosenShop = $box.find('.filter-form .chosen-shop'),
+						$datePicker = $box.find(':text[data-type=datetimepicker]');
+					var htm = tpl({optGrp : chosenOpts});
+					$chosenShop.html(htm);
+					initShopChosenPanel($chosenShop);
+					$datePicker.datetimepicker({
+						format : 'yyyy-mm-dd',
+						startDate : '2010-01-01',
+						autoclose : true,
+						minView : 'month',
+						todayBtn : true,
+						todayHighlight : true,
+						language : 'zh-CN'
+					});
+					bindEvent($box, id);
+				});
+
+			});
+
+			/*IX.Net.loadJsFiles(['../../src/js/dep/echarts/echarts-plain.js'], function () {
+				var $bd = $('.ix-body'),
+					$box = $('<div id="chart-box" />');
+				$box.css({height : '500px', marginTop : '0px'});
+				$bd.append($box);
+				var myChart = echarts.init($box[0]);
+				myChart.setOption({
+					tooltip : {
+						trigger : 'axis'
+					},
+					legend : {
+						data : ['蒸发量', '降水量']
+					},
+					toolbox : {
+						show : true,
+						feature : {
+							mark : {show : true},
+							dataView : {show : true, readOnly : false},
+							magicType : {show : true, type : ['line', 'bar']},
+							restore : {show : true},
+							saveAsImage : {show : true}
+						}
+					},
+					calculable : true,
+					xAxis : [
+						{
+							type : 'category',
+							data : ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+						}
+					],
+					yAxis : [
+						{
+							type : 'value',
+							splitArea : {show : true}
+						}
+					],
+					series : [
+						{
+							name : '蒸发量',
+							type : 'bar',
+							data : [2.0, 4.9, 7.0, 22.2, 25.6, 76.7, 135.6, 162.2, 32.56, 20, 6.4, 3.3]
+						},
+						{
+							name : '降水量',
+							type : 'bar',
+							data : [2.6, 5.9, 9.0, 21.2, 28.6, 70.7, 185.6, 172.2, 32.56, 20, 6.4, 3.3]
+						}
+					]
+				});
+
+			});*/
+		</script>
+	</body>
+</html>

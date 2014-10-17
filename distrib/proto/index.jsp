@@ -20,28 +20,28 @@
 		<link href="./asset/css/core.min.css?t=8badd652" rel="stylesheet" />
 		<!--[if lt IE 9]>
 			<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-			<script src="./asset/js/dep/respond.matchmedia.addListener.min.js?t=f6951411"></script>
+			<script src="./asset/js/dep/respond.matchmedia.addListener.min.js?t=5e00353b"></script>
 		<![endif]-->
 	</head>
 	<body >
 		<s:if test='@com.dld.platform.base.common.AppEnv@getInstance().getSystemProp("ENV_JSMIN").equals("true")'>
-			<script src="./asset/js/dep/jquery.min.js?t=b0c3bbbf"></script>
-			<script src="./asset/js/dep/bootstrap.min.js?t=26661631"></script>
+			<script src="./asset/js/dep/jquery.min.js?t=bdbae44b"></script>
+			<script src="./asset/js/dep/bootstrap.min.js?t=eb0d9bb4"></script>
 	
 			<!-- Include dependance file :underscore.js, handlebars.js datetimepicker.js, datetimepicker.zh-Cn.js, timepicker.js, validator.js, validator.zh-CN.js -->
-			<script src="./asset/js/dep/deplib.min.js?t=3ddad570"></script>
+			<script src="./asset/js/dep/deplib.min.js?t=ae26daaf"></script>
 			<!-- Include Common Lib Files for Hualala Shop Site -->
-			<script src="./asset/js/common.min.js?t=33e7c8b4"></script>
+			<script src="./asset/js/common.min.js?t=1ecfb53c"></script>
 			<!-- 百度地图API -->
 			<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.3"></script>
 			<!-- Include Global Const and call server api -->
-			<script src="./asset/js/api.min.js?t=d0c5a8b0"></script>
+			<script src="./asset/js/api.min.js?t=62278821"></script>
 			<!-- Include Template File -->
-			<script src="./asset/js/tpl.min.js?t=78604a4f"></script>
+			<script src="./asset/js/tpl.min.js?t=9e192bca"></script>
 			<!-- Include UI Lib -->
-			<script src="./asset/js/ui.min.js?t=e63bf9d6"></script>
+			<script src="./asset/js/ui.min.js?t=b753f65e"></script>
 			<!-- Include Page : entry.init.js, shop.query.model.js, shop.query.view.js, shop.query.controler.js, shop.list.model.js, shop.list.view.js, shop.list.controler.js, shop.init.js, setting.mgr.js, setting.init.js, merchant.layout.js, merchant.init.js, merchant.route.js -->
-			<script src="./asset/js/pages.min.js?t=8174d83c"></script>
+			<script src="./asset/js/pages.min.js?t=442d9f2e"></script>
 		</s:if>
 		<s:else>
 			<script src="./asset/js/dep/jquery.js?t=0180778f"></script>
