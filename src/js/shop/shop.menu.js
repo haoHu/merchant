@@ -50,7 +50,11 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
-        
+        if(!rsp.data.records)
+        {
+            topTip({msg: '该店没有任何菜品'});
+            return;
+        }
         classifiedFoods = classifyFoods(rsp.data.records);
         renderFoods(); //渲染所有菜品
         //渲染菜品分类

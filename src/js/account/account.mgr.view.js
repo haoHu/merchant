@@ -912,8 +912,11 @@
 				var _dish = {};
 				_.each(fields, function (k) {
 					var v = $XP(dish, k, ''),
-						unit = !IX.isEmpty(OrderPayFieldLabelLib[k]) && !IX.isEmpty(OrderPayFieldLabelLib[k]['unit']) ?
+						unit = !IX.isEmpty(OrderPayFieldLabelLib[k]) && !IX.isEmpty(OrderPayFieldLabelLib[k]['unit']) && k != "foodAmount" ?
 							OrderPayFieldLabelLib[k]['unit'] : '';
+					if (k == "foodAmount") {
+						v = Hualala.Common.Math.prettyPrice(v);
+					}
 					if (k == 'foodCategoryName') {
 						foodCategoryName = v;
 					}

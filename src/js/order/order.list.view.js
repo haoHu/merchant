@@ -117,6 +117,15 @@
 						]
 					};
 				} else if (pageName == 'orderQueryDay' || pageName == 'orderQueryDuring' ) {
+					pagerParams = IX.inherit(pagerParams, {
+						shopID : $XP(row, 'shopID', '')
+					});
+					if (pageName == "orderQueryDay") {
+						pagerParams = IX.inherit(pagerParams, {
+							startDate : $XP(row, 'billDate', ''),
+							endDate : $XP(row, 'billDate', '')
+						});
+					}
 					var n = pageName == "orderQueryDuring" ? "orderQueryDay" : "orderQuery",
 						params = _.map(queryKeys, function (k) {
 							return $XP(pagerParams, k, '');
