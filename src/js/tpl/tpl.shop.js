@@ -152,7 +152,7 @@
 				'<div class="d-ib t-l">',
 					'<h4>',
 						'<span class="glyphicon glyphicon-ok x-ico-suc"></span>',
-						'恭喜！豆捞坊（西直门店）创建成功！',
+						'恭喜！<span></span>创建成功！',
 					'</h4>',
 					'完成以下两个步骤，您的店铺就正式开通啦——',
 					'<ul>',

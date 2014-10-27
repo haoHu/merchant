@@ -53,7 +53,9 @@ S.initInfo = function ($container, pageType, params)
             if(!cityID) return;
             
             initAreas($area, cityID, areaID);
+            $area.blur();
             initCuisines($cuisine1, $cuisine2, cityID, cuisineID1, cuisineID2);
+            $cuisine1.blur(); $cuisine2.blur();
             
         });
         initCities($city, shopInfo);
@@ -95,9 +97,9 @@ S.initInfo = function ($container, pageType, params)
                     validators: {
                         notEmpty: { message: '店铺地址不能为空' },
                         stringLength: {
-                            min: 2,
-                            max: 100,
-                            message: '地址长度必须在6到100个字符之间'
+                            min: 1,
+                            max: 80,
+                            message: '店铺地址不能超过80个字符'
                         }
                     }
                 },

@@ -25,7 +25,9 @@ Hualala.Shop.initCreate = function ($wizard)
         if(!cityID) return;
         
         initAreas($area, cityID);
+        $area.blur();
         initCuisines($cuisine1, $cuisine2, cityID);
+        $cuisine1.blur(); $cuisine2.blur();
         
     });
     // 初始化timepicker
@@ -64,9 +66,9 @@ Hualala.Shop.initCreate = function ($wizard)
                 validators: {
                     notEmpty: { message: '店铺地址不能为空' },
                     stringLength: {
-                        min: 2,
-                        max: 100,
-                        message: '地址长度必须在6到100个字符之间'
+                        min: 1,
+                        max: 80,
+                        message: '店铺地址不能超过80个字符'
                     }
                 }
             },
@@ -162,6 +164,7 @@ Hualala.Shop.initCreate = function ($wizard)
                     return;
                 }
                 shopID = shopID || rsp.data.records[0].shopID;
+                $step3.find('h4 span').eq(1).text(dataStep1.shopName);
                 $shopSettingLink.attr('href', Hualala.PageRoute.createPath('setting'));
                 // 进入第二步标注地图
                 bsWizard.next();

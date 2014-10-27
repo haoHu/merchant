@@ -108,8 +108,9 @@
 				self.withdraw($(this));
 			});
 			self.$schema.on('click', '[data-act]', function (e) {
-				var act = $(this).attr('data-act');
 				var $btn = $(this);
+				var act = $btn.attr('data-act');
+				if ($btn.hasClass('disabled')) return;
 				switch(act) {
 					case 'edit':
 						self.editAccount($btn);
@@ -188,6 +189,7 @@
 				bankInfo = Hualala.Common.mapBankInfo(model.get('bankCode')),
 				bankAccountStr = Hualala.Common.codeMask((model.get('bankAccount') || ''), 0, -4),
 				settleBalance = parseFloat(model.get('settleBalance') || 0),
+				shopCount = parseInt(model.get('shopCount') || 0),
 				disableWithdraw = settleBalance <= 0 ? 'disabled' : '';
 
 			accountCard = {
@@ -200,25 +202,32 @@
 				bankIcon : $XP(bankInfo, 'icon_16', ''),
 				bankComName : $XP(bankInfo, 'name', ''),
 				bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
-				shopCount : parseInt(model.get('shopCount') || 0),
+				shopCount : shopCount,
 				path : Hualala.PageRoute.createPath('accountDetail', [settleUnitID]),
 				isDetail : true,
 				acts : IX.map(acts1, function (el, i) {
+					var _act = $XP(el, 'act', '');
 					return IX.inherit(el, {
-						isFirst : i == 0 ? true : false
+						isFirst : i == 0 ? true : false,
+						disabled : (_act == 'delete' && (settleBalance != 0 || shopCount != 0)) ? 'disabled' : ''
 					});
 				})
 			};
 			return {
 				accountCard : accountCard,
 				acts : _.map(acts, function (el) {
-					if ($XP(el, 'act') == 'queryShops') {
+					var _act = $XP(el, 'act', '');
+					if (_act == 'queryShops') {
 						return IX.inherit(el, {
-							label : $XP(el, 'label', '') + '(' + parseInt(model.get('shopCount') || 0) + ')'
+							label : $XP(el, 'label', '') + '(' + shopCount + ')'
 						});
-					} else if ($XP(el, 'act') == 'withdraw') {
+					} else if (_act == 'withdraw') {
 						return IX.inherit(el, {
 							disableWithdraw : disableWithdraw
+						});
+					} else if (_act == 'delete') {
+						return IX.inherit(el, {
+							disabled : (settleBalance != 0 || shopCount != 0) ? 'disabled' : ''
 						});
 					}
 					return el;
