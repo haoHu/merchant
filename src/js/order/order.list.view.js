@@ -65,10 +65,11 @@
 			case "userName":
 				var m = $XP(row, 'userMobile', ''),
 					s = Hualala.Common.getGender($XP(row, 'userSex', ''));
+				var _shortName = Hualala.Common.substrByte(v, 10) + '...';
 				s = IX.isEmpty(s) ? '' : '(' + $XP(s, 'label', '') + ')';
 				m = IX.isEmpty(m) ? '' : '(' + m + ')';
 				r.value = $XP(row, 'userID', '');
-				r.text = v + s + m;
+				r.text = _shortName + s + m;
 				break;
 			case "orderTime":
 			case "minOrderTime":

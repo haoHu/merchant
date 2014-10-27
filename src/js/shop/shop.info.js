@@ -53,10 +53,7 @@ S.initInfo = function ($container, pageType, params)
             if(!cityID) return;
             
             initAreas($area, cityID, areaID);
-            $area.blur();
             initCuisines($cuisine1, $cuisine2, cityID, cuisineID1, cuisineID2);
-            $cuisine1.blur(); $cuisine2.blur();
-            
         });
         initCities($city, shopInfo);
         // 根据所选择的城市设置地标、菜系下拉列表
@@ -287,6 +284,7 @@ function initCuisines($cuisine1, $cuisine2, cityID, cuisineID1, cuisineID2)
         fillSelectBox($cuisine2, rsp.data.records, 'cuisineID', 'cuisineName', '--不限--');
         cuisineID1 && $cuisine1.val(cuisineID1);
         cuisineID2 && $cuisine2.val(cuisineID2);
+        $cuisine1.blur(); $cuisine2.blur();
     });
     
 }
@@ -304,6 +302,7 @@ function initAreas($area, cityID, areaID)
         
         fillSelectBox($area, rsp.data.records, 'areaID', 'areaName');
         areaID && $area.val(areaID);
+        $area.blur();
     });
     
 }

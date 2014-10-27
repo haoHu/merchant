@@ -630,8 +630,8 @@
 			var transAmount = $XP(r, 'transAmount', 0),
 				transSalesCommission = $XP(r, 'transSalesCommission', 0),
 				transPoundage = $XP(r, 'transPoundage', 0),
-				transChanged = transAmount - transSalesCommission - transPoundage;
-			return {value : transChanged, text : transChanged};
+				transChanged = Hualala.Common.Math.sub(transAmount, transSalesCommission, transPoundage);
+			return {value : transChanged, text : Hualala.Common.Math.prettyNumeric(transChanged)};
 		},
 		mapColsRenderData : function (row) {
 			var self = this;

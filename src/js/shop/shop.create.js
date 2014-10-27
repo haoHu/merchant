@@ -25,9 +25,7 @@ Hualala.Shop.initCreate = function ($wizard)
         if(!cityID) return;
         
         initAreas($area, cityID);
-        $area.blur();
         initCuisines($cuisine1, $cuisine2, cityID);
-        $cuisine1.blur(); $cuisine2.blur();
         
     });
     // 初始化timepicker
@@ -219,6 +217,7 @@ function initCuisines($cuisine1, $cuisine2, cityID)
         
         fillSelectBox($cuisine1, rsp.data.records, 'cuisineID', 'cuisineName');
         fillSelectBox($cuisine2, rsp.data.records, 'cuisineID', 'cuisineName', '--不限--');
+        $cuisine1.blur(); $cuisine2.blur();
     });
     
 }
@@ -235,6 +234,7 @@ function initAreas($selectBox, cityID)
         }
         
         fillSelectBox($selectBox, rsp.data.records, 'areaID', 'areaName');
+        $selectBox.blur();
     });
     
 }
