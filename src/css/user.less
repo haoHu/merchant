@@ -1,0 +1,80 @@
+.user-list {
+	tr.user-item {position : relative; overflow: hidden;}
+	.user-col {
+		height : 0; text-align: left!important;
+		.item {text-align: left;}
+		.name, .cell, .role-item {display: block; margin-bottom : 0.5rem;}
+	}
+	.user-ctrl {
+		position : absolute; top : 0; right : 0; margin : 34px 15px 0; width : 100%; overflow : hidden;
+		background: rgba(255,255,255,.8);
+		.user-ctrl-box {
+			display:block; width : 100%; height : 100%; 
+		}
+		.btn {margin-right : 1rem; margin-bottom : 0.5rem;}
+	}
+
+	@keyframes twinkling {
+		0%{
+			opacity : 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+	@-moz-keyframes twinkling {
+		0%{
+			opacity : 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+	@-webkit-keyframes twinkling{
+		0%{
+			opacity : 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+	@-o-keyframes twinkling {
+		0%{
+			opacity : 0;
+		}
+		100% {
+			opacity: 1;
+		}
+	}
+	.user-item.shake {
+		animation : twinkling .5s 3 ease-in-out;
+		-moz-animation : twinkling .5s 3 ease-in-out;
+		-webkit-animation : twinkling .5s 3 ease-in-out;
+		-o-animation : twinkling .5s 3 ease-in-out;
+	}
+}
+
+.role-form {
+	.role-bind-grp {
+		margin-top : -20px;
+		.checkbox > .control-label {
+			padding-bottom : 7px;
+			input[type="checkbox"] {margin-top:3px;}
+		}
+		.btn-bind {font-size:12px; margin-top : -2px;}
+	}
+}
+
+.shop-list-body {
+	.bind-item .control-label {font-size : 14px;}
+}
+
+.shop-tree {
+	ul.row {padding-left : 40px;}
+	
+	.node-head .checkbox {display: inline-block;}
+}
+.tbl-role-binding {
+	margin-top : 2rem;
+	.label {margin-right : 1rem;}
+}

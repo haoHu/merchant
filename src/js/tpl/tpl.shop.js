@@ -868,7 +868,7 @@
 
 	var tpl_shop_modal_btns = [
 		'{{#each btns}}',
-			'<button type="button" class="btn {{clz}}" name="{{name}}">{{label}}</button>',
+			'<button type="button" class="btn {{clz}}" name="{{name}}" data-loading-text="{{loadingText}}" autocomplete="off">{{label}}</button>',
 		'{{/each}}'
 	].join('');
 	TplLib.register('tpl_shop_modal_btns', tpl_shop_modal_btns);

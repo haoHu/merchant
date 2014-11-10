@@ -11,7 +11,8 @@
 		Test.TestRoot + "/query.js",
 		Test.TestRoot + "/account.js",
 		Test.TestRoot + "/order.js",
-        Test.TestRoot + "/foods.js"
+        Test.TestRoot + "/foods.js",
+        Test.TestRoot + "/user.js"
 	];
 
 	Test.readyToTest = function (pageFn) {

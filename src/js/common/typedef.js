@@ -1,6 +1,17 @@
 (function ($) {
 	IX.ns("Hualala.TypeDef");
 
+	// 商户中心角色配置
+	// DongBo 要求角色数据并不是保存在后台数据库中，而是将角色常量维护在后台代码中，所以
+	// 前端也维护一份配置信息，与后台保持一致
+	Hualala.TypeDef.SiteRoleType = [
+		{id : 1, name : "店长", "sortIndex" : 5, "roleType" : "manager", "operationScope" : "single-shop", "desc" : "可以管理单店的信息和功能"},
+		{id : 2, name : "财务", "sortIndex" : 4, "roleType" : "finance", "operationScope" : "settle", "desc" : "可以管理多个结算账户"},
+		{id : 3, name : "区域经理", "sortIndex" : 3, "roleType" : "area-manager", "operationScope" : "multi-shop", "desc" : "可以开店，并管理多个店铺的基本信息和功能"},
+		{id : 4, name : "集团经理", "sortIndex" : 2, "roleType" : "general", "desc" : "管理所有店铺信息和功能及结算数据"},
+		{id : 5, name : "系统管理员", "sortIndex" : 1, "roleType" : "admin", "desc" : "超级管理员，全部权限"}
+	];
+
 	// 站点导航数据
 	Hualala.TypeDef.SiteNavType = [
 		{name : 'order', label : '订单报表'},
@@ -377,6 +388,12 @@
 			value: "Other",
 			label: "其他"
 		}
+	];
+
+	/*用户账号状态*/
+	Hualala.TypeDef.UserStatus = [
+		{value : 0, label : "停用"},
+		{value : 1, label : "正常"}
 	];
 
 

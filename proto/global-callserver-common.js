@@ -689,6 +689,177 @@
 		}));
 	};
 
+	/**
+	 * 商户中心账号管理查询
+	 * @param  {Object} params {accountID}
+	 * @param  {Function} cbFn   回调参数
+	 *          {
+	 *          	resultcode, resultmsg,
+	 *          	data : {
+	 *          		page : {pageCount, pageNo, pageSize, totalSize},
+	 *          		records : [
+	 *          			{accountID, accountStatus, action, actionTime, createTime,
+	 *          			groupID, lastLoginTime, loginCount, groupLoginName, loginName,
+	 *          			userEmail, userMobile, userName, userRemark, py},...
+	 *          		]
+	 *          	}
+	 *          }
+	 * @return {NULL}       
+	 */
+	Hualala.Global.queryShopGroupChildAccount = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		var users = Test.UserList;
+		fn(IX.inherit(res, {
+			data : {
+				page : {
+					pageCount : 1,
+					pageNo : 1,
+					pageSize : users.length,
+					totalSize : users.length
+				},
+				records : users
+			}
+		}));
+	};
+
+	/**
+	 * 删除商户中心集团子账号
+	 * @param  {Object} params {accountID}
+	 * @param  {Function} cbFn   回调参数
+	 *          {
+	 *          	resultcode, resultmsg,
+	 *          }
+	 * @return {NULL}
+	 */
+	Hualala.Global.removeShopGroupChildAccount = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(res);
+	};
+
+	/**
+	 * 解除绑定商户中心集团子账号绑定的手机
+	 * @param  {Object} params {accountID, userMobile}
+	 * @param  {Function} cbFn   回调参数
+	 *           {
+	 *           	resultcode, resultmsg
+	 *           }
+	 * @return {NULL}
+	 */
+	Hualala.Global.unbindMobileInShopGroupChildAccount = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(res);
+	};
+
+	/**
+	 * 重置商户中心集团子账号的密码
+	 * @param  {Object} params {accountID, loginPWD}
+	 * @param  {Function} cbFn   回调参数
+	 *          {
+	 *          	resultcode, resultmsg
+	 *          }
+	 * @return {NULL}
+	 */
+	Hualala.Global.resetPWDInShopGroupChildAccount = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		setTimeout(function () {
+			fn(res);
+		}, 1000);
+		
+	};
+
+	/**
+	 * 更新商户中心集团子账号的基本信息
+	 * @param  {Object} params {accountID, userName, userRemark, userEmail, accountStatus}
+	 * @param  {Function} cbFn   回调参数
+	 *          {
+	 *          	resultcode, resultmsg
+	 *          }
+	 * @return {NULL}
+	 */
+	Hualala.Global.updateShopGroupChildAccount = function (params, cbFn) {
+		IX.Debug.info("DEBUG: Update User Base Info Post Params:");
+		IX.Debug.info(params);
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		setTimeout(function () {
+			fn(res);
+		}, 1000);	
+	};
+
+	/**
+	 * 创建商户中心集团自账号的基本信息
+	 * @param {[type]} params [description]
+	 * @param {[type]} cbFn   [description]
+	 */
+	Hualala.Global.addShopGroupChildAccount = function (params, cbFn) {
+		IX.Debug.info("DEBUG: Add User Base Info Post Params:");
+		IX.Debug.info(params);
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		setTimeout(function () {
+			fn(IX.inherit(res, {
+				data : {
+					records : [IX.inherit(params, {accountID : IX.id()})]
+				}
+			}));
+		}, 1000);
+	}
+
+	/**
+	 * 设置账号角色绑定配置
+	 * @param  {Object} params {accountID,roles}
+	 *         {
+	 *         		accountID : "账号ID",
+	 *         		roles : [
+	 *         			{
+	 *         				type : "[RoleType]", items : ["[shopID|settleUnitID]",.....]
+	 *         			},
+	 *         			...
+	 *         		]
+	 *         }
+	 * @param  {Function} cbFn   回调参数
+	 *          {
+	 *          	resultcode, resultmsg
+	 *          }
+	 * @return {NULL}
+	 */
+	Hualala.Global.updateRoleBinding = function (params, cbFn) {
+		IX.Debug.info("DEBUG: User Role Binding Form Elements :");
+		IX.Debug.info(params);
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		setTimeout(function () {
+			fn(res);
+		}, 1000);	
+	};
+
+	/**
+	 * 查询账号绑定角色配置
+	 * @param  {Object} params {accountID}
+	 * @param  {Function} cbFn   回调参数
+	 *          {
+	 *          	resultcode, resultmsg,
+	 *          	data : {
+	 *          		roles : $$RoleBinding
+	 *          	}
+	 *          }
+	 * @return {NULL}
+	 */
+	Hualala.Global.queryRoleBinding = function (params, cbFn) {
+		IX.Debug.info("DEBUG: Query User Role Binding Info Post Params:");
+		IX.Debug.info(params);
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(IX.inherit(res, {
+			data : {
+				roles : Test.getUserRolesBinding($XP(params, 'accountID'))
+			}
+		}));
+	};
 })();
 
 
