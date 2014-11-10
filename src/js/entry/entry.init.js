@@ -327,6 +327,7 @@
 			self.$container.find('.panel-warning').addClass('hidden');
 			self.$formPanel.removeClass('hidden');
 			self.$formPanel.find('#group_name').val(self.groupName);
+			if (self.$formPanel.data('bootstrapValidator')) return;
 			self.$formPanel.bootstrapValidator({
 				trigger : 'blur',
 				fields : self.fvOpts
@@ -360,6 +361,7 @@
 						});
 					}
 					self.toggleProgress();
+					self.$subBtn.attr('disabled', false);
 				});
 			});
 			self.$formPanel.bootstrapValidator('resetForm');
