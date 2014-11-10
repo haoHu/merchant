@@ -603,6 +603,25 @@
 	};
 })(jQuery);
 
+// CommonFn Scroll
+(function ($) {
+	IX.ns("Hualala.Common");
+	// 平滑滚动到obj元素顶部
+	function smoothScroll (obj, during, fn) {
+		$(document.body).animate({scrollTop : $(obj).offset().top}, during, 'swing', fn);
+	};
+	// 平滑滚动到obj元素中部
+	function smoothScrollMiddle (obj, during, fn) {
+		var $obj = $(obj),
+			t = $obj.offset().top,
+			oh = $obj.height(),
+			wh = $(window).height();
+		$(document.body).animate({scrollTop : t + oh/2 - wh / 2}, during, 'swing', fn);
+	};
+	Hualala.Common.smoothScroll = smoothScroll;
+	Hualala.Common.smoothScrollMiddle = smoothScrollMiddle;
+})(jQuery);
+
 
 
 

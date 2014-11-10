@@ -63,7 +63,7 @@
 					shopLst = _.filter(self.origShops, function (s) {
 						return $XP(s, 'areaID') == aid;
 					});
-				shopLst = _.pluck(shopLst, 'areaID');
+				shopLst = _.pluck(shopLst, 'shopID');
 				areaHT.register(aid, IX.inherit(a, {
 					shopLst : shopLst
 				}));

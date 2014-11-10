@@ -20,11 +20,16 @@
 		lastLoginTime : "0"
 	};
 	Test.Roles = [
-		{id : 1, name : "店长", sortIndex : 5, roleType : 'oneshop'},
-		{id : 2, name : "财务", sortIndex : 4, roleType : 'account'},
-		{id : 3, name : "区域经理", sortIndex : 3, roleType : 'multishop'},
-		{id : 4, name : "集团经理", sortIndex : 2, roleType : 'all'},
-		{id : 5, name : "系统管理员", sortIndex : 1, roleType : 'all'}
+		// {id : 1, name : "店长", sortIndex : 5, roleType : 'oneshop'},
+		// {id : 2, name : "财务", sortIndex : 4, roleType : 'account'},
+		// {id : 3, name : "区域经理", sortIndex : 3, roleType : 'multishop'},
+		// {id : 4, name : "集团经理", sortIndex : 2, roleType : 'all'},
+		// {id : 5, name : "系统管理员", sortIndex : 1, roleType : 'all'}
+		{id : 1, name : "店长", sortIndex : 5, roleType : 'manager', "operationScope" : "single-shop"},
+		{id : 2, name : "财务", sortIndex : 4, roleType : 'finance', "operationScope" : "settle"},
+		{id : 3, name : "区域经理", sortIndex : 3, roleType : 'area-manager', "operationScope" : "multi-shop"},
+		{id : 4, name : "集团经理", sortIndex : 2, roleType : 'general'},
+		{id : 5, name : "系统管理员", sortIndex : 1, roleType : 'admin'}
 	];
 	Test.UserRight = [
 		{name : 'shop', url : '/#shop'},

@@ -298,3 +298,111 @@ Hualala.Global.queryOrderDishesHot = function (params, cbFn) {};
  */
 Hualala.Global.queryUserOrderStatistic = function (params, cbFn) {};
 
+// 账号管理模块服务
+/**
+ * 商户中心账号管理查询
+ * @param  {Object} params {accountID}
+ * @param  {Function} cbFn   回调参数
+ *          {
+ *          	resultcode, resultmsg,
+ *          	data : {
+ *          		page : {pageCount, pageNo, pageSize, totalSize},
+ *          		records : [
+ *          			{accountID, accountStatus, action, actionTime, createTime,
+ *          			groupID, lastLoginTime, loginCount, groupLoginName, loginName,
+ *          			userEmail, userMobile, userName, userRemark, py},...
+ *          		]
+ *          	}
+ *          }
+ * @return {NULL}       
+ */
+Hualala.Global.queryShopGroupChildAccount = function (params, cbFn) {};
+
+/**
+ * 删除商户中心集团子账号
+ * @param  {Object} params {accountID}
+ * @param  {Function} cbFn   回调参数
+ *          {
+ *          	resultcode, resultmsg,
+ *          }
+ * @return {NULL}
+ */
+Hualala.Global.removeShopGroupChildAccount = function (params, cbFn) {};
+
+/**
+ * 解除绑定商户中心集团子账号绑定的手机
+ * @param  {Object} params {accountID, userMobile}
+ * @param  {Function} cbFn   回调参数
+ *           {
+ *           	resultcode, resultmsg
+ *           }
+ * @return {NULL}
+ */
+Hualala.Global.unbindMobileInShopGroupChildAccount = function (params, cbFn) {};
+
+/**
+ * 重置商户中心集团自账号的密码
+ * @param  {Object} params {accountID, loginPWD}
+ * @param  {Function} cbFn   回调参数
+ *          {
+ *          	resultcode, resultmsg
+ *          }
+ * @return {NULL}
+ */
+Hualala.Global.resetPWDInShopGroupChildAccount = function (params, cbFn) {};
+
+/**
+ * 更新商户中心集团子账号的基本信息
+ * @param  {Object} params {accountID, userName, userRemark, userEmail, accountStatus}
+ * @param  {Function} cbFn   回调参数
+ *          {
+ *          	resultcode, resultmsg
+ *          }
+ * @return {NULL}
+ */
+Hualala.Global.updateShopGroupChildAccount = function (params, cbFn) {};
+
+/**
+ * 新建商户中心集团子账号的基本信息
+ * @param {Object} params {userName, userRemark, userEmail, accountStatus}
+ * @param {Function} cbFn   回调参数
+ *          {
+ *          	resultcode, resultmsg, data : {records : [{accountID, userName, userRemark, userEmail, accountStatus}]}
+ *          }
+ * @return {NULL}
+ */
+Hualala.Global.addShopGroupChildAccount = function (params, cbFn) {};
+
+/**
+ * 设置账号角色绑定配置
+ * @param  {Object} params {accountID,roles}
+ *         {
+ *         		accountID : "账号ID",
+ *         		roles : [
+ *         			{
+ *         				type : "[RoleType]", items : ["[shopID|settleUnitID]",.....]
+ *         			},
+ *         			...
+ *         		]
+ *         }
+ * @param  {Function} cbFn   回调参数
+ *          {
+ *          	resultcode, resultmsg
+ *          }
+ * @return {NULL}
+ */
+Hualala.Global.updateRoleBinding = function (params, cbFn) {};
+
+/**
+ * 查询账号绑定角色配置
+ * @param  {Object} params {accountID}
+ * @param  {Function} cbFn   回调参数
+ *          {
+ *          	resultcode, resultmsg,
+ *          	data : {
+ *          		roles : $$RoleBinding
+ *          	}
+ *          }
+ * @return {NULL}
+ */
+Hualala.Global.queryRoleBinding = function (params, cbFn) {};

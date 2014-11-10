@@ -44,7 +44,15 @@
 		["queryOrderDayDetail", "/shop/queryDayOfReconciliation.ajax", "", "POST"],
 		["queryOrderDuringDetail", "/shop/queryDuringTheBill.ajax", "", "POST"],
 		["queryOrderDishesHot", "/shop/foodStatistic.ajax", "", "POST"],
-		["queryUserOrderStatistic", "/shop/UserOrderStatistic.ajax", "", "POST"]
+		["queryUserOrderStatistic", "/shop/UserOrderStatistic.ajax", "", "POST"],
+		/*User Moudle*/
+		["queryShopGroupChildAccount", "/shop/queryShopAccount.ajax", "", "POST"],
+		["removeShopGroupChildAccount", "/shop/removeShopAccount.ajax", "", "POST"],
+		["unbindMobileInShopGroupChildAccount", "/shop/unboundMobile.ajax", "", "POST"],
+		["resetPWDInShopGroupChildAccount", "/shop/groupChildAccountResetPwd.ajax", "", "POST"],
+		["updateShopGroupChildAccount", "/shop/updateShopAccount.ajax", "", "POST"],
+		["addShopGroupChildAccount", "/shop/addShopAccount.ajax", "", "POST"]
+
 
 	]);
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([
@@ -66,7 +74,11 @@
 		"queryAccountOrderPayDetail", "queryAccountFsmCustomerDetail",
 
 		"queryOrderDetail", "queryOrderDayDetail", "queryOrderDuringDetail",
-		"queryOrderDishesHot", "queryUserOrderStatistic"
+		"queryOrderDishesHot", "queryUserOrderStatistic",
+
+		"queryShopGroupChildAccount", "removeShopGroupChildAccount", 
+		"unbindMobileInShopGroupChildAccount", "resetPWDInShopGroupChildAccount", 
+		"updateShopGroupChildAccount", "addShopGroupChildAccount"
 	]);
 
 	/*Login CallServer*/
@@ -181,6 +193,26 @@
 	};
 	Hualala.Global.queryUserOrderStatistic = function (params, cbFn) {
 		Hualala.Global.commonCallServer("queryUserOrderStatistic", params, cbFn);
+	};
+
+	/*User Moudle CallServer*/
+	Hualala.Global.queryShopGroupChildAccount = function (params, cbFn) {
+		Hualala.Global.commonCallServer("queryShopGroupChildAccount", params, cbFn);
+	};
+	Hualala.Global.removeShopGroupChildAccount = function (params, cbFn) {
+		Hualala.Global.commonCallServer("removeShopGroupChildAccount", params, cbFn);
+	};
+	Hualala.Global.unbindMobileInShopGroupChildAccount = function (params, cbFn) {
+		Hualala.Global.commonCallServer("unbindMobileInShopGroupChildAccount", params, cbFn);
+	};
+	Hualala.Global.resetPWDInShopGroupChildAccount = function (params, cbFn) {
+		Hualala.Global.commonCallServer("resetPWDInShopGroupChildAccount", params, cbFn);
+	};
+	Hualala.Global.updateShopGroupChildAccount = function (params, cbFn) {
+		Hualala.Global.commonCallServer("updateShopGroupChildAccount", params, cbFn);
+	};
+	Hualala.Global.addShopGroupChildAccount = function (params, cbFn) {
+		Hualala.Global.commonCallServer("addShopGroupChildAccount", params, cbFn);
 	};
 
 
