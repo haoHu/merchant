@@ -17,6 +17,28 @@
 Hualala.Global.loadAppData = function (params, cbFn) {}
 
 /**
+ * 获取手机动态密码
+ * @param  {Object} params {groupName, userMobile}
+ * @param  {Function} cbFn   回调参数
+ *           {
+ *           	resultcode, resultmsg
+ *           }
+ * @return {NULL}        
+ */
+Hualala.Global.getMobileDynamicPWD = function (params, cbFn) {};
+
+/**
+ * 动态密码登录请求
+ * @param  {Object} params  {groupName, userMobile, dynamicPwd}
+ * @param  {Function} cbFn   Response数据回调
+ *           @param {Object} response cbFn回调参数 {resultcode, resultmsg, data : {}}
+ *           @param {String} resultcode Response结果码
+ *           @param {String} resultmsg Response结果描述
+ * @return {NULL}        
+ */
+Hualala.Global.dynamicLoginCallServer = function (params, cbFn) {}
+
+/**
  * 获取动态验证码
  * @param  {Object} params {}
  * @param  {[type]} cbFn   Response数据回调

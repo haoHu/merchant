@@ -5,6 +5,9 @@
 		/*Login Moudle*/
 		["genAuthCode", "/getCheckCode.ajax", "", "GET"],
 		["loginCallServer", "/login.ajax", "", "POST"],
+		/*Dynamic Login*/
+		["getMobileDynamicPWD", "/getDynamicCode.action", "", "POST"],
+		["dynamicLoginCallServer", "/dynamicLogin.ajax", "", "POST"],
 		/*Session Data*/
 		["loadAppData", "/getUserInfo.ajax", "", "POST"],
 		/*Shop Moudle and Shop Setting Moudle*/
@@ -57,7 +60,9 @@
 
 	]);
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([
-		"genAuthCode", "loginCallServer", "getShopQuerySchema", 
+		"genAuthCode", "loginCallServer", 
+		"getMobileDynamicPWD", "dynamicLoginCallServer",
+		"getShopQuerySchema", 
 		"queryShop", "switchShopStatus", "switchShopServiceFeatureStatus", 
 		"setJustEatParams", "setSpotOrderParams", "setCommonReserveParams",
         'getCities', 'getAreas', 'getCuisines',
@@ -90,6 +95,14 @@
 
 	Hualala.Global.loginCallServer = function (params, cbFn) {
 		Hualala.Global.commonCallServer("loginCallServer", params, cbFn);
+	};
+
+	/*Dynamic Login CallServer*/
+	Hualala.Global.getMobileDynamicPWD = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getMobileDynamicPWD", params, cbFn);
+	};
+	Hualala.Global.dynamicLoginCallServer = function (params, cbFn) {
+		Hualala.Global.commonCallServer("dynamicLoginCallServer", params, cbFn);
 	};
 
 	/*Session Data CallServer*/

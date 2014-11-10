@@ -32,6 +32,50 @@
 	};
 
 	/**
+	 * 获取手机动态密码
+	 * @param  {Object} params {groupName, userMobile}
+	 * @param  {Function} cbFn   回调参数
+	 *           {
+	 *           	resultcode, resultmsg
+	 *           }
+	 * @return {NULL}        
+	 */
+	Hualala.Global.getMobileDynamicPWD = function (params, cbFn) {
+		IX.Debug.info("DEBUG: Get Dynamic Password Post Params:");
+		IX.Debug.info(params);
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : '短信发送成功'};
+		setTimeout(function () {
+			fn(res);
+		}, 1000);	
+	};
+
+	/**
+	 * 动态密码登录请求
+	 * @param  {Object} params  {groupName, userMobile, dynamicPwd}
+	 * @param  {Function} cbFn   Response数据回调
+	 *           @param {Object} response cbFn回调参数 {resultcode, resultmsg, data : {}}
+	 *           @param {String} resultcode Response结果码
+	 *           @param {String} resultmsg Response结果描述
+	 * @return {NULL}        
+	 */
+	Hualala.Global.dynamicLoginCallServer = function (params, cbFn) {
+		IX.Debug.info("DEBUG: Dynamic Password Login Post Params:");
+		IX.Debug.info(params);
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var random = Test.getRandom(1, 10);
+		var res = {resultcode : '000', resultmsg : ''};
+		if (random < 5) {
+			fn(IX.inherit(res, {
+				resultcode : random * 1000,
+				resultmsg : '登录失败！'
+			}));
+		} else {
+			fn(res);
+		}
+	};
+
+	/**
 	 * 获取动态验证码
 	 * @param  {Object} params {}
 	 * @param  {Function} cbFn   Response数据回调
@@ -860,6 +904,8 @@
 			}
 		}));
 	};
+
+	
 })();
 
 

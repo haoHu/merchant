@@ -205,7 +205,9 @@
 		}));
 		var $body = $('#ix_wrapper > .ix-body > .container');
 		$body.html($loginBox);
-		Hualala.Entry.initLogin($loginBox);
+		var loginPanel = new Hualala.Entry.initLogin({
+			$container : $loginBox
+		});
 	}
 
 	function initAboutPage (pageType, params) {
