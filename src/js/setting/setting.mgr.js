@@ -322,7 +322,7 @@
 		checkSpotOrder : {
 			type : 'switcher',
 			label : '支持手机结账',
-			defaultVal : 0,
+			defaultVal : 1,
 			onLabel : '支持',
 			offLabel : '不支持',
 			validCfg : {
@@ -391,6 +391,8 @@
 		 *              @param {String} serviceID 业务ID
 		 *              @param {String} serviceName 业务名称
 		 *              @param {Object} model 店铺数据模型
+		 *              @param {String} serviceFeatures 店铺服务信息
+		 *              @param {Function} successFn 编辑成功后的回调
 		 * @return {NULL}    
 		 */
 		constructor : function (cfg) {
@@ -398,8 +400,10 @@
 			this.serviceID = $XP(cfg, 'serviceID', null);
 			this.serviceName = $XP(cfg, 'serviceName', null);
 			this.model = $XP(cfg, 'model', null);
+			this.serviceFeatures = $XP(cfg, 'serviceFeatures', '');
 			this.serviceList = Hualala.TypeDef.ShopBusiness;
 			this.modal = null;
+			this.successFn = $XF(cfg, 'successFn');
 			if (!this.serviceID || !this.serviceName || !this.model) {
 				throw("Service View init failed!");
 			}
@@ -534,6 +538,7 @@
 					successFn : function () {
 						self.modal._.footer.find('.btn[name=submit]').button('reset');
 						self.emit('hide');
+						self.successFn(self.model, self.serviceID, formParams, self.$trigger);
 					}
 				});
 			});;
@@ -577,9 +582,16 @@
 							options : options
 						});
 					} else if (type == 'switcher') {
-						return IX.inherit(elCfg, {
-							checked : $XP(self.formParams, key) == $XP(elCfg, 'defaultVal') ? 'checked' : ''
-						})
+						if (key == 'checkSpotOrder') {
+							return IX.inherit(elCfg, {
+								checked : self.serviceFeatures.indexOf('spot_pay') >= 0 ? 'checked' : ''
+							});
+						} else {
+							return IX.inherit(elCfg, {
+								checked : $XP(self.formParams, key) == $XP(elCfg, 'defaultVal') ? 'checked' : ''
+							});
+						}
+						
 					} else {
 						return IX.inherit(elCfg, {
 							value : $XP(self.formParams, key, $XP(elCfg, 'defaultVal'))

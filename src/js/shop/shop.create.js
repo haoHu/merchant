@@ -171,7 +171,9 @@ Hualala.Shop.initCreate = function ($wizard)
                     isSearchMap: true,
                     shopName: dataStep1.shopName,
                     tel: dataStep1.tel,
-                    address: dataStep1.address
+                    address: dataStep1.address,
+                    area: dataStep1.areaName,
+                    city: getSelectText($city)
                 }, searchBox: $searchBox});
                 
             });

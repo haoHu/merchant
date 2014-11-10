@@ -222,9 +222,11 @@
 			self.$list.on('click', '.btn[data-business]', function (e) {
 				var $btn = $(this),
 					shopID = $btn.attr('data-shop'),
+					mShop = self.model.getShopModelByShopID(shopID),
 					businessName = $btn.attr('data-business'),
-					businessID = $btn.attr('data-business-id');
-				self.initBusinessModal($btn, shopID, businessName, businessID);
+					businessID = $btn.attr('data-business-id'),
+					serviceFeatures = mShop.get('serviceFeatures');
+				self.initBusinessModal($btn, shopID, businessName, businessID, serviceFeatures);
 			});
 		},
 		// 加载View层所需模板
@@ -381,6 +383,11 @@
 					switcherStatus = serviceFeatures.indexOf(name) >= 0 ? 1 : 0,
 					businessInfo = $XP(businessCfg, id.toString(), {}),
 					operationMode = $XP(shop, 'operationMode', null);
+				if (id == '41') {
+					businessInfo = IX.inherit(businessInfo, {
+						checkSpotOrder : serviceFeatures.indexOf('spot_pay') >= 0 ? 1 : 0
+					});
+				}
 				var ret = IX.inherit(item, businessInfo, {
 					switcherStatus : switcherStatus,
 					shopID : $XP(shop, 'shopID'),
@@ -410,7 +417,8 @@
 					type : name,
 					id : $XP(el, 'id'),
 					open : open,
-					desc : $XP(el, 'desc', '')
+					desc : $XP(el, 'desc', ''),
+					serviceFeatures : $XP(shop, 'serviceFeatures', '')
 				};
 			});
 		},
@@ -519,13 +527,21 @@
 			self.initSwitcher(':checkbox[name=switcher_status]');
 		},
 		// 生成业务编辑窗口
-		initBusinessModal : function (trigger, shopID, name, id) {
+		initBusinessModal : function (trigger, shopID, name, id, serviceFeatures) {
 			var self = this;
 			var editView = new Hualala.Setting.editServiceView({
 				triggerEl : trigger,
 				serviceID : id,
 				serviceName : name,
-				model : self.model.getShopModelByShopID(shopID)
+				serviceFeatures : serviceFeatures,
+				model : self.model.getShopModelByShopID(shopID),
+				successFn : function (mShop, serviceID, businessInfo, $trigger) {
+					var operationMode = mShop.get('operationMode'),
+						desc = self.getBusinessDesc(parseInt(serviceID), operationMode, businessInfo);
+
+					$trigger.parents('.shop-business').find('.desc').html(desc);
+
+				}
 			});
 		}
 	});

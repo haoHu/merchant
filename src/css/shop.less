@@ -215,7 +215,12 @@ form.edit-mode, .form.edit-mode
 	
 }
 
-#swfUploadImgDialog .modal-dialog { width: 485px }
+#swfUploadImgDialog
+{
+    .t-c;
+    .modal-dialog { .d-ib; .t-l; width: auto }
+
+}
 .x-ico-suc
 {   @size: 50px;
 	.x-tc();
@@ -245,6 +250,7 @@ form.edit-mode, .form.edit-mode
 	{
 		#saveBtn { display: none }
 		.map-keyword { display: block }
+        #uploadImg a { display: none }
 	}
 	&.edit-mode #editBtn { display: none }
 	.map_canvas { height: 250px }

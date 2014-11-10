@@ -272,12 +272,22 @@
 							failFn();
 						} else {
 							var newData = {};
+							newData[serviceID] = params;
 							// var revParamJson = JSON.parse(self.get('revParamJson'));
 							var revParamJson = self.get('revParamJson') || null;
+							var serviceFeatures = self.get('serviceFeatures');
 							revParamJson = !revParamJson ? {} : JSON.parse(revParamJson);
 							revParamJson = IX.inherit(revParamJson, newData);
-							newData[serviceID] = params;
 							self.set('revParamJson', JSON.stringify(revParamJson));
+							if (serviceID == 41) {
+								var checkSpotOrder = $XP(params, 'checkSpotOrder', 0);
+								if (checkSpotOrder == 0) {
+									serviceFeatures = serviceFeatures.replace('spot_pay,', '');
+								} else {
+									serviceFeatures = serviceFeatures.concat('spot_pay,');
+								}
+								self.set('serviceFeatures', serviceFeatures);
+							}
 							successFn();
 							toptip({
 								msg : '配置成功!',

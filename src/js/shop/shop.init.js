@@ -31,7 +31,7 @@
             }).on('switchChange.bootstrapSwitch', function (e, state)
             {//店铺状态切换
                 var $chkbox = $(this);
-                Hualala.Global.switchShopStatus({shopID: shopInfo.shopID, status: state}, function (rsp)
+                Hualala.Global.switchShopStatus({shopID: shopInfo.shopID, status: +state}, function (rsp)
                 {
                     if(rsp.resultcode != '000')
                     {
@@ -39,6 +39,7 @@
                         rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
                         return;
                     }
+                    Hualala.UI.TopTip({msg: '切换成功', type: 'success'})
                 });
 			});;
             //重置客户端密码

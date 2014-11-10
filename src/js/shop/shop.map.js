@@ -28,9 +28,8 @@
         this.$searchBox = $(this.cfg.searchBox);
         this.$mapResult = $(this.cfg.mapResult);
         this.map = '';
-        this.searchArea = true;
         this.mapPoint = {};
-        
+        this.isAreaSearched = false;
     }
 	ShopMap.prototype = 
     {
@@ -73,7 +72,7 @@
         loadMap: function(data)
         {
             var self = this;
-            data = data || self.self.cfg.data;
+            data = data || self.cfg.data;
             self.map.centerAndZoom(new BMap.Point(data.lng, data.lat), 14);
             self.map.enableScrollWheelZoom();
 
@@ -122,23 +121,23 @@
                     //console.info(poi.marker.infoWindow);
                 }
             });
+            
             local.search(data.keyword || data.address || data.area || data.city);
-
+            
             local.setSearchCompleteCallback(function(results)
             {
                 if(local.getStatus() !== BMAP_STATUS_SUCCESS)
                 {
-                    if(self.searchArea)
+                    Hualala.UI.Alert({msg: '抱歉，百度地图未搜到您要查询的精确位置，现为您显示该位置所在的城市或区域，您可以通过移动地图上的标记来精确定位要查询的位置。'});
+                    if(!self.isAreaSearched)
                     {
+                        self.isAreaSearched = true;
                         local.search(data.area);
-                        self.searchArea = false;
-                    } else
+                    }
+                    else
                     {
                         local.search(data.city);
                     }
-                } else 
-                {
-                    //marker.hide();
                 }
             });
             local.setMarkersSetCallback(function(pois)

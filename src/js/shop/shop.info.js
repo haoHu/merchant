@@ -144,12 +144,14 @@ S.initInfo = function ($container, pageType, params)
         $img = $uploadImg.find('img').attr('src', G.IMAGE_ROOT + '/shop_head_img_default.png');
         imagePath = shopInfo.imagePath;
         imagePath && $img.attr('src', imgHost + imagePath);
-        
+
         map = S.map({data: {
             isSearchMap: false,
             shopName: shopInfo.shopName,
             tel: shopInfo.tel,
             address: shopInfo.address,
+            area: shopInfo.areaName,
+            city: shopInfo.cityName,
             lng: shopInfo.mapLongitudeValueBaiDu,
             lat: shopInfo.mapLatitudeValueBaiDu
         }});
@@ -160,7 +162,7 @@ S.initInfo = function ($container, pageType, params)
     {
         var $target = $(e.target);
         // 修改门头图
-        if($target.is('#uploadImg img, #uploadImg a'))
+        if($target.is('.edit-mode #uploadImg img, .edit-mode #uploadImg a'))
         {
             U.uploadImg({
                 onSuccess: function (imgPath, $dlg)
@@ -177,12 +179,14 @@ S.initInfo = function ($container, pageType, params)
             if(bv.isValidField('shopName') && bv.isValidField('tel') && bv.isValidField('address'))
             {
                 var coords = map.mapPoint,
-                    formData = parseForm($form);
+                    formData = parseForm($form); console.log(formData);
                 map = S.map({data: {
                     isSearchMap: false,
                     shopName: formData.shopName,
                     tel: formData.tel,
                     address: formData.address,
+                    area: getSelectText($area),
+                    city: getSelectText($city),
                     lng: coords.lng,
                     lat: coords.lat
                 }});
