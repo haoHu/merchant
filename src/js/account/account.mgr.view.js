@@ -390,10 +390,11 @@
 					notEmpty : {
 						message : "请输入手机号"
 					},
-					stringLength : {
-						max : 30,
-						message : "手机不能超过30个字"
-					}
+					mobile : {message : "请输入正确手机号"}
+					// stringLength : {
+					// 	max : 30,
+					// 	message : "手机不能超过30个字"
+					// }
 				}
 			}
 		},
@@ -404,10 +405,11 @@
 			prefix : '<span class="glyphicon glyphicon-envelope"></span>',
 			validCfg : {
 				validators : {
-					stringLength : {
-						max : 50,
-						message : "邮箱不能超过30个字"
-					}
+					emailAddress : {message : "请输入正确邮箱账号"}
+					// stringLength : {
+					// 	max : 50,
+					// 	message : "邮箱不能超过30个字"
+					// }
 				}
 			}
 		}
