@@ -51,8 +51,9 @@
 		["unbindMobileInShopGroupChildAccount", "/shop/unboundMobile.ajax", "", "POST"],
 		["resetPWDInShopGroupChildAccount", "/shop/groupChildAccountResetPwd.ajax", "", "POST"],
 		["updateShopGroupChildAccount", "/shop/updateShopAccount.ajax", "", "POST"],
-		["addShopGroupChildAccount", "/shop/addShopAccount.ajax", "", "POST"]
-
+		["addShopGroupChildAccount", "/shop/addShopAccount.ajax", "", "POST"],
+		["updateRoleBinding", "/shop/addOrUpdateChildAccount.ajax", "", "POST"],
+		["queryRoleBinding", "/shop/queryChildAccount.ajax", "", "POST"]
 
 	]);
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([
@@ -78,7 +79,8 @@
 
 		"queryShopGroupChildAccount", "removeShopGroupChildAccount", 
 		"unbindMobileInShopGroupChildAccount", "resetPWDInShopGroupChildAccount", 
-		"updateShopGroupChildAccount", "addShopGroupChildAccount"
+		"updateShopGroupChildAccount", "addShopGroupChildAccount",
+		"updateRoleBinding", "queryRoleBinding"
 	]);
 
 	/*Login CallServer*/
@@ -213,6 +215,12 @@
 	};
 	Hualala.Global.addShopGroupChildAccount = function (params, cbFn) {
 		Hualala.Global.commonCallServer("addShopGroupChildAccount", params, cbFn);
+	};
+	Hualala.Global.updateRoleBinding = function (params, cbFn) {
+		Hualala.Global.commonCallServer("updateRoleBinding", params, cbFn);
+	};
+	Hualala.Global.queryRoleBinding = function (params, cbFn) {
+		Hualala.Global.commonCallServer("queryRoleBinding", params, cbFn);
 	};
 
 

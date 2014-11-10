@@ -118,6 +118,7 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.shop.js",
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.account.js",
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.order.js",
+					"<%= pkg.srcPath.jsPath %>/tpl/tpl.user.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/tpl.js",
 				nonull : true
@@ -179,6 +180,15 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/order/order.query.view.js",
 					"<%= pkg.srcPath.jsPath %>/order/order.query.controler.js",
 					"<%= pkg.srcPath.jsPath %>/order/order.init.js",
+
+					// User Moudle
+					
+					"<%= pkg.srcPath.jsPath %>/user/user.mgr.view.js",
+					"<%= pkg.srcPath.jsPath %>/user/role.bind.js",
+					"<%= pkg.srcPath.jsPath %>/user/user.list.model.js",
+					"<%= pkg.srcPath.jsPath %>/user/user.list.view.js",
+					"<%= pkg.srcPath.jsPath %>/user/user.list.controler.js",
+					"<%= pkg.srcPath.jsPath %>/user/user.init.js",
 
 					// Merchant init
 					"<%= pkg.srcPath.jsPath %>/common/merchant.layout.js",
