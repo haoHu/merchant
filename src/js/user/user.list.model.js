@@ -119,6 +119,7 @@
 			this.addUserCallServer = Hualala.Global.addShopGroupChildAccount;
 			this.removeCallServer = Hualala.Global.removeShopGroupChildAccount;
 			this.unbindMobileCallServer = Hualala.Global.unbindMobileInShopGroupChildAccount;
+			this.bindMobileCallServer = Hualala.Global.bindMobileInShopGroupChildAccount;
 			this.updateRoleBindingCallServer = Hualala.Global.updateRoleBinding;
 			this.queryRoleBindingCallServer = Hualala.Global.queryRoleBinding;
 			this.set("ds_role", new IX.IListManager());
@@ -215,6 +216,10 @@
 							});
 							failFn();
 						} else {
+							toptip({
+								msg : "保存成功!",
+								type : 'success'
+							});
 							self.updateUserModel($XP(res, 'data.records')[0]);
 							successFn();
 						}
@@ -233,6 +238,10 @@
 							});
 							failFn();
 						} else {
+							toptip({
+								msg : "保存成功!",
+								type : 'success'
+							});
 							self.set(postParams);
 							successFn();
 						}
@@ -254,6 +263,10 @@
 							});
 							failFn();
 						} else {
+							toptip({
+								msg : "保存成功!",
+								type : 'success'
+							});
 							successFn();
 						}
 					});
@@ -270,6 +283,10 @@
 								type : 'danger'
 							});
 						} else {
+							toptip({
+								msg : "删除成功!",
+								type : 'success'
+							});
 							successFn();
 						}
 					});
@@ -291,6 +308,10 @@
 							});
 							failFn();
 						} else {
+							toptip({
+								msg : "保存成功!",
+								type : 'success'
+							});
 							successFn();
 						}
 					});
@@ -307,7 +328,36 @@
 								type : 'danger'
 							});
 						} else {
+							toptip({
+								msg : "解绑定成功!",
+								type : 'success'
+							});
 							self.set('mobileBinded', 0);
+							successFn();
+						}
+					});
+				},
+				"bindMobile" : function (params) {
+					// 绑定手机号
+					var successFn = $XF(params, 'successFn'),
+						failFn = $XF(params, 'failFn'),
+						postData = $XP(params, 'params', {});
+					self.bindMobileCallServer(postData, function (res) {
+						if (res.resultcode != '000') {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+							failFn();
+						} else {
+							toptip({
+								msg : "绑定成功!",
+								type : 'success'
+							});
+							self.set({
+								'userMobile' : $XP(postData, 'userMobile'),
+								'mobileBinded' : 1
+							});
 							successFn();
 						}
 					});

@@ -258,6 +258,48 @@
 						'</div>',
 					'</div>',
 				'{{/checkFormElementType}}',
+				'{{#checkFormElementType type type="textwithbtns"}}',
+					'<div class="form-group">',
+						'<label for="{{id}}" class="{{labelClz}}">{{{label}}}</label>',
+						'<div class="{{clz}}">',
+							'{{#isInputGroup prefix surfix}}',
+								'<div class="input-group">',
+									'{{#if prefix}}',
+										'<span class="input-group-addon">',
+											'{{{prefix}}}',
+										'</span>',
+									'{{/if}}',
+									'<input type="text" id="{{id}}" name="{{name}}" class="form-control" placeholder="{{placeholder}}" value="{{value}}" data-type="{{type}}" {{mode}} />',
+									'{{#if surfix}}',
+										'<span class="input-group-addon">',
+											'{{{surfix}}}',
+										'</span>',
+									'{{/if}}',
+								'</div>',
+							'{{else}}',
+								'<input type="text" id="{{id}}" name="{{name}}" class="form-control" placeholder="{{placeholder}}" value="{{value}}" data-type="{{type}}" {{mode}}/>',
+							'{{/isInputGroup}}',
+						'</div>',
+						'{{#each btns}}',
+							'<div class="{{clz}}">',
+								'<a class="btn {{btnClz}}" data-act="{{act}}" data-loading-text="{{loadingText}}">{{label}}</a>',
+							'</div>',
+						'{{/each}}',
+					'</div>',
+				'{{/checkFormElementType}}',
+				'{{#checkFormElementType type type="staticwithbtns"}}',
+					'<div class="form-group {{hidden}}">',
+						'<label for="{{id}}" class="{{labelClz}}">{{{label}}}</label>',
+						'<div class="{{clz}}">',
+							'<p class="form-control-static">{{value}}</p>',
+						'</div>',
+						'{{#each btns}}',
+							'<div class="{{clz}}">',
+								'<a class="btn {{btnClz}}" data-act="{{act}}" data-loading-text="{{loadingText}}">{{label}}</a>',
+							'</div>',
+						'{{/each}}',
+					'</div>',
+				'{{/checkFormElementType}}',
 			'{{/each}}',
 		'</form>'
 	].join('');
@@ -449,6 +491,28 @@
 		'</div>'
 	].join('');
 	TplLib.register('tpl_wizard_layout', tpl_wizard_layout);
+
+	var tpl_user_mgr_layout = [
+		'<div class="panel-group" id="{{panelGrpID}}" role="tablist" aria-multiselectable="true">',
+			'{{#each panels}}',
+				'<div class="panel panel-default">',
+					'<div class="panel-heading">',
+                        '<h4 class="panel-title">',
+                            '<a data-toggle="collapse" data-parent="#{{../panelGrpID}}" href="#{{id}}" aria-expande="{{expanded}}" aria-controls="{{id}}">',
+                                '{{title}}',
+                            '</a>',
+                        '</h4>',
+                    '</div>',
+                    '<div class="panel-collapse collapse {{panelClz}}" id="{{id}}" role="tabpanel">',
+                    	'<div class="panel-body">',
+
+                    	'</div>',
+                    '</div>',
+				'</div>',
+			'{{/each}}',
+		'</div>'
+	].join('');
+	TplLib.register('tpl_user_mgr_layout', tpl_user_mgr_layout);
 })(jQuery, window);
 
 

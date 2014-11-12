@@ -91,9 +91,16 @@
 			};
 		};
 		var $wrapper = $(layoutTpl(mapRanderData()));
+		var userMgr = null;
 		$('body > #ix_wrapper').remove();
 		if (isSupportedBrowser()) {
 			$wrapper.appendTo($('body'));
+			userMgr = new Hualala.User.UserMgrModal({
+				$btnGrp : $wrapper.find('.user-mgr')
+			});
+			if ($XP(session, 'user.mobileBinded') == 0 && $XP(session, 'user.loginCount') == 1) {
+				$wrapper.find('.user-mgr .btn[data-target=bind_mobile]').trigger('click');
+			}
 		}
 		if ($.fn.bootstrapValidator) {
 			$.fn.bootstrapValidator.DEFAULT_OPTIONS = $.extend({}, $.fn.bootstrapValidator.DEFAULT_OPTIONS, {

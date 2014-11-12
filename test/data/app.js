@@ -12,12 +12,14 @@
 		role : [1, 2],
 		groupID : "5",
 		groupLoginName : 'doulaofang',
-		loginName : "temp1",
+		loginName : "temp_007",
 		userEmail: "dongjiubo@11.com",
 		userMobile: "13122222222",
+		mobileBinded : 1,
 		userName: "董九博",
 		userRemark: "董九博店小二",
-		lastLoginTime : "0"
+		lastLoginTime : "0",
+		loginCount : 2
 	};
 	Test.Roles = [
 		// {id : 1, name : "店长", sortIndex : 5, roleType : 'oneshop'},

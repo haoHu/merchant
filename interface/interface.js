@@ -363,7 +363,18 @@ Hualala.Global.removeShopGroupChildAccount = function (params, cbFn) {};
 Hualala.Global.unbindMobileInShopGroupChildAccount = function (params, cbFn) {};
 
 /**
- * 重置商户中心集团自账号的密码
+ * 为商户中心子账号绑定手机号
+ * @param  {Object} params {accountID, userMobile, authCode}
+ * @param  {Function} cbFn   回调参数
+ *           {
+ *           	resultcode, resultmsg
+ *           }
+ * @return {NULL}
+ */
+Hualala.Global.bindMobileInShopGroupChildAccount = function (params, cbFn) {};
+
+/**
+ * 重置商户中心集团子账号的密码
  * @param  {Object} params {accountID, loginPWD}
  * @param  {Function} cbFn   回调参数
  *          {

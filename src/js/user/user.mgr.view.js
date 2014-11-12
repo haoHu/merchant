@@ -122,6 +122,46 @@
 			validCfg : {
 
 			}
+		},
+		bindedMobile : {
+			type : "staticwithbtns",
+			label : "已绑定手机",
+			defaultVal : "",
+			btns : [
+				{clz : "col-sm-2", btnClz : "btn-link", label : "更改手机号", act : "changeMobile"},
+				{clz : "col-sm-2", btnClz : "btn-link", label : "解除绑定", act : "unbindMobile"}
+			],
+			validCfg : {}
+		},
+		userMobile : {
+			type : "textwithbtns",
+			label : "手机号",
+			defaultVal : "",
+			btns : [
+				{clz : "col-sm-2", btnClz : "btn-warning", label : "获取验证码", act : "getCode", loadingText : "发送中..."}
+			],
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "请输入要绑定的手机号"
+					},
+					mobile : {
+						message : "请输入中国地区手机号"
+					}
+				}
+			}
+		},
+		authCode : {
+			type : "text",
+			label : "验证码",
+			defaultVal : "",
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "请输入短信验证码"
+					}
+				}
+			}
 		}
 	};
 
@@ -143,6 +183,13 @@
 				labelClz : labelClz,
 				clz : 'col-sm-offset-3 col-sm-8'
 			}));
+		} else if (type == "staticwithbtns") {
+			BaseUserFormElsHT.register(k, IX.inherit(el, {
+				id : k + '_' + IX.id(),
+				name : k,
+				labelClz : labelClz,
+				clz : 'col-sm-3'
+			}));
 		} else {
 			BaseUserFormElsHT.register(k, IX.inherit(el, {
 				id : k + '_' + IX.id(),
@@ -156,7 +203,8 @@
 
 	var ResetPWDFormKeys = 'loginName,loginPWD,plainPWD,accountID'.split(','),
 		BaseUserFormKeys = 'loginName,accountID,userName,userRemark,userEmail,accountStatus'.split(','),
-		RoleBindingFormKeys = 'loginName,accountID,roleBinding'.split(',');
+		RoleBindingFormKeys = 'loginName,accountID,roleBinding'.split(','),
+		BindMobileFormKeys = 'accountID,bindedMobile,userMobile,authCode'.split(',');
 
 	var ResetPWDView = Stapes.subclass({
 		constructor : function (cfg) {
@@ -239,6 +287,23 @@
 			IX.Debug.info(ret);
 			return ret;
 		},
+		renderBtns : function () {
+			var self = this, btnTpl = self.get('btnTpl');
+			if (self.mode == 'edit') {
+				self.$footer.html(btnTpl({
+					btns : [
+						{clz : 'btn-default', name : 'cancel', label : '取消'},
+						{clz : 'btn-warning', name : 'submit', label : '保存', loadingText : "提交中..."}
+					]
+				}));
+			} else if (self.mode == 'personal_edit') {
+				self.$container.append(btnTpl({
+					btns : [
+						{clz : 'btn-warning col-sm-offset-5', name : 'submit', label : '确定', loadingText : "提交中..."}
+					]
+				}));
+			}
+		},
 		renderForm : function () {
 			var self = this,
 				renderData = self.mapFormElsData(),
@@ -249,15 +314,7 @@
 					items : renderData
 				});
 			self.$body.html(htm);
-			if (self.mode == 'edit') {
-				self.$footer.html(btnTpl({
-					btns : [
-						{clz : 'btn-default', name : 'cancel', label : '取消'},
-						{clz : 'btn-warning', name : 'submit', label : '保存', loadingText : "提交中..."}
-					]
-				}));
-			}
-			
+			self.renderBtns();
 		},
 		bindEvent : function () {
 			var self = this,
@@ -277,6 +334,16 @@
 					
 				}
 			});
+			if (self.getViewMode() == 'personal_edit') {
+				self.$body.delegate('.btn', 'click', function (evt) {
+					var $btn = $(this), act = $btn.attr('name');
+					if (act == 'submit') {
+						var bv = self.$body.find('form').data('bootstrapValidator');
+						$btn.button('loading');
+						bv.validate();
+					}
+				});
+			}
 			self.$body.find('form').bootstrapValidator({
 				trigger : 'blur',
 				fields : fvOpts
@@ -376,6 +443,124 @@
 		}
 	});
 	Hualala.User.UserBaseInfoView = UserBaseInfoView;
+
+
+	var UserBindMobileView = ResetPWDView.subclass({
+		constructor : ResetPWDView.prototype.constructor
+	});
+	UserBindMobileView.proto({
+		initBaseCfg : function () {
+			this.formKeys = BindMobileFormKeys;
+			if (this.mode == 'edit') {
+				this.modal = this.parentView.userBaseInfoModal;
+				this.$body = this.modal._.body;
+				this.$footer = this.modal._.footer;
+			} else {
+				this.$body = this.$container;
+				this.modal = null;
+				this.$footer = null;
+			}
+		},
+		mapFormElsData : function () {
+			var self = this,
+				formKeys = self.formKeys;
+			var ret = _.map(formKeys, function (key) {
+				var elCfg = BaseUserFormElsHT.get(key),
+					type = $XP(elCfg, 'type');
+				if (type == 'staticwithbtns') {
+					var val = $XP(self.formParams, 'userMobile', '');
+					var hidden = $XP(self.formParams, 'mobileBinded') == 1 ? '' : 'hidden';
+					return IX.inherit(elCfg, {
+						value : val,
+						hidden : hidden,
+						labelClz : 'col-sm-3 control-label'
+					});
+				} else if (type == 'textwithbtns') {
+					return IX.inherit(elCfg, {
+						value : '',
+						labelClz : 'col-sm-3 control-label'
+					});
+				} else {
+					return IX.inherit(elCfg, {
+						value : $XP(self.formParams, key, $XP(elCfg, 'defaultVal', '')),
+						labelClz : 'col-sm-3 control-label'
+					}, (type == 'text' && self.mode == 'wizard_add' && key == 'loginName') ? {
+						mode : ''
+					} : {});
+				}
+			});
+			IX.Debug.info("DEBUG: User ResetPWD Form Elements :");
+			IX.Debug.info(ret);
+			return ret;
+		},
+		renderBtns : function () {
+			var self = this;
+			var self = this, btnTpl = self.get('btnTpl');
+			if (self.mode == 'personal_edit') {
+				self.$container.append(btnTpl({
+					btns : [
+						{clz : 'btn-warning col-sm-offset-5', name : 'submit', label : '绑定手机', loadingText : "提交中..."}
+					]
+				}));
+			}
+		},
+		initUIComponents : function () {
+			var self = this;
+			var mobileBinded = $XP(self.formParams, 'mobileBinded');
+			// TODO init UI Components
+			self.dynamicPWD = new Hualala.Common.DynamicPWD({
+				$btn : self.$body.find('.btn-warning[data-act=getCode]'),
+				waiting : 180,
+				getParams : function () {
+					var groupLoginName = self.model.get('groupLoginName'),
+						$userMobile = self.$body.find(':text[name=userMobile]'),
+						bv = self.$body.find('form').data('bootstrapValidator');
+					if (!bv.validateField($userMobile).isValidField($userMobile)) {
+						return null;
+					}
+					return {
+						groupName : groupLoginName,
+						userMobile : $userMobile.val()
+					};
+				}
+			});
+			if (mobileBinded == 1) {
+				self.$body.find('.form-group').eq(0).show();
+				self.$body.find('.form-group:gt(0)').hide();
+				self.$body.find('.btn[name=submit]').hide();
+			} else {
+				self.$body.find('.form-group').eq(0).hide();
+				self.$body.find('.form-group:gt(0)').show();
+				self.$body.find('.btn[name=submit]').show();
+			}
+			self.$body.delegate('.btn[data-act]', 'click', function (e) {
+				var $btn = $(this), act = $btn.attr('data-act');
+				if (act == 'unbindMobile') {
+					Hualala.UI.Confirm({
+						title : '手机号解除绑定',
+						msg : '是否解除绑定账号(' + self.model.get('loginName') + ')的手机号？',
+						okLabel : '解除绑定',
+						okFn : function () {
+							self.model.emit('unbindMobile', {
+								accountID : self.model.get('accountID'),
+								successFn : function () {
+									self.$body.find('.form-group').eq(0).hide();
+									self.$body.find('.form-group:gt(0)').show();
+									self.$body.find('.btn[name=submit]').show();
+								}
+							});
+						}
+					});
+				} else if (act == 'changeMobile') {
+					self.$body.find('.form-group').eq(0).hide();
+					self.$body.find('.form-group:gt(0)').show();
+					self.$body.find('.btn[name=submit]').show();
+				}
+			});
+		}
+	});
+	Hualala.User.UserBindMobileView = UserBindMobileView;
+
 
 	var UserRoleView = Stapes.subclass({
 		constructor : function (cfg) {
@@ -920,4 +1105,143 @@
 		}
 	});
 	Hualala.User.CreateUserModal = CreateUserModal;
+})(jQuery, window);
+(function ($, window) {
+	IX.ns("Hualala.User");
+	var popoverMsg = Hualala.UI.PopoverMsgTip;
+	var toptip = Hualala.UI.TopTip;
+	var LoadingModal = Hualala.UI.LoadingModal;
+
+	var PanelGroupCfg = [
+		{id : 'bind_mobile', title : "绑定手机", panelClz : 'in', expanded : 'true'},
+		{id : 'reset_pwd', title : "重置密码", panelClz : '', expanded : 'false'}
+	];
+
+	var UserMgrModal = Stapes.subclass({
+		constructor : function (cfg) {
+			this.$btnGrp = $XP(cfg, '$btnGrp');
+			this.curPanelName = $XP(cfg, 'curPanelName', 'bind_mobile');
+			this.userModel = null;
+			this.$body = null;
+			this.$bindMobilePanel = null;
+			this.$resetPWDPanel = null;
+			this.panelGrpHT = new IX.IListManager();
+			this.initUserModel();
+			this.loadTemplates();
+			this.bindBtnGrpEvent();
+		}
+	});
+	UserMgrModal.proto({
+		initUserModel : function () {
+			var self = this,
+				userData = Hualala.getSessionUser();
+			userData = IX.inherit(userData, {
+				roleType : $XP(userData, 'role').join(',')
+			});
+			self.userModel = new Hualala.User.BaseUserModel(userData);
+		},
+		updateCurPanelName : function (curTarget) {
+			this.curPanelName = curTarget;
+		},
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_user_mgr_layout')),
+				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
+			
+			this.set({
+				layoutTpl : layoutTpl,
+				btnTpl : btnTpl
+			});
+		},
+		mapLayoutRenderData : function () {
+			var self = this;
+			var data = _.map(PanelGroupCfg, function (el) {
+				var id = $XP(el, 'id');
+				return IX.inherit(el, {
+					panelClz : id == self.curPanelName ? 'in' : '',
+					expanded : id == self.curPanelName ? 'true' : ''
+				});
+			});
+			return {
+				panelGrpID : 'user_mgr_panel',
+				panels : data
+			};
+		},
+		renderPanelGrpLayout : function () {
+			var self = this,
+				layoutTpl = self.get('layoutTpl');
+			var renderData = self.mapLayoutRenderData();
+			var htm = layoutTpl(renderData);
+			self.$body.html(htm);
+			self.$bindMobilePanel = self.$body.find('#bind_mobile');
+			self.$resetPWDPanel = self.$body.find('#reset_pwd');
+			self.panelGrpHT.register('reset_pwd', new Hualala.User.ResetPWDView({
+				mode : 'personal_edit',
+				container : self.$resetPWDPanel,
+				parentView : self,
+				model : self.userModel,
+				evtType : 'resetPWD',
+				successFn : function (mUser) {
+					var view = self.panelGrpHT.get('reset_pwd');
+					view.$body.find('.btn[name="submit"]').button('reset');
+				},
+				failFn : function (mUser) {
+					var view = self.panelGrpHT.get('reset_pwd');
+					view.$body.find('.btn[name="submit"]').button('reset');
+				}
+			}));
+			self.panelGrpHT.register('bind_mobile', new Hualala.User.UserBindMobileView({
+				mode : 'personal_edit',
+				container : self.$bindMobilePanel,
+				parentView : self,
+				model : self.userModel,
+				evtType : 'bindMobile',
+				successFn : function (mUser) {
+					var view = self.panelGrpHT.get('bind_mobile');
+					view.$body.find('.btn[name="submit"]').button('reset');
+				},
+				failFn : function (mUser) {
+					var view = self.panelGrpHT.get('bind_mobile');
+					view.$body.find('.btn[name="submit"]').button('reset');
+				}
+			}));
+			self.renderModalBtns();
+
+		},
+		renderModalBtns : function () {
+			var self = this, btnTpl = self.get('btnTpl');
+			self.modal._.footer.html(btnTpl({
+				btns : [
+					{clz : 'btn-default', name : 'cancel', label : '关闭'}
+				]
+			}));
+			self.modal._.footer.find('.btn-default').attr('data-dismiss', 'modal');
+		},
+		initModal : function () {
+			var self = this;
+			self.modal = new Hualala.UI.ModalDialog({
+				id : "user_mgr_modal",
+				clz : 'account-modal',
+				title : "个人管理",
+				// backdrop : 'static',
+				showFooter : true,
+				afterHide : function () {
+					
+				}
+			});
+			self.$body = self.modal._.body;
+			self.renderPanelGrpLayout();
+
+			self.modal.show();
+		},
+		bindBtnGrpEvent : function () {
+			var self = this;
+			self.$btnGrp.undelegate('.btn[data-target]', 'click');
+			self.$btnGrp.delegate('.btn[data-target]', 'click', function(e) {
+				var $btn = $(this), curTarget = $btn.attr('data-target');
+				self.updateCurPanelName(curTarget);
+				self.initModal();
+			});
+		}
+	});
+	Hualala.User.UserMgrModal = UserMgrModal;
 })(jQuery, window);

@@ -798,6 +798,25 @@
 	};
 
 	/**
+	 * 为商户中心子账号绑定手机号
+	 * @param  {Object} params {accountID, userMobile, authCode}
+	 * @param  {Function} cbFn   回调参数
+	 *           {
+	 *           	resultcode, resultmsg
+	 *           }
+	 * @return {NULL}
+	 */
+	Hualala.Global.bindMobileInShopGroupChildAccount = function (params, cbFn) {
+		IX.Debug.info("DEBUG: Bind Mobile Post Params:");
+		IX.Debug.info(params);
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		setTimeout(function () {
+			fn(res);
+		}, 1000);	
+	};
+
+	/**
 	 * 重置商户中心集团子账号的密码
 	 * @param  {Object} params {accountID, loginPWD}
 	 * @param  {Function} cbFn   回调参数

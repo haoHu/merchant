@@ -158,6 +158,7 @@
 			getDynamicPWD : function () {$btn.trigger('click');}
 		};
 	};
+	Hualala.Common.DynamicPWD = DynamicPWD;
 
 	/**
 	 * 生成AuthCode实例
