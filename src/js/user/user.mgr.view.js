@@ -1176,7 +1176,7 @@
 			self.$resetPWDPanel = self.$body.find('#reset_pwd');
 			self.panelGrpHT.register('reset_pwd', new Hualala.User.ResetPWDView({
 				mode : 'personal_edit',
-				container : self.$resetPWDPanel,
+				container : self.$resetPWDPanel.find('.panel-body'),
 				parentView : self,
 				model : self.userModel,
 				evtType : 'resetPWD',
@@ -1191,7 +1191,7 @@
 			}));
 			self.panelGrpHT.register('bind_mobile', new Hualala.User.UserBindMobileView({
 				mode : 'personal_edit',
-				container : self.$bindMobilePanel,
+				container : self.$bindMobilePanel.find('.panel-body'),
 				parentView : self,
 				model : self.userModel,
 				evtType : 'bindMobile',
@@ -1220,7 +1220,7 @@
 			var self = this;
 			self.modal = new Hualala.UI.ModalDialog({
 				id : "user_mgr_modal",
-				clz : 'account-modal',
+				clz : 'account-modal user-mgr-modal',
 				title : "个人管理",
 				// backdrop : 'static',
 				showFooter : true,
