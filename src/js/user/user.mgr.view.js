@@ -957,7 +957,7 @@
 				'finishSelector' : '.btn[name=finish]',
 				onTabClick : function () {return false;},
 				onInit : function ($wizard, $navBar, nIdx) {
-					console.info('onInit');console.info(arguments);
+					// console.info('onInit');console.info(arguments);
 					// 加载新建账号基本信息View层
 					var $tab = $('li:eq(' + nIdx + ')', self.$wizard),
 						cntID = self.getTabContentIDByIndex($navBar, nIdx),
@@ -973,7 +973,7 @@
 				 *         
 				 */
 				onNext : function ($curNav, $navBar, nIdx) {
-					console.info('onNext');
+					// console.info('onNext');
 					var $curTab = $($curNav.find('a[data-toggle]').attr('href')),
 						curID = $curTab.attr('id');
 					if (self.enableGoToNextStep == false) {
@@ -992,7 +992,7 @@
 				 * @return {Boolean}         false:不移动到下一步，true:移动到下一步
 				 */
 				onPrevious : function ($curNav, $navBar, nIdx) {
-					console.info('onPrevious');
+					// console.info('onPrevious');
 					var $curTab = $($curNav.find('a[data-toggle]').attr('href')),
 						curID = $curTab.attr('id');
 					// if (self.enableGoToNextStep == false) {
@@ -1016,7 +1016,7 @@
 				 * @return {Boolean} false:不移动到下一步，true:移动到下一步
 				 */
 				onTabChange : function ($curNav, $navBar, cIdx, nIdx) {
-					console.info('onTabChange'); console.info(cIdx + '--->' + nIdx);
+					// console.info('onTabChange'); console.info(cIdx + '--->' + nIdx);
 					var curID = self.getTabContentIDByIndex($navBar, cIdx),
 						nextID = self.getTabContentIDByIndex($navBar, nIdx),
 						$nextCnt = $('#' + nextID, self.$wizard),
@@ -1043,7 +1043,7 @@
 				 * @return {Boolean} false:不移动到下一步，true:移动到下一步
 				 */
 				onTabShow : function ($curNav, $navBar, cIdx) {
-					console.info('onTabShow');
+					// console.info('onTabShow');
 					
 				},
 				/**
@@ -1054,7 +1054,7 @@
 				 * @return {Boolean} false:不移动到下一步，true:移动到下一步
 				 */
 				onFinish : function ($curNav, $navBar, cIdx) {
-					console.info('onFinish');
+					// console.info('onFinish');
 					var $curTab = $($curNav.find('a[data-toggle]').attr('href')),
 						curID = $curTab.attr('id');
 					self.commitStep(curID);
