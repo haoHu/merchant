@@ -47,7 +47,13 @@
 		return ajaxEngine[isCaller?"createCaller": "createRouter"](IX.map(routes, function(routeDef){
 			var isRef = IX.isString(routeDef);
 			return IX.inherit(ajaxStore.get(isRef?routeDef:routeDef.name), isRef?{}:routeDef);
-		}));
+		}), function (res) {
+			if($XP(res, 'resultcode', '') == 'FP10005') {
+				document.location.href = Hualala.PageRoute.createPath('login');
+				return false;
+			}
+			return true;
+		});
 	}
 	function initEngine (cfg){
 		urlEngine.init(cfg);
