@@ -210,7 +210,7 @@
 						clz : el.clz + ' hidden disabled'
 					});
 				}
-				if (act == 'unbindMobile' && !mobileBinded) {
+				if (act == 'unbindMobile' && mobileBinded == 0) {
 					return IX.inherit(el, {
 						clz : el.clz + ' hidden disabled'
 					});

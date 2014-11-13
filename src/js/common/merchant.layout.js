@@ -95,11 +95,13 @@
 		$('body > #ix_wrapper').remove();
 		if (isSupportedBrowser()) {
 			$wrapper.appendTo($('body'));
-			userMgr = new Hualala.User.UserMgrModal({
-				$btnGrp : $wrapper.find('.user-mgr')
-			});
-			if ($XP(session, 'user.mobileBinded') == 0 && $XP(session, 'user.loginCount') == 1) {
-				$wrapper.find('.user-mgr .btn[data-target=bind_mobile]').trigger('click');
+			if (isLogin) {
+				userMgr = new Hualala.User.UserMgrModal({
+					$btnGrp : $wrapper.find('.user-mgr')
+				});
+				if ($XP(session, 'user.mobileBinded') == 0 && $XP(session, 'user.loginCount') == 1) {
+					$wrapper.find('.user-mgr .btn[data-target=bind_mobile]').trigger('click');
+				}
 			}
 			var footerAnimation = function (expand) {
 				var $footer = $('#ix_wrapper .ix-footer');

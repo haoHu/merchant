@@ -17,9 +17,9 @@
 						message : "请输入账号名称"
 					},
 					stringLength : {
-						min : 6,
+						min : 5,
 						max : 50,
-						message : "账号名称长度在6-50个字符之间"
+						message : "账号名称长度在5-50个字符之间"
 					}
 				}
 			}
