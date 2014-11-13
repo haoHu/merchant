@@ -90,6 +90,7 @@
 				'</tbody>',
 			'</table>',
 		'</div>',
+		'{{{warningText}}}',
 		'<form class="form-horizontal {{formClz}}" role="form">',
 			'<div class="form-group">',
 				'<label for="{{id}}" class="{{labelClz}}">{{label}}</label>',

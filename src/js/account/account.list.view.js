@@ -182,6 +182,12 @@
 				}
 			});
 		},
+		mapPoundageAmountStr : function (n) {
+			return (IX.isEmpty(n) || n == 0) ? '无手续费' : '<strong>' + n + '</strong>元';
+		},
+		mapPoundageMinAmountStr : function (n) {
+			return (IX.isEmpty(n) || n == 0) ? '不限' : ('<strong>' + n + '</strong>元');
+		},
 		mapFormElsData : function () {
 			var self = this,
 				accountInfoKeys = [
@@ -189,17 +195,49 @@
 					{key : 'receiverName', label : '开户名'},
 					{key : 'bankName', label : '开户行'},
 					{key : 'bankAccount', label : '账号'},
-					{key : 'settleBalance', label : '账户余额'}
-				],
-				accountInfo = _.map(accountInfoKeys, function (el) {
-					var k = $XP(el, 'key');
-					return {
-						label : $XP(el, 'label', ''),
-						value : k == 'settleBalance' ? ('<strong>' + self.model.get(k) + '</strong>元') : self.model.get(k)
-					};
-				});
+					{key : 'settleBalance', label : '账户余额'},
+					{key : 'poundageAmount', label : '提现手续费'},
+					{key : 'poundageMinAmount', label : '免费提现最低金额'}
+				];
+			var poundageAmount = self.model.get('poundageAmount'),
+				poundageMinAmount = self.model.get('poundageMinAmount'),
+				warningTextTpl = '<p class="alert alert-warning ">'
+					+ '由于提现操作需要向银行缴纳交易手续费<strong>{poundageAmount}</strong>元人民币，<br/>' 
+					+ '当提现金额高于<strong>{poundageMinAmount}</strong>(包含<strong>{poundageMinAmount}</strong>)元人民币，手续费由<strong>北京多来点信息技术有限公司</strong>支付；<br/>'
+					+ '当提现金额低于<strong>{poundageMinAmount}</strong>元人民币，手续费由<strong>{settleUnitName}</strong>支付。<br/>'
+					+ '</p>';
+			var warningText = '';
+			if (!IX.isEmpty(poundageAmount) && poundageAmount != 0) {
+				warningText = warningTextTpl.replaceAll('{poundageAmount}', poundageAmount)
+					.replaceAll('{poundageMinAmount}', poundageMinAmount)
+					.replaceAll('{settleUnitName}', self.model.get('settleUnitName'));
+			}
+			var accountInfo = _.map(accountInfoKeys, function (el) {
+				var k = $XP(el, 'key');
+				var valStr = '';
+				switch(k) {
+					case 'poundageAmount':
+						valStr = self.mapPoundageAmountStr(self.model.get(k));
+						break;
+					case 'poundageMinAmount':
+						valStr = self.mapPoundageMinAmountStr(self.model.get(k));
+						break;
+					case 'settleBalance':
+						valStr = ('<strong>' + self.model.get(k) + '</strong>元');
+						break;
+					default :
+						valStr = self.model.get(k);
+						break;
+				}
+				return {
+					label : $XP(el, 'label', ''),
+					value : valStr
+				};
+			});
+
 			return {
 				accountInfo : accountInfo,
+				warningText : warningText,
 				formClz : 'account-withdraw-form form-feedback-out',
 				labelClz : 'col-sm-4 control-label',
 				clz : 'col-sm-7',
@@ -258,12 +296,13 @@
 							},
 							greaterThan : {
 								inclusive : false,
-								value : 0,
-								message : "提现金额必须大于0"
+								value : self.model.get('poundageAmount') || 0,
+								message : "提现金额必须大于" + self.model.get('poundageAmount') || 0
 							},
 							lessThan : {
 								inclusive : true,
-								value : self.model.get('settleBalance')
+								value : self.model.get('settleBalance'),
+								message : "提现金额不能超过账户余额"
 							},
 							accuracy : {
 								accuracy : 2,

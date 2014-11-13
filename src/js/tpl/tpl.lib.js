@@ -95,8 +95,11 @@
 			'</div>',
 			// Footer
              // @NOTE: 开发阶段隐藏页脚
-			'<div class="ix-footer navbar-fixed-bottom ">',
-				'<div class="container">',
+			'<div class="ix-footer navbar-fixed-bottom in">',
+				'<div class="btn-toggle">',
+					'<div class="toggle-icon"><span></span></div>',
+				'</div>',
+				'<div class="container footer-cnt">',
 					'<p class="links">',
 						'<a href="{{footer.aboutPath}}">关于哗啦啦商户中心</a>',
 						'<a href="{{footer.contactPath}}">联系我们</a>',

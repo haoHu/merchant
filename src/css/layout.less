@@ -149,7 +149,19 @@ body.login {
 	}
 }
 .ix-footer {
-	.x-area-size(100%, @page-footer-h); background-color : @page-footer-bg; border-top : 2px solid @page-footer-boder-color;
+	.x-area-size(100%, auto); background-color : @page-footer-bg; border-top : 2px solid @page-footer-boder-color; 
+	.btn-toggle {
+		@btn-height : 60px;
+		position : relative; height : @btn-height; margin-top : -1 * @btn-height;
+		> .toggle-icon {
+			@arrow-size : 16px; 
+			position : absolute; left : 50%; top : (-1 * @arrow-size * 2 + @btn-height); margin-left : (-1 * @arrow-size / 2); .x-arrow-up-style(@page-footer-boder-color, @arrow-size);
+			/*.x-arrow-up-style(#111, @arrow-size);*/
+			> span {margin-left:(-1 * @arrow-size); margin-top:(-1 * (@arrow-size - 1));.x-arrow-up-style(#fff, @arrow-size);}
+		}
+		
+	}
+	.footer-cnt {height : @page-footer-h;}
 	.links, .copyright {
 		padding : 30px 0 0; text-align : center; vertical-align: middle; .x-adjust-leading-to(1.5, 1em);
 		color : @x-font-color-midGray;

@@ -101,6 +101,23 @@
 			if ($XP(session, 'user.mobileBinded') == 0 && $XP(session, 'user.loginCount') == 1) {
 				$wrapper.find('.user-mgr .btn[data-target=bind_mobile]').trigger('click');
 			}
+			var footerAnimation = function (expand) {
+				var $footer = $('#ix_wrapper .ix-footer');
+				var $cnt = $footer.find('.footer-cnt');
+				if ($footer.hasClass('in') == expand) return;
+				$cnt.animate({
+					height : !expand ? '0px' : '100px'
+				}, 400, function () {
+					$footer[!expand ? 'removeClass' : 'addClass']('in');
+				});
+			}
+			$('#ix_wrapper .ix-footer').on('mouseleave', function (e) {
+				footerAnimation(false);
+			});
+			$('#ix_wrapper .btn-toggle').on('mouseenter', function (e) {
+				footerAnimation(true);
+			});
+			footerAnimation(false);
 		}
 		if ($.fn.bootstrapValidator) {
 			$.fn.bootstrapValidator.DEFAULT_OPTIONS = $.extend({}, $.fn.bootstrapValidator.DEFAULT_OPTIONS, {
