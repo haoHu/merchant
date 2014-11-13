@@ -1544,7 +1544,8 @@ function AjaxCaller(routes, _ajaxFn, urlFac, chkRes){
 			data : _data,
 			success : function(data) {
 				unlockChannel(channel);
-				if (IX.isFn(chkRes) && !chkRes(data)) return ;
+				// if (IX.isFn(chkRes) && !chkRes(data)) return ;
+				IX.isFn(chkRes) && chkRes(data);
 				_caller.onsuccess(data, _cbFn, params);
 			},
 			fail: function(data){

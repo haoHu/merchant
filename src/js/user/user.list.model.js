@@ -297,7 +297,7 @@
 						failFn = $XF(params, 'failFn'),
 						postData = {
 							accountID : self.get('accountID'),
-							roles : self.getRoleBindings()
+							roles : JSON.stringify(self.getRoleBindings())
 						};
 					
 					self.updateRoleBindingCallServer(postData, function (res) {
