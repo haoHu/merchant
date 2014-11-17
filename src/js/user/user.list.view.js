@@ -338,7 +338,7 @@
 				}
 			});
 			// 用户查询栏的操作
-			self.$queryBar.on('click', '.btn', function (e) {
+			self.$queryBar.parent().on('click', '.shop-query .btn', function (e) {
 				var $btn = $(this),
 					act = $btn.attr('data-act');
 				if (act == 'query') {
@@ -349,7 +349,7 @@
 					self.initCreateUserModal(act);
 				}
 			});
-			self.$queryBar.on('keyup', '.chosen-container', function (e) {
+			self.$queryBar.parent().on('keyup', '.shop-query .chosen-container', function (e) {
 				var $this = $(this);
 				if ($this.hasClass('chosen-container-active') && !$this.hasClass('chosen-with-drop')) {
 					$this.find('input').first().trigger('blur.chosen');

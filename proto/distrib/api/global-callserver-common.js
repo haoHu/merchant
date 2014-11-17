@@ -28,6 +28,7 @@
 		["setJustEatParams", "/shop/justEatParam.ajax", "", "POST"],
 		["setSpotOrderParams", "/shop/spotParam.ajax", "", "POST"],
 		["setCommonReserveParams", "/shop/commonreserveParam.ajax", "", "POST"],
+		["bindSettleUnitByShopID", "/shop/updateSettleUnitByshopID.ajax", "", "POST"],
 
 		// ["setJustEatParams", "/shop/shopParam.ajax", "", "POST"],
 		// ["setSpotOrderParams", "/shop/shopParam.ajax", "", "POST"],
@@ -65,7 +66,7 @@
 		"getMobileDynamicPWD", "dynamicLoginCallServer",
 		"getShopQuerySchema", 
 		"queryShop", "switchShopStatus", "switchShopServiceFeatureStatus", 
-		"setJustEatParams", "setSpotOrderParams", "setCommonReserveParams",
+		"setJustEatParams", "setSpotOrderParams", "setCommonReserveParams", "bindSettleUnitByShopID",
         'getCities', 'getAreas', 'getCuisines',
         'createShop', 'updateShopBaseInfo', 'setShopMap',
         'setShopClientPwd', 'getShopInfo', 'getShopMenu',
@@ -164,6 +165,10 @@
 	Hualala.Global.setCommonReserveParams = function (params, cbFn) {
 		Hualala.Global.commonCallServer("setCommonReserveParams", params, cbFn);
 	};
+	Hualala.Global.bindSettleUnitByShopID = function (params, cbFn) {
+		Hualala.Global.commonCallServer("bindSettleUnitByShopID", params, cbFn);
+	};
+	
 
 	/*Account Moudle CallServer*/
 	Hualala.Global.queryAccount = function (params, cbFn) {

@@ -228,6 +228,12 @@
 					serviceFeatures = mShop.get('serviceFeatures');
 				self.initBusinessModal($btn, shopID, businessName, businessID, serviceFeatures);
 			});
+			self.$list.on('click', '.bind-settle', function (e) {
+				var $btn = $(this),
+					settleID = $btn.attr('data-id'),
+					shopID = $btn.attr('data-shop');
+				self.initBindSettleModal($btn, settleID, shopID);
+			});
 		},
 		// 加载View层所需模板
 		loadTemplates : function () {
@@ -426,13 +432,13 @@
 		chkHasAccountRole : function () {
 			var loginUsr = Hualala.getSessionUser(),
 				usrRoles = $XP(loginUsr, 'role');
-				roles = Hualala.getSessionRoles();
+				roles = Hualala.TypeDef.SiteRoleType;
 			var ret = _.find(roles, function (role) {
 				var roleType = $XP(role, 'roleType');
 				var matchedID = _.find(usrRoles, function (v) {
 					return $XP(role, 'id') == v;
 				});
-				return !!matchedID && (roleType == 'account' || roleType == 'all');
+				return !!matchedID && (roleType != 'manager');
 			});
 			return !!ret;
 		},
@@ -440,12 +446,18 @@
 		mapRenderData : function (data) {
 			var self = this;
 			var ret = _.map(data, function (shop, i, l) {
+				var settleUnitID = $XP(shop, 'settleID', '');
 				return {
 					clz : '',
 					shopID : $XP(shop, 'shopID', ''),
 					shopName : $XP(shop, 'shopName', ''),
-					hideAccount : !self.chkHasAccountRole() ? 'hidden' : '',
+					hideAccount : self.chkHasAccountRole() ? true : false,
+					settleID : settleUnitID,
 					settleName : $XP(shop, 'settleName', ''),
+					btn : {
+						clz : 'bind-settle',
+						label : IX.isEmpty('settleID') ? '绑定结算账户' : '修改'
+					},
 					switcherName : 'switcher_status',
 					shopOpen : $XP(shop, 'status') == 1 ? 'checked' : '',
 					business : self.mapBusinessRenderData(shop)
@@ -596,6 +608,25 @@
 
 					$trigger.parents('.shop-business').find('.desc').html(desc);
 
+				}
+			});
+		},
+		// 生成绑定结算账号窗口
+		initBindSettleModal : function (trigger, settleID, shopID) {
+			var self = this;
+			var view = new Hualala.Setting.bindSettleUnitView({
+				triggerEl : trigger,
+				settleID : settleID,
+				model : self.model.getShopModelByShopID(shopID),
+				successFn : function (mShop, $trigger, settleInfo) {
+					var settleUnitID = $XP(settleInfo, 'settleUnitID'),
+						settleUnitName = $XP(settleInfo, 'settleUnitName', '');
+					$trigger.attr('data-id', settleUnitID);
+					$trigger.parent().find('.account-name').html(settleUnitName);
+					mShop.set({
+						settleID : settleUnitID,
+						settleName : settleUnitName
+					})
 				}
 			});
 		}

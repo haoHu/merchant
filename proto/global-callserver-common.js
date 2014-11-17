@@ -254,6 +254,20 @@
 	};
 
 	/**
+	 * 为店铺绑定结算账户
+	 * @param  {Object} params 参数{settleID,shopID}
+	 * @param  {Function} cbFn   回调{resultcode, resultmsg}
+	 * @return {NULL}       
+	 */
+	Hualala.Global.bindSettleUnitByShopID = function (params, cbFn) {
+		IX.Debug.info("DEBUG: Bind Settle Unit By ShopID Form Elements :");
+		IX.Debug.info(params);
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(res);
+	};
+
+	/**
 	 * 获取结算账户信息
 	 * @param  {Object} params 参数{transCreateBeginTime,transCreateEndTime,settleUnitID,transStatus,transType,groupID,minTransAmount,maxTransAmount}
 	 * @param  {Function} cbFn   回调函数{resultcode, resultmsg, data}

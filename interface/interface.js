@@ -129,6 +129,14 @@ Hualala.Global.setSpotOrderParams = function (params, cbFn) {}
 Hualala.Global.setCommonReserveParams = function (params, cbFn) {};
 
 /**
+ * 为店铺绑定结算账户
+ * @param  {Object} params 参数{settleID,shopID}
+ * @param  {Function} cbFn   回调{resultcode, resultmsg}
+ * @return {NULL}       
+ */
+Hualala.Global.bindSettleUnitByShopID = function (params, cbFn) {};
+
+/**
  * 获取结算账户信息
  * @param  {Object} params 参数{}
  * @param  {Function} cbFn   回调函数{resultcode, resultmsg, data}

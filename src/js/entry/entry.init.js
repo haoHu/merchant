@@ -353,7 +353,7 @@
 				IX.Debug.info('INFO: Login Params : ');
 				IX.Debug.info(params);
 				self.callServer(params, function (res) {
-					if (res.resultcode == 000) {
+					if (res.resultcode == '000') {
 						document.location.href = Hualala.PageRoute.createPath('main'); 
 					} else {
 						Hualala.UI.TopTip({

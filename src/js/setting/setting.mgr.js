@@ -666,4 +666,159 @@
 		}
 	});
 	Hualala.Setting.editServiceView = editServiceView;
+
+
+	var bindSettleUnitView = Stapes.subclass({
+		constructor : function (cfg) {
+			this.$trigger = $XP(cfg, 'triggerEl', null);
+			this.settleID = $XP(cfg, 'settleID', '');
+			this.model = $XP(cfg, 'model', null);
+			this.successFn = $XF(cfg, 'successFn');
+			this.getSettleUnitsCallServer = Hualala.Global.queryAccount;
+			this.bindSettleUnitCallServer = Hualala.Global.bindSettleUnitByShopID;
+			this.modal = null;
+			this.$body = null;
+			this.$footer = null;
+			if (!this.$trigger || !this.settleID || !this.model) {
+				throw("Bind Settle Unit View init failed!");
+			}
+			this.loadTemplates();
+			this.initModal();
+			this.bindEvent();
+			this.emit('load');
+		}
+	});
+	bindSettleUnitView.proto({
+		loadTemplates : function () {
+			var self = this;
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_role_bind_shop')),
+				listTpl = Handlebars.compile(Hualala.TplLib.get('tpl_settle_list')),
+				itemTpl = Handlebars.compile(Hualala.TplLib.get('tpl_settle_item'));
+			Handlebars.registerPartial("settleItem", Hualala.TplLib.get('tpl_settle_item'));
+			Handlebars.registerHelper('checkItemType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			this.set({
+				layoutTpl : layoutTpl,
+				listTpl : listTpl,
+				itemTpl : itemTpl
+			});
+		},
+		initModal : function () {
+			var self = this;
+			self.modal = new Hualala.UI.ModalDialog({
+				id : 'bind_settle_modal',
+				clz : 'account-modal',
+				title : "绑定结算账户"
+			});
+			self.$body = self.modal._.body;
+			self.$footer = self.modal._.footer;
+			var layoutTpl = self.get('layoutTpl'),
+				htm = layoutTpl({
+					clz : '',
+					title : '选择店铺要绑定的结算账户'
+				});
+			self.$body.html(htm);
+			self.$resultBox = self.$body.find('.result-box');
+		},
+		bindEvent : function () {
+			var self = this;
+			this.on({
+				"show" : function () {
+					self.modal.show();
+				},
+				"hide" : function () {
+					self.modal.hide();
+				},
+				"load" : function () {
+					if (!self.origSettleData) {
+						self.getSettleUnitsCallServer({}, function (res) {
+							if (res.resultcode != '000') {
+								toptip({
+									msg : $XP(res, 'resultmsg', ''),
+									type : 'danger'
+								});
+								self.emit('hide');
+							} else {
+								self.origSettleData = $XP(res, 'data.records', []);
+								self.render(self.origSettleData);
+								self.emit('show');
+							}
+						});
+					} else {
+						self.render(self.origSettleData);
+					}
+				}
+			});
+			self.$resultBox.tooltip({
+				selector : '[title]'
+			});
+			self.$resultBox.delegate(':radio', 'change', function (e) {
+				var $el = $(this),
+					checked = !this.checked ? false : true,
+					itemID = $el.val();
+				self.curSettleUnit = _.find(self.origSettleData, function (settle) {return $XP(settle, 'settleUnitID', '') == itemID;});
+			});
+			self.$footer.delegate('.btn', 'click', function (e) {
+				var $btn = $(this),
+					act = $btn.hasClass('btn-ok') ? 'ok' : 'cancel';
+				if (act == 'cancel') {
+					self.emit('hide');
+				} else {
+					// 设置角色绑定店铺数据
+					self.bindItems();
+					
+				}
+			});
+		},
+		bindItems : function () {
+			var self = this;
+			self.bindSettleUnitCallServer({
+				shopID : self.model.get('shopID'),
+				settleID : $XP(self.curSettleUnit, 'settleUnitID'),
+				settleName : $XP(self.curSettleUnit, 'settleUnitName'),
+				oldSettleID : self.settleID
+			}, function (res) {
+				if (res.resultcode != '000') {
+					toptip({
+						msg : $XP(res, 'resultmsg', ''),
+						type : 'danger'
+					});
+				} else {
+					toptip({
+						msg : '绑定成功',
+						type : 'success'
+					});
+					self.emit('hide');
+					self.successFn(self.model, self.$trigger, self.curSettleUnit);
+				}
+			});
+		},
+		mapRenderData : function (data) {
+			var self = this;
+			var ret = _.map(data, function (settle, i, l) {
+				var id = $XP(settle, 'settleUnitID'),
+					checked = id == self.settleID ? 'checked' : '';
+				return IX.inherit(settle, {
+					type : 'radio',
+					clz : 'bind-item',
+					settleUnitNameLabel : $XP(settle, 'settleUnitName', ''),
+					checked : checked
+				});
+			});
+			return ret;
+		},
+		render : function (data) {
+			var self = this,	
+				listTpl = self.get('listTpl');
+			var renderData = self.mapRenderData(data);
+			var htm = listTpl({
+				settleList : {
+					list : renderData
+				}
+			});
+			self.$resultBox.html(htm);
+		}
+	});
+	Hualala.Setting.bindSettleUnitView = bindSettleUnitView;
 })(jQuery, window);

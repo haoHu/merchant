@@ -66,6 +66,7 @@
 		var isLogin = !$XP(Hualala.getSessionUser(), 'loginName', null) ? false : true,
 			loginName = $XP(session, 'user.loginName', ''),
 			groupName = $XP(session, 'site.groupName', '');
+		var bindMobileWizard = IX.Cookie.get('bindMobileWizard') == 1 ? false : true;
 		var mapRanderData = function () {
 			var header = {
 				pcClientPath : Hualala.PageRoute.createPath('pcclient'),
@@ -99,8 +100,9 @@
 				userMgr = new Hualala.User.UserMgrModal({
 					$btnGrp : $wrapper.find('.user-mgr')
 				});
-				if ($XP(session, 'user.mobileBinded') == 0 && $XP(session, 'user.loginCount') == 1) {
+				if (bindMobileWizard && $XP(session, 'user.mobileBinded') == 0 && $XP(session, 'user.loginCount') == 1) {
 					$wrapper.find('.user-mgr .btn[data-target=bind_mobile]').trigger('click');
+					IX.Cookie.set('bindMobileWizard', 1);
 				}
 			}
 			var footerAnimation = function (expand) {
