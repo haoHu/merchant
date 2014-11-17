@@ -665,6 +665,8 @@
 					if (type == 'switcher') {
 						// ret[key] = $('[name=' + key + ']').attr('checked') ? 1 : 0;
 						ret[key] = !$('[name=' + key + ']').data('bootstrapSwitch').options.state ? 0 : 1;
+					} else if (type == 'radiogrp') {
+						ret[key] = $('[name=' + key + ']:checked').val();
 					} else {
 						ret[key] = $('[name=' + key + ']').val();
 					}

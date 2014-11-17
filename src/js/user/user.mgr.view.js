@@ -151,7 +151,7 @@
 				}
 			}
 		},
-		authCode : {
+		dynamicCode : {
 			type : "text",
 			label : "验证码",
 			defaultVal : "",
@@ -204,7 +204,7 @@
 	var ResetPWDFormKeys = 'loginName,loginPWD,plainPWD,accountID'.split(','),
 		BaseUserFormKeys = 'loginName,accountID,userName,userRemark,userEmail,accountStatus'.split(','),
 		RoleBindingFormKeys = 'loginName,accountID,roleBinding'.split(','),
-		BindMobileFormKeys = 'accountID,bindedMobile,userMobile,authCode'.split(',');
+		BindMobileFormKeys = 'accountID,bindedMobile,userMobile,dynamicCode'.split(',');
 
 	var ResetPWDView = Stapes.subclass({
 		constructor : function (cfg) {
@@ -384,9 +384,9 @@
 					var elCfg = BaseUserFormElsHT.get(key),
 						type = $XP(elCfg, 'type');
 					if (type == 'switcher') {
-						ret[key] = !$('[name=' + key + ']').data('bootstrapSwitch').options.state ? 0 : 1;
+						ret[key] = !$('[name=' + key + ']', self.$body).data('bootstrapSwitch').options.state ? 0 : 1;
 					} else {
-						ret[key] = $('[name=' + key + ']').val();
+						ret[key] = $('[name=' + key + ']', self.$body).val();
 					}
 				});
 			return ret;

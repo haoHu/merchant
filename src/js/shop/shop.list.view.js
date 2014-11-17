@@ -458,28 +458,43 @@
 			};
 		},
 		// 渲染开关
-		initSwitcher : function (selector) {
+		initSwitcher : function (switcherName) {
 			var self = this;
-			self.$list.find(selector).bootstrapSwitch({
+			var $switchers = self.$list.find(':checkbox[name=' + switcherName + ']');
+			var changeSubSwitchersStatus = function () {
+				$switchers.each(function (idx, el) {
+					var $el = $(el),
+						shopID = $el.attr('data-shop'),
+						$parentSwitcher = $(':checkbox[name=switcher_status][data-shop=' + shopID + ']'),
+						checked = $parentSwitcher[0].checked;
+					$el.bootstrapSwitch('disabled', !checked ? true : false);
+				});
+			};
+			$switchers.bootstrapSwitch({
 				// baseClass : 'ix-bs-switch',
 				// wrapperClass : 'ix-bs-switch-wrapper',
 				size : 'normal',
-				onColor : selector == ':checkbox[name=switcher_business]' ? 'primary' : 'success',
+				onColor : switcherName == 'switcher_business' ? 'primary' : 'success',
 				offColor : 'default',
 				onText : '已开通',
 				offText : '未开通'
 			});
-			// 绑定开关事件
-			self.$list.find(selector).on('switchChange.bootstrapSwitch', function (e, state) {
-				var $chkbox = $(this),
-					name = $chkbox.attr('name'),
-					shopID = $chkbox.attr('data-shop'),
-					state = !state ? 0 : 1,
-					business = $chkbox.attr('data-business'),
-					businessID = $chkbox.attr('data-business-id');
+			if (switcherName == 'switcher_business') {
+				changeSubSwitchersStatus();
+			}
+			$switchers.on('switchChange.bootstrapSwitch', function (e, state) {
+				var $chkbox = $(this), name = $chkbox.attr('name'), shopID = $chkbox.attr('data-shop'),
+					state = !state ? 0 : 1, business = $chkbox.attr('data-business'), businessID = $chkbox.attr('data-business-id');
 				if (name == 'switcher_status') {
 					self.model.updateShopStatus(shopID, state, function (_shopID) {
-						self.$list.find(selector).filter('[data-shop=' + _shopID + ']').bootstrapSwitch('toggleState', true);
+						var $switcherEl = self.$list.find(':checkbox[name=' + switcherName + ']').filter('[data-shop=' + _shopID + ']'),
+							$subSwitchers = self.$list.find(':checkbox[name=switcher_business]').filter('[data-shop=' + _shopID + ']');
+						$switcherEl.bootstrapSwitch('toggleState', true);
+						$subSwitchers.bootstrapSwitch('disabled', state == 0 ? false : true);
+					}, function (_shopID) {
+						var $switcherEl = self.$list.find(':checkbox[name=' + switcherName + ']').filter('[data-shop=' + _shopID + ']'),
+							$subSwitchers = self.$list.find(':checkbox[name=switcher_business]').filter('[data-shop=' + _shopID + ']');
+						$subSwitchers.bootstrapSwitch('disabled', state == 0 ? true : false);
 					});
 				} else {
 					self.model.updateShopBusinessStatus({
@@ -488,13 +503,51 @@
 						id : businessID,
 						status : state
 					}, function (params) {
-						self.$list.find(selector).filter('[data-shop=' + $XP(params, 'shopID') + '][data-business-id=' + $XP(params, 'id') + ']')
+						self.$list.find(':checkbox[name=' + switcherName + ']').filter('[data-shop=' + $XP(params, 'shopID') + '][data-business-id=' + $XP(params, 'id') + ']')
 							.bootstrapSwitch('toggleState', true);
 					});
 				}
-				
 			});
+
 		},
+		// 渲染开关
+		// initSwitcher : function (selector) {
+		// 	var self = this;
+		// 	self.$list.find(selector).bootstrapSwitch({
+		// 		// baseClass : 'ix-bs-switch',
+		// 		// wrapperClass : 'ix-bs-switch-wrapper',
+		// 		size : 'normal',
+		// 		onColor : selector == ':checkbox[name=switcher_business]' ? 'primary' : 'success',
+		// 		offColor : 'default',
+		// 		onText : '已开通',
+		// 		offText : '未开通'
+		// 	});
+		// 	// 绑定开关事件
+		// 	self.$list.find(selector).on('switchChange.bootstrapSwitch', function (e, state) {
+		// 		var $chkbox = $(this),
+		// 			name = $chkbox.attr('name'),
+		// 			shopID = $chkbox.attr('data-shop'),
+		// 			state = !state ? 0 : 1,
+		// 			business = $chkbox.attr('data-business'),
+		// 			businessID = $chkbox.attr('data-business-id');
+		// 		if (name == 'switcher_status') {
+		// 			self.model.updateShopStatus(shopID, state, function (_shopID) {
+		// 				self.$list.find(selector).filter('[data-shop=' + _shopID + ']').bootstrapSwitch('toggleState', true);
+		// 			});
+		// 		} else {
+		// 			self.model.updateShopBusinessStatus({
+		// 				shopID : shopID,
+		// 				name : business,
+		// 				id : businessID,
+		// 				status : state
+		// 			}, function (params) {
+		// 				self.$list.find(selector).filter('[data-shop=' + $XP(params, 'shopID') + '][data-business-id=' + $XP(params, 'id') + ']')
+		// 					.bootstrapSwitch('toggleState', true);
+		// 			});
+		// 		}
+				
+		// 	});
+		// },
 		// 渲染view
 		render : function () {
 			var self = this,
@@ -523,8 +576,10 @@
 				href : 'javascript:void(0);'
 			});
 			// self.$list.find(':checkbox[name*=switcher_]').bootstrapSwitch();
-			self.initSwitcher(':checkbox[name=switcher_business]');
-			self.initSwitcher(':checkbox[name=switcher_status]');
+			// self.initSwitcher(':checkbox[name=switcher_business]');
+			// self.initSwitcher(':checkbox[name=switcher_status]');
+			self.initSwitcher('switcher_business');
+			self.initSwitcher('switcher_status');
 		},
 		// 生成业务编辑窗口
 		initBusinessModal : function (trigger, shopID, name, id, serviceFeatures) {

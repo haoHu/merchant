@@ -204,9 +204,12 @@
 			var roleType = mUser.get('roleType'),
 				roles = mUser.get('roles'),
 				mobileBinded = mUser.get('mobileBinded');
+			roles = _.filter(roles, function (role) {
+				return $XP(role, 'binded') == true;
+			});
 			return _.map(UserCtrlBtns, function (el) {
 				var act = $XP(el, 'act');
-				if (act == 'reviewRole' && (!roleType || roleType.length == 0)) {
+				if (act == 'reviewRole' && (!roles || roles.length == 0)) {
 					return IX.inherit(el, {
 						clz : el.clz + ' hidden disabled'
 					});

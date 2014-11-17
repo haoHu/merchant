@@ -250,11 +250,14 @@
 				},
 				"resetPWD" : function (params) {
 					// TODO 重置用户密码
+					var self = this;
 					var loginPWD = $XP(params, 'params.loginPWD', ''),
 						postParams = $XP(params, 'params', {}),
 						successFn = $XF(params, 'successFn'),
 						failFn = $XF(params, 'failFn');
-
+					postParams = IX.inherit(postParams, {
+						accountID : self.get('accountID')
+					});
 					self.resetPWDCallServer(postParams, function (res) {
 						if (res.resultcode != '000') {
 							toptip({

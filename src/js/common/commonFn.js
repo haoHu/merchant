@@ -485,6 +485,13 @@
 		}
 		return price;
 	};
+
+	// 标准价格显示，自动补齐小数点后两位；标准价格显示：[整数部分].[角][分]
+	var standardPrice = function (price) {
+		if (isNaN(price)) return price;
+		price = parseFloat(price).toFixed(2).toString();
+		return price;
+	};
 	
 	var add = function () {
 		var baseNum = 0, args = $XA(arguments);
@@ -601,6 +608,7 @@
 		prettyNumeric : prettyNumeric,
 		restoreNumeric : restoreNumeric,
 		prettyPrice : prettyPrice,
+		standardPrice : standardPrice,
 		add : add,
 		sub : sub,
 		multi : multi,

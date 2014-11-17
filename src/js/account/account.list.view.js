@@ -467,8 +467,9 @@
 		{clz : '', label : '交易状态'},
 		{clz : '', label : '交易类型'},
 		{clz : '', label : '交易金额'},
-		{clz : '', label : '佣金'},
-		{clz : '', label : '手续费'},
+		// {clz : '', label : '佣金'},
+		// {clz : '', label : '手续费'},
+		{clz : '', label : '交易费用'},
 		{clz : '', label : '余额变动'},
 		{clz : '', label : '交易后余额'},
 		{clz : '', label : '操作'}
@@ -663,7 +664,7 @@
 			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', '')};
 		},
 		mapCashData : function (s) {
-			return {text : Hualala.Common.Math.prettyNumeric(s), value : s};
+			return {text : Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(s)), value : s};
 		},
 		mapTransChanged : function (r) {
 			var transAmount = $XP(r, 'transAmount', 0),
@@ -674,7 +675,7 @@
 		},
 		mapColsRenderData : function (row) {
 			var self = this;
-			var colKeys = 'transCreateTime,SUATransItemID,transStatus,transType,transAmount,transSalesCommission,transPoundage,transChanged,transAfterBalance,rowControl';
+			var colKeys = 'transCreateTime,SUATransItemID,transStatus,transType,transAmount,transactionCost,transChanged,transAfterBalance,rowControl';
 			var col = {clz : '', type : 'text'};
 
 			var cols = _.map(colKeys.split(','), function (k, i) {
@@ -693,10 +694,15 @@
 						r = self.mapTransType($XP(row, k, ''));
 						break;
 					case 'transAmount':
-					case 'transSalesCommission':
-					case 'transPoundage':
+					// case 'transSalesCommission':
+					// case 'transPoundage':
 					case 'transAfterBalance':
 						r = self.mapCashData($XP(row, k, ''));
+						break;
+					case 'transactionCost':
+						var transSalesCommission = $XP(row, 'transSalesCommission', 0), transPoundage = $XP(row, 'transPoundage', 0);
+						var transactionCost = Hualala.Common.Math.add(transSalesCommission, transPoundage);
+						r = self.mapCashData(transactionCost);
 						break;
 					case 'transChanged':
 						r = self.mapTransChanged(row);

@@ -80,6 +80,7 @@
 			// 		}
 			// 	});
 			// });
+
 			Hualala.PageRoute.start(function (pageName, pageParams, pageInitFn) {
 				var hasNoNavPages = 'main,pcclient,about,contact,login';
 				var commonPages = _.filter(hasNoNavPages.split(','), function (v) {return v != 'main'}).join(',');
@@ -100,6 +101,7 @@
 					pageInitFn && pageInitFn.apply(null, [pageName, pageParams]);
 				});
 			});
+			
 			APPInitialized = true;
 		}
 	};

@@ -190,6 +190,28 @@
 	Hualala.Order.mapOrderQueryFormRenderData = function () {
 		var self = this;
 		var queryKeys = self.model.queryKeys;
+		// var query = {cols : [
+		// 	{
+		// 		colClz : 'col-md-4',
+		// 		items : QueryFormElsHT.getByKeys(['orderTime', 'orderTotal'])
+		// 	},
+		// 	{
+		// 		colClz : 'col-md-2',
+		// 		items : QueryFormElsHT.getByKeys(['cityID', 'shopID'])
+		// 	},
+		// 	{
+		// 		colClz : 'col-md-3',
+		// 		items : QueryFormElsHT.getByKeys(['orderStatus', 'orderID'])
+		// 	},
+		// 	{
+		// 		colClz : 'col-md-3',
+		// 		items : QueryFormElsHT.getByKeys(['userMobile'])
+		// 	},
+		// 	{
+		// 		colClz : 'col-md-offset-1 col-md-2',
+		// 		items : QueryFormElsHT.getByKeys(['button'])
+		// 	}
+		// ]};
 		var query = {cols : [
 			{
 				colClz : 'col-md-4',
@@ -197,11 +219,11 @@
 			},
 			{
 				colClz : 'col-md-2',
-				items : QueryFormElsHT.getByKeys(['cityID', 'shopID'])
+				items : QueryFormElsHT.getByKeys(['cityID', 'orderStatus'])
 			},
 			{
 				colClz : 'col-md-3',
-				items : QueryFormElsHT.getByKeys(['orderStatus', 'orderID'])
+				items : QueryFormElsHT.getByKeys(['shopID', 'orderID'])
 			},
 			{
 				colClz : 'col-md-3',
@@ -385,6 +407,40 @@
 				self.$queryBox.find('[name=' + k + ']').val(v);
 			});
 		},
+		initChosenPanel : function (_cfg) {
+			var self = this,
+				matcher = (new Pymatch([])),
+				sections = $XP(_cfg, 'sectionsData'),
+				$target = $XP(_cfg, '$target'),
+				chosenPanelCfg = $XP(_cfg, 'chosenPanelCfg', {}),
+				changeFn = $XF(_cfg, 'changeFn');
+			var getMatchedFn = function (searchText) {
+				matcher.setNames(_.map(sections, function (el) {
+					return IX.inherit(el, {
+						name : el.label,
+						py : el.py
+					});
+				}));
+				var matchedSections = matcher.match(searchText);
+				var matchedOptions = {};
+				_.each(matchedSections, function (el, i) {
+					matchedOptions[el[0].value] = true;
+				});
+				return matchedOptions;
+			};
+			var chosen = $target.data('chosen');
+			chosen && chosen.destroy();
+			$target.chosen(IX.inherit({
+				width : '200px',
+				placeholder_text : "请选择",
+				no_results_text : "抱歉，没有找到！",
+				allow_single_deselect : true
+			}, chosenPanelCfg, {
+				getMatchedFn : getMatchedFn
+			})).change(function (e) {
+				changeFn.apply(this, e);
+			});
+		},
 		initCityComboOpts : function (curCityID) {
 			var self = this,
 				cities = self.model.getCities();
@@ -394,13 +450,15 @@
 				return {
 					value : id,
 					label : name,
-					selected : id == curCityID ? 'selected' : ''
+					selected : id == curCityID ? 'selected' : '',
+					py : $XP(city, 'py', '')
 				};
 			});
 			cities.unshift({
 				value : '',
 				label : '全部',
-				selected : IX.isEmpty(curCityID) ? 'selected' : ''
+				selected : IX.isEmpty(curCityID) ? 'selected' : '',
+				py : 'quan;bu'
 			});
 			var optTpl = self.get('comboOptsTpl'),
 				htm = optTpl({
@@ -408,6 +466,19 @@
 				}),
 				$select = self.$queryBox.find('select[name=cityID]');
 			$select.html(htm);
+
+			self.initChosenPanel({
+				chosenPanelCfg : {
+					width : $select.parent().width() + 'px',
+					placeholder_text : "请选择城市"
+				},
+				sectionsData : cities,
+				$target : $select,
+				changeFn : function (e) {
+					var $this = $(this);
+					self.chosenCityID = $this.val();
+				}
+			});
 		},
 		initShopComboOpts : function (curCityID, curShopID) {
 			var self = this,
@@ -418,13 +489,15 @@
 				return {
 					value : id,
 					label : name,
-					selected : id == curShopID ? 'selected' : ''
+					selected : id == curShopID ? 'selected' : '',
+					py : $XP(shop, 'py', '')
 				};
 			});
 			shops.unshift({
 				value : '',
 				label : '全部',
-				selected : IX.isEmpty(curShopID) ? 'selected' : ''
+				selected : IX.isEmpty(curShopID) ? 'selected' : '',
+				py : 'quan;bu'
 			});
 			var optTpl = self.get('comboOptsTpl'),
 				htm = optTpl({
@@ -432,6 +505,19 @@
 				}),
 				$select = self.$queryBox.find('select[name=shopID]');
 			$select.html(htm);
+
+			self.initChosenPanel({
+				chosenPanelCfg : {
+					width : $select.parent().width() + 'px',
+					placeholder_text : "请选择店铺"
+				},
+				sectionsData : shops,
+				$target : $select,
+				changeFn : function (e) {
+					var $this = $(this);
+					self.chosenCityID = $this.val();
+				}
+			});
 		},
 		initQueryEls : function () {
 			var self = this;

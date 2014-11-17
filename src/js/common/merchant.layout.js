@@ -161,12 +161,19 @@
 	function initSiteNavBar (pageType) {
 		var session = Hualala.getSessionData(),
 			navTpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_navbar')),
-			navToggleTpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_navbarToggle'));
+			navToggleTpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_navbarToggle')),
+			rights = Hualala.getSessionUserRight();
 		var mapRanderData = function () {
+			var rightHT = new IX.IListManager();
+			IX.iterate(rights, function (el) {
+				rightHT.register(el.name, el);
+			});
 			var navs = _.map(Hualala.TypeDef.SiteNavType, function (v, i, list) {
+				var hasRight = !rightHT.get(v.name) ? false : true;
 				return {
 					active : !Hualala.Global.isCurrentPage(v.name) ? '' : 'active',
-					disabled : '',
+					disabled : !hasRight ? 'disabled' : '',
+					noPath : !hasRight ? true : false,
 					path : Hualala.PageRoute.createPath(v.name) || '#',
 					name : v.name,
 					label : v.label,

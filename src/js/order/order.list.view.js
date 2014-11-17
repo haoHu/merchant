@@ -96,12 +96,24 @@
 				break;
 			case "sumPrice":
 				r.value = v || 0;
-				r.text = Hualala.Common.Math.prettyPrice(Hualala.Common.Math.div(r.value, $XP(row, 'sumMaster', 1)));
+				r.text = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(Hualala.Common.Math.div(r.value, $XP(row, 'sumMaster', 1))));
 				break;
 			case "userSex":
 				r.value = v;
 				r.text = $XP(Hualala.Common.getGender($XP(row, 'userSex', '')), 'label', '');
 				break;
+			case "total" : 
+			case "orderTotal":
+			case "moneyBalance":
+			case "pointBalance":
+			case "orderRefundAmount":
+			case "shouldSettlementTotal":
+				r.value = v;
+				r.text = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(v));
+				break;
+			case "foodAmount" :
+				r.value = v;
+				r.text = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(v));
 			case "rowControl" :
 				if (pageName == 'orderQuery') {
 					r = {
@@ -195,7 +207,7 @@
 				clz : clz,
 				colspan : colspan,
 				rowspan : rowspan,
-				text : v,
+				text : Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(v)),
 				value : v
 			};
 		});
@@ -269,7 +281,7 @@
 				clz : clz,
 				colspan : colspan,
 				rowspan : rowspan,
-				text : v,
+				text : (k == 'count' ? Hualala.Common.Math.prettyNumeric(v) : Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(v))),
 				value : v
 			};
 		});

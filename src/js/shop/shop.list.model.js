@@ -130,7 +130,7 @@
 			return shopHT.get(shopID);
 		},
 		// 更新店铺状态
-		updateShopStatus : function (shopID, status, failFn) {
+		updateShopStatus : function (shopID, status, failFn, successFn) {
 			var self = this,
 				shopHT = self.get('ds_shop');
 			var shop = shopHT.get(shopID);
@@ -141,7 +141,8 @@
 			// shop.set('status', status);
 			shop.emit('switchShopStatus', {
 				status : status,
-				failFn : failFn
+				failFn : failFn,
+				successFn : successFn
 			});
 		},
 		// 更新店铺业务状态
@@ -172,7 +173,7 @@
 		}
 	});
 	BaseShopModel.proto({
-		switchShopStatus : function (status, failFn) {
+		switchShopStatus : function (status, failFn, successFn) {
 			var self = this,
 				shopID = self.get('shopID');
 			self.set('status', status);
@@ -195,6 +196,7 @@
 						msg : '切换成功!',
 						type : 'success'
 					});
+					successFn(shopID);
 				}
 			});
 		},
@@ -247,8 +249,9 @@
 			this.on({
 				"switchShopStatus" : function (params) {
 					var status = $XP(params, 'status'),
-						failFn = $XF(params, 'failFn');
-					this.switchShopStatus(status, failFn);
+						failFn = $XF(params, 'failFn'),
+						successFn = $XF(params, 'successFn');
+					this.switchShopStatus(status, failFn, successFn);
 				},
 				"switchBusinessStatus" : function (params) {
 					this.switchShopBusinessStatus(params);
