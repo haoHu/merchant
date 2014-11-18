@@ -436,7 +436,7 @@
 			var ret = _.find(roles, function (role) {
 				var roleType = $XP(role, 'roleType');
 				var matchedID = _.find(usrRoles, function (v) {
-					return $XP(role, 'id') == v;
+					return $XP(role, 'roleType') == v;
 				});
 				return !!matchedID && (roleType != 'manager');
 			});

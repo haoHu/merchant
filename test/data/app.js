@@ -9,7 +9,7 @@
 		groupID : "5"
 	};
 	Test.LoginUser = {
-		role : [1, 2],
+		role : ['admin'],
 		groupID : "5",
 		groupLoginName : 'doulaofang',
 		loginName : "temp_007",

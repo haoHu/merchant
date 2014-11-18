@@ -6478,6 +6478,38 @@
 }(window.jQuery));
 
 //=============自定义验证器====================
+//登录名验证
+(function ($) {
+    $.fn.bootstrapValidator.i18n.loginName = $.extend($.fn.bootstrapValidator.i18n.loginName || {}, {
+        'default' : 'Please enter a valid user name'
+    });
+    $.fn.bootstrapValidator.validators.loginName = {
+        validate : function (validator, $field, options) {
+            var value = $field.val();
+            if (value === '') {
+                return true;
+            }
+            var regExp = /^[a-zA-Z0-9_]{5,50}$/;
+            return regExp.test(value);
+        }
+    };
+})(window.jQuery);
+// 不含汉子
+(function ($) {
+    $.fn.bootstrapValidator.i18n.noChinese = $.extend($.fn.bootstrapValidator.i18n.noChinese || {}, {
+        'default' : 'Please enter string which has nothing chinese'
+    });
+    $.fn.bootstrapValidator.validators.noChinese = {
+        validate : function (validator, $field, options) {
+            var value = $field.val();
+            if (value === '') {
+                return true;
+            }
+            var regExp = /[\u4e00-\u9fa5]/g;
+            return !regExp.test(value);
+        }
+    };
+})(window.jQuery);
 //手机号
 (function($) {
     $.fn.bootstrapValidator.i18n.mobile = $.extend($.fn.bootstrapValidator.i18n.mobile || {}, {
