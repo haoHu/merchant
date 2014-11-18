@@ -341,7 +341,7 @@
 	var tpl_food = [
 	'{{#each foods}}',
 		'<tr data-id="{{foodID}}" data-cid="{{foodCategoryID}}">',
-			'<td><img data-original="{{imgSrc}}" src="{{imgSrc}}" /></td>',
+			'<td><img src="{{imgSrc}}" /></td>',
 			'<td>{{foodName}}</td>',
 			'<td>',
 			'{{#each units}}',

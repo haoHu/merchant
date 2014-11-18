@@ -334,6 +334,12 @@
                 'SG': '新加坡 邮政编码',
                 'US': '美国 邮政编码'
             }
-        }
+        },
+		loginName : {
+			'default' : '请输入有效的登录名'
+		},
+		noChinese : {
+			'default' : '请输入不含中文的字符串'
+		}
     });
 }(window.jQuery));
