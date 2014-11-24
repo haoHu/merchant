@@ -55,7 +55,7 @@
 			"shopPromotionType": "1",
 			"shopServiceOptions": "234214321431",
 			"takeawayNotice": "",
-			"takeawayParamJson" : {"20":{"advanceTime":"20","freeServiceAmount":"0","holidayFlag":"1","minAmount":"50","noticeTime":"45","payMethod":"","serviceAmount":"0","servicePeriods":"1000,2300","takeawayDeliveryAgent":"3","takeawayDeliveryTime":"20","takeawayScope":"4","takeawayScopeDesc":"仅限"},"21":{"advanceTime":"30","freeServiceAmount":"0","holidayFlag":"0","minAmount":"60","noticeTime":"30","serviceAmount":"0","servicePeriods":"0300,1230"}},
+			"takeawayParamJson" : JSON.stringify({"20":{"advanceTime":"20","freeServiceAmount":"0","holidayFlag":"1","minAmount":"50","noticeTime":"45","payMethod":"","serviceAmount":"0","servicePeriods":"1000,2300","takeawayDeliveryAgent":"3","takeawayDeliveryTime":"20","takeawayScope":"4","takeawayScopeDesc":"仅限"},"21":{"advanceTime":"30","freeServiceAmount":"0","holidayFlag":"0","minAmount":"60","noticeTime":"30","serviceAmount":"0","servicePeriods":"0300,1230"}}),
 			"cancelRevBeforTime": "0",
 			"isCancelRevReturnVoucher": "0",
 			"discountNote": "asdfsadf",

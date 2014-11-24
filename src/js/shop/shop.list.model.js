@@ -277,11 +277,20 @@
 							var newData = {};
 							newData[serviceID] = params;
 							// var revParamJson = JSON.parse(self.get('revParamJson'));
-							var revParamJson = self.get('revParamJson') || null;
+							var revParamJson = self.get('revParamJson') || null,
+								takeawayParamJson = self.get('takeawayParamJson') || null;
 							var serviceFeatures = self.get('serviceFeatures');
 							revParamJson = !revParamJson ? {} : JSON.parse(revParamJson);
-							revParamJson = IX.inherit(revParamJson, newData);
-							self.set('revParamJson', JSON.stringify(revParamJson));
+							takeawayParamJson = !takeawayParamJson ? {} : JSON.parse(takeawayParamJson);
+							if (serviceID == 20 || serviceID == 21) {
+								takeawayParamJson = IX.inherit(takeawayParamJson, newData);
+								self.set('revParamJson', JSON.stringify(takeawayParamJson));
+							} else {
+								revParamJson = IX.inherit(revParamJson, newData);
+								self.set('revParamJson', JSON.stringify(revParamJson));
+							}
+							
+							
 							if (serviceID == 41) {
 								var checkSpotOrder = $XP(params, 'checkSpotOrder', 0);
 								if (checkSpotOrder == 0) {

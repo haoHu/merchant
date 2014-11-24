@@ -261,7 +261,7 @@
 			// formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,servicePeriods,takeawayDeliveryAgent,takeawayDeliveryTime,takeawayScope,takeawayScopeDesc,payMethod'
 			formKeys : 'noticeTime,servicePeriods,holidayFlag,takeawayDeliveryTime,minAmount,serviceAmount,freeServiceAmount,takeawayScope,payMethod'
 		},
-		{id : 21, label : "到店自提", name : "takeout_order", businessIsSupported : true,
+		{id : 21, label : "自提", name : "takeout_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setTakeOutParams',
 			// formKeys : 'advanceTime,freeServiceAmount,holidayFlag,minAmount,serviceAmount,servicePeriods,noticeTime,payMethod'
 			formKeys : 'noticeTime,servicePeriods,holidayFlag,advanceTime,minAmount,payMethod'

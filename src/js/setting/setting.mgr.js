@@ -419,9 +419,13 @@
 				this.callServer = IX.getNS(this.callServer);
 			}
 			// var revParamJson = JSON.parse(this.model.get('revParamJson'));
-			var revParamJson = this.model.get('revParamJson') || null;
+			var revParamJson = this.model.get('revParamJson') || null,
+				takeawayParamJson = this.model.get('takeawayParamJson') || null,
+				businessCfg = null;
 			revParamJson = !revParamJson ? {} : JSON.parse(revParamJson);
-			this.formParams = $XP(revParamJson, this.serviceID);
+			takeawayParamJson = !takeawayParamJson ? {} : JSON.parse(takeawayParamJson);
+			businessCfg = IX.inherit(revParamJson, takeawayParamJson);
+			this.formParams = $XP(businessCfg, this.serviceID);
 			this.initModal();
 			this.renderForm();
 			this.bindEvent();

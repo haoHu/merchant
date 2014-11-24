@@ -448,11 +448,15 @@
 				businessHT = new IX.IListManager(),
 				serviceFeatures = $XP(shop, 'serviceFeatures', ''),
 				// businessCfg = JSON.parse($XP(shop, 'revParamJson', {})),
-				businessCfg = $XP(shop, 'revParamJson', null);
-			businessCfg = !businessCfg ? {} : JSON.parse(businessCfg)
+				businessCfg = null,
+				revParamJson = $XP(shop, 'revParamJson', null),
+				takeawayParamJson = $XP(shop, 'takeawayParamJson', null);
+			revParamJson = !revParamJson ? {} : JSON.parse(revParamJson);
+			takeawayParamJson = !takeawayParamJson ? {} : JSON.parse(takeawayParamJson);
+			businessCfg = IX.inherit(revParamJson, takeawayParamJson);
 			var ret = null;
 			_.each(business, function (item, i, l) {
-				var id = $XP(item, 'id'), name = $XP(item, 'name')
+				var id = $XP(item, 'id'), name = $XP(item, 'name'),
 					switcherStatus = serviceFeatures.indexOf(name) >= 0 ? 1 : 0,
 					businessInfo = $XP(businessCfg, id.toString(), {}),
 					operationMode = $XP(shop, 'operationMode', null);
