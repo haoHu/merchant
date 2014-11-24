@@ -73,7 +73,7 @@
 		{name : 'pcclient', url : '/#download'},
 		{name : 'about', url : '/#about'},
 		{name : 'contact', url : '/#contact'},
-		{name : 'crmMemberSchema', url : '/#crm/member/schema'}
+		{name : 'crm', url : '/#crm'}
 	];
 	Test.PCClient = {
 		downloadClientAddress : '/pcclient/download/1.0.1-release.zip',

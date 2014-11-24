@@ -14,11 +14,34 @@
 
 	// 站点导航数据
 	Hualala.TypeDef.SiteNavType = [
-		{name : 'order', label : '订单报表'},
-		{name : 'account', label : '账户结算'},
-		{name : 'shop', label : '店铺管理'},
-		{name : 'setting', label : '业务设置'},
-		{name : 'user', label : '账号管理'}
+		{name : 'order', label : '订单报表', type:"link"},
+		{name : 'account', label : '账户结算', type:"link"},
+		{name : 'shop', label : '店铺管理', type:"link"},
+		{name : 'setting', label : '业务设置', type:"link"},
+		{name : 'user', label : '账号管理', type:"link"},
+		{name : 'crm', label : '会员管理', type:"subnav",
+			subnavs : [
+				{name : "crmMemberSchema", label : "会员概况", type : "link", src : "CRMMemberSubNavType"},
+				{name : "crmDealSummary", label : "交易报表", type : "link", src : "CRMDealSubNavType"},
+				{name : "crmParameter", label : "参数设置", type : "link", src : "CRMParamsSubNavType"}
+			]
+		}
+	];
+
+	Hualala.TypeDef.CRMMemberSubNavType = [
+		{name : "crmMemberSchema", label : "会员概览", pkeys : []},
+		{name : "crmQueryMember", label : "会员查询", pkeys : []},
+		{name : "crmCardStats", label : "办卡统计", pkeys : []}
+	];
+	Hualala.TypeDef.CRMDealSubNavType = [
+		{name : "crmDealSummary", label : "交易汇总", pkeys : []},
+		{name : "crmDealDetail", label : "交易明细", pkeys : []},
+		{name : "crmRechargeReconciliation", label : "储值对账", pkeys : []}
+	];
+	Hualala.TypeDef.CRMParamsSubNavType = [
+		{name : "crmParameter", label : "会员系统参数", pkeys : []},
+		{name : "crmRechargePackageBusiness", label : "充值套餐", pkeys : []},
+		{name : "crmShopSpecialPrice", label : "店铺特惠", pkeys : []}
 	];
 
 	Hualala.TypeDef.OrderSubNavType = [

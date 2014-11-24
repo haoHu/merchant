@@ -1,0 +1,18 @@
+.crm-subnav {
+	.nav-list {
+		margin-bottom:20px; background-color : #F0E4CD;
+		.x-border-radius();
+		> .navbar-collapse {padding-left : 0;}
+		.nav-pills {
+			> li > a {color : @site-nav-color; .x-font-size(16px);  font-weight: bold; .x-font-size(14px);}
+			> li.active > a, > li.active > a:hover, > li.active > a:focus {
+				color : #fff;
+				background-color : @site-nav-bg;
+			}
+			>li > a:hover, > li.active > a:hover {
+				color : #fff;
+				background-color: lighten(@site-nav-bg, 10%);
+			}
+		}
+	}
+}

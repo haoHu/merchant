@@ -5,7 +5,7 @@
 		{name : 'order', title : '订单', label : '报表.菜品排行', brickClz : 'home-brick-md-3', itemClz : 'brick-item', icon : 'icon-order'},
 		{name : 'shop', title : '店铺管理', label : '开店.信息.菜谱', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-home'},
 		{name : 'pcclient', title : '下载哗啦啦', label : '', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-download'},
-		{name : 'crmMemberSchema', title : '会员管理', label : '会员系统管理', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-setting'},		
+		{name : 'crm', title : '会员管理', label : '会员系统管理', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-setting'},		
 		{name : 'user', title : '账号管理', label : '账号.权限', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-lock'},
 		{name : 'setting', title : '业务设置', label : '开通业务.业务参数', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-setting'}
 	];
@@ -176,16 +176,38 @@
 			IX.iterate(rights, function (el) {
 				rightHT.register(el.name, el);
 			});
+			// var navs = _.map(Hualala.TypeDef.SiteNavType, function (v, i, list) {
+			// 	var hasRight = !rightHT.get(v.name) ? false : true;
+			// 	return {
+			// 		active : !Hualala.Global.isCurrentPage(v.name) ? '' : 'active',
+			// 		disabled : !hasRight ? 'disabled' : '',
+			// 		noPath : !hasRight ? true : false,
+			// 		path : Hualala.PageRoute.createPath(v.name) || '#',
+			// 		name : v.name,
+			// 		label : v.label,
+			// 	};
+			// });
 			var navs = _.map(Hualala.TypeDef.SiteNavType, function (v, i, list) {
 				var hasRight = !rightHT.get(v.name) ? false : true;
-				return {
+				var subnavs = $XP(v, 'subnavs', []);
+				subnavs = _.map(subnavs, function (s) {
+					return {
+						path : Hualala.PageRoute.createPath(s.name) || '#',
+						name : s.name,
+						label : s.label
+					};
+				});
+				var list = {
 					active : !Hualala.Global.isCurrentPage(v.name) ? '' : 'active',
 					disabled : !hasRight ? 'disabled' : '',
 					noPath : !hasRight ? true : false,
 					path : Hualala.PageRoute.createPath(v.name) || '#',
 					name : v.name,
 					label : v.label,
+					isSubNav : v.type == 'subnav' ? true : false,
+					subnavs : subnavs
 				};
+				return list;
 			});
 			return {items : navs};
 		};
