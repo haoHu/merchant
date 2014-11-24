@@ -27,6 +27,8 @@
 		["switchShopServiceFeatureStatus", "/shop/controlServiceFeatures.ajax", "", "POST"],
 		["setJustEatParams", "/shop/justEatParam.ajax", "", "POST"],
 		["setSpotOrderParams", "/shop/spotParam.ajax", "", "POST"],
+		["setTakeAwayParams", "/shop/takeawayParam.ajax", "", "POST"],
+		["setTakeOutParams", "/shop/takeoutParam.ajax", "", "POST"],
 		["setCommonReserveParams", "/shop/commonreserveParam.ajax", "", "POST"],
 		["bindSettleUnitByShopID", "/shop/updateSettleUnitByshopID.ajax", "", "POST"],
 
@@ -66,7 +68,7 @@
 		"getMobileDynamicPWD", "dynamicLoginCallServer",
 		"getShopQuerySchema", 
 		"queryShop", "switchShopStatus", "switchShopServiceFeatureStatus", 
-		"setJustEatParams", "setSpotOrderParams", "setCommonReserveParams", "bindSettleUnitByShopID",
+		"setJustEatParams", "setSpotOrderParams", "setTakeAwayParams", "setTakeOutParams", "setCommonReserveParams", "bindSettleUnitByShopID",
         'getCities', 'getAreas', 'getCuisines',
         'createShop', 'updateShopBaseInfo', 'setShopMap',
         'setShopClientPwd', 'getShopInfo', 'getShopMenu',
@@ -161,6 +163,12 @@
 	};
 	Hualala.Global.setSpotOrderParams = function (params, cbFn) {
 		Hualala.Global.commonCallServer("setSpotOrderParams", params, cbFn);
+	};
+	Hualala.Global.setTakeAwayParams = function (params, cbFn) {
+		Hualala.Global.commonCallServer("setTakeAwayParams", params, cbFn);
+	};
+	Hualala.Global.setTakeOutParams = function (params, cbFn) {
+		Hualala.Global.commonCallServer("setTakeOutParams", params, cbFn);
 	};
 	Hualala.Global.setCommonReserveParams = function (params, cbFn) {
 		Hualala.Global.commonCallServer("setCommonReserveParams", params, cbFn);

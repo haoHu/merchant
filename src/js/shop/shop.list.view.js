@@ -278,10 +278,10 @@
 						var r = $XP(businessInfo, k, '');
 						switch(k) {
 							case "advanceTime":
-								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
 								break;
 							case "noticeTime":
-								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
+								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅, ' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
 								break;
 							case "minAmount":
 								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + Hualala.Constants.CashUnit + ', ');
@@ -316,10 +316,10 @@
 								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + Hualala.Constants.CashUnit + ', ');
 								break;
 							case "advanceTime" : 
-								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
 								break;
 							case "noticeTime" : 
-								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
+								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅, ' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
 								break;
 							case "reserveTableTime" : 
 								r = IX.isEmpty(r) || r == 0 ? '' : ('留位' + getMinutIntervalLabel(r) + ', ');
@@ -367,8 +367,75 @@
 						return r;
 					});
 					break;
+				// 外卖
+				case 20:
+					tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_takeaway_desc'));
+					renderKeys = 'servicePeriods,holidayFlag,noticeTime,takeawayDeliveryTime,minAmount,serviceAmount,freeServiceAmount,takeawayScope,payMethod'.split(',');
+					params = _.map(renderKeys, function (k) {
+						var r = $XP(businessInfo, k, '');
+						switch(k) {
+							case "servicePeriods" :
+								r = '开放时间段：' + r.replace(',', '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
+								break;
+							case "holidayFlag" : 
+								r = (r == 0 ? '工作日及节假日均开放' : (r == 1 ? '仅节假日开放' : '仅工作日开放')) + ', ';
+								break;
+							case "noticeTime" : 
+								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅, ' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
+								break;
+							case "takeawayDeliveryTime" :
+								r = IX.isEmpty(r) || r == 0 ? '立即送达, ' : ('预计' + r + '分钟送达, ');
+								break;
+							case "minAmount":
+								r = (IX.isEmpty(r) || r == 0 ? 0 : r) + '元起送, ';
+								break;
+							case "serviceAmount" :
+								r = IX.isEmpty(r) || r == 0 ? '免费送餐, ' : (r + '元送餐费');
+								break;
+							case "freeServiceAmount" :
+								r = IX.isEmpty(r) || r == 0 ? '' : ('(满' + r + '元免送餐费), ');
+								break;
+							case "takeawayScope" :
+								r = IX.isEmpty(r) || r == 0 ? '' : ('送餐范围' + r + '公里, ');
+								break;
+							case "payMethod":
+								r = (r == 0 ? '仅支持在线支付' : (r == 1 ? '仅支持线下支付' : '线上及线下支付均支持')) + ', ';
+								break;
+						}
+						return r;
+					});
+					break;
+				// 自提
+				case 21:
+					tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_takeout_desc'));
+					renderKeys = 'servicePeriods,holidayFlag,advanceTime,noticeTime,minAmount,payMethod'.split(',');
+					params = _.map(renderKeys, function (k) {
+						var r = $XP(businessInfo, k, '');
+						switch(k) {
+							case "servicePeriods" :
+								r = '开放时间段：' + r.replace(',', '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
+								break;
+							case "holidayFlag" : 
+								r = (r == 0 ? '工作日及节假日均开放' : (r == 1 ? '仅节假日开放' : '仅工作日开放')) + ', ';
+								break;
+							case "advanceTime":
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
+								break;
+							case "noticeTime" : 
+								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅, ' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
+								break;
+							case "minAmount" : 
+								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + Hualala.Constants.CashUnit + ', ');
+								break;
+							case "payMethod":
+								r = (r == 0 ? '仅支持在线支付' : (r == 1 ? '仅支持线下支付' : '线上及线下支付均支持')) + ', ';
+								break;
+						}
+						return r;
+					});
+					break;
 			}
-			if (businessID == 11 || businessID == 41 || businessID == 10) {
+			if (businessID == 11 || businessID == 41 || businessID == 10 || businessID == 20 || businessID == 21) {
 				htm = tpl(_.object(renderKeys, params));
 				htm = htm.slice(0, htm.lastIndexOf(','));
 			}

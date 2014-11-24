@@ -254,6 +254,38 @@
 	};
 
 	/**
+	 * 设置外送业务配置参数
+	 * @param {Object} params {servicePeriods,holidayFlag,noticeTime,takeawayDeliveryTime,minAmount,serviceAmount,freeServiceAmount,takeawayScope,payMethod}
+	 * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 */
+	Hualala.Global.setTakeAwayParams = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var random = Test.getRandom(1, 10);
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(IX.inherit(res, {
+			// resultcode : random > 5 ? random * 100 : '000',
+			resultmsg : "参数配置失败"
+		}));
+	};
+
+	/**
+	 * 设置自提业务配置参数
+	 * @param {Object} params {servicePeriods,holidayFlag,advanceTime,noticeTime,minAmount,payMethod}
+	 * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 */
+	Hualala.Global.setTakeOutParams = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var random = Test.getRandom(1, 10);
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(IX.inherit(res, {
+			// resultcode : random > 5 ? random * 100 : '000',
+			resultmsg : "参数配置失败"
+		}));
+	};
+
+	/**
 	 * 为店铺绑定结算账户
 	 * @param  {Object} params 参数{settleID,shopID}
 	 * @param  {Function} cbFn   回调{resultcode, resultmsg}

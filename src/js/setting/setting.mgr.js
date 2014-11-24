@@ -592,6 +592,23 @@
 							});
 						}
 						
+					} else if (type == 'text' && self.serviceID == "20" && key == "minAmount") {
+						return IX.inherit(elCfg, {
+							label : "起送金额",
+							value : $XP(self.formParams, key, 0)
+						});
+					} else if (type == 'text' && self.serviceID == "20" && key == "serviceAmount") {
+						return IX.inherit(elCfg, {
+							label : "送餐费",
+							value : $XP(self.formParams, key, 0)
+						});
+					} else if (type == 'text' && self.serviceID == "20" && key == "freeServiceAmount") {
+						return IX.inherit(elCfg, {
+							label : "免送餐费金额",
+							prefix : '满',
+							surfix : Hualala.Constants.CashUnit + "，免送餐费",
+							value : $XP(self.formParams, key, $XP(elCfg, 'defaultVal'))
+						});
 					} else {
 						return IX.inherit(elCfg, {
 							value : $XP(self.formParams, key, $XP(elCfg, 'defaultVal'))

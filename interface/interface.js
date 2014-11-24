@@ -120,6 +120,21 @@ Hualala.Global.setJustEatParams = function (params, cbFn) {}
   * @return {NULL} 
   */
 Hualala.Global.setSpotOrderParams = function (params, cbFn) {}
+/**
+ * 设置外送业务配置参数
+ * @param {Object} params {servicePeriods,holidayFlag,noticeTime,takeawayDeliveryTime,minAmount,serviceAmount,freeServiceAmount,takeawayScope,payMethod}
+ * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+ * @return {NULL}
+ */
+Hualala.Global.setTakeAwayParams = function (params, cbFn) {};
+
+/**
+ * 设置自提业务配置参数
+ * @param {Object} params {servicePeriods,holidayFlag,advanceTime,noticeTime,minAmount,payMethod}
+ * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+ * @return {NULL}
+ */
+Hualala.Global.setTakeOutParams = function (params, cbFn) {};
 
 /**
  * 常规订座点菜业务配置参数

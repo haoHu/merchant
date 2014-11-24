@@ -256,13 +256,15 @@
 			callServer : 'Hualala.Global.setJustEatParams',
 			formKeys : 'advanceTime,noticeTime,minAmount,holidayFlag,servicePeriods,reserveTableTime,reserveTableDesc,payMethod'
 		},
-		{id : 20, label : "外送", name : "takeaway_order", businessIsSupported : false,
-			callServer : null,
-			formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,servicePeriods,takeawayDeliveryAgent,takeawayDeliveryTime,takeawayScope,takeawayScopeDesc,payMethod'
+		{id : 20, label : "外送", name : "takeaway_order", businessIsSupported : true,
+			callServer : 'Hualala.Global.setTakeAwayParams',
+			// formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,servicePeriods,takeawayDeliveryAgent,takeawayDeliveryTime,takeawayScope,takeawayScopeDesc,payMethod'
+			formKeys : 'noticeTime,servicePeriods,holidayFlag,takeawayDeliveryTime,minAmount,serviceAmount,freeServiceAmount,takeawayScope,payMethod'
 		},
-		{id : 21, label : "到店自提", name : "takeout_order", businessIsSupported : false,
-			callServer : null,
-			formKeys : 'advanceTime,freeServiceAmount,holidayFlag,minAmount,serviceAmount,servicePeriods,noticeTime,payMethod'
+		{id : 21, label : "到店自提", name : "takeout_order", businessIsSupported : true,
+			callServer : 'Hualala.Global.setTakeOutParams',
+			// formKeys : 'advanceTime,freeServiceAmount,holidayFlag,minAmount,serviceAmount,servicePeriods,noticeTime,payMethod'
+			formKeys : 'noticeTime,servicePeriods,holidayFlag,advanceTime,minAmount,payMethod'
 		},
 		{id : 41, label : "店内自助", name : "spot_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setSpotOrderParams',

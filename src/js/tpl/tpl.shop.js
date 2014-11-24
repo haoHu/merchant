@@ -919,4 +919,15 @@
 		'{{{payMethod}}}'
 	].join('');
 	TplLib.register('tpl_shop_commonreserve_desc', tpl_shop_commonreserve_desc);
+
+	var tpl_shop_takeaway_desc = [
+		'{{{servicePeriods}}}', '{{{holidayFlag}}}', '{{{noticeTime}}}', '{{{takeawayDeliveryTime}}}',
+		'{{{minAmount}}}','{{{serviceAmount}}}','{{{freeServiceAmount}}}','{{{takeawayScope}}}','{{{payMethod}}}'
+	].join('');
+	TplLib.register('tpl_shop_takeaway_desc', tpl_shop_takeaway_desc);
+
+	var tpl_shop_takeout_desc = [
+		'{{{servicePeriods}}}','{{{holidayFlag}}}','{{{advanceTime}}}','{{{noticeTime}}}','{{{minAmount}}}','{{{payMethod}}}'
+	].join('');
+	TplLib.register('tpl_shop_takeout_desc', tpl_shop_takeout_desc);
 })(jQuery, window);
