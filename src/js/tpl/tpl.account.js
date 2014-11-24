@@ -107,7 +107,7 @@
 	TplLib.register('tpl_withdraw_form', tpl_withdraw_form);
 
 	var tpl_addAccount_Card = [
-		'<div class="panel panel-default ix-card bank-card create-account">',
+		'<div class="panel panel-default ix-card bank-card create-account" data-btn-name="createAccount">',
 			'<div class="panel-heading ix-card-header hidden">',
 				'<h4 class="panel-title"></h4>',
 			'</div>',

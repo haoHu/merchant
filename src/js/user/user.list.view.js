@@ -201,9 +201,13 @@
 		},
 		// 格式化用户操作按钮渲染数据
 		mapUserBtns : function (mUser) {
+			var self = this,
+				sessionUser = Hualala.getSessionUser(),
+				sessionLoginName = $XP(sessionUser, 'loginName', '');
 			var roleType = mUser.get('roleType'),
 				roles = mUser.get('roles'),
-				mobileBinded = mUser.get('mobileBinded');
+				mobileBinded = mUser.get('mobileBinded'),
+				loginName = mUser.get('loginName');
 			roles = _.filter(roles, function (role) {
 				return $XP(role, 'binded') == true;
 			});
@@ -215,6 +219,11 @@
 					});
 				}
 				if (act == 'unbindMobile' && mobileBinded == 0) {
+					return IX.inherit(el, {
+						clz : el.clz + ' hidden disabled'
+					});
+				}
+				if (act == 'remove' && sessionLoginName == loginName) {
 					return IX.inherit(el, {
 						clz : el.clz + ' hidden disabled'
 					});

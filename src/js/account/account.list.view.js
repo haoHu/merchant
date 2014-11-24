@@ -68,6 +68,18 @@
 				}
 			});
 		},
+		chkCtrlRight : function () {
+			var self = this;
+			var curPageRight = Hualala.Common.getCurPageUserRight();
+			var disabled = $XP(curPageRight, 'right.disabled', []),
+				enabled = $XP(curPageRight, 'right.enabled', []);
+			_.each(disabled, function (n) {
+				self.$list.find('[data-btn-name=' + n + ']').attr('disabled', true).addClass('invisible');
+			});
+			_.each(enabled, function (n) {
+				self.$list.find('[data-btn-name=' + n + ']').attr('disabled', false).removeClass('invisible');
+			});
+		},
 		// 重载格式化渲染数据
 		mapRenderData : function (data) {
 			var self = this;
@@ -118,6 +130,7 @@
 				self.emptyBar.show();
 			} else {
 				self.$list.html(html);
+				self.chkCtrlRight();
 			}
 			self.initPager({
 				total : model.get('pageCount'),

@@ -528,7 +528,7 @@
 							
 						'</div>',
 						'{{#if needShopCreate}}',
-							'<button class="btn btn-warning create-shop pull-right" style="margin-top:8px;">创建店铺</button>',
+							'<button class="btn btn-warning create-shop pull-right" style="margin-top:8px;" data-btn-name="createShop">创建店铺</button>',
 						'{{/if}}',
 					'</div>',
 				'</div>',

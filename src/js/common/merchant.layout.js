@@ -66,8 +66,12 @@
 			layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_layout'));
 		var isLogin = !$XP(Hualala.getSessionUser(), 'loginName', null) ? false : true,
 			loginName = $XP(session, 'user.loginName', ''),
+			isSuperAdmin = false,
 			groupName = $XP(session, 'site.groupName', '');
 		var bindMobileWizard = IX.Cookie.get('bindMobileWizard') == 1 ? false : true;
+		if ($XP(session, 'user.loginName') == 'admin' && _.find($XP(session, 'user.role', []), function (r) {return r == 'admin'})) {
+			isSuperAdmin = true;
+		}
 		var mapRanderData = function () {
 			var header = {
 				pcClientPath : Hualala.PageRoute.createPath('pcclient'),
@@ -79,6 +83,7 @@
 				isLogin : isLogin,
 				logoutPath : Hualala.Global.getLogoutJumpToUrl(),
 				logo : Hualala.Global.getDefaultImage('logo'),
+				isSuperAdmin : isSuperAdmin
 			},
 			footer = {
 				aboutPath : Hualala.PageRoute.createPath("about") || '#',

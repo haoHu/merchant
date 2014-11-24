@@ -150,6 +150,7 @@
 					userModel : self.get('userModel')
 				});
 				self.view.emit('init');
+				self.emit('reset');
 			});
 		},
 		bindEvent : function () {
@@ -172,6 +173,23 @@
 				bindItems : function () {
 					var self = this;
 					self.resultController && self.resultController.emit('bindItems');
+				},
+				reset : function () {
+					var self = this;
+					var mUser = self.get('userModel'),
+						roleType = self.get('roleType'),
+						roleInfo = mUser.getRoleInfoByType(roleType),
+						items = !$XP(roleInfo, 'binded') ? [] : $XP(roleInfo, 'items');
+					if (items.length > 0) {
+						self.view.keywordLst = items[0];
+						var shop = self.view.model.getShops(items)[0],
+							cityID = $XP(shop, 'cityID', -1),
+							areaID = $XP(shop, 'areaID', -1);
+						self.view.updateFilterCityLayout(cityID);
+						self.view.updateFilterAreaLayout(areaID);
+						self.emit('query', self.view.getQueryParams());
+					}
+
 				}
 			}, this);
 			this.model.on({

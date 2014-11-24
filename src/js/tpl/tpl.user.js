@@ -386,7 +386,7 @@
 											'{{> collapseBtn}}',
 											'{{> item}}',
 										'</div>',
-										'<div class="node-body collapse " id="{{nodeType}}_{{id}}">',
+										'<div class="node-body collapse {{expanded}}" id="{{nodeType}}_{{id}}">',
 											'<ul class="row">',
 												'{{#each shops}}',
 													'<li class="node {{nodeClz}}">',

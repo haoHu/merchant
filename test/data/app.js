@@ -11,6 +11,7 @@
 	Test.LoginUser = {
 		role : ['admin'],
 		groupID : "5",
+		accountID : '12',
 		groupLoginName : 'doulaofang',
 		loginName : "temp_007",
 		userEmail: "dongjiubo@11.com",
@@ -34,11 +35,41 @@
 		{id : 5, name : "系统管理员", sortIndex : 1, roleType : 'admin'}
 	];
 	Test.UserRight = [
+		// manager
+		// {name : 'shop', url : '/#shop', disabled : ['createShop']},
+		// {name : 'setting', url : '/#setting', disabled : ['bindSettle']},
+		// {name : 'order', url : '/#order'},
+		// {name : 'pcclient', url : '/#download'},
+		// {name : 'about', url : '/#about'},
+		// {name : 'contact', url : '/#contact'}
+		// finance
+		// {name : 'account', url : '/#account', disabled : ['createAccount']},
+		// {name : 'order', url : '/#order'},
+		// {name : 'pcclient', url : '/#download'},
+		// {name : 'about', url : '/#about'},
+		// {name : 'contact', url : '/#contact'}
+		// area-manager
+		// {name : 'shop', url : '/#shop'},
+		// {name : 'setting', url : '/#setting'},
+		// {name : 'order', url : '/#order'},
+		// {name : 'pcclient', url : '/#download'},
+		// {name : 'about', url : '/#about'},
+		// {name : 'contact', url : '/#contact'}
+		// general
+		// {name : 'shop', url : '/#shop'},
+		// {name : 'setting', url : '/#setting'},
+		// {name : 'account', url : '/#account'},
+		// {name : 'order', url : '/#order'},
+		// {name : 'user', url : '/#user'},
+		// {name : 'pcclient', url : '/#download'},
+		// {name : 'about', url : '/#about'},
+		// {name : 'contact', url : '/#contact'}
+		// admin
 		{name : 'shop', url : '/#shop'},
 		{name : 'setting', url : '/#setting'},
 		{name : 'account', url : '/#account'},
-		{name : 'user', url : '/#user'},
 		{name : 'order', url : '/#order'},
+		{name : 'user', url : '/#user'},
 		{name : 'pcclient', url : '/#download'},
 		{name : 'about', url : '/#about'},
 		{name : 'contact', url : '/#contact'},

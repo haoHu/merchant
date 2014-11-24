@@ -17,9 +17,9 @@
 						message : "请输入账号名称"
 					},
 					stringLength : {
-						min : 5,
+						min : 3,
 						max : 50,
-						message : "账号名称长度在5-50个字符之间"
+						message : "账号名称长度在3-50个字符之间"
 					},
 					loginName : {
 						message : "账号名称只能包含数字、英文字母和下划线(_)"
@@ -693,6 +693,17 @@
 		},
 		initUIComponents : function () {
 
+		},
+		// 用于取消选中的角色
+		updateRoleBindStatus : function (roleType) {
+			var self = this, mUser = self.model;
+			var roleInfo = mUser.getRoleInfoByType(roleType),
+				items = !$XP(roleInfo, 'binded') ? [] : $XP(roleInfo, 'items'),
+				$chk = self.$body.find(':checkbox[name=' + roleType + ']');
+			if (items.length <= 0) {
+				$chk[0].checked = false;
+				$chk.trigger('change');
+			}
 		},
 		bindEvent : function () {
 			var self = this;

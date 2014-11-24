@@ -50,12 +50,15 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
-        if(!+rsp.data.records)
+        var records = rsp.data.records;
+        if(!records || records.length == 0)
         {
-            $container.append('<div class="alert alert-warning t-c">此店铺暂无菜品，您可以通过下载<a target="_blank">PC客户端</a>上传菜品数据。</div>').find('a').attr('href', Hualala.PageRoute.createPath('pcclient'));
+            var $alert = $('<div class="alert alert-warning t-c">此店铺暂无菜品，您可以通过下载<a target="_blank">PC客户端</a>上传菜品数据。</div>');
+            $alert.find('a').attr('href', Hualala.PageRoute.createPath('pcclient'));
+            $alert.appendTo($container);
             return;
         }
-        classifiedFoods = classifyFoods(rsp.data.records);
+        classifiedFoods = classifyFoods(records);
         renderFoods(); //渲染所有菜品
         //渲染菜品分类
         var $foodClassBox = $menu.find('#foodClassBox').append($('<span class="current-food-class"></span>').text('全部菜品 (' + foods.length + ')'));

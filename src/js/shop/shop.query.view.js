@@ -91,6 +91,18 @@
 				optGrp : queryChosenShops
 			};
 		},
+		chkCtrlRight : function () {
+			var self = this;
+			var curPageRight = Hualala.Common.getCurPageUserRight();
+			var disabled = $XP(curPageRight, 'right.disabled', []),
+				enabled = $XP(curPageRight, 'right.enabled', []);
+			_.each(disabled, function (n) {
+				self.$query.find('[data-btn-name=' + n + ']').attr('disabled', true).addClass('invisible');
+			});
+			_.each(enabled, function (n) {
+				self.$query.find('[data-btn-name=' + n + ']').attr('disabled', false).removeClass('invisible');
+			});
+		},
 		// 渲染整体query 框架
 		renderLayout : function () {
 			var self = this,
@@ -103,6 +115,7 @@
 			this.$filter = this.$queryBox.find('.filter');
 			this.$query = this.$queryBox.find('.query');
 			this.initShopChosenPanel();
+			this.chkCtrlRight();
 		},
 		// 生成渲染地区的渲染数据
 		mapFilterData : function (cfg) {
