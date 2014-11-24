@@ -342,9 +342,12 @@
 				},
 				"bindMobile" : function (params) {
 					// 绑定手机号
+					var self = this;
 					var successFn = $XF(params, 'successFn'),
 						failFn = $XF(params, 'failFn'),
-						postData = $XP(params, 'params', {});
+						postData = IX.inherit($XP(params, 'params', {}), {
+							groupName : self.get('groupLoginName')
+						});
 					self.bindMobileCallServer(postData, function (res) {
 						if (res.resultcode != '000') {
 							toptip({

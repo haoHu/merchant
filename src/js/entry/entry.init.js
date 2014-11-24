@@ -21,9 +21,9 @@
 					// 	message : "用户账号不能为空"
 					// },
 					stringLength : {
-						min : 5,
+						min : 3,
 						max : 50,
-						message : "账号名称长度在5-50个字符之间"
+						message : "账号名称长度在3-50个字符之间"
 					},
 					loginName : {
 						message : "账号名称只能包含数字、英文字母和下划线(_)"

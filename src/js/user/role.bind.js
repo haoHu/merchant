@@ -41,7 +41,8 @@
 			self.modal = new Hualala.UI.ModalDialog({
 				id : 'account_query_shop',
 				clz : 'account-modal',
-				title : "选择所管辖的店铺"
+				title : "选择所管辖的店铺",
+				backdrop : "static"
 			});
 		},
 		render : function () {
@@ -79,10 +80,21 @@
 					act = $btn.attr('name');
 				if (act == 'cancel') {
 					self.emit('hide');
+					self.parentView.updateRoleBindStatus(self.get('roleType'));
 				} else {
 					// 设置角色绑定店铺数据
 					self.queryCtrl.emit('bindItems');
-					self.emit('hide');
+					var mUser = self.model, roleType = self.get('roleType'),
+						roleInfo = mUser.getRoleInfoByType(roleType),
+						items = !$XP(roleInfo, 'binded') ? [] : $XP(roleInfo, 'items');
+					if (items.length > 0) {
+						self.emit('hide');
+					} else {
+						toptip({
+							msg : "请选择要绑定的店铺",
+							type : 'danger'
+						});
+					}
 				}
 			});
 		},
@@ -158,7 +170,8 @@
 			self.modal = new Hualala.UI.ModalDialog({
 				id : 'account_query_settle',
 				clz : 'account-modal',
-				title : "选择所管辖的结算账户"
+				title : "选择所管辖的结算账户",
+				backdrop : "static"
 			});
 			self.$body = self.modal._.body;
 			self.$footer = self.modal._.footer;
@@ -245,11 +258,20 @@
 			});
 			self.$footer.delegate('.btn', 'click', function (e) {
 				var $btn = $(this),
-					act = $btn.attr('name');
+					act = $btn.hasClass('btn-close') ? 'cancel' : 'ok';
+				var cache = self.get('itemsCache');
 				if (act == 'cancel') {
 					self.emit('hide');
+					self.parentView.updateRoleBindStatus(self.get('roleType'));
 				} else {
 					// 设置角色绑定店铺数据
+					if (!cache || cache.length == 0) {
+						toptip({
+							msg : "请选择要绑定的结算账户",
+							type : 'danger'
+						});
+						return ;
+					}
 					self.bindItems();
 					self.emit('hide');
 				}
@@ -334,7 +356,8 @@
 			self.modal = new Hualala.UI.ModalDialog({
 				id : 'account_query_shop',
 				clz : 'account-modal',
-				title : "选择所管辖的店铺"
+				title : "选择所管辖的店铺",
+				backdrop : "static"
 			});
 			self.$body = self.modal._.body;
 			self.$footer = self.modal._.footer;
@@ -357,9 +380,12 @@
 				areas = queryModel.getAreas();
 			var mapShopData = function (list) {
 				var curShopLst = queryModel.getShops(list);
+				var checkedCount = 0;
 				var shops = _.map(curShopLst, function (shop) {
 					var shopID = $XP(shop, 'shopID'),
-						shopName = $XP(shop, 'shopName');
+						shopName = $XP(shop, 'shopName'),
+						checked = self.chkShopBinded(shopID);
+					checked && checkedCount++;
 					return {
 						nodeClz : 'col-sm-4',
 						nodeType : 'shop',
@@ -367,13 +393,14 @@
 						name : shopName,
 						parentID : $XP(shop, 'areaID'),
 						hideCollapse : 'hidden',
-						checked : self.chkShopBinded(shopID) ? 'checked' : ''
+						checked : checked ? 'checked' : ''
 					}
 				});
 				var unBinded = _.reject(shops, function (el) {return el.checked == 'checked';});
 				return {
 					shops : shops,
-					checked : unBinded.length > 0 ? '' : 'checked'
+					checked : unBinded.length > 0 ? '' : 'checked',
+					expanded : checkedCount > 0 ? 'in' : ''
 				};
 			};
 			var mapAreaData = function (list) {
@@ -494,24 +521,36 @@
 			});
 			self.$footer.delegate('.btn', 'click', function (e) {
 				var $btn = $(this),
-					act = $btn.attr('name');
+					act = $btn.hasClass('btn-close') ? 'cancel' : 'ok';
+				var cache = self.getBindItems();
 				if (act == 'cancel') {
 					self.emit('hide');
+					self.parentView.updateRoleBindStatus(self.get('roleType'));
 				} else {
 					// 设置角色绑定店铺数据
+					if (!cache || cache.length == 0) {
+						toptip({
+							msg : "请选择要绑定的店铺",
+							type : 'danger'
+						});
+						return ;
+					}
 					self.bindItems();
 					self.emit('hide');
 				}
 			});
 		},
-		bindItems : function () {
+		getBindItems : function () {
 			var self = this, $els = self.$body.find(':checked[name=shop]');
-			var mUser = self.model,
-				roleType = self.get('roleType');
 			var ids = _.map($els, function (el) {
 				return $(el).val();
 			});
-
+			return ids;
+		},
+		bindItems : function () {
+			var self = this, mUser = self.model,
+				roleType = self.get('roleType');
+			var ids = self.getBindItems();
 			mUser.updateRoleItemsBind(roleType, ids);
 		}
 	});

@@ -6489,12 +6489,12 @@
             if (value === '') {
                 return true;
             }
-            var regExp = /^[a-zA-Z0-9_]{5,50}$/;
+            var regExp = /^[a-zA-Z0-9_]{1,}$/;
             return regExp.test(value);
         }
     };
 })(window.jQuery);
-// 不含汉子
+// 不含汉字
 (function ($) {
     $.fn.bootstrapValidator.i18n.noChinese = $.extend($.fn.bootstrapValidator.i18n.noChinese || {}, {
         'default' : 'Please enter string which has nothing chinese'
@@ -6524,7 +6524,7 @@
             if (value === '') {
                 return true;
             }
-            var mobileRegExp = /^1[3458]\d{9}$/;
+            var mobileRegExp = /^1[34578]\d{9}$/;
             return mobileRegExp.test(value);
         }
     };
@@ -6563,7 +6563,7 @@
                 return true;
             }
             
-            if (/^1[3458]\d{9}$/.test(value)) {
+            if (/^1[34578]\d{9}$/.test(value)) {
                 return true;
             }
             

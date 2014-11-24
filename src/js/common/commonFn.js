@@ -634,6 +634,38 @@
 	};
 	Hualala.Common.smoothScroll = smoothScroll;
 	Hualala.Common.smoothScrollMiddle = smoothScrollMiddle;
+
+	/**
+	 * 获取当前页面的角色权限
+	 * @return {Object} 角色权限数据
+	 * @param {String} name 当前页面名称
+	 * @param {String} parentName 父级页面名称
+	 * @param {Array} roles 当前用户的角色
+	 * @param {NULL|Object} right 用户在当前页面的权限, null：证明没有权限访问页面
+	 *        @param {String} name 页面名称
+	 *        @param {String} url 页面链接
+	 *        @param {NULL|Array} enabled 有权限进行的操作入口名称
+	 *        @param {NULL|Array} disabled 无权限进行的操作入口名称
+	 */
+	var getCurPageUserRight = function () {
+		var curPageCxt = Hualala.PageRoute.getPageContextByPath(location.href),
+			parentName = $XP(curPageCxt, 'parentName', ''),
+			name = $XP(curPageCxt, 'name', '');
+		var roles = $XP(Hualala.getSessionUser(), 'role', []),
+			userRights = Hualala.getSessionUserRight(),
+			ht = new IX.IListManager();
+		_.each(userRights, function (el) {
+			ht.register(el.name, el);
+		});
+		var right = ht.get(name);
+		return {
+			name : name,
+			parentName : parentName,
+			roles : roles,
+			right : right
+		};
+	};
+	Hualala.Common.getCurPageUserRight = getCurPageUserRight;
 })(jQuery);
 
 
