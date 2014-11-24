@@ -255,6 +255,55 @@
 			PageInitiator : "Hualala.Order.QueryOrderCustomerInit", parentName : "main", label : "顾客统计"
 		},
 
+		// 会员系统管理
+		/*
+			
+		 */
+		{
+			name : "crmMemberSchema", path : "/#crm/member/schema",
+			reg : /crm\/member\/schema/, bodyClz : "",
+			PageInitiator : "", parentName : "main", label : "会员概览"
+		},
+		{
+			name : "crmQueryMember", path : "/#crm/member/query",
+			reg : /crm\/member\/query/, bodyClz : "",
+			PageInitiator : "", parentName : "main", label : "会员查询"
+		},
+		{
+			name : "crmCardStats", path : "/#crm/member/cardstat",
+			reg : /crm\/member\/cardstat/, bodyClz : "",
+			PageInitiator : "", parentName : "main", label : "办卡统计"
+		},
+		{
+			name : "crmDealSummary", path : "/#crm/deal/sum",
+			reg : /crm\/deal\/sum/, bodyClz : "",
+			PageInitiator : "", parentName : "main", label : "交易汇总"
+		},
+		{
+			name : "crmDealDetail", path : "/#crm/deal/detail",
+			reg : /crm\/deal\/detail/, bodyClz : "",
+			PageInitiator : "", parentName : "main", label : "交易明细"
+		},
+		{
+			name : "crmRechargeReconciliation", path : "/#crm/deal/recharge",
+			reg : /crm\/deal\/recharge/, bodyClz : "",
+			PageInitiator : "", parentName : "main", label : "储值对账"
+		},
+		{
+			name : "crmParameter", path : "/#crm/settings/params",
+			reg : /crm\/settings\/params/, bodyClz : "",
+			PageInitiator : "", parentName : "main", label : "会员系统参数"
+		},
+		{
+			name : "crmRechargePackageBusiness", path : "/#crm/settings/recharge",
+			reg : /crm\/settings\/recharge/, bodyClz : "",
+			PageInitiator : "", parentName : "main", label : "充值套餐"
+		},
+		{
+			name : "crmShopSpecialPrice", path : "/#crm/settings/ssp",
+			reg : /crm\/settings\/ssp/, bodyClz : "",
+			PageInitiator : "", parentName : "main", label : "店铺特惠"
+		},
 
 		// PC客户端下载页面
 		{
