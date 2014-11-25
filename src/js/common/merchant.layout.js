@@ -4,8 +4,8 @@
 		{name : 'account', title : '结算', label : '提现.账户设置.结算报表', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-pay'},
 		{name : 'order', title : '订单', label : '报表.菜品排行', brickClz : 'home-brick-md-3', itemClz : 'brick-item', icon : 'icon-order'},
 		{name : 'shop', title : '店铺管理', label : '开店.信息.菜谱', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-home'},
+		{name : 'crm', title : '会员', label : '储值.优惠', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-setting'},		
 		{name : 'pcclient', title : '下载哗啦啦', label : '', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-download'},
-		{name : 'crm', title : '会员管理', label : '会员系统管理', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-setting'},		
 		{name : 'user', title : '账号管理', label : '账号.权限', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-lock'},
 		{name : 'setting', title : '业务设置', label : '开通业务.业务参数', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-setting'}
 	];
