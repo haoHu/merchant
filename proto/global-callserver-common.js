@@ -972,7 +972,7 @@
     
     /**
 	  * 获取CRM系统参数
-      * @param {} params 参数{groupID} 可选
+      * @param {Object} params 参数{groupID} 可选
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {records: [itemID, serviceStartTime, serviceEndTime, isPointCanPay, pointExchangeRate, pointClearDate, vipServiceTel, vipServiceRemark}]}}
 	  * @return {NULL} 
       * 服务调用 URL: /crm/crmGroupParamsQuery.ajax
@@ -999,8 +999,8 @@
 	};
     
     /**
-        * 获取CRM系统参数
-      * @param {} params 参数{itemID, vipServiceTel, vipServiceRemark} 
+        * 设置CRM系统参数
+      * @param {Object} params 参数{itemID, vipServiceTel, vipServiceRemark} 
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
 	  * @return {NULL} 
       * 服务调用 URL: /crm/crmGroupParamsUPdateOrAdd.ajax
@@ -1016,7 +1016,7 @@
     
     /**
 	  * 获取CRM充值套餐列表
-      * @param {} params 参数{} 
+      * @param {Object} params 参数{} 
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg...}
 	  * @return {NULL} 
       * 服务调用 URL: /crm/crmSaveMoneySetQuery.ajax
@@ -1028,6 +1028,22 @@
         });
 	};
 	
+    /**
+        * 切换会员充值套餐启用/禁用状态
+      * @param {Object} params 参数{saveMoneySetID, isActive} 
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL} 
+      * 服务调用 URL: /crm/crmSaveMoneyIsActive.ajax
+	  */
+	Hualala.Global.switchCrmRechargeSetState = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
 })();
 
 

@@ -49,5 +49,50 @@
     '</form>'].join('');
 	TplLib.register('tpl_crm_params', tpl_crm_params);
 
-	
+	var tpl_crm_recharge_sets = [
+    '<div class="well well-sm t-r">',
+        '<button class="btn btn-warning">添加</button>',
+    '</div>',
+    '<table class="table table-striped table-hover">',
+        '<thead>',
+            '<tr>',
+                '<th>充值套餐名</th>',
+                '<th>充值金额</th>',
+                '<th>返金额数</th>',
+                '<th>返积分数</th>',
+                '<th>充值升级等级</th>',
+                '<th>销售份数</th>',
+                '<th>状态</th>',
+                '<th>操作</th>',
+            '</tr>',
+        '</thead>',
+        '<tbody>',
+        '{{#each sets}}',
+            '<tr>',
+                '<td>{{setName}}</td>',
+                '<td>{{setSaveMoney}}</td>',
+                '<td>{{returnMoney}}</td>',
+                '<td>{{returnPoint}}</td>',
+                '<td>{{switchCardLevelName}}</td>',
+                '<td>{{salesAmount}}</td>',
+                '<td><input type="checkbox" data-setid="{{saveMoneySetID}}" {{checked}} /></td>',
+                '<td><button class="btn btn-default" data-setid="{{saveMoneySetID}}">修改</button></td>',
+            '</tr>',
+        '{{/each}}',
+        '</tbody>',
+    '</table>'].join('');
+    TplLib.register('tpl_crm_recharge_sets', tpl_crm_recharge_sets);
+    
+    
 })(jQuery, window);
+
+
+
+
+
+
+
+
+
+
+

@@ -1,6 +1,6 @@
 (function ($, window) {
 	IX.ns("Hualala.CRM");
-    var G = Hualala.Global;
+    var G = Hualala.Global,
         topTip = Hualala.UI.TopTip;
 	Hualala.CRM.initParams = function($crm)
     {
