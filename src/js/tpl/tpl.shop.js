@@ -668,7 +668,7 @@
 					'<p class="desc">{{desc}}</p>',
 				'</div>',
 				'<div class="col-xs-12 col-sm-1 col-md-1">',
-					'<button type="button" class="btn btn-default pull-right" name="business_edit" data-shop="{{shopID}}" data-business="{{type}}"  data-business-id="{{id}}" data-serviceFeatures="{{serviceFeatures}}">修改</button>',
+					'<button type="button" class="btn btn-default pull-right {{hideBtn}}" name="business_edit" data-shop="{{shopID}}" data-business="{{type}}"  data-business-id="{{id}}" data-serviceFeatures="{{serviceFeatures}}">修改</button>',
 				'</div>',
 			'</div>',
 			'{{/each}}',

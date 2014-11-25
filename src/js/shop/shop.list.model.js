@@ -146,7 +146,7 @@
 			});
 		},
 		// 更新店铺业务状态
-		updateShopBusinessStatus : function (params, failFn) {
+		updateShopBusinessStatus : function (params, failFn, successFn) {
 			var self = this,
 				shopHT = self.get('ds_shop'),
 				shopID = $XP(params, 'shopID'),
@@ -155,7 +155,8 @@
 				name : $XP(params, 'name'),
 				id : $XP(params, 'id'),
 				status : $XP(params, 'status', 0),
-				failFn : failFn
+				failFn : failFn,
+				successFn : successFn
 			});
 
 		}
@@ -204,6 +205,7 @@
 			var self = this,
 				shopID = self.get('shopID');
 			var failFn = $XF(params, 'failFn'),
+				successFn = $XF(params, 'successFn'),
 				name = $XP(params, 'name'),
 				id = $XP(params, 'id'),
 				status = $XP(params, 'status');
@@ -240,6 +242,11 @@
 					toptip({
 						msg : '切换成功!',
 						type : 'success'
+					});
+					successFn({
+						mShop : self,
+						id : id,
+						name : name
 					});
 				}
 			});

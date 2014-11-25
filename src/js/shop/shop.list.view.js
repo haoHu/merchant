@@ -201,7 +201,10 @@
 			// 分页容器
 			this.$pager = null;
 			this.emptyBar = null;
+			// 开关相关提示消息
+			this.shopBusinessSwitcherTipHT = new IX.IListManager();
 			this.loadTemplates();
+			this.initShopBusinessSwitcherTips();
 		}
 	});
 	ShopListView.proto({
@@ -235,6 +238,21 @@
 				self.initBindSettleModal($btn, settleID, shopID);
 			});
 		},
+		// 加载店铺业务开关相关的提示消息
+		initShopBusinessSwitcherTips : function () {
+			var self = this,
+				tips = Hualala.TypeDef.ShopBusinessSwitcherTips;
+			_.each(tips, function (tip) {
+				var name = $XP(tip, 'name');
+				self.shopBusinessSwitcherTipHT.register(name, tip);
+			});
+		},
+		// 通过名字获取店铺业务开关相关提示信息
+		getBusinessSwitcherTipsByName : function (name) {
+			var self = this,
+				ht = self.shopBusinessSwitcherTipHT;
+			return ht.get(name);
+		},
 		// 加载View层所需模板
 		loadTemplates : function () {
 			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_list_layout')),
@@ -257,9 +275,11 @@
 		 * @param  {Int} businessID    业务ID(10:常规预订,11:闪吃,20:外送,21:到店自提,41:店内自助)
 		 * @param  {Int} operationMode 餐厅运营模式 0：正餐；1：正餐
 		 * @param  {Object} businessInfo  业务配置信息
+		 * @param {String} businessName 业务名称
+		 * @param {String} ShopID 店铺ID
 		 * @return {String}               业务配置描述
 		 */
-		getBusinessDesc : function (businessID, operationMode, businessInfo) {
+		getBusinessDesc : function (businessID, operationMode, businessInfo, businessName, shopID) {
 			var self = this;
 			var tpl = null, renderKeys = null, params = null, htm = '';
 			var minuteIntervalOpts = Hualala.TypeDef.MinuteIntervalOptions();
@@ -269,6 +289,8 @@
 				});
 				return $XP(m, 'label', '');
 			};
+			var businessStatus = self.getBusinessSwitcherStatus(shopID, businessName),
+				businessDesc = $XP(self.getBusinessSwitcherTipsByName(businessName), 'desc', '');
 			switch(businessID) {
 				// 常规预定点菜
 				case 10:
@@ -438,14 +460,27 @@
 			if (businessID == 11 || businessID == 41 || businessID == 10 || businessID == 20 || businessID == 21) {
 				htm = tpl(_.object(renderKeys, params));
 				htm = htm.slice(0, htm.lastIndexOf(','));
+				htm = businessStatus == 1 ? htm : businessDesc
+			} else {
+				htm = businessDesc;
 			}
+
 			return htm;
+		},
+		// 获取店铺业务状态
+		// @param name 店铺业务名称
+		getBusinessSwitcherStatus : function (shopID, name) {
+			var self = this,
+				mShop = self.model.getShopModelByShopID(shopID);
+			var serviceFeatures = mShop.get('serviceFeatures') || '';
+			return serviceFeatures.indexOf(name) >= 0 ? 1 : 0;
 		},
 		// 获取店铺业务信息数据
 		getShopBusiness : function (shop) {
 			var self = this;
 			var business = Hualala.TypeDef.ShopBusiness,
 				businessHT = new IX.IListManager(),
+				shopID = $XP(shop, 'shopID'),
 				serviceFeatures = $XP(shop, 'serviceFeatures', ''),
 				// businessCfg = JSON.parse($XP(shop, 'revParamJson', {})),
 				businessCfg = null,
@@ -457,7 +492,7 @@
 			var ret = null;
 			_.each(business, function (item, i, l) {
 				var id = $XP(item, 'id'), name = $XP(item, 'name'),
-					switcherStatus = serviceFeatures.indexOf(name) >= 0 ? 1 : 0,
+					switcherStatus = self.getBusinessSwitcherStatus(shopID, name),
 					businessInfo = $XP(businessCfg, id.toString(), {}),
 					operationMode = $XP(shop, 'operationMode', null);
 				if (id == '41') {
@@ -467,8 +502,8 @@
 				}
 				var ret = IX.inherit(item, businessInfo, {
 					switcherStatus : switcherStatus,
-					shopID : $XP(shop, 'shopID'),
-					desc : self.getBusinessDesc(id, operationMode, businessInfo)
+					shopID : shopID,
+					desc : self.getBusinessDesc(id, operationMode, businessInfo, name, shopID)
 				});
 				businessHT.register(name, ret);
 			});
@@ -495,7 +530,8 @@
 					id : $XP(el, 'id'),
 					open : open,
 					desc : $XP(el, 'desc', ''),
-					serviceFeatures : $XP(shop, 'serviceFeatures', '')
+					serviceFeatures : $XP(shop, 'serviceFeatures', ''),
+					hideBtn : (name == 'bi' || name == 'crm') ? 'disabled hidden' : ''
 				};
 			});
 		},
@@ -580,15 +616,36 @@
 						$subSwitchers.bootstrapSwitch('disabled', state == 0 ? true : false);
 					});
 				} else {
-					self.model.updateShopBusinessStatus({
-						shopID : shopID,
-						name : business,
-						id : businessID,
-						status : state
-					}, function (params) {
-						self.$list.find(':checkbox[name=' + switcherName + ']').filter('[data-shop=' + $XP(params, 'shopID') + '][data-business-id=' + $XP(params, 'id') + ']')
-							.bootstrapSwitch('toggleState', true);
+					var businessSwitcherTip = self.getBusinessSwitcherTipsByName(business),
+						title = (state == 1 ? '开启' : '关闭') + $XP(businessSwitcherTip, 'title', ''),
+						msg = $XP(businessSwitcherTip, (state == 1 ? 'switchOn' : 'switchOff'), '');
+					Hualala.UI.Confirm({
+						title : title,
+						msg : msg,
+						// okLabel : '',
+						okFn : function () {
+							self.model.updateShopBusinessStatus({
+								shopID : shopID,
+								name : business,
+								id : businessID,
+								status : state
+							}, function (params) {
+								self.$list.find(':checkbox[name=' + switcherName + ']').filter('[data-shop=' + $XP(params, 'shopID') + '][data-business-id=' + $XP(params, 'id') + ']')
+									.bootstrapSwitch('toggleState', true);
+							}, function (params) {
+								var mShop = $XP(params, 'mShop'), serviceID = $XP(params, 'id'), businessName = $XP(params, 'name'),
+									shop = mShop.getAll(), businessData = self.getShopBusiness(shop);
+								var curBusinessData = _.find(businessData, function (el) {return el.name == businessName;});
+								var desc = $XP(curBusinessData, 'desc', '');
+
+								$chkbox.parents('.shop-business').find('.desc').html(desc);
+							});
+						},
+						cancelFn : function () {
+							$chkbox.bootstrapSwitch('toggleState', true);
+						}
 					});
+					
 				}
 			});
 
@@ -675,7 +732,9 @@
 				model : self.model.getShopModelByShopID(shopID),
 				successFn : function (mShop, serviceID, businessInfo, $trigger) {
 					var operationMode = mShop.get('operationMode'),
-						desc = self.getBusinessDesc(parseInt(serviceID), operationMode, businessInfo);
+						businessName = $trigger.attr('data-business'),
+						shopID = $trigger.attr('data-shop'),
+						desc = self.getBusinessDesc(parseInt(serviceID), operationMode, businessInfo, businessName, shopID);
 
 					$trigger.parents('.shop-business').find('.desc').html(desc);
 
