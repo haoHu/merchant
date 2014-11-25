@@ -171,12 +171,15 @@ form.read-mode, .form.read-mode
 	.form-control-feedback, .help-block
 	{ display: none!important; }
 	.control-label:after { content: ' :'; }
+    .btn-save { display: none }
 }
 form.edit-mode, .form.edit-mode
 {
 	.form-control-static { display: none }
+    .form-control-static.no-hidden { display: block }
 	.control-label:before { content: '* '; }
 	.control-label.no-require:before { display: none }
+    .btn-edit { display: none }
 }
 // 表单验证反馈图标显示在表单外部
 .feed-back-out

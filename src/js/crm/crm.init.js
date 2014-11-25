@@ -125,7 +125,8 @@
 		initCRMPageLayout(Hualala.TypeDef.CRMParamsSubNavType);
 		var $pageBody = $body.find('.crm-body'),
 			queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMParamsSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
-		$pageBody.html('<h1>会员系统参数设置</h1>');
+		//$pageBody.html('<h1>会员系统参数设置</h1>');
+        Hualala.CRM.initParams($pageBody);
 	};
 
 	/*充值套餐*/
