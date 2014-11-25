@@ -136,7 +136,8 @@
 		initCRMPageLayout(Hualala.TypeDef.CRMParamsSubNavType);
 		var $pageBody = $body.find('.crm-body'),
 			queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMParamsSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
-		$pageBody.html('<h1>充值套餐</h1>');
+		//$pageBody.html('<h1>充值套餐</h1>');
+        Hualala.CRM.initRecharge($pageBody);
 	};
 
 	/*店铺特惠*/

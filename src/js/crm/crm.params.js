@@ -1,10 +1,14 @@
 (function ($, window) {
 	IX.ns("Hualala.CRM");
+    var G = Hualala.Global;
+        topTip = Hualala.UI.TopTip;
 	Hualala.CRM.initParams = function($crm)
     {
-        var $form = null;
+        var $form = null, bv = null, itemID = null,
+            $vipServiceTel = null, $vipServiceRemark = null,
+            $p1 = null, $p2 = null;
         
-        Hualala.Global.getCrmParams(Hualala.getSessionData().site.groupID, function(rsp)
+        G.getCrmParams({groupID: Hualala.getSessionData().site.groupID}, function(rsp)
         {
             if(rsp.resultcode != '000')
             {
@@ -12,19 +16,39 @@
                 return;
             }
             var crmParams = rsp.data.records[0];
+            itemID = crmParams.itemID;
             crmParams.serviceStartTime = formatDate(crmParams.serviceStartTime);
             crmParams.serviceEndTime = formatDate(crmParams.serviceEndTime);
             crmParams.pointClearDate = formatDate(crmParams.pointClearDate);
             crmParams.isPointCanPay = crmParams.isPointCanPay == 0 ? 'minus' : 'ok';
             
             $form = $(Handlebars.compile(Hualala.TplLib.get('tpl_crm_params'))(crmParams)).appendTo($crm);
+            
+            $vipServiceTel = $form.find('input[name=vipServiceTel]');
+            $vipServiceRemark = $form.find('textarea[name=vipServiceRemark]');
+            $p1 = $vipServiceTel.siblings('p');
+            $p2 = $vipServiceRemark.siblings('p');
+            
+            $form.bootstrapValidator({
+                fields: {
+                    vipServiceTel: {
+                        validators: {
+                            notEmpty: { message: '会员服务电话不能为空' },
+                            telOrMobile: { message: '' }
+                        }
+                    }
+                }
+            });
+            bv = $form.data('bootstrapValidator');
         });
         
         
-        $form.on('click', function(e)
+        $crm.on('click', function(e)
         {
             var $target = $(e.target);
-            e.preventDefault();
+            
+            if($target.is('.btn-edit, .btn-save')) e.preventDefault();
+            
             if($target.is('.btn-edit'))
             {
                 $form.removeClass('read-mode').addClass('edit-mode');
@@ -32,7 +56,29 @@
             
             if($target.is('.btn-save'))
             {
-                $form.removeClass('edit-mode').addClass('read-mode');
+                if(!bv.validate().isValid()) return;
+                
+                var vipServiceTel = $vipServiceTel.val(),
+                    vipServiceRemark = $vipServiceRemark.val(),
+                    data = {
+                        itemID: itemID,
+                        vipServiceTel: vipServiceTel,
+                        vipServiceRemark: vipServiceRemark
+                    };
+                
+                G.setCrmParams(data, function(rsp)
+                {
+                    if(rsp.resultcode != '000')
+                    {
+                        rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    
+                    $p1.text(vipServiceTel);
+                    $p2.text(vipServiceRemark);
+                    $form.removeClass('edit-mode').addClass('read-mode');
+                    topTip({msg: '保存成功！', type: 'success'});
+                });
             }
         });
     };

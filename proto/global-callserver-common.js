@@ -969,7 +969,64 @@
 			}
 		}));
 	};
-
+    
+    /**
+	  * 获取CRM系统参数
+      * @param {} params 参数{groupID} 可选
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {records: [itemID, serviceStartTime, serviceEndTime, isPointCanPay, pointExchangeRate, pointClearDate, vipServiceTel, vipServiceRemark}]}}
+	  * @return {NULL} 
+      * 服务调用 URL: /crm/crmGroupParamsQuery.ajax
+	  */
+	Hualala.Global.getCrmParams = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: '',
+                data: {
+                    records: [{
+                        itemID: 63,
+                        serviceStartTime: "20140810",
+                        serviceEndTime: "20150810",
+                        isPointCanPay: "1",
+                        pointExchangeRate: "1",
+                        pointClearDate: "0521",
+                        vipServiceTel: "010-68502174",
+                        vipServiceRemark: "这是会员服务说明"
+                    }]
+                }
+            };
+		fn(rsp);
+	};
+    
+    /**
+        * 获取CRM系统参数
+      * @param {} params 参数{itemID, vipServiceTel, vipServiceRemark} 
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL} 
+      * 服务调用 URL: /crm/crmGroupParamsUPdateOrAdd.ajax
+	  */
+	Hualala.Global.setCrmParams = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+	  * 获取CRM充值套餐列表
+      * @param {} params 参数{} 
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg...}
+	  * @return {NULL} 
+      * 服务调用 URL: /crm/crmSaveMoneySetQuery.ajax
+	  */
+	Hualala.Global.getCrmRechargeSets = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/crm_recharge_sets.js'], function(){
+            fn(Test.crmRechargeSets);
+        });
+	};
 	
 })();
 
