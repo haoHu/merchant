@@ -605,16 +605,26 @@
 				var $chkbox = $(this), name = $chkbox.attr('name'), shopID = $chkbox.attr('data-shop'),
 					state = !state ? 0 : 1, business = $chkbox.attr('data-business'), businessID = $chkbox.attr('data-business-id');
 				if (name == 'switcher_status') {
-					self.model.updateShopStatus(shopID, state, function (_shopID) {
-						var $switcherEl = self.$list.find(':checkbox[name=' + switcherName + ']').filter('[data-shop=' + _shopID + ']'),
-							$subSwitchers = self.$list.find(':checkbox[name=switcher_business]').filter('[data-shop=' + _shopID + ']');
-						$switcherEl.bootstrapSwitch('toggleState', true);
-						$subSwitchers.bootstrapSwitch('disabled', state == 0 ? false : true);
-					}, function (_shopID) {
-						var $switcherEl = self.$list.find(':checkbox[name=' + switcherName + ']').filter('[data-shop=' + _shopID + ']'),
-							$subSwitchers = self.$list.find(':checkbox[name=switcher_business]').filter('[data-shop=' + _shopID + ']');
-						$subSwitchers.bootstrapSwitch('disabled', state == 0 ? true : false);
+					Hualala.UI.Confirm({
+						title : (state == 1 ? "开启" : "关闭") + "店铺",
+						msg : "你确定要" + (state == 1 ? "开启" : "关闭") + "店铺？",
+						okFn : function () {
+							self.model.updateShopStatus(shopID, state, function (_shopID) {
+								var $switcherEl = self.$list.find(':checkbox[name=' + switcherName + ']').filter('[data-shop=' + _shopID + ']'),
+									$subSwitchers = self.$list.find(':checkbox[name=switcher_business]').filter('[data-shop=' + _shopID + ']');
+								$switcherEl.bootstrapSwitch('toggleState', true);
+								$subSwitchers.bootstrapSwitch('disabled', state == 0 ? false : true);
+							}, function (_shopID) {
+								var $switcherEl = self.$list.find(':checkbox[name=' + switcherName + ']').filter('[data-shop=' + _shopID + ']'),
+									$subSwitchers = self.$list.find(':checkbox[name=switcher_business]').filter('[data-shop=' + _shopID + ']');
+								$subSwitchers.bootstrapSwitch('disabled', state == 0 ? true : false);
+							});
+						},
+						cancelFn : function () {
+							$chkbox.bootstrapSwitch('toggleState', true);
+						}
 					});
+					
 				} else {
 					var businessSwitcherTip = self.getBusinessSwitcherTipsByName(business),
 						title = (state == 1 ? '开启' : '关闭') + $XP(businessSwitcherTip, 'title', ''),
