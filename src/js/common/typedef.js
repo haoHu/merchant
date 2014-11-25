@@ -247,6 +247,18 @@
 	 * 
 	 */
 	Hualala.TypeDef.ShopBusiness = [
+		{id : 41, label : "店内自助", name : "spot_order", businessIsSupported : true,
+			callServer : 'Hualala.Global.setSpotOrderParams',
+			// formKeys : 'fetchFoodMode,payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
+			formKeys : 'fetchFoodMode,checkSpotOrder,payBeforeCommit,supportCommitToSoftware',
+			operationMode : {
+				// 正餐
+				// 0 : 'payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
+				0 : 'checkSpotOrder,payBeforeCommit,supportCommitToSoftware',
+				// 快餐
+				1 : 'fetchFoodMode,supportCommitToSoftware'
+			}
+		},
 		{
 			id : 10, label : "订座点菜", name : "commonreserve_order", businessIsSupported : true, 
 			callServer : 'Hualala.Global.setCommonReserveParams',
@@ -266,18 +278,6 @@
 			// formKeys : 'advanceTime,freeServiceAmount,holidayFlag,minAmount,serviceAmount,servicePeriods,noticeTime,payMethod'
 			formKeys : 'noticeTime,servicePeriods,holidayFlag,advanceTime,minAmount,payMethod'
 		},
-		{id : 41, label : "店内自助", name : "spot_order", businessIsSupported : true,
-			callServer : 'Hualala.Global.setSpotOrderParams',
-			// formKeys : 'fetchFoodMode,payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
-			formKeys : 'fetchFoodMode,checkSpotOrder,payBeforeCommit,supportCommitToSoftware',
-			operationMode : {
-				// 正餐
-				// 0 : 'payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
-				0 : 'checkSpotOrder,payBeforeCommit,supportCommitToSoftware',
-				// 快餐
-				1 : 'fetchFoodMode,supportCommitToSoftware'
-			}
-		},
 		{id : 1000, label : "会员卡", name : "crm", businessIsSupported : true, callServer : null, formKeys : null},
 		{id : 2000, label : "老板通", name : "bi", businessIsSupported : true, callServer : null, formKeys : null}
 		// {id : 42, label : "店内买单", name : "spot_pay"}
@@ -294,6 +294,12 @@
 	 * switchOff : 关闭操作的确认文字
 	 */
 	Hualala.TypeDef.ShopBusinessSwitcherTips = [
+		{
+			id : 41, name : "spot_order", title : "店内自助", 
+			desc : "开启此功能后顾客到店即可通过手机扫描二维码进行自助点菜、自助结账，此项功能将有效的缓解服务人员少、服务量大的问题，提升顾客体验、提升点菜、结账效率", 
+			switchOn : "开启此功能请确保店内餐饮软件与哗啦啦接口打通，并已在店内安装了哗啦啦代理程序否则顾客将无法使用此功能！", 
+			switchOff : "关闭此功能将导致顾客无法通过手机进行自助点菜结账！"
+		},
 		{
 			id : 10, name : "commonreserve_order", title : "订座点菜", 
 			desc : "开启此功能后顾客可通过手机或网上随时预订本店桌台、提前点菜、提前支付", 
@@ -318,12 +324,7 @@
 			switchOn : "开启此功能请确保店内已经安装了哗啦啦代理程序，否则将无法接受顾客自提订单！", 
 			switchOff : "关闭此功能将导致顾客无法通过网上下自提订单！"
 		},
-		{
-			id : 41, name : "spot_order", title : "店内自助", 
-			desc : "开启此功能后顾客到店即可通过手机扫描二维码进行自助点菜、自助结账，此项功能将有效的缓解服务人员少、服务量大的问题，提升顾客体验、提升点菜、结账效率", 
-			switchOn : "开启此功能请确保店内餐饮软件与哗啦啦接口打通，并已在店内安装了哗啦啦代理程序否则顾客将无法使用此功能！", 
-			switchOff : "关闭此功能将导致顾客无法通过手机进行自助点菜结账！"
-		},
+		
 		{
 			id : 1000, name : "crm", title : "会员卡", 
 			desc : "开启此功能后顾客即可通过手机申请注册成为本店会员，且能自助完成会员卡在线储值、会员卡消费积分、会员卡支付、会员信息查询等业务。此功能将大大增加门店注册会员数，提升顾客忠诚度，提升会员重复消费频次，同时因会员自助大大减轻会员店内查询、储值、消费积分、卡余额支付等日常会员卡业务操作的工作量。", 
