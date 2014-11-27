@@ -53,7 +53,7 @@
     '<div class="well well-sm t-r">',
         '<button class="btn btn-warning">添加</button>',
     '</div>',
-    '<table class="table table-striped table-hover">',
+    '<table id="crmRechargeSetsTable" class="table table-striped table-hover">',
         '<thead>',
             '<tr>',
                 '<th>充值套餐名</th>',
@@ -83,6 +83,57 @@
     '</table>'].join('');
     TplLib.register('tpl_crm_recharge_sets', tpl_crm_recharge_sets);
     
+    var tpl_crm_recharge_set_add_update = [
+    '<form class="form-horizontal form-feedback-out">',
+        '<div class="form-group">',
+            '<label class="col-sm-offset-1 col-sm-3 control-label">* 套餐名</label>',
+            '<div class="col-sm-5">',
+                '<input type="text" name="setName" class="form-control" value="{{setName}}" />',
+            '</div>',
+        '</div>',
+        '<div class="form-group">',
+            '<label class="col-sm-offset-1 col-sm-3 control-label">* 充值金额</label>',
+            '<div class="col-sm-5">',
+                '<div class="input-group">',
+                '<span class="input-group-addon">￥</span>',
+                '<input type="text" name="setSaveMoney" class="form-control" value="{{setSaveMoney}}" />',
+                '<span class="input-group-addon">元</span>',
+                '</div>',
+            '</div>',
+        '</div>',
+        '<div class="form-group">',
+            '<label class="col-sm-offset-1 col-sm-3 control-label">返金额数</label>',
+            '<div class="col-sm-5">',
+                '<div class="input-group">',
+                '<span class="input-group-addon">￥</span>',
+                '<input type="text" name="returnMoney" class="form-control" value="{{returnMoney}}" />',
+                '<span class="input-group-addon">元</span>',
+                '</div>',
+            '</div>',
+        '</div>',
+        '<div class="form-group">',
+            '<label class="col-sm-offset-1 col-sm-3 control-label">充值升级等级</label>',
+            '<div class="col-sm-5">',
+                '<select name="switchCardLevelID" class="form-control" value="{{switchCardLevelID}}">',
+                    '<option value="0">不变</option>',
+                '</select>',
+            '</div>',
+        '</div>',
+        '<div class="form-group">',
+            '<label class="col-sm-offset-1 col-sm-3 control-label">返积分数</label>',
+            '<div class="col-sm-5">',
+                '<input type="text" name="returnPoint" class="form-control" value="{{returnPoint}}" />',
+            '</div>',
+        '</div>',
+    '</form>'].join('');
+    TplLib.register('tpl_crm_recharge_set_add_update', tpl_crm_recharge_set_add_update);
+    
+    var tpl_crm_recharge_set_vip_level = [
+    '{{#each levels}}',
+        '<option value="{{cardLevelID}}">{{cardLevelName}}</option>',
+    '{{/each}}'
+    ].join('');
+    TplLib.register('tpl_crm_recharge_set_vip_level', tpl_crm_recharge_set_vip_level);
     
 })(jQuery, window);
 

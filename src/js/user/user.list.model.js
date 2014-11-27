@@ -138,7 +138,7 @@
 		},
 		updateRoleStore : function (roleCfg) {
 			var self = this, roleHT = self.get('ds_role'),
-				roleTypes = IX.isEmpty(roleCfg) ? (this.get('roleType') + ',') : roleCfg,
+				roleTypes = IX.isEmpty(roleCfg) ? (',' + this.get('roleType') + ',') : roleCfg,
 				siteRoleType = Hualala.TypeDef.SiteRoleType,
 				roleHT = self.get('ds_role');
 			roleHT.clear();
@@ -147,7 +147,7 @@
 					var ret = null;
 					if (IX.isString(roleTypes)) {
 						ret = IX.inherit(role, {
-							binded : roleTypes.indexOf(roleType + ',') >= 0 ? true : false
+							binded : roleTypes.indexOf(',' + roleType + ',') >= 0 ? true : false
 						});
 					} else {
 						var _r = _.find(roleTypes, function (el) {

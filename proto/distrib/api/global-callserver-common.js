@@ -64,7 +64,12 @@
         
         /*CRM Module*/
         ["getCrmParams", "/crm/crmGroupParamsQuery.ajax", "", "POST"],
-        ["setCrmParams", "/crm/crmGroupParamsUPdateOrAdd.ajax", "", "POST"]
+        ["setCrmParams", "/crm/crmGroupParamsUPdateOrAdd.ajax", "", "POST"],
+        ["getCrmRechargeSets", "/crm/crmSaveMoneySetQuery.ajax", "", "POST"],
+        ["switchCrmRechargeSetState", "/crm/crmSaveMoneyIsActive.ajax", "", "POST"],
+        ["addCrmRechargeSet", "/crm/crmSaveMoneySetAdd.ajax", "", "POST"],
+        ["updateCrmRechargeSet", "/crm/crmSaveMoneySetUpdate.ajax", "", "POST"],
+        ["getVipLevels", "/crm/crmLevelQuery.ajax", "", "POST"]
 
 	]);
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([
@@ -264,6 +269,26 @@
 	};
     Hualala.Global.setCrmParams = function (params, cbFn) {
 		Hualala.Global.commonCallServer("setCrmParams", params, cbFn);
+	};
+    
+    Hualala.Global.getCrmRechargeSets = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getCrmRechargeSets", params, cbFn);
+	};
+    
+    Hualala.Global.switchCrmRechargeSetState = function (params, cbFn) {
+		Hualala.Global.commonCallServer("switchCrmRechargeSetState", params, cbFn);
+	};
+    
+    Hualala.Global.addCrmRechargeSet = function (params, cbFn) {
+		Hualala.Global.commonCallServer("addCrmRechargeSet", params, cbFn);
+	};
+    
+    Hualala.Global.updateCrmRechargeSet = function (params, cbFn) {
+		Hualala.Global.commonCallServer("updateCrmRechargeSet", params, cbFn);
+	};
+    
+    Hualala.Global.getVipLevels = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getVipLevels", params, cbFn);
 	};
 
 

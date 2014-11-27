@@ -999,7 +999,7 @@
 	};
     
     /**
-        * 设置CRM系统参数
+      * 设置CRM系统参数
       * @param {Object} params 参数{itemID, vipServiceTel, vipServiceRemark} 
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
 	  * @return {NULL} 
@@ -1029,7 +1029,7 @@
 	};
 	
     /**
-        * 切换会员充值套餐启用/禁用状态
+      * 切换会员充值套餐启用/禁用状态
       * @param {Object} params 参数{saveMoneySetID, isActive} 
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
 	  * @return {NULL} 
@@ -1040,6 +1040,62 @@
         var rsp = {
                 resultcode: '000', 
                 resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 添加会员充值套餐
+      * @param {Object} params 参数{setName, setSaveMoney, returnMoney, returnPoint, switchCardLevelID} 
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL} 
+      * 服务调用 URL: /crm/crmSaveMoneySetAdd.ajax
+	  */
+	Hualala.Global.addCrmRechargeSet = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 修改会员充值套餐
+      * @param {Object} params 参数{saveMoneySetID, setName, setSaveMoney, returnMoney, returnPoint, switchCardLevelID} 
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL} 
+      * 服务调用 URL: /crm/crmSaveMoneySetUpdate.ajax
+	  */
+	Hualala.Global.updateCrmRechargeSet = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 获取会员等级列表
+      * @param {Object} params 参数{} 
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data.records: [{isActive, cardLevelID, cardLevelName, ...}, ...]}
+	  * @return {NULL} 
+      * 服务调用 URL: /crm/crmLevelQuery.ajax
+	  */
+	Hualala.Global.getVipLevels = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: '',
+                data: {
+                    records: [
+                        {cardLevelID: '201', cardLevelName: 'VIP1', isActive: 1},
+                        {cardLevelID: '202', cardLevelName: 'VIP2', isActive: 1},
+                        {cardLevelID: '203', cardLevelName: 'VIP3', isActive: 1},
+                        {cardLevelID: '204', cardLevelName: 'VIP4', isActive: 1}
+                    ]
+                }
             };
 		fn(rsp);
 	};
