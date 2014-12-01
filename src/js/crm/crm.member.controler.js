@@ -45,7 +45,7 @@
 					var self = this;
 					var cbFn = function () {
 						self.view.emit('render');
-						self.view.emit('loaded');
+						// self.view.emit('loaded');
 					};
 					self.view.emit('loading');
 					self.model.load(params, cbFn);

@@ -76,6 +76,11 @@ module.exports = function (grunt) {
 				dest : "<%= pkg.destPath.jsPath %>/dep/bootstrap.js",
 				nonull : true
 			},
+			echarts : {
+				src : ["<%= pkg.srcPath.jsPath %>/dep/echarts/echarts-plain.js"],
+				dest : "<%= pkg.destPath.jsPath %>/dep/echarts-plain.js",
+				nonull : true
+			},
 			deplib : {
 				src : [
 					"<%= pkg.srcPath.jsPath %>/dep/underscore/underscore.js",
@@ -118,7 +123,8 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.shop.js",
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.account.js",
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.order.js",
-					"<%= pkg.srcPath.jsPath %>/tpl/tpl.user.js"
+					"<%= pkg.srcPath.jsPath %>/tpl/tpl.user.js",
+					"<%= pkg.srcPath.jsPath %>/tpl/tpl.crm.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/tpl.js",
 				nonull : true
@@ -190,6 +196,17 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/user/user.list.controler.js",
 					"<%= pkg.srcPath.jsPath %>/user/user.init.js",
 
+					// CRM Moudle
+					"<%= pkg.srcPath.jsPath %>/crm/crm.member.model.js",
+					"<%= pkg.srcPath.jsPath %>/crm/crm.member.view.js",
+					"<%= pkg.srcPath.jsPath %>/crm/crm.member.controler.js",
+
+					"<%= pkg.srcPath.jsPath %>/crm/crm.params.js",
+					"<%= pkg.srcPath.jsPath %>/crm/crm.recharge.js",
+					"<%= pkg.srcPath.jsPath %>/crm/crm.query.js",
+
+					"<%= pkg.srcPath.jsPath %>/crm/crm.init.js",
+
 					// Merchant init
 					"<%= pkg.srcPath.jsPath %>/common/merchant.layout.js",
 					"<%= pkg.srcPath.jsPath %>/common/merchant.init.js",
@@ -222,6 +239,9 @@ module.exports = function (grunt) {
 					],
 					"<%= pkg.destPath.jsPath %>/dep/bootstrap.min.js" : [
 						"<%= pkg.destPath.jsPath %>/dep/bootstrap.js"
+					],
+					"<%= pkg.destPath.jsPath %>/dep/echarts-plain.min.js" : [
+						"<%= pkg.destPath.jsPath %>/dep/echarts-plain.js"
 					],
 					"<%= pkg.destPath.jsPath %>/dep/deplib.min.js" : [
 						"<%= pkg.destPath.jsPath %>/dep/deplib.js"

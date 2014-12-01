@@ -141,8 +141,25 @@
 			var tblTpl = self.get('tableTpl'),
 				html = tblTpl(tableRenderData);
 			self.$tableBox.html(html);
-			self.renderChart();
 			self.bindEvent();
+			IX.Net.loadJsFiles([Hualala.Global.ECHART_PATH], function () {
+				self.emit('loaded');
+				_.map(Hualala.CRM.MemberSchemaChartConfigs, function (el) {
+					var id = $XP(el, 'id'), $box = $('#' + id);
+					$box.css({height : '500px'});
+					var oChart = echarts.init($box[0]);
+					$box.data('oChart', oChart);
+					oChart.showLoading({
+						text : "加载中...",
+						x : 'center',
+						y : 'center',
+						effect : 'spin'
+					});
+				});
+				self.renderChart();
+			});
+			
+			
 		},
 		renderChart : function () {
 			var self = this, model = self.model;
@@ -196,14 +213,12 @@
 					option : opt
 				};
 			});
-			IX.Net.loadJsFiles(['http://echarts.baidu.com/build/dist/echarts-all.js'], function () {
-				_.each(chartOptions, function (el) {
-					var id = $XP(el, 'id'), opt = $XP(el, 'option', {});
-					var $chart = $('#' + id);
-					$chart.css({height : '500px'});
-					var oChart = echarts.init($chart[0]);
-					oChart.setOption(opt);
-				});
+			_.each(chartOptions, function (el) {
+				var id = $XP(el, 'id'), opt = $XP(el, 'option', {});
+				var $chart = $('#' + id);
+				var oChart = $chart.data('oChart');
+				oChart.hideLoading();
+				oChart.setOption(opt);
 			});
 		},
 		hideLoadingModal : function () {

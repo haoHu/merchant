@@ -15,7 +15,7 @@
 	var BaseChartToolBox = {
 		show : true,
 		feature : {
-			mark : {show : true},
+			mark : {show : false},
 			dataView : {show : false, readOnly : true},
 			restore : {show : true},
 			saveAsImage : {show : true}
@@ -23,15 +23,15 @@
 	};
 	var BaseChartLegend = {
 		orient : 'vertical',
-		x : 'right',
+		x : 'left',
 		y : '50px',
 		data : null
 	};
 
 	var MemberSchemaChartConfigs = [
-		{id : "member_level_chart", clz : "col-xs-12 col-sm-6 ix-chart-canvas", label : "会员等级占比图"},
-		{id : "member_gender_chart", clz : "col-xs-12 col-sm-6 ix-chart-canvas", label : "会员性别占比"},
-		{id : "member_source_chart", clz : "col-xs-12 col-sm-12 ix-chart-canvas", label : "会员来源占比图"}
+		{id : "member_level_chart", clz : "col-xs-12 col-sm-6 ", chartClz : "ix-chart-canvas", label : "会员等级占比图"},
+		{id : "member_gender_chart", clz : "col-xs-12 col-sm-6 ", chartClz : "ix-chart-canvas", label : "会员性别占比"},
+		{id : "member_source_chart", clz : "col-xs-12 col-sm-12 ", chartClz : "ix-chart-canvas", label : "会员来源占比图"}
 	];
 	Hualala.CRM.BaseChartTitle = BaseChartTitle;
 	Hualala.CRM.BaseChartTooltip = BaseChartTooltip;
