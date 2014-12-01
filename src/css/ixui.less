@@ -1,10 +1,102 @@
 // 顶部提示框
 .site-toptip {
 	@site-toptip-width : 600px;
-	position : fixed; z-index : @x-max-zIndex; top : 0; left : 50%;
+	position : fixed; z-index : @x-max-zIndex; top : 50%; left : 50%;
 	margin-left : (-1 * @site-toptip-width / 2);
 	.x-area-size(@site-toptip-width, auto);
 	p {text-align : center;}
+	@keyframes popup {
+		0% {
+			top : 100%;
+			.x-filter(.2);
+		}
+		100% {
+			top : 50%;
+			.x-filter(1);
+		}
+		
+	}
+	@-moz-keyframes popup {
+		0% {
+			top : 100%;
+			.x-filter(.2);
+		}
+		100% {
+			top : 50%;
+			.x-filter(1);
+		}
+		
+	}
+	@-webkit-keyframes popup {
+		0% {
+			top : 100%;
+			.x-filter(.2);
+		}
+		100% {
+			top : 50%;
+			.x-filter(1);
+		}
+		
+	}
+	@-o-keyframes popup {
+		0% {
+			top : 100%;
+			.x-filter(.2);
+		}
+		100% {
+			top : 50%;
+			.x-filter(1);
+		}
+		
+	}
+	@keyframes bubbleover {
+		0% {
+			top : 50%;
+		}
+		100% {
+			top : 0;
+			.x-filter(.2);
+		}
+	}
+	@-moz-keyframes bubbleover {
+		0% {
+			top : 50%;
+		}
+		100% {
+			top : 0;
+			.x-filter(.2);
+		}
+	}
+	@-webkit-keyframes bubbleover {
+		0% {
+			top : 50%;
+		}
+		100% {
+			top : 0;
+			.x-filter(.2);
+		}
+	}
+	@-o-keyframes bubbleover {
+		0% {
+			top : 50%;
+		}
+		100% {
+			top : 0;
+			.x-filter(.2);
+		}
+	}
+	&.popup {
+		animation : popup .5s 1 ease;
+		-moz-animation : popup .5s 1 ease;
+		-webkit-animation : popup .5s 1 ease;
+		-o-animation : popup .5s 1 ease;
+	}
+	&.bubbleover {
+		animation : bubbleover .5s 1 ease-out;
+		-moz-animation : bubbleover .5s 1 ease-out;
+		-webkit-animation : bubbleover .5s 1 ease-out;
+		-o-animation : bubbleover .5s 1 ease-out;
+	}
 }
 // 跟随提示（气泡提示）
 .popover {

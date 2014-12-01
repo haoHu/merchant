@@ -76,10 +76,23 @@
 				$XF(cfg, 'afterClosed')(e);
 			}
 		});
+		tipEl.addClass('popup');
 		tipEl.alert();
+		var timmer = null, count = 0;
 		setTimeout(function () {
-			tipEl.alert('close');
-		}, $XP(cfg, 'interval', 1500));
+			if (count <= 1) {
+				setTimeout(arguments.callee, count == 0 ? $XP(cfg, 'interval', 1500) : 500);
+				count == 1 && tipEl.removeClass('popup').addClass('bubbleover');
+				count++;
+			} else {
+				tipEl.alert('close');
+			}
+			
+		}, 500);
+		// setTimeout(function () {
+		// 	tipEl.removeClass('popup').addClass('bubbleover');
+		// 	tipEl.alert('close');
+		// }, $XP(cfg, 'interval', 3000));
 	};
 
 	/**

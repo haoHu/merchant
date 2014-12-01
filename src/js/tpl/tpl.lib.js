@@ -4,7 +4,10 @@
 	// 顶部提示框模板
 	var tpl_site_toptip = [
 		'<div id="site_toptip_{{id}}" class="site-toptip alert alert-{{type}} fade in">',
-			'<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>',
+			'<button type="button" class="close" data-dismiss="alert" aria-hidden="true">',
+				'<span aria-hidden="true">&times;</span>',
+				'<span class="sr-only">关闭</span>',
+			'</button>',
 			'<p>{{msg}}</p>',
 		'</div>'
 	].join('');
