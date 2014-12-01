@@ -1,6 +1,34 @@
 (function ($, window) {
 	IX.ns("Hualala");
 	var TplLib = Hualala.TplLib;
+
+    // 会员概览布局
+    var tpl_crm_schema_layout = [
+        '<div class="crm-schema-table">',
+        '</div>',
+        '<div class="crm-schema-chart row">',
+            '{{#each charts}}',
+                '<div class="{{clz}}" id="{{id}}" title="{{label}}">',
+                '</div>',
+            '{{/each}}',
+        '</div>'
+    ].join('');
+    TplLib.register('tpl_crm_schema_layout', tpl_crm_schema_layout);
+
+    // 会员等级描述模板
+    var tpl_crm_card_level_info = [
+        '{{{cardLevelName}}}等级特权：',
+        '{{#if isVipPrice}}',
+            '享受会员价，',
+        '{{else}}',
+            '不享受会员价，',
+        '{{/if}}',
+        '{{{discountRate}}}，',
+        '{{{discountRange}}}，',
+        '{{{discountDescription}}}，',
+        '累积消费{{{switchLevelUpPoint}}}元可升至该级。'
+    ].join('');
+    TplLib.register('tpl_crm_card_level_info', tpl_crm_card_level_info);
 	
 	var tpl_crm_params = [
     '<form class="crm-params form-horizontal feed-back-out read-mode">',

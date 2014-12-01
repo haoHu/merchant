@@ -394,6 +394,60 @@
 	].join('');
 	TemplateList.register('tpl_site_modal_btns', tpl_site_modal_btns);
 
+
+	// 复杂数据表格模板
+	var tpl_cmpx_datagrid = [
+		'<div class="table-responsive {{clz}}">',
+			'<table class="table {{tblClz}}">',
+				'<thead>',
+					'{{#each thead}}',
+						'<tr class="{{clz}}">',
+							'{{#each cols}}',
+								'<th class="{{clz}}" colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</th>',
+							'{{/each}}',
+						'</tr>',
+					'{{/each}}',
+				'</thead>',
+				'{{#if isEmpty}}',
+					'<tbody>',
+						'<tr>',
+							'<td colspan="{{colCount}}"><p class="text-center">无结果</p></td>',
+						'</tr>',
+					'</tbody>',
+				'{{else}}',
+					'<tbody>',
+						'{{#each rows}}',
+							'<tr class="{{clz}}">',
+								'{{#each cols}}',
+									'<td class="{{clz}}">',
+										'{{#chkColType type type="button"}}',
+											'{{> colBtns}}',
+										'{{/chkColType}}',
+										'{{#chkColType type type="text"}}',
+											'<p data-value="{{value}}" title="{{title}}">{{{text}}}</p>',
+										'{{/chkColType}}',
+									'</td>',
+								'{{/each}}',
+							'</tr>',
+						'{{/each}}',
+					'</tbody>',
+					'<tfoot>',
+						'{{#each tfoot}}',
+							'<tr class="{{clz}}">',
+								'{{#each cols}}',
+									'<th class="{{clz}}" colspan="{{colspan}}" rowspan="{{rowspan}}">',
+										'<p data-value="{{value}}" >{{{text}}}</p>',
+									'</th>',
+								'{{/each}}',
+							'</tr>',
+						'{{/each}}',
+					'</tfoot>',
+				'{{/if}}',
+			'</table>',
+		'</div>'
+	].join('');
+	TemplateList.register('tpl_cmpx_datagrid', tpl_cmpx_datagrid);
+
 	// 基础数据表格模版
 	var tpl_base_datagrid = [
 		'<div class="table-responsive {{clz}}">',

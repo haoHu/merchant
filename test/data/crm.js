@@ -1,0 +1,155 @@
+(function () {
+	IX.ns("Test");
+	var MemberSchemaData = {
+		"data": {
+			"datasets": {
+				"cardOverViewSummerrizingDs": {
+					"data": {
+						"page": {
+							"pageCount": 0,
+							"pageNo": 0,
+							"pageSize": 0,
+							"totalSize": 0
+						},
+						"records": [
+							{
+								"cardCount": "32",
+								"cardLevelName": "VIP1",
+								"consumptionCountSum": "83",
+								"consumptionPerOrder": "639.64",
+								"consumptionTotalSum": "53090.50",
+								"description": "",
+								"discountDescription": "",
+								"discountRange": "1",
+								"discountRate": "1.00",
+								"inShopCount": "13",
+								"inShopRate": "40.6",
+								"isActive": "1",
+								"isDefaultLevel": "1",
+								"isVipPrice": "1",
+								"levelCardCountRate": "100.00",
+								"levelSort": "100",
+								"moneyBalanceSum": "10026318.60",
+								"onLineCount": "19",
+								"onLineRate": "59.4",
+								"operator": "",
+								"pointBalanceSum": "1146493.04",
+								"pointRate": "0.10",
+								"sexFemaleCount": "3",
+								"sexFemaleRate": "9.4",
+								"sexMaleCount": "16",
+								"sexMaleRate": "50.0",
+								"sexUnknownCount": "13",
+								"sexUnknownRate": "40.6",
+								"switchLevelDownPoint": "0",
+								"switchLevelUpPoint": "0"
+							}
+						]
+					}
+				}
+			},
+			"records": [
+				{
+					"cardCount": "25",
+					"cardLevelName": "VIP1",
+					"consumptionCountSum": "6",
+					"consumptionPerOrder": "121.00",
+					"consumptionTotalSum": "726.00",
+					"description": "",
+					"discountDescription": "",
+					"discountRange": "1",
+					"discountRate": "1.00",
+					"inShopCount": "10",
+					"inShopRate": "40.0",
+					"isActive": "1",
+					"isDefaultLevel": "1",
+					"isVipPrice": "1",
+					"levelCardCountRate": "78.1",
+					"levelSort": "100",
+					"moneyBalanceSum": "10000923.00",
+					"onLineCount": "15",
+					"onLineRate": "60.0",
+					"operator": "",
+					"pointBalanceSum": "1121194.40",
+					"pointRate": "0.10",
+					"sexFemaleCount": "1",
+					"sexFemaleRate": "4.0",
+					"sexMaleCount": "12",
+					"sexMaleRate": "48.0",
+					"sexUnknownCount": "12",
+					"sexUnknownRate": "48.0",
+					"switchLevelDownPoint": "0",
+					"switchLevelUpPoint": "0"
+				},
+				{
+					"cardCount": "3",
+					"cardLevelName": "VIP3",
+					"consumptionCountSum": "48",
+					"consumptionPerOrder": "106.38",
+					"consumptionTotalSum": "5106.00",
+					"description": "",
+					"discountDescription": "",
+					"discountRange": "1",
+					"discountRate": "0.80",
+					"inShopCount": "1",
+					"inShopRate": "33.3",
+					"isActive": "1",
+					"isDefaultLevel": "0",
+					"isVipPrice": "1",
+					"levelCardCountRate": "9.4",
+					"levelSort": "300",
+					"moneyBalanceSum": "21495.60",
+					"onLineCount": "2",
+					"onLineRate": "66.7",
+					"operator": "",
+					"pointBalanceSum": "19940.00",
+					"pointRate": "0.14",
+					"sexFemaleCount": "0",
+					"sexFemaleRate": "0.0",
+					"sexMaleCount": "3",
+					"sexMaleRate": "100.0",
+					"sexUnknownCount": "0",
+					"sexUnknownRate": "0.0",
+					"switchLevelDownPoint": "0",
+					"switchLevelUpPoint": "3000"
+				},
+				{
+					"cardCount": "4",
+					"cardLevelName": "VIP4",
+					"consumptionCountSum": "29",
+					"consumptionPerOrder": "1629.60",
+					"consumptionTotalSum": "47258.50",
+					"description": "",
+					"discountDescription": "",
+					"discountRange": "1",
+					"discountRate": "1.00",
+					"inShopCount": "2",
+					"inShopRate": "50.0",
+					"isActive": "1",
+					"isDefaultLevel": "0",
+					"isVipPrice": "0",
+					"levelCardCountRate": "12.5",
+					"levelSort": "400",
+					"moneyBalanceSum": "3900.00",
+					"onLineCount": "2",
+					"onLineRate": "50.0",
+					"operator": "",
+					"pointBalanceSum": "5358.64",
+					"pointRate": "0.16",
+					"sexFemaleCount": "2",
+					"sexFemaleRate": "50.0",
+					"sexMaleCount": "1",
+					"sexMaleRate": "25.0",
+					"sexUnknownCount": "1",
+					"sexUnknownRate": "25.0",
+					"switchLevelDownPoint": "0",
+					"switchLevelUpPoint": "4000"
+				}
+			]
+		},
+		"resultcode": "000",
+		"resultmsg": ""
+	};
+
+	Test.MemberSchemaData = MemberSchemaData;
+})();

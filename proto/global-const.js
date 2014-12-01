@@ -18,4 +18,6 @@
 	Hualala.Global.SWF_ROOT = "../src/swf";
 	
 	Hualala.Global.workMode = "pesudo";
+
+	Hualala.Global.ECHART_PATH = "../src/js/dep/echarts/echarts-plain.js";
 })();

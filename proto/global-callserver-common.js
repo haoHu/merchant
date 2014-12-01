@@ -969,6 +969,49 @@
 			}
 		}));
 	};
+
+	/**
+	 * 获取会员概览统计报表数据
+	 * @param  {Object} params {}
+	 * @param  {Function} cbFn   回调参数
+	 *           {
+	 *           	resultcode, resultmsg,
+	 *           	data : {
+	 *           		datasets : {
+	 *           			cardOverViewSummerrizingDs : {
+	 *           				data : {
+	 *           					page : {pageCount,pageNo,pageSize,totalSize},
+	 *           					records : [{
+	 *           						cardCount, cardLevelName, consumptionCountSum, consumptionPerOrder,
+	 *           						consumptionTotalSum, description, discountDescription, discountRange,
+	 *           						discountRate, inShopCount, inShopRate, isDefaultLevel, isVipPrice, levelCardCountRate,
+	 *           						levelSort, isActive, moneyBalanceSum, onLineCount, onLineRate, operator, pointBalanceSum,
+	 *           						pointRate, sexFemaleCount, sexFemaleRate, sexMaleCount, secMaleRate, sexUnkonownRate,
+	 *           						secUnknownCount, switchLevelDownPoint, switchLevelUpPoint
+	 *           					}]
+	 *           				}
+	 *           			}
+	 *           		}
+	 *           		records : [{
+	 *           			cardCount,cardLevelName,consumptionCountSum,consumptionPerOrder,consumptionTotalSum,
+	 *           		 description,discountDescription,discountRange,discountRate,inShopCount,inShopRate,isDefaultLevel,
+	 *           		 isVipPrice,levelCardCountRate,levelSort,isActive,moneyBalanceSum,onLineCount,onLineRate,operator,pointBalanceSum,
+	 *           		 pointRate,secFemaleCount,sexFemaleRate,sexMaleCount,sexMaleRate,sexUnknownRate,sexUnknownRate,switchLevelDownPoint,switchLevelUpPoint
+	 *           	  	}]
+	 *           	},
+	 *           	
+	 *           }
+	 * @return {NULL}
+	 */
+	Hualala.Global.queryCrmMemberSchema = function (params, cbFn) {
+		IX.Debug.info("DEBUG: Query CRM Member Schema Post Params:");
+		IX.Debug.info(params);
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(IX.inherit(res, Test.MemberSchemaData));
+	};
+
+
     
     /**
 	  * 获取CRM系统参数
