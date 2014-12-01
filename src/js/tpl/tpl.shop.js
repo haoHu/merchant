@@ -352,7 +352,7 @@
 			'<td><span class="glyphicon {{takeawayIco}}"></span></td>',
 			'<td><b>{{takeoutPackagingFee}}</b></td>',
 			'<td><span class="glyphicon {{activeIco}}"></span></td>',
-			'<td><span class="label label-default">修改</span></td>',
+			'<td><button class="btn btn-default">修改</buttion></td>',
 		'</tr>',
 	'{{/each}}'].join('');
 	TplLib.register('tpl_food', tpl_food);

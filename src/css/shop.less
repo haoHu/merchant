@@ -307,17 +307,15 @@ form.edit-mode, .form.edit-mode
 		tbody
 		{
 			tr { border: 1px solid #ddd; }
+            tr:hover { cursor: pointer }
 			tr:hover, tr:active { background: #fcf8e3 }
 			td
 			{
 				padding: 6px; 
 				&:first-child { padding: 0 }
-				&:last-child 
-				{
-					span { padding: 8px 16px; display: none }
-				}
 			}
-			tr:hover td:last-child span { display: inline; }
+            .btn { display: none }
+			tr:hover .btn { display: inline; }
 			img { width: 92px; height: 92px }
 			p
 			{
