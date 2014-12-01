@@ -63,7 +63,7 @@
 							isVipPrice = $XP(m, 'isVipPrice', 0) == 0 ? false : true,
 							discountRate = $XP(m, 'discountRate', 1) == 1 ? "不打折" : ('打' + math.multi($XP(m, 'discountRate', 1), 10) + '折'),
 							// 0：部分菜品打折，1：全部菜品打折
-							discountRange = $XP(m, 'discountRange', 0) == 0 ? "(部分不打折)" : "",
+							discountRange = $XP(m, 'discountRange', 0) == 0 ? "(部分不打折)，" : "",
 							// 折扣描述
 							discountDescription = $XP(m, 'discountDescription', ''),
 							switchLevelUpPoint = $XP(m, 'switchLevelUpPoint', null);
@@ -73,7 +73,7 @@
 							isVipPrice : isVipPrice,
 							discountRate : discountRate,
 							discountRange : discountRange,
-							discountDescription : discountDescription,
+							discountDescription : IX.isEmpty(discountDescription) ? '' : (discountDescription + '，'),
 							switchLevelUpPoint : switchLevelUpPoint
 						});
 					};
@@ -142,6 +142,7 @@
 				html = tblTpl(tableRenderData);
 			self.$tableBox.html(html);
 			self.renderChart();
+			self.bindEvent();
 		},
 		renderChart : function () {
 			var self = this, model = self.model;
@@ -210,6 +211,12 @@
 		},
 		showLoadingModal : function () {
 			this.loadingModal.show();
+		},
+		bindEvent : function () {
+			var self = this;
+			self.$tableBox.tooltip({
+				selector : 'p[title]'
+			});
 		}
 	});
 	Hualala.CRM.MemberSchemaView = MemberSchemaView;

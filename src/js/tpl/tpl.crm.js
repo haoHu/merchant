@@ -24,8 +24,8 @@
             '不享受会员价，',
         '{{/if}}',
         '{{{discountRate}}}，',
-        '{{{discountRange}}}，',
-        '{{{discountDescription}}}，',
+        '{{{discountRange}}}',
+        '{{{discountDescription}}}',
         '累积消费{{{switchLevelUpPoint}}}元可升至该级。'
     ].join('');
     TplLib.register('tpl_crm_card_level_info', tpl_crm_card_level_info);
