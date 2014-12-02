@@ -15,7 +15,7 @@
                 rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
                 return;
             }
-            var crmParams = rsp.data.records[0];
+            var crmParams = rsp.data;
             itemID = crmParams.itemID;
             crmParams.serviceStartTime = formatDate(crmParams.serviceStartTime);
             crmParams.serviceEndTime = formatDate(crmParams.serviceEndTime);

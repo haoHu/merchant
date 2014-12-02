@@ -102,7 +102,7 @@
 		"updateShopGroupChildAccount", "addShopGroupChildAccount",
 		"updateRoleBinding", "queryRoleBinding", "bindMobileInShopGroupChildAccount",
 		"queryCrmMemberSchema",
-        "getCrmParams", "setCrmParams"
+        "getCrmParams", "setCrmParams", "getCrmRechargeSets", "switchCrmRechargeSetState", "addCrmRechargeSet", "updateCrmRechargeSet", "getVipLevels"
 	]);
 
 	/*Login CallServer*/

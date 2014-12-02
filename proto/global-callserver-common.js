@@ -1026,16 +1026,15 @@
                 resultcode: '000', 
                 resultmsg: '',
                 data: {
-                    records: [{
-                        itemID: 63,
-                        serviceStartTime: "20140810",
-                        serviceEndTime: "20150810",
-                        isPointCanPay: "1",
-                        pointExchangeRate: "1",
-                        pointClearDate: "0521",
-                        vipServiceTel: "010-68502174",
-                        vipServiceRemark: "这是会员服务说明"
-                    }]
+                    itemID: 63,
+                    serviceStartTime: "20140810",
+                    serviceEndTime: "20150810",
+                    isPointCanPay: "1",
+                    pointExchangeRate: "1",
+                    pointClearDate: "0521",
+                    vipServiceTel: "010-68502174",
+                    vipServiceRemark: "这是会员服务说明"
+                    
                 }
             };
 		fn(rsp);

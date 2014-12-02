@@ -73,7 +73,8 @@
 		initCRMPageLayout(Hualala.TypeDef.CRMMemberSubNavType);
 		var $pageBody = $body.find('.crm-body'),
 			queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMMemberSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
-		$pageBody.html('<h1>会员查询页面</h1>');
+		//$pageBody.html('<h1>会员查询页面</h1>');
+        Hualala.CRM.initQuery($pageBody);
 	};
 
 	/*会员详情*/
