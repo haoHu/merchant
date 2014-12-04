@@ -33,7 +33,7 @@
 			'<span class="shop-name">{{shopName}}</span>',
 			'<a href="{{shopUrl}}" target="_blank">查看网上店铺</a>',
 			'<a href="{{shopListLink}}">切换店铺</a>',
-			'<a id="resetPwd" href="javascript:;">重置客户端密码</a>',
+			'<a id="resetPwd" href="javascript:;">重置代理程序密码</a>',
 		'</div>',
 		'<div class="shop-state">',
 			'<label class="t-label">店铺当前状态：</label>',

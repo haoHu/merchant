@@ -354,13 +354,13 @@
 		},
 		fetchFoodMode : {
 			type : 'combo',
-			label : '取餐模式',
+			label : '下单后出餐模式',
 			defaultVal : 0,
 			options : Hualala.TypeDef.FetchFoodModeOptions,
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "取餐模式不能为空"
+						message : "下单后出餐模式不能为空"
 					}
 				}
 				

@@ -15,10 +15,10 @@
 	// 站点导航数据
 	Hualala.TypeDef.SiteNavType = [
 		{name : 'order', label : '订单报表', type:"link"},
-		{name : 'account', label : '账户结算', type:"link"},
+		{name : 'account', label : '资金结算', type:"link"},
 		{name : 'shop', label : '店铺管理', type:"link"},
 		{name : 'setting', label : '业务设置', type:"link"},
-		{name : 'user', label : '账号管理', type:"link"},
+		{name : 'user', label : '用户管理', type:"link"},
 		{name : 'crm', label : '会员管理', type:"subnav",
 			subnavs : [
 				{name : "crmMemberSchema", label : "会员概况", type : "link", src : "CRMMemberSubNavType"},
@@ -243,7 +243,7 @@
 	 * payMethodAtShop: 店内支付方式 int 0：均不支持（默认）；1：直接输入金额付款；2：扫码付款；3：均支持
 	 * checkSpotOrder: 顾客可通过手机结账 int 0: 不支持；1:支持
 	 * payBeforeCommit: 支付完成后才能下单 int 0：不支持（不支持）；1：支持
-	 * fetchFoodMode : 取餐模式 int 0：流水号模式（默认）；1：牌号模式；2：收银台直接取餐
+	 * fetchFoodMode : 取餐模式 int 0：流水号模式（默认）；1：牌号模式；2：收银台直接出餐
 	 * 
 	 */
 	Hualala.TypeDef.ShopBusiness = [
@@ -255,7 +255,7 @@
 				// 正餐
 				// 0 : 'payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
 				// @Note for 1.1 delete supportCommitToSoftware(#4105)
-				0 : 'checkSpotOrder,payBeforeCommit',
+				0 : 'payBeforeCommit',
 				// 快餐
 				// @Note for 1.1 delete supportCommitToSoftware(#4105)
 				1 : 'fetchFoodMode'
@@ -329,7 +329,7 @@
 		
 		{
 			id : 1000, name : "crm", title : "会员卡", 
-			desc : "开启此功能后顾客即可通过手机申请注册成为本店会员，且能自助完成会员卡在线储值、会员卡消费积分、会员卡支付、会员信息查询等业务。此功能将大大增加门店注册会员数，提升顾客忠诚度，提升会员重复消费频次，同时因会员自助大大减轻会员店内查询、储值、消费积分、卡余额支付等日常会员卡业务操作的工作量。", 
+			desc : "开启此功能后，顾客即可随时随地自助注册成为会员，在线储值、卡余额核销、查询卡信息等全自助操作，结合有效的运营策略您将看到会员数、消费粘性及储值快速增长。", 
 			switchOn : "开启此功能请确保店内已经安装了哗啦啦代理程序，否则顾客将无法使用会员功能！", 
 			switchOff : "关闭此功能将导致本店已有会员无法在本店享受会员服务（会员优惠、积分、卡余额支付等）！"
 		},
@@ -357,7 +357,7 @@
 	Hualala.TypeDef.FetchFoodModeOptions = [
 		{value : 0, label : "流水号模式"},
 		{value : 1, label : "牌号模式"},
-		{value : 2, label : "收银台直接取餐"}
+		{value : 2, label : "收银台直接出餐"}
 	];
 
 	Hualala.TypeDef.HolidayFlagOptions = [

@@ -159,7 +159,7 @@
 		// 结算账户页面
 		{
 			name : "account", path : "/#account", reg : /account$/, bodyClz : "",
-			PageInitiator : "Hualala.Account.AccountListInit", parentName : "main", label : "账户结算"
+			PageInitiator : "Hualala.Account.AccountListInit", parentName : "main", label : "资金结算"
 		},
 		// 结算账户详情设置页面
 		{
@@ -167,10 +167,10 @@
 			PageInitiator : "Hualala.Account.AccountMgrInit", parentName : "account", label : "账户明细"
 		},
 
-		// 账号管理页面
+		// 用户管理页面
 		{
 			name : "user", path : "/#user", reg : /user$/, bodyClz : "",
-			PageInitiator : "Hualala.User.UserListInit", parentName : "main", label : "账号管理"
+			PageInitiator : "Hualala.User.UserListInit", parentName : "main", label : "用户管理"
 		},
 
 		// 订单报表页面

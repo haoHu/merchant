@@ -45,15 +45,15 @@
                     })
                 });
 			});;
-            //重置客户端密码
+            //重置代理程序密码
             $shopInfoHead.find('#resetPwd').on('click', function ()
             {
                 var resetPwdTpl = Handlebars.compile(Hualala.TplLib.get('tpl_set_shop_client_pwd'));
                 var $resetPwdForm = $(resetPwdTpl(shopInfo));
-                //弹出重置客户端密码模态框
+                //弹出重置代理程序密码模态框
                 var modal = new Hualala.UI.ModalDialog({
                     id: 'resetCltPwdDlg',
-                    title: '重置客户端密码',
+                    title: '重置代理程序密码',
                     html: $resetPwdForm,
                     sizeCls: 'modal-sm',
                     hideCloseBtn: false
@@ -98,7 +98,7 @@
                             return;
                         }
                         modal.hide();
-                        Hualala.UI.TopTip({msg: '重置客户端密码成功！', type: 'success'});
+                        Hualala.UI.TopTip({msg: '重置代理程序密码成功！', type: 'success'});
                     });
                     
                 });
