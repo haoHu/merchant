@@ -521,7 +521,7 @@
 		initLayout : function () {
 			var layoutTpl = this.get('layoutTpl');
 			var result = [],
-				tblClz = 'table-striped table-hover',
+				tblClz = 'table-bordered table-striped table-hover ix-data-report',
 				tblHeaders = TransResultCols,
 				query = {cols : [
 					{
@@ -645,7 +645,7 @@
 			return ret;
 		},
 		mapTimeData : function (s) {
-			var r = {value : '', text : ''};
+			var r = {value : '', text : '', clz : 'date'};
 			var s1 = '';
 			if (IX.isString(s) && s.length > 0) {
 				s1 = s.replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
@@ -663,7 +663,7 @@
 			if (s.length == 0 || m.length == 0) {
 				return {text : '', value : ''};
 			}
-			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', '')};
+			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', ''), clz : 'status'};
 		},
 		mapTransType : function (s) {
 			s = s || '';
@@ -674,17 +674,17 @@
 			if (s.length == 0 || m.length == 0) {
 				return {text : '', value : ''};
 			}
-			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', '')};
+			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', ''), clz : 'text'};
 		},
 		mapCashData : function (s) {
-			return {text : Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(s)), value : s};
+			return {text : Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(s)), value : s, clz : 'number'};
 		},
 		mapTransChanged : function (r) {
 			var transAmount = $XP(r, 'transAmount', 0),
 				transSalesCommission = $XP(r, 'transSalesCommission', 0),
 				transPoundage = $XP(r, 'transPoundage', 0),
 				transChanged = Hualala.Common.Math.sub(transAmount, transSalesCommission, transPoundage);
-			return {value : transChanged, text : Hualala.Common.Math.prettyNumeric(transChanged)};
+			return {value : transChanged, text : Hualala.Common.Math.prettyNumeric(transChanged), clz : 'number'};
 		},
 		mapColsRenderData : function (row) {
 			var self = this;
@@ -698,7 +698,7 @@
 						r = self.mapTimeData($XP(row, k, ''));
 						break;
 					case 'SUATransItemID':
-						r = {value : $XP(row, k, ''), text : $XP(row, k, '')};
+						r = {value : $XP(row, k, ''), text : $XP(row, k, ''), clz : 'number'};
 						break;
 					case 'transStatus':
 						r = self.mapTransStatus($XP(row, k, ''));
@@ -741,7 +741,7 @@
 		},
 		mapRenderData : function (data) {
 			var self = this;
-			var tblClz = 'table-striped table-hover',
+			var tblClz = 'table-bordered table-striped table-hover ix-data-report',
 				tblHeaders = TransResultCols;
 			var rows = _.map(data, function (row) {
 				return {

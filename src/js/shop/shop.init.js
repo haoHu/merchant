@@ -39,7 +39,10 @@
                         rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
                         return;
                     }
-                    Hualala.UI.TopTip({msg: '切换成功', type: 'success'})
+                    Hualala.UI.TopTip({
+                        msg: !+state ? '关闭成功' : '开启成功', 
+                        type: 'success'
+                    })
                 });
 			});;
             //重置客户端密码

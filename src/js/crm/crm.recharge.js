@@ -69,7 +69,7 @@
                         return;
                     }
                     
-                    levels = filterVipLevels(sets, rsp.data.records);
+                    levels = filterVipLevels(rsp.data.records);
                     $select.append(vipLevelTpl({levels: levels})).val(levelID);
                 });
             }
@@ -122,7 +122,7 @@
         }
     };
     
-    function filterVipLevels(sets, levels)
+    function filterVipLevels(levels)
     {
         var ret = [];
         for(var i = 0, level; level = levels[i]; i++)

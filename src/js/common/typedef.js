@@ -254,9 +254,11 @@
 			operationMode : {
 				// 正餐
 				// 0 : 'payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
-				0 : 'checkSpotOrder,payBeforeCommit,supportCommitToSoftware',
+				// @Note for 1.1 delete supportCommitToSoftware(#4105)
+				0 : 'checkSpotOrder,payBeforeCommit',
 				// 快餐
-				1 : 'fetchFoodMode,supportCommitToSoftware'
+				// @Note for 1.1 delete supportCommitToSoftware(#4105)
+				1 : 'fetchFoodMode'
 			}
 		},
 		{
@@ -362,6 +364,11 @@
 		{value : 0, label : "包含节假日"},
 		{value : 1, label : "只能在节假日"},
 		{value : 2, label : "不包含节假日"}
+	];
+
+	Hualala.TypeDef.PayBeforeCommitOptions = [
+		{value : 1, label : "餐前结账"},
+		{value : 0, label : "餐后结账"}
 	];
 
 	/**

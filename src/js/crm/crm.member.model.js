@@ -60,7 +60,7 @@
 				{clz : '', label : '女', colspan : '', rowspan : ''},
 				{clz : '', label : '未知', colspan : '', rowspan : ''},
 				{clz : '', label : '线上', colspan : '', rowspan : ''},
-				{clz : '', label : '店内', colspan : '', rowspan : ''}
+				{clz : '', label : '线下', colspan : '', rowspan : ''}
 			]
 		}
 	];
@@ -155,7 +155,7 @@
 		getSourceChartData : function () {
 			var self = this,
 				summary = self.get('memberSummarize')[0] || {};
-			var sources = [{key : "onLineCount", name : "线上"}, {key : "inShopCount", name : "店内"}];
+			var sources = [{key : "onLineCount", name : "线上"}, {key : "inShopCount", name : "线下"}];
 			return _.map(sources, function (o) {
 				return {
 					name : $XP(o, 'name', ''),

@@ -1142,6 +1142,106 @@
 		fn(rsp);
 	};
     
+    /**
+      * 获取会员信息集合
+      * @param {Object} params 参数{createTimeStart, createTimeEnd, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data.records: [{cardNO, customerName, ...}, ...]}
+	  * @return {NULL} 
+      * 服务调用 URL: /crm/crmCustomerCardComplexQuery.ajax
+	  */
+	Hualala.Global.queryCrm = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/crm_query_items.js'], function(){
+            var srcRecords = Test.crmQueryItems.data.records;
+            var startIndex = (params.pageNo - 1) * params.pageSize;
+            Test.crmQueryItems.data.page.pageNo = params.pageNo;
+            Test.crmQueryItems.data.records = srcRecords.slice(startIndex, startIndex + params.pageSize);
+            if(params.cardID)
+                Test.crmQueryItems.data.records = [srcRecords[Hualala.Common.inArray(srcRecords, {cardID: params.cardID}, 'cardID')]];
+            fn(Test.crmQueryItems);
+        });
+	};
+    
+    /**
+      * 获取会员详情
+      * @param {Object} params 参数{cardID}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data: {cardNO, customerName, ...}, ...}
+	  * @return {NULL}
+      * 服务调用 URL: /crm/crmCustomerCardDetailInfo.ajax
+	  */
+	Hualala.Global.getCrmDetail = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/crm_query_items.js'], function(){
+            var rsp = { resultcode: '000', resultmsg: '' },
+                srcRecords = Test.crmQueryItems.data.records;
+            
+            rsp.data = srcRecords[Hualala.Common.inArray(srcRecords, {cardID: params.cardID}, 'cardID')];
+            $.extend(rsp.data, {
+                saveMoneyTotal: '52445.00', deductMoneyTotal: '2568.00', moneyBalance: '2552.00',
+                consumptionTotal: '200.00', consumptionCount: '12', lastConsumptionTime: '20141106160227',
+                pointGetTotal: '3000.00', pointBalance: '500.00', lastYearPointBalance: '200.00',
+                cardLevelName: 'VIP3', lastSwitchLevelTime: '20141025160056', switchUpNeedConsumption: '1000.00'
+            });
+            fn(rsp);
+        });
+	};
+    
+    /**
+      * 获取会员交易明细
+      * @param {Object} params 参数{cardID}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data.records: [{transTime, transShopName, ...}, ...]}
+	  * @return {NULL}
+      * 服务调用 URL: /crm/crmTransDetailQuery.ajax
+	  */
+	Hualala.Global.getCrmTransDetail = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/crm_trans_detail.js'], function(){
+            fn(Test.crmTransDetail);
+        });
+	};
+    
+    /**
+      * 获取会员参与活动
+      * @param {Object} params 参数{cardID}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data.records: [{customerName, eventName, ...}, ...]}
+	  * @return {NULL}
+      * 服务调用 URL: /crm/crmEventUserQuery.ajax
+	  */
+	Hualala.Global.getCrmUserEvents = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/crm_user_events.js'], function(){
+            fn(Test.crmUserEvents);
+        });
+	};
+    
+    /**
+      * 获取会员优惠券
+      * @param {Object} params 参数{cardID}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data.records: [{giftName, getWay, ...}, ...]}
+	  * @return {NULL}
+      * 服务调用 URL: /crm/crmEGiftDetailQuery.ajax
+	  */
+	Hualala.Global.getCrmUserGifts = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/crm_user_gifts.js'], function(){
+            fn(Test.crmUserGifts);
+        });
+	};
+    
+    /**
+      * 获取会员卡日志
+      * @param {Object} params 参数{cardID}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data.records: [{createTime, shopName, ...}, ...]}
+	  * @return {NULL}
+      * 服务调用 URL: /crm/crmCustomerCardLogQuery.ajax
+	  */
+	Hualala.Global.getCrmCardLogs = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/crm_card_logs.js'], function(){
+            fn(Test.crmCardLogs);
+        });
+	};
+    
 })();
 
 

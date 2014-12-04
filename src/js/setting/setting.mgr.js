@@ -22,7 +22,9 @@
 			type : 'combo',
 			label : '订单提前通知时间',
 			defaultVal : 0,
-			options : Hualala.TypeDef.MinuteIntervalOptions(),
+			// @Note for 1.1 modify MinuteIntervalOptions first option label (#4105)
+			// options : Hualala.TypeDef.MinuteIntervalOptions(),
+			options : Hualala.Common.getMinuteIntervalOptions({startLabel : "用户下单后立即通知"}),
 			validCfg : {
 				validators : {
 					notEmpty : {
@@ -329,16 +331,26 @@
 				validators : {}
 			}
 		},
+		// @NOTE: for 1.1 modify payBeforeCommit to combobox(#4105)
+		// payBeforeCommit : {
+		// 	type : 'switcher',
+		// 	label : '支持餐前结账',
+		// 	defaultVal : 1,
+		// 	onLabel : '支持',
+		// 	offLabel : '不支持',
+		// 	validCfg : {
+		// 		validators : {}
+		// 	}
+			
+		// },
 		payBeforeCommit : {
-			type : 'switcher',
-			label : '支持餐前结账',
+			type : 'combo',
+			label : '结账模式',
 			defaultVal : 1,
-			onLabel : '支持',
-			offLabel : '不支持',
+			options : Hualala.TypeDef.PayBeforeCommitOptions,
 			validCfg : {
 				validators : {}
 			}
-			
 		},
 		fetchFoodMode : {
 			type : 'combo',

@@ -173,3 +173,33 @@
 	li, a {.x-font-size(14px); font-weight: 700;}
 	> li.active {color : @x-base-font-color; }
 }
+
+// 数据报表
+.ix-data-report {
+	thead {
+		th {text-align: center; vertical-align: middle;}
+	}
+	tbody {
+		td.text, td.date {
+			text-align : left;
+		}
+		td.number {
+			text-align : right;
+		}
+		td.status {
+			text-align: center;
+		}
+	}
+	tfoot {
+		.text, .date {
+			text-align : left;
+		}
+		.number {
+			text-align: right;
+		}
+		.status {
+			text-align: center;
+		}
+	}
+
+}

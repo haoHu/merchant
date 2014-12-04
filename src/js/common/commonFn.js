@@ -259,6 +259,24 @@
 		}
 		return v.replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
 	};
+    
+    Hualala.Common.formatDateStr = function (str, l, sp)
+    {
+        sp = sp || '/', l == l || 8, ln = str.length;
+        if(ln < 8) return '';
+        var ret = [str.substr(0, 4), str.substr(4, 2), str.substr(6, 2)].join(sp);
+        if(l == 12 && ln >= 12)
+            ret += ' ' + str.substr(8, 2) + ':' + str.substr(10, 2);
+        else if(l == 14) 
+        {
+            if(ln >= 12)
+                ret += ' ' + str.substr(8, 2) + ':' + str.substr(10, 2);
+            if(ln >= 14)
+                ret += ':' + str.substr(12, 2);
+        }
+            
+        return ret;
+    }
 
 	/**
 	 * 设置垂直居中位置
@@ -329,18 +347,22 @@
 	 * 获取事件间隔选项数据
 	 * @param  {Object} cfg {startLabel, start, end}
 	 *          cfg : {
-	 *          	startLabel : value为0的选项的label，
-	 *          	start : 开始获取的分钟，
+	 *          	startLabel : 第一个选项的label，
 	 *          	end : 结束的分钟
 	 *          }
 	 * @return {[type]}     [description]
 	 */
 	Hualala.Common.getMinuteIntervalOptions = function (cfg) {
 		var startLabel = $XP(cfg, 'startLabel', '不限'),
-			start = $XP(cfg, 'start', 0),
-			end = $XP(cfg, 'end', (Hualala.Constants.SecondsOfDay / 60));
-		
+			end = $XP(cfg, 'end', (Hualala.Constants.SecondsOfDay / 60)),
+			list = Hualala.TypeDef.MinuteIntervalOptions(end);
+		return _.map(list, function (el, i) {
+			return IX.inherit(el, {
+				label : i == 0 ? startLabel : $XP(el, 'label', '')
+			});
+		});
 	};
+
     /**
 	 * 将表单里内容转换为 plainObject
 	 * @param  {DOM | jQuery Objuect | selector string} form
@@ -359,6 +381,16 @@
         return result;
 		
 	};
+    
+    //根据对象的一个属性检查某个对象是否在一个对象数组中
+    Hualala.Common.inArray = function(arr, obj, key)
+    {
+        for(var i = 0, l = arr.length; i < l; i++)
+        {
+            if(arr[i][key] == obj[key]) return i;
+        }
+        return -1;
+    }
 
 	/**
 	 * 号码遮罩

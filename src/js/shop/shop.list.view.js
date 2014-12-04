@@ -152,8 +152,19 @@
 				var $chkbox = $(this),
 					shopID = $chkbox.attr('data-shop'),
 					state = !state ? 0 : 1;
-				self.model.updateShopStatus(shopID, state, function (_shopID) {
-					self.$list.find(selector).filter('[data-shop=' + _shopID + ']').bootstrapSwitch('toggleState', true);
+				Hualala.UI.Confirm({
+					title : (state == 1 ? "开启" : "关闭") + "店铺",
+					msg : "你确定要" + (state == 1 ? "开启" : "关闭") + "店铺？",
+					okFn : function () {
+						self.model.updateShopStatus(shopID, state, function (_shopID) {
+							self.$list.find(selector).filter('[data-shop=' + _shopID + ']').bootstrapSwitch('toggleState', true);
+						}, function (_shopID) {
+							
+						});
+					},
+					cancelFn : function () {
+						self.$list.find(selector).filter('[data-shop=' + shopID + ']').bootstrapSwitch('toggleState', true);
+					}
 				});
 			});
 		},

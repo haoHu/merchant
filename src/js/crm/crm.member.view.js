@@ -56,7 +56,7 @@
 			var mapColData = function (member) {
 				var cols = _.map(colNames.split(','), function (k) {
 					var v = $XP(member, k, ''),
-						text = '', title = '';
+						text = '', title = '', clz = '';
 					var mapCardLevelTip = function (m) {
 						var cardLevelName = $XP(m, 'cardLevelName'),
 							// 0:不享受会员价，1：享受会员价
@@ -80,6 +80,7 @@
 					switch (k) {
 						case 'cardCount':
 							text = parseInt(v);
+							clz = 'number';
 							break;
 						case 'levelCardCountRate':
 						case 'sexMaleRate':
@@ -88,17 +89,20 @@
 						case 'onLineRate':
 						case 'inShopRate':
 							text = v + '%';
+							clz = 'number';
 							break;
 						case 'moneyBalanceSum':
 						case 'pointBalanceSum':
 						case 'consumptionPerOrder':
 							text = math.prettyNumeric(math.standardPrice(v));
+							clz = 'number';
 							break;
 						default : 
 							text = v;
+							clz = 'text';
 					}
 					return {
-						clz : '',
+						clz : clz,
 						type : 'text',
 						value : v,
 						text : text,
@@ -127,7 +131,7 @@
 				}
 			});
 			return {
-				tblClz : 'table table-bordered table-striped table-hover',
+				tblClz : 'table table-bordered table-striped table-hover ix-data-report',
 				thead : tableHeader,
 				rows : rows,
 				tfoot : tfoot
@@ -191,7 +195,7 @@
 					case "member_source_chart":
 						tipTitle = "会员来源";
 						series = self.model.getSourceChartData();
-						legend = IX.inherit(legendCfg, {data : ['线上', '店内']});
+						legend = IX.inherit(legendCfg, {data : ['线上', '线下']});
 						break;
 				}
 				opt = IX.inherit(opt, {

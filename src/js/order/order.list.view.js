@@ -5,50 +5,50 @@
 
 
 	var OrderQueryTableHeaderCfg = [
-		{key : "cityID", clz : "", label : "城市"},
-		{key : "shopName", clz : "", label : "店铺名称"},
-		{key : "orderID", clz : "", label : "订单号"},
-		{key : "userName", clz : "", label : "客户姓名"},
-		{key : "orderTime", clz : "", label : "就餐时间"},
-		{key : "orderStatus", clz : "", label : "订单状态"},
-		{key : "orderTotal", clz : "", label : "应付金额"},
-		{key : "moneyBalance", clz : "", label : "会员卡支付"},
-		{key : "pointBalance", clz : "", label : "会员卡积分支付"},
-		{key : "orderRefundAmount", clz : "", label : "退订/退款"},
-		{key : "total", clz : "", label : "应结金额"},
-		{key : "shouldSettlementTotal", clz : "", label : "结算金额"},
+		{key : "cityID", clz : "text", label : "城市"},
+		{key : "shopName", clz : "text", label : "店铺名称"},
+		{key : "orderID", clz : "number", label : "订单号"},
+		{key : "userName", clz : "text", label : "客户姓名"},
+		{key : "orderTime", clz : "date", label : "就餐时间"},
+		{key : "orderStatus", clz : "status", label : "订单状态"},
+		{key : "orderTotal", clz : "number", label : "应付金额"},
+		{key : "moneyBalance", clz : "number", label : "会员卡支付"},
+		{key : "pointBalance", clz : "number", label : "会员卡积分支付"},
+		{key : "orderRefundAmount", clz : "number", label : "退订/退款"},
+		{key : "total", clz : "number", label : "应结金额"},
+		{key : "shouldSettlementTotal", clz : "number", label : "结算金额"},
 		{key : "rowControl", clz : "", label : "操作"}
 	];
 	var OrderQueryDuringTableHeaderCfg = [
-		{key : "cityID", clz : "", label : "城市"},
-		{key : "billDate", clz : "", label : "日期"},
-		{key : "count", clz : "", label : "订单数"},
-		{key : "giftAmountTotal", clz : "", label : "代金券总金额"},
-		{key : "orderTotal", clz : "", label : "订单支付金额"},
-		{key : "orderWaitTotal", clz : "", label : "待消费订单金额"},
-		{key : "orderRegAmount", clz : "", label : "退款金额"},
-		{key : "orderRefundAmount", clz : "", label : "退订金额"},
-		{key : "total", clz : "", label : "成交金额"},
-		{key : "orderTotal", clz : "", label : "线下金额"},
+		{key : "cityID", clz : "text", label : "城市"},
+		{key : "billDate", clz : "date", label : "日期"},
+		{key : "count", clz : "number", label : "订单数"},
+		{key : "giftAmountTotal", clz : "number", label : "代金券总金额"},
+		{key : "orderTotal", clz : "number", label : "订单支付金额"},
+		{key : "orderWaitTotal", clz : "number", label : "待消费订单金额"},
+		{key : "orderRegAmount", clz : "number", label : "退款金额"},
+		{key : "orderRefundAmount", clz : "number", label : "退订金额"},
+		{key : "total", clz : "number", label : "成交金额"},
+		{key : "orderTotal", clz : "number", label : "线下金额"},
 		{key : "rowControl", clz : "", label : "操作"}
 	];
 
 	var OrderQueryDishHotTableHeaderCfg = [
-		{key : "index", clz : "", label : "序号"},
-		{key : "foodName", clz : "", label : "菜品名称"},
-		{key : "foodCategoryName", clz : "", label : "分类名称"},
-		{key : "sumPrice", clz : "", label : "平均价格"},
-		{key : "sumMaster", clz : "", label : "销售份数"}
+		{key : "index", clz : "number", label : "序号"},
+		{key : "foodName", clz : "text", label : "菜品名称"},
+		{key : "foodCategoryName", clz : "text", label : "分类名称"},
+		{key : "sumPrice", clz : "number", label : "平均价格"},
+		{key : "sumMaster", clz : "number", label : "销售份数"}
 	];
 
 	var OrderQueryUserTableHeaderCfg = [
-		{key : "userName", clz : "", label : "姓名"},
-		{key : "userSex", clz : "", label : "性别"},
-		{key : "userLoginMobile", clz : "", label : "手机号"},
-		{key : "sumRecord", clz : "", label : "订餐次数"},
-		{key : "foodAmount", clz : "", label : "订餐金额"},
-		{key : "minOrderTime", clz : "", label : "首次订餐时间"},
-		{key : "maxOrderTime", clz : "", label : "最近订餐时间"}
+		{key : "userName", clz : "text", label : "姓名"},
+		{key : "userSex", clz : "text", label : "性别"},
+		{key : "userLoginMobile", clz : "text", label : "手机号"},
+		{key : "sumRecord", clz : "number", label : "订餐次数"},
+		{key : "foodAmount", clz : "number", label : "订餐金额"},
+		{key : "minOrderTime", clz : "date", label : "首次订餐时间"},
+		{key : "maxOrderTime", clz : "date", label : "最近订餐时间"}
 	];
 
 	var mapColItemRenderData = function (row, rowIdx, colKey) {
@@ -177,18 +177,19 @@
 	Hualala.Order.mapQueryOrderResultRenderData = function (records) {
 		var self = this;
 		var clz = "col-md-12",
-			tblClz = "table-striped table-hover",
+			tblClz = "table-bordered table-striped table-hover ix-data-report",
 			tblHeaders = OrderQueryTableHeaderCfg,
 			statisticData = self.model.getStatisticData();
 		var mapColsRenderData = function (row, idx) {
 			var colKeys = _.map(tblHeaders, function (el) {
-				return $XP(el, 'key', '');
+				// return $XP(el, 'key', '');
+				return {key : $XP(el, 'key', ''), clz : $XP(el, 'clz', '')};
 			});
 			// colKeys.push('rowControl');
 			var col = {clz : '', type : 'text'};
 			var cols = _.map(colKeys, function (k, i) {
-				var r = mapColItemRenderData.apply(self, [row, idx, k]);
-				return IX.inherit(col, r);
+				var r = mapColItemRenderData.apply(self, [row, idx, $XP(k, 'key', '')]);
+				return IX.inherit(col, r, {clz : $XP(k, 'clz', '')});
 			});
 			return cols;
 		};
@@ -214,6 +215,7 @@
 		ftCols.unshift({
 			clz : 'title', colspan : '6', rowspan : '1', value : '', text : '共计：'
 		});
+		ftCols.push({clz : '', colspan : '', rowspan : '', value : '', text : ''});
 		var tfoot = [{
 			clz : '',
 			cols : ftCols
@@ -240,7 +242,7 @@
 		var pagerParams = self.model.getPagerParams();
 		var queryKeys = self.model.queryKeys;
 		var clz = "col-md-12",
-			tblClz = "table-striped table-hover",
+			tblClz = "table-bordered table-striped table-hover ix-data-report",
 			tblHeaders = IX.clone(OrderQueryDuringTableHeaderCfg),
 			statisticData = self.model.getStatisticData();;
 		if (pageName == 'orderQueryDuring') {
@@ -248,7 +250,7 @@
 				var key = $XP(el, 'key', '');
 				if (key == 'billDate') {
 					el = IX.inherit(el, {
-						key : 'shopName', clz : "", label : "店铺名称"
+						key : 'shopName', label : "店铺名称"
 					});
 				}
 				return el;
@@ -256,13 +258,14 @@
 		}
 		var mapColsRenderData = function (row, idx) {
 			var colKeys = _.map(tblHeaders, function (el) {
-				return $XP(el, 'key', '');
+				// return $XP(el, 'key', '');
+				return _.pick(el, 'key', 'clz');
 			});
 			// colKeys.push('rowControl');
 			var col = {clz : '', type : 'text'};
 			var cols = _.map(colKeys, function (k, i) {
-				var r = mapColItemRenderData.apply(self, [row, idx, k]);
-				return IX.inherit(col, r);
+				var r = mapColItemRenderData.apply(self, [row, idx, $XP(k, 'key', '')]);
+				return IX.inherit(col, r, {clz : $XP(k, 'clz', '')});
 			});
 			return cols;
 		};
@@ -288,6 +291,7 @@
 		ftCols.unshift({
 			clz : 'title', colspan : '2', rowspan : '1', value : '', text : '共计：'
 		});
+		ftCols.push({clz : '', colspan : '', rowspan : '', value : '', text : ''});
 		var tfoot = [{
 			clz : '',
 			cols : ftCols
@@ -310,17 +314,18 @@
 	Hualala.Order.mapQueryDishesHotRenderData = function (records) {
 		var self = this;
 		var clz = "col-md-12",
-			tblClz = "table-striped table-hover",
+			tblClz = "table-bordered table-striped table-hover ix-data-report",
 			tblHeaders = OrderQueryDishHotTableHeaderCfg;
 		var mapColsRenderData = function (row, idx) {
 			var colKeys = _.map(tblHeaders, function (el) {
-				return $XP(el, 'key', '');
+				// return $XP(el, 'key', '');
+				return _.pick(el, 'key', 'clz');
 			});
 			// colKeys.push('rowControl');
 			var col = {clz : '', type : 'text'};
 			var cols = _.map(colKeys, function (k, i) {
-				var r = mapColItemRenderData.apply(self, [row, idx, k]);
-				return IX.inherit(col, r);
+				var r = mapColItemRenderData.apply(self, [row, idx, $XP(k, 'key', '')]);
+				return IX.inherit(col, r, {clz : $XP(k, 'clz', '')});
 			});
 			return cols;
 		};
@@ -348,17 +353,18 @@
 	Hualala.Order.mapQueryUserRenderData = function (records) {
 		var self = this;
 		var clz = "col-md-12",
-			tblClz = "table-striped table-hover",
+			tblClz = "table-bordered table-striped table-hover ix-data-report",
 			tblHeaders = OrderQueryUserTableHeaderCfg;
 		var mapColsRenderData = function (row, idx) {
 			var colKeys = _.map(tblHeaders, function (el) {
-				return $XP(el, 'key', '');
+				// return $XP(el, 'key', '');
+				return _.pick(el, 'key', 'clz');
 			});
 			// colKeys.push('rowControl');
 			var col = {clz : '', type : 'text'};
 			var cols = _.map(colKeys, function (k, i) {
-				var r = mapColItemRenderData.apply(self, [row, idx, k]);
-				return IX.inherit(col, r);
+				var r = mapColItemRenderData.apply(self, [row, idx, $XP(k, 'key', '')]);
+				return IX.inherit(col, r, {clz : $XP(k, 'clz', '')});
 			});
 			return cols;
 		};

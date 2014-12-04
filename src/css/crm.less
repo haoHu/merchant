@@ -27,7 +27,20 @@
     .glyphicon-ok { color: #390 }
 	.glyphicon-minus { color: @x-font-color-lightGray }
 }
-#crmRechargeSetsTable td { vertical-align: middle }
+#crmRechargeSetsTable td { .v-m; }
+.crm-query-panel
+{
+    padding: 15px 0 0 15px;
+    label { .d-ib; margin: -0px 15px 15px 0; font-weight: normal; }
+    select, input { .fc-ib; margin-left: 12px; }
+    .date-lbl input, .more-crm-query input { width: 125px; }
+    .ml-0 { .ml-0; }
+    span { .gut; }
+    .btn { margin-left: 15px; width: 100px; }
+    .t-r { margin: 0 15px 15px 0; }
+    .t-j { margin-bottom: -15px; }
+    .t-j:after { content: ''; .d-ib; width: 100%; height: 0; }
+}
 
 
 

@@ -19,17 +19,21 @@ body {
 .m-t { margin-top: @x-gutter-size }  
 .mt-12 { margin-top: 12px } 
 .mt-13 { margin-top: 13px }          
-.mt-14 { margin-top: 14px }       
+.mt-14 { margin-top: 14px }   
 .m-b { margin-bottom: @x-gutter-size }  
 .mb-12 { margin-bottom: 12px } 
 .mb-13 { margin-bottom: 13px }          
 .mb-14 { margin-bottom: 14px }   
+.mr-15 { margin-right: 15px; }
+.ml-0 { margin-left: 0; }
 .d-b { .x-block() }
 .d-i { display: inline }
 .d-ib { .x-inlineblock() }
+.dn { display: none; }
 .t-l { .x-tl() }
 .t-c { .x-tc() }
 .t-r { .x-tr() }
+.t-j { text-align: justify; }
 .v-t { .x-vt() }
 .v-m { .x-vm() }
 .v-b { .x-vb() }
@@ -37,6 +41,8 @@ body {
 .ib-vm { .x-ib-vm() }
 .ib-vb { .x-ib-vb() }
 .t-label { .x-inlineblock(); margin-right: @x-gutter-size }
+.fc-ib { .d-ib; width: auto; }
+.gut { margin: 0 6px 0 6px; }
 
 /*======== Bootstrap override - Start =========*/
 .form-horizontal .control-label { padding-right: 0 }
@@ -86,8 +92,12 @@ body.login {
 		}
 		.hello, .user {.x-inlineblock(); margin-right : 4px; color : @x-font-color-midGray; font-weight: 700;}
 	}
+	// @Note for 1.1 delete logo and group title in navbar-header and move to topbar
+	// .ix-group-brand {
+	// 	float : left; .x-font-size(18px); font-weight: bold; .x-adjust-leading-to(1.5, 1em); vertical-align: middle; padding : 15px 0;
+	// }
 	.ix-group-brand {
-		float : left; .x-font-size(18px); font-weight: bold; .x-adjust-leading-to(1.5, 1em); vertical-align: middle; padding : 15px 0;
+		.x-inlineblock(); .x-font-size(18px); font-weight: bolder; .x-adjust-leading-to(1.5, 1rem); vertical-align: middle;
 	}
 	.icon-pcclient {
 		.x-icon-16_mobile(); .x-icon-size(18px); margin-right : 6px; vertical-align: -4px;
@@ -96,11 +106,18 @@ body.login {
 		.x-icon-16_go(); .x-icon-size(16px); margin-right : 6px; vertical-align: -4px;
 	}
 	.logo {
-		padding-top : 10px;
-		> img {.x-area-size(@site-logo-w, @site-logo-h);}
+		// @Note for 1.1 delete logo and group title in navbar-header and move to topbar
+		// padding-top : 10px;
+		// > img {.x-area-size(@site-logo-w, @site-logo-h);}
+		.x-inlineblock(); vertical-align: middle;
+		> img {.x-area-size(auto, 22px);}
+	}
+	.user-mgr.navbar-nav {
+		margin-right : 0;
 	}
 	.nav-justified {
-		width : 60%;
+		// @Note for 1.1 delete logo and group title in navbar-header and move to topbar
+		// width : 60%;
 		a {
 			padding : 10px 15px; margin-top : 10px; font-weight : 700;
 		}
@@ -130,15 +147,20 @@ body.login {
 
 @media (min-width: 768px) and (max-width: 992px) {
 	.ix-header {
-		.logo {
-			padding-top : 18px;
-			> img {.x-area-size(@site-logo-w * 0.6, @site-logo-h * 0.6);}
-		}
+
+		// .logo {
+		// 	padding-top : 18px;
+		// 	> img {.x-area-size(@site-logo-w * 0.6, @site-logo-h * 0.6);}
+		// }
 		#site_navbar .nav-pills > li > a {.x-font-size(14px);}
 	}
 }
 
 @media (max-width: 767px) {
+	.user-mgr.navbar-nav.navbar-right {
+		float: right; margin : 0;
+		& .open .dropdown-menu {position : absolute; background-color : #fff; border : 1px solid #ccc; border : 1px solid rgba(0, 0, 0, 0.175);}
+	}
 	.navbar-header, .navbar-collapse {background-color : @page-header-bg;}
 	.ix-header .nav-justified {width : 100%;}
 	.ix-header .nav-pills li {

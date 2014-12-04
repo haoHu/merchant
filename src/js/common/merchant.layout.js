@@ -5,7 +5,7 @@
 		{name : 'order', title : '订单', label : '报表.菜品排行', brickClz : 'home-brick-md-3', itemClz : 'brick-item', icon : 'icon-order'},
 		{name : 'shop', title : '店铺管理', label : '开店.信息.菜谱', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-home'},
 		{name : 'crm', title : '会员', label : '储值.优惠', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-crm'},		
-		{name : 'pcclient', title : '下载哗啦啦', label : '', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-download'},
+		{name : 'pcclient', title : '下载哗啦啦', label : '哗啦啦客户端', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-download'},
 		{name : 'user', title : '账号管理', label : '账号.权限', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-lock'},
 		{name : 'setting', title : '业务设置', label : '开通业务.业务参数', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-setting'}
 	];
@@ -121,13 +121,14 @@
 					$footer[!expand ? 'removeClass' : 'addClass']('in');
 				});
 			}
-			$('#ix_wrapper .ix-footer').on('mouseleave', function (e) {
-				footerAnimation(false);
-			});
-			$('#ix_wrapper .btn-toggle').on('mouseenter', function (e) {
-				footerAnimation(true);
-			});
-			footerAnimation(false);
+			// @NOTE: For 1.1 hidden site footer (#4105)
+			// $('#ix_wrapper .ix-footer').on('mouseleave', function (e) {
+			// 	footerAnimation(false);
+			// });
+			// $('#ix_wrapper .btn-toggle').on('mouseenter', function (e) {
+			// 	footerAnimation(true);
+			// });
+			// footerAnimation(false);
 		}
 		if ($.fn.bootstrapValidator) {
 			$.fn.bootstrapValidator.DEFAULT_OPTIONS = $.extend({}, $.fn.bootstrapValidator.DEFAULT_OPTIONS, {

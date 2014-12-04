@@ -48,9 +48,16 @@
 			'<div class="navbar navbar-default navbar-fixed-top ix-header" role="navigation">',
 				'<div class="header-line clearfix">',
 					'<div class="container">',
-						'<div class="hidden-xs pull-left">',
-							// '<a href="{{header.pcClientPath}}" target="_blank"><span class="icon-pcclient"></span>哗啦啦PC客户端</a>',
-							'<a href="{{header.hualalaUrl}}" target="_blank"><span class="icon-jumpsite"></span>访问哗啦啦网站</a>',
+						// @NOTE: for 1.1 delete top bar link and add site logo
+						// '<div class="hidden-xs pull-left">',
+						// 	// '<a href="{{header.pcClientPath}}" target="_blank"><span class="icon-pcclient"></span>哗啦啦PC客户端</a>',
+						// 	'<a href="{{header.hualalaUrl}}" target="_blank"><span class="icon-jumpsite"></span>访问哗啦啦网站</a>',
+						// '</div>',
+						'<div class=" pull-left">',
+							'<a class="logo" href="{{header.merchantRoot}}" title="哗啦啦商户中心">',
+								'<img alt="哗啦啦商户中心" src="{{header.logo}}" />',
+							'</a>',
+							'<h1 class="ix-group-brand ">{{header.groupName}}</h1>',
 						'</div>',
 						'{{#if header.isLogin}}',
 						'<div class="pull-right hidden">',
@@ -89,8 +96,9 @@
 				'</div>',
 				'<div class="container">',
 					'<div class="navbar-header">',
-						'<a class="navbar-brand logo" href="{{header.merchantRoot}}" title="哗啦啦商户中心"><img alt="哗啦啦商户中心" src="{{header.logo}}" /></a>',
-						'<h1 class="ix-group-brand">{{header.groupName}}</h1>',
+						// @NOTE for 1.1 delete site logo in navbar and move to topbar
+						// '<a class="navbar-brand logo" href="{{header.merchantRoot}}" title="哗啦啦商户中心"><img alt="哗啦啦商户中心" src="{{header.logo}}" /></a>',
+						// '<h1 class="ix-group-brand">{{header.groupName}}</h1>',
 					'</div>',
 				'</div>',
 			'</div>',
@@ -100,8 +108,8 @@
 				'</div>',
 			'</div>',
 			// Footer
-             // @NOTE: 开发阶段隐藏页脚
-			'<div class="ix-footer navbar-fixed-bottom in">',
+             // @NOTE: For 1.1 hidden site footer (#4105)
+			'<div class="ix-footer navbar-fixed-bottom in hidden">',
 				'<div class="btn-toggle">',
 					'<div class="toggle-icon"><span></span></div>',
 				'</div>',

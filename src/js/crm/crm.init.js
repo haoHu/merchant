@@ -79,7 +79,14 @@
 
 	/*会员详情*/
 	function initMemberDetail () {
-		// TODO 会员详情页面
+		var ctx = Hualala.PageRoute.getPageContextByPath(),
+			$body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+        Hualala.CRM.initDetail($body, ctx.params[0]);
 	};
 
 

@@ -194,7 +194,7 @@
 					
 				} else {
 					toptip({
-						msg : '切换成功!',
+						msg : !status ? '关闭成功！' : '开启成功！',
 						type : 'success'
 					});
 					successFn(shopID);
@@ -240,7 +240,7 @@
 					});
 				} else {
 					toptip({
-						msg : '切换成功!',
+						msg : !status ? '关闭成功！' : '开启成功！',
 						type : 'success'
 					});
 					successFn({

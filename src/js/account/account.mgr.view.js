@@ -423,7 +423,7 @@
 				return IX.inherit(op, {
 					id : k + '_' + IX.id(),
 					name : k,
-					clz : 'col-sm-6'
+					clz : 'col-sm-5 radio-inline'
 				});
 			});
 			AccountEditFormElsHT.register(k, IX.inherit(el, {

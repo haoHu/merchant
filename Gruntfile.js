@@ -285,6 +285,9 @@ module.exports = function (grunt) {
 					"<%= pkg.destPath.jsPath %>/dep/bootstrap.min.js" : [
 						"<%= pkg.destPath.jsPath %>/dep/bootstrap.js"
 					],
+					"<%= pkg.destPath.jsPath %>/dep/echarts-plain.min.js" : [
+						"<%= pkg.destPath.jsPath %>/dep/echarts-plain.js"
+					],
 					"<%= pkg.destPath.jsPath %>/dep/deplib.min.js" : [
 						"<%= pkg.destPath.jsPath %>/dep/deplib.js"
 					],
