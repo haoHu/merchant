@@ -28,50 +28,122 @@
 	.glyphicon-minus { color: @x-font-color-lightGray }
 }
 #crmRechargeSetsTable td { .v-m; }
-.crm-query-panel
+
+.query-panel, .crm-query-panel
 {
     padding: 15px 0 0 15px;
-    label { .d-ib; margin: -0px 15px 15px 0; font-weight: normal; }
-    select, input { .fc-ib; margin-left: 12px; }
-    .date-lbl input, .more-crm-query input { width: 125px; }
+    label { .d-ib; margin: -0px 36px 15px 0; font-weight: normal; }
+    .date-lbl input, .more-crm-query input,
+    { width: 125px; }
     .ml-0 { .ml-0; }
+    select, input, .chosen-container { .fc-ib; margin-left: 12px; }
+    .btn { width: 100px; }
+}
+.query-panel .btn { margin: 0 15px 15px 0; float: right }
+
+.crm-query-panel
+{
+    label { margin-right: 15px; }
     span { .gut; }
-    .btn { margin-left: 15px; width: 100px; }
     .t-r { margin: 0 15px 15px 0; }
     .t-j { margin-bottom: -15px; }
     .t-j:after { content: ''; .d-ib; width: 100%; height: 0; }
+    .btn { margin-left: 15px; }
+}
+
+.glyphicon.ok { color: #390; margin-left: 8px;}
+.glyphicon.no { color: @x-font-color-lightGray; margin-left: 8px;}
+
+.crm-query-table, .crm-detail { th, td{ .t-c; } }
+    
+.crm-query-table 
+{
+    td:nth-child(6), td:nth-child(7), 
+    td:nth-child(8), td:nth-child(9)
+    { .t-r; }
 }
 .crm-detail
 {
     .basic-info
     {
-        img { margin-right: 20px; }
+        margin: 25px 0;
+        img { float: left; }
         img, div { vertical-align: middle; }
-        div, li { .d-ib; }
-        div { line-height: 34px; }
-        li { margin-right: 25px; }
-        label { margin-right: 8px; font-weight: normal; }
+        div { margin-left: 120px; line-height: 34px; }
+        li { .d-i; margin-right: 25px; }
+        label, span { .d-ib; }
+        label { margin-right: 8px; }
         label:after { content: ': ' }
     }
-    .detail-info
+    
+    .tab-content { padding-top: 15px; }
+    
+    #transDetail, #cardLog 
+    { 
+        th:last-child { width: 300px; } 
+        td:last-child { .t-l; }
+    }
+    
+    #transDetail
     {
-        margin: 25px 0 5px 0;
-        table 
-        { display: inline-table; background-color: #fefce4; 
-          margin: 0 20px 20px 0; 
-        }
-        th, td { padding: 0 12px; line-height: 2; }
-        th { font-weight: normal; padding-right: 0; text-align: right; }
-        th:after { content: ':' }
-        td { text-align: left; }
-        tr:first-child th, tr:first-child td
-        { padding-top: 6px; }
-        tr:last-child th, tr:last-child td
-        { padding-bottom: 6px; }
+        td:nth-child(4), td:nth-child(5), td:nth-child(6),
+        td:nth-child(7), td:nth-child(8)
+        { .t-r; }
     }
 }
 
+.crm-pref-table
+{
+    thead
+    {
+        th:nth-child(5), th:nth-child(7)
+        { .t-c; }
+    }
+    tbody
+    {
+        td:nth-child(5), td:nth-child(7)
+        { .t-r; }
+    }
+}
 
+.pref-form
+{
+    input[type=text], select { .fc-ib; }
+    .fwc input { width: 125px }
+    .form-group > div > div { margin-top: 6px; }
+}
+
+.crm-report-table
+{
+    thead th { .t-c; }
+    .sort
+    {
+        cursor: pointer;
+        span { .d-ib; width: 10px; margin-right: 4px; position: relative; bottom: -1px; line-height: 5px; color: #dedede }
+        span:before, span:after { content: ''; .d-ib; }
+        span:before { border: 5px solid; border-top: none; border-left-color: transparent; border-right-color: transparent; }
+        span:after { border: 5px solid; border-bottom: none; border-left-color: transparent; border-right-color: transparent; }
+        &.asc span:before { border-bottom-color: #000; }
+        &.desc span:after { border-top-color: #000; }
+    }
+}
+
+.TransSum .crm-report-table thead th:first-child { width: 140px }
+
+.TransDetail
+{
+    .query-panel
+    {
+        label { margin-right: 25px; }
+        .date-lbl input { width: 110px; }
+        [name=keyword] { width: 125px }
+        [name=transType] { width: 100px }
+        [name=transShopID] { max-width: 125px }
+    }
+    
+    thead th:nth-child(10) { width: 160px; }
+}
+.modal-trans-detail .modal-dialog { width: 225px; font-family: simsum serif; }
 
 
 

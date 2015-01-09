@@ -172,7 +172,7 @@
 form.read-mode, .form.read-mode
 {
 	.control-label { color: #787878 }
-	.form-control, .star-required { display: none; }
+	.form-control, .star-required, .chosen-container { display: none; }
 	.form-control-feedback, .help-block
 	{ display: none!important; }
 	.control-label:after { content: ' :'; }
@@ -218,7 +218,7 @@ form.edit-mode, .form.edit-mode
 		  border-radius: 50%; background: #fff;
 		}
 		li:last-child:before { top: 0 }
-		li a { width: 120px }
+		li a { width: 150px }
 		li a:first-child { margin-right: 12px }
 	}
 	
@@ -342,6 +342,7 @@ form.edit-mode, .form.edit-mode
     { display: inline-block; vertical-align: top }
     .form-food
     {
+        width: 448px;
         div { margin-bottom: 12px; }
         .form-group 
         { 

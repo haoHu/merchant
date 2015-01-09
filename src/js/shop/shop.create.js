@@ -12,12 +12,18 @@ Hualala.Shop.initCreate = function ($wizard)
         $step1 = $wizard.find('#tab1'),
         $step2 = $wizard.find('#tab2'),
         $step3 = $wizard.find('#tab3'),
+        $select = $wizard.find('select'),
         $city = $step1.find('#cityID'),
         $area = $step1.find('#areaID'),
         $cuisine1 = $step1.find('#cuisineID1'),
-        $cuisine2 = $step1.find('#cuisineID2');
+        $cuisine2 = $step1.find('#cuisineID2'),
+        bv = null;
     // 初始化城市列表下拉框
     initCities($city);
+    U.createChosen($area, [], 1, 1, { width: '100%', placeholder_text : "请先选择或输入所在城市", }, false);
+    U.createChosen($cuisine1, [], 1, 1, { width: '100%', placeholder_text : "请先选择或输入所在城市", }, false);
+    U.createChosen($cuisine2, [], 1, 1, { width: '100%', placeholder_text : "请先选择或输入所在城市", }, false);
+    
     // 根据所选择的城市设置地标、菜系下拉列表
     $city.on('change', function ()
     {
@@ -37,6 +43,7 @@ Hualala.Shop.initCreate = function ($wizard)
     });
     // 初始化表单验证
     $step1.bootstrapValidator({
+        excluded: ':disabled',
         fields: {
             shopName: {
                 message: '店铺名无效',
@@ -108,6 +115,7 @@ Hualala.Shop.initCreate = function ($wizard)
             }
         }
     });
+    bv = $step1.data('bootstrapValidator');
     
     var $uploadImg = $step1.find('#uploadImg'),
         imagePath = ''; // 门头图图片路径
@@ -118,7 +126,7 @@ Hualala.Shop.initCreate = function ($wizard)
         U.uploadImg({
             onSuccess: function (imgPath, $dlg)
             {
-                var src = G.IMAGE_RESOURCE_DOMAIN + '/' + imgPath;
+                var src = G.IMAGE_RESOURCE_DOMAIN + '/' + imgPath + '?quality=70';
                 imagePath = imgPath;
                 $uploadImg.find('img').attr('src', src);
                 $dlg.modal('hide');
@@ -138,7 +146,8 @@ Hualala.Shop.initCreate = function ($wizard)
         // 第一步
         if($curStep.is('#tab1'))
         {
-            if(!$step1.data('bootstrapValidator').validate().isValid()) return;
+            //$select.blur();
+            if(!bv.validate().isValid()) return;
             // 数据提交前预处理
             dataStep1 = Hualala.Common.parseForm($step1);
             dataStep1.shopID = shopID;
@@ -208,43 +217,40 @@ Hualala.Shop.initCreate = function ($wizard)
 // 初始化菜系下拉列表
 function initCuisines($cuisine1, $cuisine2, cityID)
 {
-    var callServer = G.getCuisines;
-    callServer({cityID: cityID}, function(rsp)
+    G.getCuisines({cityID: cityID}, function(rsp)
     {
         if(rsp.resultcode != '000')
         {
             rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
-        
-        fillSelectBox($cuisine1, rsp.data.records, 'cuisineID', 'cuisineName');
-        fillSelectBox($cuisine2, rsp.data.records, 'cuisineID', 'cuisineName', '--不限--');
-        $cuisine1.blur(); $cuisine2.blur();
+        $cuisine1.siblings('.chosen-container').remove();
+        U.createChosen($cuisine1.show().data('chosen', null), rsp.data.records || [], 'cuisineID', 'cuisineName', { width: '100%' }, { cuisineID: '', cuisineName: '--请选择--' }).blur().change(function(){ $(this).blur() });
+        $cuisine2.siblings('.chosen-container').remove();
+        U.createChosen($cuisine2.show().data('chosen', null), rsp.data.records || [], 'cuisineID', 'cuisineName', { width: '100%' }, { cuisineID: '', cuisineName: '--不限--' }).blur().change(function(){ $(this).blur() });
     });
     
 }
 // 初始化地标下拉列表
 function initAreas($selectBox, cityID)
 {
-    var callServer = G.getAreas;
-    callServer({cityID: cityID}, function(rsp)
+    G.getAreas({cityID: cityID}, function(rsp)
     {
         if(rsp.resultcode != '000')
         {
             rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
             return;
         }
-        
-        fillSelectBox($selectBox, rsp.data.records, 'areaID', 'areaName');
-        $selectBox.blur();
+        $selectBox.siblings('.chosen-container').remove();
+        U.createChosen($selectBox.show().data('chosen', null), rsp.data.records || [], 'areaID', 'areaName', { width: '100%' }, { areaID: '', areaName: '--请选择--' })
+        .blur().change(function(){ $(this).blur() });
     });
     
 }
 // 初始化城市下拉列表
 function initCities($selectBox)
 {
-    var callServer = G.getCities;
-    callServer({isActive: 1}, function(rsp)
+    G.getCities({isActive: 1}, function(rsp)
     {
         if(rsp.resultcode != '000')
         {
@@ -252,26 +258,12 @@ function initCities($selectBox)
             return;
         }
         
-        fillSelectBox($selectBox, rsp.data.records, 'cityID', 'cityName');
+        U.createChosen($selectBox, rsp.data.records || [], 'cityID', 'cityName', { width: '100%' }, { cityID: '', cityName: '--请选择--' })
+        .change(function(){ $(this).blur() });
     });
     
 }
-// 设置下拉列表的项
-function fillSelectBox($selectBox, data, key, value, initialValue)
-{
-    var optionsHtml = '<option value="">' + 
-                      (initialValue || '--请选择--') + 
-                      '</option>';
-    $.each(data, function (i, o)
-    {
-        optionsHtml += '<option value="' + 
-                       o[key] + '">' + 
-                       o[value] + 
-                       '</option>';
-    });
-        
-    $selectBox.empty().html(optionsHtml);
-}
+
 // 处理并获取下拉列表当前选择项的文本
 function getSelectText($select)
 {

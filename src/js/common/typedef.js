@@ -40,9 +40,12 @@
 	];
 	Hualala.TypeDef.CRMParamsSubNavType = [
 		{name : "crmParameter", label : "会员系统参数", pkeys : []},
+        {name : "crmCardLevels", label : "会员等级", pkeys : []},
 		{name : "crmRechargePackageBusiness", label : "充值套餐", pkeys : []},
 		{name : "crmShopSpecialPrice", label : "店铺特惠", pkeys : []}
 	];
+    
+    
 
 	Hualala.TypeDef.OrderSubNavType = [
 		// Note：先屏蔽，第二版本开放
@@ -159,21 +162,21 @@
 	 */
 	Hualala.TypeDef.FSMTransType = [
 		{value : '', label : "全部"},
-		{value : 101, label : "网上订餐消费", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
-		{value : 102, label : "账户充值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
-		{value : 103, label : "网上订餐用券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
-		{value : 104, label : "到店消费验券", tpl : "tpl_chktick_detail", queryCall : null, queryKeys : null},
-		{value : 105, label : "会员卡充值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
-		{value : 199, label : "账户资金调加"},
-		{value : 201, label : "订餐消费后退款", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
-		{value : 202, label : "平台预付款"},
+		{value : 101, label : "网上订餐", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		//{value : 102, label : "账户充值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
+		//{value : 103, label : "网上订餐用券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		//{value : 104, label : "到店消费验券", tpl : "tpl_chktick_detail", queryCall : null, queryKeys : null},
+		{value : 105, label : "会员在线储值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
+		//{value : 199, label : "账户资金调加"},
+		{value : 201, label : "订单退款", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		//{value : 202, label : "平台预付款"},
 		{value : 203, label : "提现", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
 		// {value : 204, label : "支付平台服务费"},
 		// {value : 205, label : "支付平台广告费"},
 		// {value : 206, label : "支付平台信息费"},
-		{value : 207, label : "订餐消费后退券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
-		{value : 299, label : "账户资金调减"},
-		{value : 410, label : "店内自助", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"}
+		//{value : 207, label : "订餐消费后退券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		//{value : 299, label : "账户资金调减"},
+		{value : 410, label : "店内自助点菜结账", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"}
 	];
 	/**
 	 * 交易状态
@@ -485,6 +488,101 @@
 		{value : 0, label : "停用"},
 		{value : 1, label : "正常"}
 	];
+    
+    Hualala.TypeDef.CRM = {
+        //会员来源类型
+        sourceType: {
+            '10': 'WEB网站',
+            '12': 'APP客户端',
+            '14': '触屏版',
+            '20': '店内',
+            '22': '原会员导入',
+            '30': '微信',
+            '40': '淘宝',
+            '50': '百度'
+        },
+        //会员来源途径
+        sourceWay: { '0': '线下', '1': '线上' },
+        transWay: { '0': '线下', '1': '线上' },
+        //会员卡状态类型
+        cardStatus: {
+            '10': '正常',
+            '20': '挂失中',
+            '30': '冻结',
+            '40': '注销'
+        },
+        //会员性别类型
+        customerSex: { '0': '女', '1': '男', '2': '未知' },
+        //会员交易类型
+        transType: {
+            '10': '初始转入', 
+            '20': '储值', 
+            '30': '支付', 
+            '31': '消费', 
+            '40': '调账', 
+            '50': '活动赠积分', 
+            '60': '积分兑换', 
+            '70': '积分清零', 
+            '80': '活动赠余额', 
+            '90': '消费退款'
+        },
+        //会员活动类型
+        eventWay: {
+            '20': '摇奖', 
+            '21': '领取', 
+            '22': '报名', 
+            '24': '有奖竞答', 
+            '30': '积分兑换'
+        },
+        //会员优惠券获取方式
+        getWay: {
+            '10': '消费返券',
+            '20': '摇奖活动', 
+            '30': '积分摇奖', 
+            '40': '积分兑换', 
+            '50': '订单摇奖',
+            '60': '免费领取',
+            '70': '商家赠送',
+            '80': '商家支付',
+            '90': '换卡转入 ',
+            '91': '会员摇奖',
+            '92': '免费领取',
+            '93': '积分兑换',
+            '94': '参与活动',
+            '95': '有奖竞猜',
+            '96': '套餐充值',  
+            '100': '批量导入'
+        },
+        //会员优惠券状态
+        giftStatus: { '1': '可使用', '2': '已使用', '3': '已过期', '4': '已退订' },
+        //会员卡日志类型
+        logType: {
+            '0': '其他', 
+            '10': '挂失', 
+            '11': '解除挂失', 
+            '20': '冻结', 
+            '21': '解冻', 
+            '30': '注销', 
+            '31': '激活', 
+            '40': '卡遗损补办', 
+            '41': '换手机号', 
+            '42': '补办实体卡', 
+            '50': '转让', 
+            '60': '升级', 
+            '61': '降级'
+        }
+    }
 
 
 })(jQuery);
+
+
+
+
+
+
+
+
+
+
+

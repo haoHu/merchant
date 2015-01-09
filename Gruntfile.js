@@ -89,7 +89,8 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/datepicker/local/datetimepicker.zh-CN.js",
 					"<%= pkg.srcPath.jsPath %>/timepicker/timepicker.js",
 					"<%= pkg.srcPath.jsPath %>/validator/validator.js",
-					"<%= pkg.srcPath.jsPath %>/validator/local/validator.zh-CN.js"
+					"<%= pkg.srcPath.jsPath %>/validator/local/validator.zh-CN.js",
+                    "<%= pkg.srcPath.jsPath %>/dep/jquery/jquery.form.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/dep/deplib.js",
 				nonull : true
@@ -124,7 +125,8 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.account.js",
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.order.js",
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.user.js",
-					"<%= pkg.srcPath.jsPath %>/tpl/tpl.crm.js"
+					"<%= pkg.srcPath.jsPath %>/tpl/tpl.crm.js",
+                    "<%= pkg.srcPath.jsPath %>/tpl/tpl.weixin.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/tpl.js",
 				nonull : true
@@ -202,10 +204,24 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/crm/crm.member.controler.js",
 
 					"<%= pkg.srcPath.jsPath %>/crm/crm.params.js",
+                    "<%= pkg.srcPath.jsPath %>/crm/crm.card.levels.js",
 					"<%= pkg.srcPath.jsPath %>/crm/crm.recharge.js",
 					"<%= pkg.srcPath.jsPath %>/crm/crm.query.js",
+					"<%= pkg.srcPath.jsPath %>/crm/crm.detail.js",
+                    "<%= pkg.srcPath.jsPath %>/crm/crm.preferential.js",
+                    "<%= pkg.srcPath.jsPath %>/crm/crm.report.js",
 
 					"<%= pkg.srcPath.jsPath %>/crm/crm.init.js",
+                    
+                    
+                    "<%= pkg.srcPath.jsPath %>/weixin/reply.js",
+                    "<%= pkg.srcPath.jsPath %>/weixin/subscribe.js",
+                    "<%= pkg.srcPath.jsPath %>/weixin/menu.js",
+                    "<%= pkg.srcPath.jsPath %>/weixin/qrcode.js",
+                    "<%= pkg.srcPath.jsPath %>/weixin/content.js",
+                    "<%= pkg.srcPath.jsPath %>/weixin/text.js",
+                    "<%= pkg.srcPath.jsPath %>/weixin/typedef.js",
+                    "<%= pkg.srcPath.jsPath %>/weixin/weixin.init.js",
 
 					// Merchant init
 					"<%= pkg.srcPath.jsPath %>/common/merchant.layout.js",

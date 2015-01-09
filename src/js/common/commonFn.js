@@ -262,7 +262,9 @@
     
     Hualala.Common.formatDateStr = function (str, l, sp)
     {
-        sp = sp || '/', l == l || 8, ln = str.length;
+        sp = sp || '/'; 
+        l == l || 8;
+        var ln = str.length;
         if(ln < 8) return '';
         var ret = [str.substr(0, 4), str.substr(4, 2), str.substr(6, 2)].join(sp);
         if(l == 12 && ln >= 12)
@@ -698,56 +700,32 @@
 		};
 	};
 	Hualala.Common.getCurPageUserRight = getCurPageUserRight;
+    
+    /**
+	 * 对AJAX接口调用的封装
+	 * @return {Object} jQuery Deferred 对象
+	 * @param {String} api Hualala.Globel命名空间下的AJAX接口名称
+	 * @param {Object} params 调用AJAX接口传递的参数
+	 */
+    function loadData(api, params)
+    {
+        var df = $.Deferred();
+        Hualala.Global[api](params, function(rsp)
+        {
+            if(rsp.resultcode != '000')
+            {
+                rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                df.reject(rsp);
+                return;
+            }
+            
+            df.resolve(rsp);
+        });
+        return df.promise();
+    }
+    Hualala.Common.loadData = loadData;
+    
 })(jQuery);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -16,7 +16,8 @@
 				addAccountTpl = Handlebars.compile(Hualala.TplLib.get('tpl_addAccount_Card'));
 			// 注册accountCard子模板
 			Handlebars.registerPartial("accountCard", Hualala.TplLib.get('tpl_account_card'));
-			Handlebars.registerPartial("addAccountCard", Hualala.TplLib.get('tpl_addAccount_Card'));
+			// @NOTE: 新需求STORY #1074，任何权限的用户都不允许添加结算账户，所以屏蔽掉添加结算账户的片段
+			// Handlebars.registerPartial("addAccountCard", Hualala.TplLib.get('tpl_addAccount_Card'));
 
 			this.set({
 				layoutTpl : layoutTpl,
@@ -50,16 +51,17 @@
 					parentView : self
 				});
 			});
-			self.$list.on('click', '.create-account', function (e) {
-				var $btn = $(this);
-				// TODO 创建账户
-				var editAccount = new Hualala.Account.AccountEditView({
-					triggerEl : $btn,
-					mode : 'add',
-					model : null,
-					parentView : self
-				});
-			});
+			// @NOTE: 新需求STORY #1074，任何权限的用户都不允许添加结算账户，所以屏蔽掉添加结算账户的片段
+			// self.$list.on('click', '.create-account', function (e) {
+			// 	var $btn = $(this);
+			// 	// TODO 创建账户
+			// 	var editAccount = new Hualala.Account.AccountEditView({
+			// 		triggerEl : $btn,
+			// 		mode : 'add',
+			// 		model : null,
+			// 		parentView : self
+			// 	});
+			// });
 			self.on({
 				'updateSettleBalance' : function (mAccount) {
 					var settleUnitID = mAccount.get('settleUnitID'),
@@ -123,15 +125,17 @@
 			// self.$list.html(html);
 			self.emptyBar && self.emptyBar.destroy();
 			self.$list.empty();
-			if (accounts.length == 0) {
-				self.emptyBar = new Hualala.UI.EmptyPlaceholder({
-					container : self.$list
-				});
-				self.emptyBar.show();
-			} else {
-				self.$list.html(html);
-				self.chkCtrlRight();
-			}
+			// if (accounts.length == 0) {
+			// 	self.emptyBar = new Hualala.UI.EmptyPlaceholder({
+			// 		container : self.$list
+			// 	});
+			// 	self.emptyBar.show();
+			// } else {
+			// 	self.$list.html(html);
+			// 	self.chkCtrlRight();
+			// }
+			self.$list.html(html);
+			self.chkCtrlRight();
 			self.initPager({
 				total : model.get('pageCount'),
 				page : model.get('pageNo'),

@@ -108,7 +108,7 @@
 	 * 		movable : false	,	//default false
 	 * 		showTitle : true ,	//default true
 	 * 		showFooter : true,	//default true
-	 * 		hideCloseBtn : true,	//default true 默认屏蔽窗口的关闭按钮
+	 * 		hideCloseBtn : false,	//default false 默认显示窗口的关闭按钮
 	 * 		title : '',			//title string
 	 * 		hideWithRemove : true,	//隐藏时是否删除
 	 * 		clz : '',			//dialog className
@@ -133,7 +133,7 @@
 			zIndex : null,
 			showTitle : true,
 			showFooter : true,
-			hideCloseBtn : true,
+			hideCloseBtn : false,
 			title : '',
 			hideWithRemove : true,
 			clz : '',
@@ -174,7 +174,7 @@
 			if (!$XP(config, 'showFooter', false)) {
 				$dialogFoot.hide();
 			}
-			if (!!$XP(config, 'hideCloseBtn', false)) {
+			if (!!$XP(config, 'hideCloseBtn', true)) {
 				$closeBtn.hide();
 			}
 		};
@@ -279,6 +279,7 @@
 			cbFn();
 		});
 		modal.show();
+        return modal;
 	};
 	/**
 	 * Confirm提示框
@@ -522,6 +523,101 @@
         window.uploadStart = function(swfId) { opts.onStart(); };
         
     }
+    
+    function fillSelect($select, items, k, t, dk, dt)
+    {
+        var options = [];
+        if(dk !== false && $.isArray(items))
+        {
+            items = items.slice();
+            var firstItem = {};
+            firstItem[k] = dk || '';
+            firstItem[t] = dt || '全部';
+            items.unshift(firstItem);
+        }
+        
+        if($.isArray(items))
+            for(var i = 0, item; item = items[i++];)
+                options.push($('<option>').val(item[k]).text(item[t]));
+        else if($.isPlainObject(items))
+            for(var key in items)
+                options.push($('<option>').val(key).text(items[key]));
+        
+        return $select.html(options);
+    };
+    
+    function createChosen($select, items, k, t, cfg, defaultItem, cv)
+    {
+        items = items.slice();
+        if(defaultItem !== false)
+        {
+            defaultItem = defaultItem || {};
+            var firstItem = { py: defaultItem.py || 'quan;bu' };
+            firstItem[k] = defaultItem[k] || '';
+            firstItem[t] = defaultItem[t] || '全部';
+            items.unshift(firstItem);
+        }
+        
+        var matcher = (new Pymatch([])),
+            getMatchedFn = function (searchText)
+            {
+                matcher.setNames(_.map(items, function (el)
+                {
+                    return IX.inherit(el, {
+                        name : el[t],
+                        py : el.py
+                    });
+                }));
+                
+                var matchedSections = matcher.match(searchText),
+                    matchedOptions = {};
+                
+                _.each(matchedSections, function (el, i) {
+                    matchedOptions[el[0][k]] = true;
+                });
+                return matchedOptions;
+            },
+            opts = {
+                placeholder_text : "请选择或输入内容",
+                // max_selected_options: 1,
+                no_results_text : "没有相关结果！",
+                allow_single_deselect : true,
+                getMatchedFn : getMatchedFn
+            };
+        fillSelect($select, items, k, t, false);
+        cv && $select.val(cv);
+        return $select.chosen($.extend(opts, cfg || {}));
+    };
+    
+    function createSchemaChosen($shopSelect, $citySelect)
+    {
+        Hualala.Global.getShopQuerySchema({}, function(rsp)
+        {
+            if(rsp.resultcode != '000')
+            {
+                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                return;
+            }
+            var shops = rsp.data.shops, cities = rsp.data.cities;
+            $citySelect && createChosen($citySelect, cities, 'cityID', 'cityName');
+            $shopSelect && createChosen($shopSelect, shops, 'shopID', 'shopName');
+            
+            if($citySelect && $shopSelect)
+            {
+                $citySelect.change(function()
+                {
+                    var that = this;
+                    
+                    var retShops = !that.value ? shops : _.filter(shops, function(shop)
+                    {
+                        return shop.cityID == that.value;
+                    })
+                    $shopSelect.siblings('.chosen-container').remove();
+                    createChosen($shopSelect.show().data('chosen', null), retShops, 'shopID', 'shopName');
+                });
+            }
+        });
+    }
 
 	Hualala.UI.PopoverMsgTip = PopoverMsgTip;
 	Hualala.UI.TopTip = TopTip;
@@ -531,8 +627,13 @@
 	Hualala.UI.EmptyPlaceholder = EmptyPlaceholder;
 	Hualala.UI.BreadCrumb = BreadCrumb;
 	Hualala.UI.LoadingModal = LoadingModal;
-
+    
     Hualala.UI.uploadImg = uploadImg;
+    Hualala.UI.fillSelect = fillSelect;
+    Hualala.UI.createChosen = createChosen;
+    Hualala.UI.createSchemaChosen = createSchemaChosen;
+    
+    
 })(jQuery, window);
 
 /*!

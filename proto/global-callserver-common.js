@@ -26,7 +26,7 @@
 					user : Test.LoginUser,
 					userRight : Test.UserRight,
 					roles : Test.Roles
-				}
+                    }
 			});
 		}, 200);
 	};
@@ -1127,19 +1127,9 @@
 	  */
 	Hualala.Global.getVipLevels = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
-        var rsp = {
-                resultcode: '000', 
-                resultmsg: '',
-                data: {
-                    records: [
-                        {cardLevelID: '201', cardLevelName: 'VIP1', isActive: 1},
-                        {cardLevelID: '202', cardLevelName: 'VIP2', isActive: 1},
-                        {cardLevelID: '203', cardLevelName: 'VIP3', isActive: 1},
-                        {cardLevelID: '204', cardLevelName: 'VIP4', isActive: 1}
-                    ]
-                }
-            };
-		fn(rsp);
+        IX.Net.loadJsFiles(['/test/data/crm_vip_levels.js'], function(){
+            fn(Test.crmVipLevels);
+        });
 	};
     
     /**
@@ -1196,6 +1186,13 @@
 	Hualala.Global.getCrmTransDetail = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
         IX.Net.loadJsFiles(['/test/data/crm_trans_detail.js'], function(){
+            if(params.pageNo)
+            {
+                var srcRecords = Test.crmTransDetail.data.records;
+                var startIndex = (params.pageNo - 1) * params.pageSize;
+                Test.crmTransDetail.data.page.pageNo = params.pageNo;
+                Test.crmTransDetail.data.records = srcRecords.slice(startIndex, startIndex + params.pageSize);
+            }
             fn(Test.crmTransDetail);
         });
 	};
@@ -1239,6 +1236,108 @@
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
         IX.Net.loadJsFiles(['/test/data/crm_card_logs.js'], function(){
             fn(Test.crmCardLogs);
+        });
+	};
+    
+    /**
+      * 获取CRM店铺特惠
+      * @param {Object} params 参数{groupID 可选}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data.records: [{shopName, shopPointRate, ...}, ...]}
+	  * @return {NULL}
+      * 服务调用 URL: /crm/crmShopParamsQuery.ajax
+	  */
+	Hualala.Global.getCrmPreferential = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/crm_preferential.js'], function(){
+            var srcRecords = Test.crmPreferential.data.records;
+            var startIndex = (params.pageNo - 1) * params.pageSize;
+            Test.crmPreferential.data.page.pageNo = params.pageNo;
+            Test.crmPreferential.data.records = srcRecords.slice(startIndex, startIndex + params.pageSize);
+            if(params.itemID)
+                Test.crmPreferential.data.records = [srcRecords[Hualala.Common.inArray(srcRecords, {itemID: params.itemID}, 'itemID')]];
+            fn(Test.crmPreferential);
+        });
+	};
+    
+    /**
+      * 修改会员店铺优惠
+      * @param {Object} params 参数{itemID, isActive, ...} 
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL} 
+      * 服务调用 URL: /crm/crmShopParamsUpdate.ajax
+	  */
+	Hualala.Global.updateCrmPreferential = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 获取会员交易汇总信息
+      * @param {Object} params 参数{queryStartTime, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data]}
+	  * @return {NULL}
+      * 服务调用 URL: /crm/crmTransDetailSummrizing.ajax
+	  */
+	Hualala.Global.getCrmTransSum = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/crm_trans_sum.js'], function(){
+            var rsp = Test.crmTransSum;
+            if(params.pageNo)
+            {
+                var srcRecords = rsp.data.records;
+                var startIndex = (params.pageNo - 1) * params.pageSize;
+                rsp.data.page.pageNo = params.pageNo;
+                rsp.data.records = srcRecords.slice(startIndex, startIndex + params.pageSize);
+            }
+            fn(rsp);
+        });
+	};
+    
+    /**
+      * 获取会员办卡统计信息
+      * @param {Object} params 参数{queryStartTime, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data]}
+	  * @return {NULL}
+      * 服务调用 URL: /crm/crmCustomerCardCreateSummarize.ajax
+	  */
+	Hualala.Global.getCrmCardSum = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/crm_card_sum.js'], function(){
+            var rsp = Test.crmCardSum;
+            if(params.pageNo)
+            {
+                var srcRecords = rsp.data.records;
+                var startIndex = (params.pageNo - 1) * params.pageSize;
+                rsp.data.page.pageNo = params.pageNo;
+                rsp.data.records = srcRecords.slice(startIndex, startIndex + params.pageSize);
+            }
+            fn(rsp);
+        });
+	};
+    
+    /**
+      * 获取会员储值对账信息
+      * @param {Object} params 参数{queryStartTime, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data]}
+	  * @return {NULL}
+      * 服务调用 URL: /crm/crmTransDetailSaveMoneyReconcile.ajax
+	  */
+	Hualala.Global.getCrmRechargeSum = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/crm_recharge_sum.js'], function(){
+            var rsp = Test.crmRechargeSum;
+            if(params.pageNo)
+            {
+                var srcRecords = rsp.data.records;
+                var startIndex = (params.pageNo - 1) * params.pageSize;
+                rsp.data.page.pageNo = params.pageNo;
+                rsp.data.records = srcRecords.slice(startIndex, startIndex + params.pageSize);
+            }
+            fn(rsp);
         });
 	};
     

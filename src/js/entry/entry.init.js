@@ -2,24 +2,24 @@
 	IX.ns('Hualala.Entry');
 	var formFields = [
 		{
-			name : 'group_name', type : 'text', palceholder : '请输入集团主账号', clz : 'form-control input-md',
+			name : 'group_name', type : 'text', palceholder : '请输入主账号', clz : 'form-control input-md',
 			key : 'groupName',
 			field : {
 				validators : {
 					notEmpty : {
-						message : "请输入集团主账号"
+						message : "请输入主账号"
 					}
 				}
 			}
 		},
 		{
-			name : 'group_subname', type : 'text', palceholder : '请输入集团子账号', clz : 'form-control input-md',
+			name : 'group_subname', type : 'text', palceholder : '请输入子账号', clz : 'form-control input-md',
 			key : 'childName',
 			field : {
 				validators : {
-					// notEmpty : {
-					// 	message : "用户账号不能为空"
-					// },
+					notEmpty : {
+						message : "用户账号不能为空"
+					},
 					stringLength : {
 						min : 3,
 						max : 50,
@@ -32,7 +32,7 @@
 			}
 		},
 		{
-			name : 'login_pwd', type : 'passowrd', palceholder : '请输入登陆密码', clz : 'form-control input-md',
+			name : 'login_pwd', type : 'password', palceholder : '请输入登陆密码', clz : 'form-control input-md',
 			key : 'password',
 			field : {
 				validators : {
@@ -132,7 +132,7 @@
 				} else {
 					Hualala.UI.TopTip({
 						type : 'danger',
-						msg : "发送动态密码失败"
+						msg : $XP(res, 'resultmsg', "发送动态密码失败")
 					});
 					$btn.button('reset');
 				}
@@ -368,6 +368,9 @@
 							type : 'danger',
 							msg : $XP(res, 'resultmsg')
 						});
+						if (self.mode == 'common') {
+							self.authCode.genCode();
+						}
 					}
 					self.toggleProgress();
 					self.$subBtn.attr('disabled', false);

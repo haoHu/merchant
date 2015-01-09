@@ -381,7 +381,11 @@
 								r = operationMode == 0 ? true : false;
 								break;
 							case "supportCommitToSoftware":
-								r = (r == 1 ? '支持' : '不支持') + '下单到餐饮软件, ';
+								if (IX.isEmpty(r)) {
+									r = '支持下单到餐饮软件, ';
+								} else {
+									r = (r == 1 ? '支持' : '不支持') + '下单到餐饮软件, ';
+								}
 								break;
 							case "fetchFoodMode":
 								r = '下单后' + (r == 1 ? '凭牌号' : (r == 2 ? '直接' : '凭流水号')) + '在收银台取餐, ';

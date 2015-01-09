@@ -29,7 +29,7 @@
 			};
 		};
 		var $navbar = $body.find('.crm-subnav'),
-			$pageBody = $body.find('.crm-body');
+			$pageBody = $body.find('.crm-body').addClass('table-responsive');
 		$navbar.html(navTpl(mapNavRenderData()));
 	};
 
@@ -98,7 +98,8 @@
 		initCRMPageLayout(Hualala.TypeDef.CRMMemberSubNavType);
 		var $pageBody = $body.find('.crm-body'),
 			queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMMemberSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
-		$pageBody.html('<h1>会员办卡统计</h1>');
+		//$pageBody.html('<h1>会员办卡统计</h1>');
+        Hualala.CRM.initCardSum($pageBody);
 	};
 
 	/*交易汇总*/
@@ -107,8 +108,9 @@
 			$body = $('#ix_wrapper > .ix-body > .container');
 		initCRMPageLayout(Hualala.TypeDef.CRMDealSubNavType);
 		var $pageBody = $body.find('.crm-body'),
-			queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMDealSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
-		$pageBody.html('<h1>交易汇总</h1>');
+        queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMDealSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
+		//$pageBody.html('<h1>交易汇总</h1>');
+        Hualala.CRM.initTransSum($pageBody);
 	};
 
 	/*交易详情*/
@@ -118,7 +120,8 @@
 		initCRMPageLayout(Hualala.TypeDef.CRMDealSubNavType);
 		var $pageBody = $body.find('.crm-body'),
 			queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMDealSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
-		$pageBody.html('<h1>交易详情</h1>');
+		//$pageBody.html('<h1>交易详情</h1>');
+        Hualala.CRM.initTransDetail($pageBody);
 	};
 
 	/*充值对账*/
@@ -128,7 +131,8 @@
 		initCRMPageLayout(Hualala.TypeDef.CRMDealSubNavType);
 		var $pageBody = $body.find('.crm-body'),
 			queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMDealSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
-		$pageBody.html('<h1>充值对账</h1>');
+		//$pageBody.html('<h1>充值对账</h1>');
+        Hualala.CRM.initRechargeSum($pageBody);
 	};
 
 	/*会员系统参数设置*/
@@ -140,6 +144,17 @@
 			queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMParamsSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
 		//$pageBody.html('<h1>会员系统参数设置</h1>');
         Hualala.CRM.initParams($pageBody);
+	};
+    
+    /*会员等级*/
+	function initCRMSettingsLevels () {
+		var ctx = Hualala.PageRoute.getPageContextByPath(),
+			$body = $('#ix_wrapper > .ix-body > .container');
+		initCRMPageLayout(Hualala.TypeDef.CRMParamsSubNavType);
+		var $pageBody = $body.find('.crm-body'),
+			queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMParamsSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
+		//$pageBody.html('<h1>会员系等级</h1>');
+        Hualala.CRM.initVipLevels($pageBody);
 	};
 
 	/*充值套餐*/
@@ -160,7 +175,7 @@
 		initCRMPageLayout(Hualala.TypeDef.CRMParamsSubNavType);
 		var $pageBody = $body.find('.crm-body'),
 			queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMParamsSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
-		$pageBody.html('<h1>店铺特惠</h1>');
+        Hualala.CRM.initPreferential($pageBody);
 	};
 
 	Hualala.CRM.CRMPageLayoutInit = initCRMPageLayout;
@@ -173,6 +188,7 @@
 	Hualala.CRM.DealDetailInit = initDealDetail;
 	Hualala.CRM.RechargeReconciliationInit = initRechargeReconciliation;
 	Hualala.CRM.CRMSettingsParamsInit = initCRMSettingsParams;
+    Hualala.CRM.CRMSettingsLevelsInit = initCRMSettingsLevels;
 	Hualala.CRM.RechargePackageBusinessInit = initRechargePackageBusiness;
 	Hualala.CRM.ShopSpecialPriceInit = initShopSpecialPrice;
 

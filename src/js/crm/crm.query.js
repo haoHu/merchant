@@ -3,38 +3,24 @@
     var G = Hualala.Global,
         C = Hualala.Common,
         M = C.Math,
+        CrmTypeDef = Hualala.TypeDef.CRM,
         dF = IX.Date,
         tplLib = Hualala.TplLib,
         parseForm = Hualala.Common.parseForm,
         topTip = Hualala.UI.TopTip;
         
     var staticData = {
-        sourceType: {
-            '10': 'WEB网站',
-            '12': 'APP客户端',
-            '14': '触屏版',
-            '20': '店内',
-            '22': '原会员导入',
-            '30': '微信',
-            '40': '淘宝',
-            '50': '百度'
-        },
-        cardStatus: {
-            '10': '正常',
-            '20': '挂失中',
-            '30': '冻结',
-            '40': '注销'
-        },
-        customerSex: { '0': '女', '1': '男', '2': '未知' },
-        sourceWay: { '0': '店内', '1': '网上' },
+        cardStatus: CrmTypeDef.cardStatus,
+        customerSex: CrmTypeDef.customerSex,
+        sourceWay: CrmTypeDef.sourceWay,
         
         today: dF.getDateByFormat(dF.formatDate(new Date), 'yyyy/MM/dd'),
-        crmQueryTableHeads: ['来源', '姓名', '性别', '手机号', '生日', '卡号', '储值累计', '储值余额', '消费累计', '积分余额', '等级', '入会日期', '状态', '查看'],
-        crmQueryTableKeys: ['sourceWay', 'customerName', 'customerSex', 'customerMobile', 'customerBirthday', 'cardNO', 'saveMoneyTotal', 'moneyBalance', 'consumptionTotal', 'pointBalance', 'cardLevelName', 'createTime', 'cardStatus', 'cardID']
+        crmQueryTableHeads: ['姓名', '性别', '手机号', '生日', '卡号', '储值累计', '现金余额', '赠送余额', '消费累计', '积分余额', '等级', '入会日期', '状态', '查看'],
+        crmQueryTableKeys: ['customerName', 'customerSex', 'customerMobile', 'customerBirthday', 'cardNO', 'saveMoneyTotal', 'moneyBalance', 'giveBalance', 'consumptionTotal', 'pointBalance', 'cardLevelName', 'createTime', 'cardStatus', 'cardID']
     };
     
     var levels = null, pageSize = 15,
-        $tbody = null, $pager = null,
+        $tbody = null, $pager = $('<div>').addClass('pull-right'),
         vipLevelTpl = Handlebars.compile(tplLib.get('tpl_crm_recharge_set_vip_level'));
     
 	Hualala.CRM.initQuery = function($crm)
@@ -42,6 +28,7 @@
         var params = {pageNo: 1, pageSize: pageSize}, $form = null;
         
         $(Handlebars.compile(tplLib.get('tpl_crm_query'))(staticData)).appendTo($crm);
+        $crm.append($pager);
         
         $crm.find('[data-type=datetimepicker]').datetimepicker({
             format : 'yyyy/mm/dd',
@@ -55,7 +42,6 @@
         
         $form = $crm.find('form');
         $tbody = $crm.find('tbody');
-        $pager = $crm.find('tfoot th').eq(0);
         $levels = $crm.find('[name=cardLevelID]');
         
         if(levels)
@@ -103,27 +89,26 @@
     function renderCrmQueryTable($tbody, items)
     {
         var trs = [], keys = staticData.crmQueryTableKeys,
+            icoOk = '<i class="glyphicon glyphicon-ok ok" title="已验证"></i>',
             createPath = Hualala.PageRoute.createPath;
         for(var i = 0, item; item = items[i++];)
         {
             var $tr = $('<tr>');
             for(var j = 0, key; key = keys[j++];)
             {
-                var $td = $('<td>'), val = item[key];
-                if(/customerSex|sourceWay|cardStatus/.test(key))
-                    $td.text(staticData[key][val]);
-                else if(/saveMoneyTotal|moneyBalance|consumptionTotal|pointBalance/.test(key))
-                    $td.text(M.prettyNumeric(val));
-                else if(key == 'createTime')
-                    $td.text(formatDateStr(val));
-                else if(key == 'customerBirthday')
-                    $td.text(val.replace(/-/g, '/'));
+                var $td = $('<td>'), val = item[key] || '';
+                if(/customerSex|cardStatus/.test(key))
+                    val = staticData[key][val];
+                else if(/saveMoneyTotal|moneyBalance|giveBalance|consumptionTotal|pointBalance/.test(key))
+                    val = M.prettyNumeric(val);
+                else if(/createTime|customerBirthday/.test(key))
+                    val = C.formatDateStr(val.replace(/-/g, ''));
+                else if(key == 'customerMobile' && +item.isMobileChecked)
+                    val += icoOk;
                 else if(key == 'cardID')
-                    $('<a>查看</a>').attr('href', createPath('crmMemberDetail', [val])).appendTo($td);
-                else
-                    $td.text(val);
-                    
-                $tr.append($td);
+                    val = $('<a>查看</a>').attr('href', createPath('crmMemberDetail', [val]));
+                
+                $td.html(val).appendTo($tr);
             }
             trs.push($tr);
         }
@@ -149,11 +134,6 @@
     function formatPostDate(str)
     {
         return /\d{4}\/\d{2}\/\d{2}/.test(str) ? str.split('/').join('') : '';
-    }
-    
-    function formatDateStr(str)
-    {
-        return [str.substr(0, 4), str.substr(4, 2), str.substr(6, 2)].join('/');
     }
     
     function filterVipLevels(levels)

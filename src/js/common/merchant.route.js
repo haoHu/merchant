@@ -51,7 +51,7 @@
 			IX.checkReady(_checking, IX.emptyFn, 40, {
 				maxAge : 15000,
 				expire : function () {
-					alert("Can't find page inializor : \n" + fnames.join("\n"));
+					//alert("Can't find page inializor : \n" + fnames.join("\n"));
 				}
 			});
 		}
@@ -304,6 +304,11 @@
 			reg : /crm\/settings\/params$/, bodyClz : "",
 			PageInitiator : "Hualala.CRM.CRMSettingsParamsInit", parentName : "crm", label : "会员系统参数"
 		},
+        {
+			name : "crmCardLevels", path : "/#crm/settings/levels",
+			reg : /crm\/settings\/levels$/, bodyClz : "",
+			PageInitiator : "Hualala.CRM.CRMSettingsLevelsInit", parentName : "crm", label : "会员等级"
+		},
 		{
 			name : "crmRechargePackageBusiness", path : "/#crm/settings/recharge",
 			reg : /crm\/settings\/recharge$/, bodyClz : "",
@@ -313,6 +318,48 @@
 			name : "crmShopSpecialPrice", path : "/#crm/settings/ssp",
 			reg : /crm\/settings\/ssp/, bodyClz : "",
 			PageInitiator : "Hualala.CRM.ShopSpecialPriceInit", parentName : "crm", label : "店铺特惠"
+		},
+        
+        // 微信系统管理
+		{
+			name : "weixin", path : "/#weixin",
+			reg : /weixin$/, bodyClz : "",
+			PageInitiator : "Hualala.Weixin.homeInit", parentName : "main", label : "微信管理"
+		},
+		{
+			name : "wxReply", path : "/#weixin/admin/reply",
+			reg : /weixin\/admin\/reply$/, bodyClz : "wx-reply",
+			PageInitiator : "Hualala.Weixin.replyInit", parentName : "weixin", label : "自动回复"
+		},
+		{
+			name : "wxSubscribe", path : "/#weixin/admin/subscribe",
+			reg : /weixin\/admin\/subscribe$/, bodyClz : "wx-subscribe",
+			PageInitiator : "Hualala.Weixin.subscribeInit", parentName : "weixin", label : "订阅消息"
+		},
+		{
+			name : "wxMenu", path : "/#weixin/admin/menu",
+			reg : /weixin\/admin\/menu$/, bodyClz : "wx-menu",
+			PageInitiator : "Hualala.Weixin.menuInit", parentName : "weixin", label : "自定义菜单"
+		},
+        {
+			name : "wxQrCode", path : "/#weixin/admin/qrcode",
+			reg : /weixin\/admin\/qrcode$/, bodyClz : "wx-qrcode",
+			PageInitiator : "Hualala.Weixin.qrCodeInit", parentName : "weixin", label : "二维码维护"
+		},
+		{
+			name : "wxAdvertorial", path : "/#weixin/advertorial",
+			reg : /weixin\/advertorial$/, bodyClz : "wx-advertorial",
+			PageInitiator : "Hualala.Weixin.advertorialInit", parentName : "weixin", label : "二维码维护"
+		},
+        {
+			name : "wxContent", path : "/#weixin/material/content",
+			reg : /weixin\/material\/content$/, bodyClz : "wx-content",
+			PageInitiator : "Hualala.Weixin.contentInit", parentName : "weixin", label : "图文管理"
+		},
+        {
+			name : "wxText", path : "/#weixin/material/text",
+			reg : /weixin\/material\/text$/, bodyClz : "wx-text",
+			PageInitiator : "Hualala.Weixin.textInit", parentName : "weixin", label : "文本管理"
 		},
 
 		// PC客户端下载页面
@@ -356,7 +403,7 @@
 	});
 	detectPageInitializor.start();
 
-
+    var $body = $('body');
 	Hualala.PageRoute.start = function (cbFn) {
 		isInitialized = true;
 		Router.flush().config({mode : 'history', root : Hualala.Global.HOME});
@@ -368,6 +415,7 @@
 			handler = function (params) {
 				IX.Debug.info("INFO: Init Page : [" + name + "]");
 				IX.Debug.info("INFO: Page Arguments : [" + params + "]");
+                $body.removeClass().addClass(route.bodyClz);
 				IX.isFn(cbFn) && cbFn(name, params, initFn);
 				
 				// initFn && initFn.apply(null, [name, params]);

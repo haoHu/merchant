@@ -67,6 +67,7 @@ S.initInfo = function ($container, pageType, params)
         });
         // 初始化表单验证
         $form.bootstrapValidator({
+            excluded: ':disabled',
             fields: {
                 shopName: {
                     message: '店铺名无效',
@@ -137,13 +138,13 @@ S.initInfo = function ($container, pageType, params)
                     }
                 }
             }
-        });
+        }).on('submit', function(){ return false });
         bv = $form.data('bootstrapValidator');
         
         var $uploadImg = $form.find('#uploadImg');
         $img = $uploadImg.find('img').attr('src', G.IMAGE_ROOT + '/shop_head_img_default.png');
         imagePath = shopInfo.imagePath;
-        imagePath && $img.attr('src', imgHost + imagePath);
+        imagePath && $img.attr('src', imgHost + imagePath + '?quality=70');
 
         map = S.map({data: {
             isSearchMap: false,
@@ -284,19 +285,20 @@ function initCuisines($cuisine1, $cuisine2, cityID, cuisineID1, cuisineID2)
             return;
         }
         
-        fillSelectBox($cuisine1, rsp.data.records, 'cuisineID', 'cuisineName');
-        fillSelectBox($cuisine2, rsp.data.records, 'cuisineID', 'cuisineName', '--不限--');
-        cuisineID1 && $cuisine1.val(cuisineID1);
-        cuisineID2 && $cuisine2.val(cuisineID2);
-        $cuisine1.blur(); $cuisine2.blur();
+        $cuisine1.siblings('.chosen-container').remove();
+        U.createChosen($cuisine1.show().data('chosen', null), rsp.data.records || [], 'cuisineID', 'cuisineName', { width: '100%', placeholder_text : '请选择或输入菜系1' }, false, cuisineID1 || '')
+        .blur().change(function(){ $(this).blur() });
+        
+        $cuisine2.siblings('.chosen-container').remove();
+        U.createChosen($cuisine2.show().data('chosen', null), rsp.data.records || [], 'cuisineID', 'cuisineName', { width: '100%', placeholder_text : '请选择或输入菜系2' }, { cuisineID: '', cuisineName: '--不限--' }, cuisineID2 || '')
+        .blur().change(function(){ $(this).blur() });
     });
     
 }
 // 初始化地标下拉列表
 function initAreas($area, cityID, areaID)
 {
-    var callServer = G.getAreas;
-    callServer({cityID: cityID}, function(rsp)
+    G.getAreas({cityID: cityID}, function(rsp)
     {
         if(rsp.resultcode != '000')
         {
@@ -304,17 +306,17 @@ function initAreas($area, cityID, areaID)
             return;
         }
         
-        fillSelectBox($area, rsp.data.records, 'areaID', 'areaName');
-        areaID && $area.val(areaID);
-        $area.blur();
+        $area.siblings('.chosen-container').remove();
+        U.createChosen($area.show().data('chosen', null), rsp.data.records || [], 'areaID', 'areaName', { width: '100%', placeholder_text : '请选择或输入地标' }, false, areaID || '')
+        .blur().change(function(){ $(this).blur() });
     });
     
 }
+
 // 初始化城市下拉列表
 function initCities($city, shopInfo)
 {
-    var callServer = G.getCities;
-    callServer({isActive: 1}, function(rsp)
+    G.getCities({isActive: 1}, function(rsp)
     {
         if(rsp.resultcode != '000')
         {
@@ -322,27 +324,13 @@ function initCities($city, shopInfo)
             return;
         }
         
-        fillSelectBox($city, rsp.data.records, 'cityID', 'cityName');
-        $city.val(shopInfo.cityID).trigger('change', [shopInfo.areaID, shopInfo.cuisineID1, shopInfo.cuisineID2]);
+        U.createChosen($city, rsp.data.records || [], 'cityID', 'cityName', { width: '100%', placeholder_text : '请选择或输入所在城市' }, false, shopInfo.cityID)
+        .trigger('change', [shopInfo.areaID, shopInfo.cuisineID1, shopInfo.cuisineID2])
+        .change(function(){ $(this).blur() });
     });
     
 }
-// 设置下拉列表的项
-function fillSelectBox($selectBox, data, key, value, initialValue)
-{
-    var optionsHtml = '<option value="">' + 
-                      (initialValue || '--请选择--') + 
-                      '</option>';
-    $.each(data, function (i, o)
-    {
-        optionsHtml += '<option value="' + 
-                       o[key] + '">' + 
-                       o[value] + 
-                       '</option>';
-    });
-        
-    $selectBox.empty().html(optionsHtml);
-}
+
 // 处理并获取下拉列表当前选择项的文本
 function getSelectText($select)
 {

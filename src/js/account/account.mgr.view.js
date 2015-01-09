@@ -5,7 +5,7 @@
 
 	var AccountActs = [
 		{clz : 'btn-success withdraw', act : 'withdraw', label : '提现'},
-		{clz : 'btn-link', act : 'edit', label : '修改银行卡'},
+		{clz : 'btn-link', act : 'edit', label : '修改财务人员信息'},
 		{clz : 'btn-link', act : 'queryShops', label : '查看全部店铺'},
 		{clz : 'btn-link', act : 'delete', label : '删除此帐户'}
 	];
@@ -359,6 +359,8 @@
 			defaultVal : 1,
 			onLabel : "开启",
 			offLabel : "关闭",
+			helpClz : "help-block col-sm-12 text-center form-help-cutoff",
+			help : "<span class='cutoff'></span><span class='cutoff-text text-warning'>如需更改请与哗啦啦客服联系。</span>",
 			validCfg : {
 				validators : {}
 			}
@@ -485,7 +487,7 @@
 			});
 		},
 		getModalTitle : function () {
-			return (this.mode == 'edit' ?  '修改' : '增加') + '结算账户';
+			return (this.mode == 'edit' ?  '修改' : '增加') + '财务人员信息';
 		},
 		initModal : function () {
 			var self = this;
@@ -500,6 +502,7 @@
 		},
 		mapFormElsData : function () {
 			var self = this,
+				mode = self.mode,
 				formKeys = self.formKeys;
 			var formEls = _.map(formKeys, function (key) {
 				var elCfg = AccountEditFormElsHT.get(key),
@@ -512,6 +515,7 @@
 							});
 						});
 					return IX.inherit(elCfg, {
+						disabled : mode == 'edit' ? 'disabled' : '',
 						value : v,
 						options : options
 					});
@@ -519,6 +523,7 @@
 					var v = self.model.get(key) || $XP(elCfg, 'defaultVal'),
 						options = _.map($XP(elCfg, 'options'), function (op) {
 							return IX.inherit(op, {
+								disabled : mode == 'edit' ? 'disabled' : '',
 								checked : $XP(op, 'value') == v ? 'checked' : ''
 							});
 						});
@@ -528,10 +533,12 @@
 					});
 				} else if (type == 'switcher') {
 					return IX.inherit(elCfg, {
+						disabled : mode == 'edit' ? 'disabled' : '',
 						checked : self.model.get(key) == $XP(elCfg, 'defaultVal') ? 'checked' : ''
 					});
 				} else {
 					return IX.inherit(elCfg, {
+						disabled : mode !== 'edit' ? '' : ((key == 'receiverLinkman' || key == 'receiverMobile' || key == 'receiverEmail') ? '' : 'disabled'),
 						value : self.model.get(key) || $XP(elCfg, 'defaultVal')
 					});
 				}
@@ -541,6 +548,7 @@
 		renderForm : function () {
 			var self = this,
 				renderData = self.mapFormElsData(),
+				mode = self.mode,
 				tpl = self.get('layoutTpl'),
 				btnTpl = self.get('btnTpl'),
 				htm = tpl({
@@ -551,11 +559,12 @@
 			self.modal._.footer.html(btnTpl({
 				btns : [
 					{clz : 'btn-default', name : 'cancel', label : '取消'},
-					{clz : 'btn-warning', name : 'submit', label : self.mode == 'edit' ? '保存' : '添加'}
+					{clz : 'btn-warning', name : 'submit', label : mode == 'edit' ? '保存' : '添加'}
 				]
 			}));
 
 			self.initSwitcher(':checkbox[data-type=switcher]');
+
 		},
 		initValidFieldOpts : function () {
 			var self = this,

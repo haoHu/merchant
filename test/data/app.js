@@ -73,7 +73,8 @@
 		{name : 'pcclient', url : '/#download'},
 		{name : 'about', url : '/#about'},
 		{name : 'contact', url : '/#contact'},
-		{name : 'crm', url : '/#crm'}
+		{name : 'crm', url : '/#crm'},
+        {name : 'weixin', url : '/#weixin'}
 	];
 	Test.PCClient = {
 		downloadClientAddress : '/pcclient/download/1.0.1-release.zip',

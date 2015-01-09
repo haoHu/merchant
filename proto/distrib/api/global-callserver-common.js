@@ -71,7 +71,19 @@
         ["switchCrmRechargeSetState", "/crm/crmSaveMoneyIsActive.ajax", "", "POST"],
         ["addCrmRechargeSet", "/crm/crmSaveMoneySetAdd.ajax", "", "POST"],
         ["updateCrmRechargeSet", "/crm/crmSaveMoneySetUpdate.ajax", "", "POST"],
-        ["getVipLevels", "/crm/crmLevelQuery.ajax", "", "POST"]
+        ["getVipLevels", "/crm/crmLevelQuery.ajax", "", "POST"],
+        
+        ["queryCrm", "/crm/crmCustomerCardComplexQuery.ajax", "", "POST"],
+        ["getCrmDetail", "/crm/crmCustomerCardDetailInfo.ajax", "", "POST"],
+        ["getCrmTransDetail", "/crm/crmTransDetailQuery.ajax", "", "POST"],
+        ["getCrmUserEvents", "/crm/crmEventUserQuery.ajax", "", "POST"],
+        ["getCrmUserGifts", "/crm/crmEGiftDetailQuery.ajax", "", "POST"],
+        ["getCrmCardLogs", "/crm/crmCustomerCardLogQuery.ajax", "", "POST"],
+        ["getCrmPreferential", "/crm/crmShopParamsQuery.ajax", "", "POST"],
+        ["updateCrmPreferential", "/crm/crmShopParamsUpdate.ajax", "", "POST"],
+        ["getCrmTransSum", "/crm/crmTransDetailSummrizing.ajax", "", "POST"],
+        ["getCrmCardSum", "/crm/crmCustomerCardCreateSummarize.ajax", "", "POST"],
+        ["getCrmRechargeSum", "/crm/crmTransDetailSaveMoneyReconcile.ajax", "", "POST"]
 
 	]);
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([
@@ -102,7 +114,11 @@
 		"updateShopGroupChildAccount", "addShopGroupChildAccount",
 		"updateRoleBinding", "queryRoleBinding", "bindMobileInShopGroupChildAccount",
 		"queryCrmMemberSchema",
-        "getCrmParams", "setCrmParams", "getCrmRechargeSets", "switchCrmRechargeSetState", "addCrmRechargeSet", "updateCrmRechargeSet", "getVipLevels"
+        "getCrmParams", "setCrmParams", "getCrmRechargeSets", "switchCrmRechargeSetState", "addCrmRechargeSet", "updateCrmRechargeSet", "getVipLevels",
+        "queryCrm", "getCrmDetail", "getCrmTransDetail",
+        "getCrmUserEvents", "getCrmUserGifts", "getCrmCardLogs",
+        "getCrmPreferential", "updateCrmPreferential",
+        "getCrmTransSum", "getCrmCardSum", "getCrmRechargeSum"
 	]);
 
 	/*Login CallServer*/
@@ -296,9 +312,63 @@
     Hualala.Global.getVipLevels = function (params, cbFn) {
 		Hualala.Global.commonCallServer("getVipLevels", params, cbFn);
 	};
+    
+    Hualala.Global.queryCrm = function (params, cbFn) {
+		Hualala.Global.commonCallServer("queryCrm", params, cbFn);
+	};
+    
+    Hualala.Global.getCrmDetail = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getCrmDetail", params, cbFn);
+	};
+    
+    Hualala.Global.getCrmTransDetail = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getCrmTransDetail", params, cbFn);
+	};
 
-
+    Hualala.Global.getCrmUserEvents = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getCrmUserEvents", params, cbFn);
+	};
+    
+    Hualala.Global.getCrmUserGifts = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getCrmUserGifts", params, cbFn);
+	};
+    
+    Hualala.Global.getCrmCardLogs = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getCrmCardLogs", params, cbFn);
+	};
+    
+    Hualala.Global.getCrmPreferential = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getCrmPreferential", params, cbFn);
+	};
+    
+    Hualala.Global.updateCrmPreferential = function (params, cbFn) {
+		Hualala.Global.commonCallServer("updateCrmPreferential", params, cbFn);
+	};
+    
+    Hualala.Global.getCrmTransSum = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getCrmTransSum", params, cbFn);
+	};
+    
+    Hualala.Global.getCrmCardSum = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getCrmCardSum", params, cbFn);
+	};
+    
+    Hualala.Global.getCrmRechargeSum = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getCrmRechargeSum", params, cbFn);
+	};
 
 
 
 })();
+
+
+
+
+
+
+
+
+
+
+
+
