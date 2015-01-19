@@ -26,8 +26,9 @@
 			}, 
 			$self.data('settings') || {}, 
 			options || {});
-
-		if (settings.total <= 0 ) {
+        
+        this.toggleClass('hidden', settings.total <= 1);
+		if (settings.total <= 1 ) {
 			return this;
 		}
 		// 所有页码全部显示
@@ -77,6 +78,7 @@
 		return this.each(function () {
 			var $IXPager, pg, $this = $(this),
 				htm = ['<ul class="pagination ix-pager">'];
+            
 			if (settings.prev) {
 				htm.push('<li data-pg="1" class="ix-pager-prev"><a href="' + genHref(1) + '">' + settings.prev + '</a></li>');
 			}

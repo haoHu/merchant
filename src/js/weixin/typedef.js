@@ -2,7 +2,7 @@
 	IX.ns("Hualala.Weixin");
     
     Hualala.Weixin.getEmotions = getEmotions;
-    Hualala.Weixin.getLinkResources = getLinkResources;
+    Hualala.Weixin.getLinkTypes = getLinkTypes;
     
     function getEmotions()
     {
@@ -115,9 +115,32 @@
         ];
     }
     
-    function getLinkResources()
+    function getLinkTypes()
     {
-        
+        return [
+            { value: "1", title: "软文", type: 'select', subTitle: '软文', api: 'getAdvertorials', params: {}, keys: ['itemID', 'title'] },
+            { value: "2", title: "集团首页" },
+            { value: "3", title: "店铺预定搜索网页", type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: 0, cityName: '附近' } },
+            { value: "4", title: "订座点菜具体店铺", type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName']},
+            { value: "5", title: "店铺外卖搜索网页" , type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: 0, cityName: '附近' }},
+            { value: "6", title: "外卖自提具体店铺", type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'] },
+            { value: "7", title: "附近店铺" },
+            { value: "8", title: "(新)成为会员" },
+            { value: "9", title: "(新)我的会员卡" },
+            { value: "10", title: "成为会员" },
+            { value: "11", title: "我的会员卡" },
+            { value: "12", title: "我的代金券" },
+            { value: "13", title: "我的订单页" },
+            { value: "14", title: "我的账户" },
+            { value: "15", title: "会员活动列表" },
+            { value: "16", title: "会员具体活动", type: 'select', subTitle: '会员活动', api: 'getCrmEvents', params: {}, keys: ['eventIdWay', 'eventName'] },
+            { value: "17", title: "用户活动", type: 'select', subTitle: '用户活动', api: 'getUserEvents', params: { eventStatus: 1 }, keys: ['eventItemID', 'eventSubjects'] },
+            { value: "18", title: "用户反馈" },
+            { value: "19", title: "代金券交易", type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: 0, cityName: '附近' } },
+            { value: "20", title: "排队取号搜索" },
+            { value: "21", title: "报名活动", type: 'select', subTitle: '用户活动', api: 'getUserEvents', params: { eventStatus: 1, gameWay: 20 }, keys: ['eventItemID', 'eventSubjects'] },
+            { value: "22", title: "自定义链接", type: 'input', subTitle: '内容' }
+        ];
     }
     
 })(jQuery, window);

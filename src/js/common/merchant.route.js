@@ -282,12 +282,12 @@
 		{
 			name : "crmCardStats", path : "/#crm/member/cardstat",
 			reg : /crm\/member\/cardstat$/, bodyClz : "",
-			PageInitiator : "Hualala.CRM.CardStatisticInit", parentName : "crm", label : "办卡统计"
+			PageInitiator : "Hualala.CRM.CardStatisticInit", parentName : "crm", label : "入会统计"
 		},
 		{
 			name : "crmDealSummary", path : "/#crm/deal/sum",
 			reg : /crm\/deal\/sum/, bodyClz : "",
-			PageInitiator : "Hualala.CRM.DealSummaryInit", parentName : "crm", label : "交易汇总"
+			PageInitiator : "Hualala.CRM.DealSummaryInit", parentName : "crm", label : "储值消费汇总"
 		},
 		{
 			name : "crmDealDetail", path : "/#crm/deal/detail",
@@ -347,9 +347,9 @@
 			PageInitiator : "Hualala.Weixin.qrCodeInit", parentName : "weixin", label : "二维码维护"
 		},
 		{
-			name : "wxAdvertorial", path : "/#weixin/advertorial",
-			reg : /weixin\/advertorial$/, bodyClz : "wx-advertorial",
-			PageInitiator : "Hualala.Weixin.advertorialInit", parentName : "weixin", label : "二维码维护"
+			name : "wxAdvertorial", path : "/#weixin/material/advertorial",
+			reg : /weixin\/material\/advertorial$/, bodyClz : "wx-advertorial",
+			PageInitiator : "Hualala.Weixin.advertorialInit", parentName : "weixin", label : "软文管理"
 		},
         {
 			name : "wxContent", path : "/#weixin/material/content",

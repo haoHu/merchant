@@ -3,7 +3,7 @@
 	var ajaxEngine = Hualala.ajaxEngine;
 	ajaxEngine.mappingUrls([
 		/*Login Moudle*/
-		["genAuthCode", "/getCheckCode.ajax", "", "GET"],
+		["genAuthCode", "/getCheckCode.ajax", "", "POST"],
 		["loginCallServer", "/login.ajax", "", "POST"],
 		/*Dynamic Login*/
 		["getMobileDynamicPWD", "/getDynamicCode.action", "", "POST"],
@@ -83,7 +83,30 @@
         ["updateCrmPreferential", "/crm/crmShopParamsUpdate.ajax", "", "POST"],
         ["getCrmTransSum", "/crm/crmTransDetailSummrizing.ajax", "", "POST"],
         ["getCrmCardSum", "/crm/crmCustomerCardCreateSummarize.ajax", "", "POST"],
-        ["getCrmRechargeSum", "/crm/crmTransDetailSaveMoneyReconcile.ajax", "", "POST"]
+        ["getCrmRechargeSum", "/crm/crmTransDetailSaveMoneyReconcile.ajax", "", "POST"],
+        
+        
+        ["getWeixinAccounts", "/wechat/wechatListMp.ajax", "", "POST"],
+        ["getWeixinAutoReplyList", "/wechat/wechatGetShopAutoReply.ajax", "", "POST"],
+        ["deleteWeixinAutoReplyRole", "/wechat/wechatDelAutoReplyRule.ajax", "", "POST"],
+        ["getWeixinResources", "/wechat/wechatResourceAll.ajax", "", "POST"],
+        ["updateWeixinAutoReplyRole", "/wechat/wechatUpdateAutoReplyRule.ajax", "", "POST"],
+        ["addWeixinAutoReplyRole", "/wechat/wechatAddAutoReplyRule.ajax", "", "POST"],
+        ["getWeixinReply", "/wechat/wechatGetAutoReplyById.ajax", "", "POST"],
+        
+        ["getWeixinSubscribe", "/wechat/wechatEventByMpid.ajax", "", "POST"],
+        ["addWeixinSubscribe", "/wechat/wechatCreateAutoReplyRule.ajax", "", "POST"],
+        ["updateWeixinSubscribe", "/wechat/wechatUpdateAutoReplyRule.ajax", "", "POST"],
+        
+        ["saveWinxinMenu", "/wechat/wechatUpdateMp.ajax", "", "POST"],
+        ["importWinxinMenu", "/wechat/wechatGetMenu.ajax", "", "POST"],
+        ["publishWinxinMenu", "/wechat/wechatCreatMenu.ajax", "", "POST"],
+        
+        ["getAdvertorials", "/sysbase/sysbaseQuerySysMobileAds.ajax", "", "POST"],
+        
+        ["getCrmEvents", "/pay/queryCrmCustomerEvent.ajax", "", "POST"],
+        
+        ["getUserEvents", "/sysbase/querySysEventItemList.ajax", "", "POST"]
 
 	]);
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([
@@ -118,7 +141,24 @@
         "queryCrm", "getCrmDetail", "getCrmTransDetail",
         "getCrmUserEvents", "getCrmUserGifts", "getCrmCardLogs",
         "getCrmPreferential", "updateCrmPreferential",
-        "getCrmTransSum", "getCrmCardSum", "getCrmRechargeSum"
+        "getCrmTransSum", "getCrmCardSum", "getCrmRechargeSum",
+        
+        "getWeixinAccounts", "getWeixinAutoReplyList", 
+        "deleteWeixinAutoReplyRole", "getWeixinResources",
+        "updateWeixinAutoReplyRole", "addWeixinAutoReplyRole",
+        "getWeixinReply", 
+        
+        "getWeixinSubscribe", "addWeixinSubscribe",
+        "updateWeixinSubscribe",
+        
+        "saveWinxinMenu", "importWinxinMenu",
+        "publishWinxinMenu",
+        
+        "getAdvertorials",
+        
+        "getCrmEvents",
+        
+        "getUserEvents"
 	]);
 
 	/*Login CallServer*/
@@ -356,6 +396,72 @@
     Hualala.Global.getCrmRechargeSum = function (params, cbFn) {
 		Hualala.Global.commonCallServer("getCrmRechargeSum", params, cbFn);
 	};
+    
+    //微信模块
+    Hualala.Global.getWeixinAccounts = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getWeixinAccounts", params, cbFn);
+	};
+    
+    Hualala.Global.getWeixinAutoReplyList = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getWeixinAutoReplyList", params, cbFn);
+	};
+    
+    Hualala.Global.deleteWeixinAutoReplyRole = function (params, cbFn) {
+		Hualala.Global.commonCallServer("deleteWeixinAutoReplyRole", params, cbFn);
+	};
+    
+    Hualala.Global.getWeixinResources = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getWeixinResources", params, cbFn);
+	};
+    
+    Hualala.Global.updateWeixinAutoReplyRole = function (params, cbFn) {
+		Hualala.Global.commonCallServer("updateWeixinAutoReplyRole", params, cbFn);
+	};
+    
+    Hualala.Global.addWeixinAutoReplyRole = function (params, cbFn) {
+		Hualala.Global.commonCallServer("addWeixinAutoReplyRole", params, cbFn);
+	};
+    
+    Hualala.Global.getWeixinReply = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getWeixinReply", params, cbFn);
+	};
+    
+    Hualala.Global.getWeixinSubscribe = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getWeixinSubscribe", params, cbFn);
+	};
+    Hualala.Global.addWeixinSubscribe = function (params, cbFn) {
+		Hualala.Global.commonCallServer("addWeixinSubscribe", params, cbFn);
+	};
+    
+    Hualala.Global.updateWeixinSubscribe = function (params, cbFn) {
+		Hualala.Global.commonCallServer("updateWeixinSubscribe", params, cbFn);
+	};
+    
+    Hualala.Global.saveWinxinMenu = function (params, cbFn) {
+		Hualala.Global.commonCallServer("saveWinxinMenu", params, cbFn);
+	};
+    
+    Hualala.Global.importWinxinMenu = function (params, cbFn) {
+		Hualala.Global.commonCallServer("importWinxinMenu", params, cbFn);
+	};
+    
+    Hualala.Global.publishWinxinMenu = function (params, cbFn) {
+		Hualala.Global.commonCallServer("publishWinxinMenu", params, cbFn);
+	};
+    
+    Hualala.Global.getAdvertorials = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getAdvertorials", params, cbFn);
+	};
+    
+    //会员营销活动
+    Hualala.Global.getCrmEvents = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getCrmEvents", params, cbFn);
+	};
+    //哗啦啦营销活动
+    Hualala.Global.getUserEvents = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getUserEvents", params, cbFn);
+	};
+    
 
 
 

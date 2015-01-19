@@ -32,7 +32,7 @@
 .query-panel, .crm-query-panel
 {
     padding: 15px 0 0 15px;
-    label { .d-ib; margin: -0px 36px 15px 0; font-weight: normal; }
+    span { .d-ib; margin: -0px 36px 15px 0; font-weight: normal; }
     .date-lbl input, .more-crm-query input,
     { width: 125px; }
     .ml-0 { .ml-0; }
@@ -43,8 +43,8 @@
 
 .crm-query-panel
 {
-    label { margin-right: 15px; }
-    span { .gut; }
+    span { margin-right: 15px; }
+    i { .gut; }
     .t-r { margin: 0 15px 15px 0; }
     .t-j { margin-bottom: -15px; }
     .t-j:after { content: ''; .d-ib; width: 100%; height: 0; }
@@ -58,9 +58,11 @@
     
 .crm-query-table 
 {
-    td:nth-child(6), td:nth-child(7), 
-    td:nth-child(8), td:nth-child(9)
+    td:nth-child(7), td:nth-child(8), 
+    td:nth-child(9), td:nth-child(10)
     { .t-r; }
+    td:nth-child(3)
+    { .t-l; }
 }
 .crm-detail
 {
@@ -141,9 +143,14 @@
         [name=transShopID] { max-width: 125px }
     }
     
-    thead th:nth-child(10) { width: 160px; }
+    thead th:nth-child(9) { width: 160px; }
 }
-.modal-trans-detail .modal-dialog { width: 225px; font-family: simsum serif; }
+.modal-trans-detail .modal-dialog 
+{
+    min-width: 225px; max-width: 320px; margin: 15px auto; 
+    font-family: simsun serif;
+    .modal-body { width: 225px; margin: 0 auto; }
+}
 
 
 

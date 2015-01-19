@@ -2,22 +2,25 @@
 IX.ns('Hualala.Shop');
 var G = Hualala.Global,
     U = Hualala.UI,
-    topTip = U.TopTip; 
+    topTip = U.TopTip;
 // 初始化创建店铺页面
 Hualala.Shop.initCreate = function ($wizard)
 {
+    
     //初始化向导控件
     $wizard.bootstrapWizard();
     var bsWizard = $wizard.data('bootstrapWizard'),
         $step1 = $wizard.find('#tab1'),
         $step2 = $wizard.find('#tab2'),
         $step3 = $wizard.find('#tab3'),
-        $select = $wizard.find('select'),
         $city = $step1.find('#cityID'),
         $area = $step1.find('#areaID'),
         $cuisine1 = $step1.find('#cuisineID1'),
         $cuisine2 = $step1.find('#cuisineID2'),
-        bv = null;
+        bv = null,
+        operationModeType = Hualala.Shop.Typedef.operationMode;
+    
+    U.fillSelect($step1.find('#operationMode'), operationModeType);
     // 初始化城市列表下拉框
     initCities($city);
     U.createChosen($area, [], 1, 1, { width: '100%', placeholder_text : "请先选择或输入所在城市", }, false);

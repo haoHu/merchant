@@ -832,6 +832,9 @@
 			var ret = _.map(data, function (settle, i, l) {
 				var id = $XP(settle, 'settleUnitID'),
 					checked = id == self.settleID ? 'checked' : '';
+				if (checked == 'checked') {
+					self.curSettleUnit = settle;
+				}
 				return IX.inherit(settle, {
 					type : 'radio',
 					clz : 'bind-item',

@@ -1,5 +1,10 @@
 (function ($, window) {
 	IX.ns("Hualala.Shop");
+    
+    Hualala.Shop.Typedef = {
+        operationMode: { '0': '正餐', '1': '快餐', '2': '美食广场' }
+    };
+    
     /**
 	  * 渲染店铺详情页头部
 	  * @param {Object | String} shopInfo 店铺ID或者店铺详情信息对象

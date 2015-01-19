@@ -22,7 +22,7 @@
             tplReplyForm = Handlebars.compile(tplLib.get('tpl_wx_reply_add_update'));
             
         var queryParams = { mpID: mpID, pageNo: 1, pageSize: 15 },
-            replies, resources = [], emotions = emotions || W.getEmotions();
+            replies, resources = [];
         
         getReplies();
         
@@ -68,11 +68,11 @@
                 reply = itemID ? findReply(itemID) : {},
                 $replyForm = $(tplReplyForm(reply)),
                 $select = $replyForm.find('select'),
-                $resWiew = $replyForm.find('.form-control-static');
+                $resView = $replyForm.find('.form-control-static');
                 
             $replyForm.find('[name=pushContentType]').eq(reply.pushContentType || 0).prop('checked', true);
             
-            W.createResourceChosen($select, resources, reply.resourceID || '')
+            W.createResourceChosen($select, $resView, resources, reply.resourceID || '')
             .done(function(res)
             {
                 resources = res;
@@ -80,11 +80,6 @@
                         title: (itemID ? '修改' : '添加') + '微信自动回复规则', 
                         html: $replyForm
                     }).show();
-                
-                $select.on('change', function()
-                {
-                    $resWiew.html(W.createResourceView(_.findWhere(res, { itemID: this.value }), emotions));
-                }).change();
                 
                 modal._.footer.find('.btn-ok').on('click', function()
                 {
@@ -149,7 +144,6 @@
         function renderReplies()
         {
             emptyAlert[replies.length ? 'hide' : 'show']();
-            $pager[replies.length ? 'show' : 'hide']();
             var trs = [];
             for(var i = 0, reply; reply = replies[i++];)
                 trs.push(tplTr(reply));

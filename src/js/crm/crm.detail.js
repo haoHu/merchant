@@ -18,22 +18,22 @@
         var Meta = {
             basicInfo: [
                 {customerName: '姓名', customerSex: '性别', customerBirthday: '生日', createTime: '入会时间', createShopName: '入会店铺'},
-                {customerMobile: '手机号', cardNO: '卡号', cardLevelName: '等级' , moneyBalance: '储值余额', pointBalance: '积分余额'},
+                {customerMobile: '手机号', cardNO: '卡号', cardLevelName: '等级' , moneyBalance: '现金储值余额', giveBalance: '赠送储值余额', pointBalance: '积分余额'},
                 {saveMoneyTotal: '储值累计', pointGetTotal: '积分累计', consumptionTotal: '消费累计', consumptionCount: '消费次数', lastConsumptionTime: '最后消费时间'}
             ],
             customerSex: CrmTypeDef.customerSex,
             transDetail: {
-                transTime: '交易时间', transShopName: '交易店铺', transType: '交易类型', consumptionAmount: '消费金额', moneyChange: '储值余额变动', pointChange:'积分余额变动', transAfterMoneyBalance: '交易后储值余额', transAfterPointBalance: '交易后积分余额', transRemark: '交易备注'
+                transTime: '交易时间', transShopName: '交易店铺', transType: '交易类型', consumptionAmount: '消费金额', moneyChange: '储值余额变动', pointChange:'积分余额变动', transAfterMoneyBalanceSum: '交易后储值余额', transAfterPointBalance: '交易后积分余额', transRemark: '交易备注'
             },
             transType: CrmTypeDef.transType,
             event: {
-                customerName: '姓名', cardNO: '会员卡号', cardLevelName: '卡号等级', eventName: '活动主题', eventWay: '活动类型', createTime: '参与时间',
+                cardLevelName: '等级', eventName: '活动主题', eventWay: '活动类型', createTime: '参与时间',
                 //eventNews ~= Meta.eventNews[eventWay][winFlag]
                 eventNews: '活动动态'
             },
             eventWay: CrmTypeDef.eventWay,
             gift: {
-                createTime: '获得时间', giftName: '名称', getWay: '获得方式', giftStatus: '状态', usingShopName: '使用店铺', usingTime: '使用时间', validUntilDate: '有效期至'
+                giftName: '名称', createTime: '获得时间', getWay: '获得方式', giftStatus: '状态', usingShopName: '使用店铺', usingTime: '使用时间', validUntilDate: '使用截止日期'
             },
             getWay: CrmTypeDef.getWay,
             giftStatus: CrmTypeDef.giftStatus,
@@ -72,12 +72,12 @@
                 var $ul = $('<ul>');
                 for(var key in item)
                 {
-                    var val = data[key];
+                    var val = data[key] || '';
                     if(val)
                     {
                         if(/createTime|customerBirthday|lastConsumptionTime/.test(key))
                             val = formatDateStr(val.replace(/-/g, ''), 12);
-                        else if(/moneyBalance|pointBalance|saveMoneyTotal|pointGetTotal|consumptionTotal/.test(key)) 
+                        else if(/moneyBalance|shopChargeGiftSum|pointBalance|saveMoneyTotal|pointGetTotal|consumptionTotal/.test(key)) 
                             val = prettyNumeric(val);
                         else if(key == 'customerMobile' && +data.isMobileChecked)
                             val += icoOk;
@@ -107,10 +107,10 @@
                 var $tr = $('<tr>');
                 for(var key in transDetail)
                 {
-                    var val = item[key];
+                    var val = item[key] || '';
                     if(key == 'transTime') 
                         val = formatDateStr(val, 12);
-                    else if(/consumptionAmount|moneyChange|transAfterMoneyBalance/.test(key))
+                    else if(/consumptionAmount|moneyChange|transAfterMoneyBalanceSum/.test(key))
                         val = prettyNumeric(val);
                     else if(key == 'transType')
                         val = transType[val];
@@ -153,7 +153,7 @@
         function getEventNews(way, flag)
         {
             var ret = '已兑换';
-            if(way == 20) ret = flag == 1 ? '一等奖' : flag == 2 ? '二等奖' : '未知';
+            if(way == 20) ret = flag == 1 ? '一等奖' : flag == 2 ? '二等奖' : '三等奖';
             else if(way == 21) ret = '已领取';
             else if(ret == 22) ret = flag == 1 ? '已入围' : '未入围';
             

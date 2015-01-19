@@ -14,9 +14,8 @@
         customerSex: CrmTypeDef.customerSex,
         sourceWay: CrmTypeDef.sourceWay,
         
-        today: dF.getDateByFormat(dF.formatDate(new Date), 'yyyy/MM/dd'),
-        crmQueryTableHeads: ['姓名', '性别', '手机号', '生日', '卡号', '储值累计', '现金余额', '赠送余额', '消费累计', '积分余额', '等级', '入会日期', '状态', '查看'],
-        crmQueryTableKeys: ['customerName', 'customerSex', 'customerMobile', 'customerBirthday', 'cardNO', 'saveMoneyTotal', 'moneyBalance', 'giveBalance', 'consumptionTotal', 'pointBalance', 'cardLevelName', 'createTime', 'cardStatus', 'cardID']
+        crmQueryTableHeads: ['姓名', '性别', '手机号(卡号)', '生日', '等级', '入会日期', '储值余额', '积分余额', '累计储值总额', '累计消费总额', '状态', '查看'],
+        crmQueryTableKeys: ['customerName', 'customerSex', 'customerMobile', 'customerBirthday', 'cardLevelName', 'createTime', 'moneyBalance', 'pointBalance', 'saveMoneyTotal', 'consumptionTotal', 'cardStatus', 'cardID']
     };
     
     var levels = null, pageSize = 15,
@@ -89,7 +88,7 @@
     function renderCrmQueryTable($tbody, items)
     {
         var trs = [], keys = staticData.crmQueryTableKeys,
-            icoOk = '<i class="glyphicon glyphicon-ok ok" title="已验证"></i>',
+            icoOk = '<i class="glyphicon glyphicon-ok ok" title="手机号已绑定"></i>',
             createPath = Hualala.PageRoute.createPath;
         for(var i = 0, item; item = items[i++];)
         {
@@ -97,6 +96,14 @@
             for(var j = 0, key; key = keys[j++];)
             {
                 var $td = $('<td>'), val = item[key] || '';
+                
+                if(key == 'customerMobile' && item.cardNO)
+                {
+                    val += '(卡号)';
+                    $td.attr('title', '卡号：' + item.cardNO).attr('data-toggle', 'tooltip')
+                    .tooltip({ trigger: 'click | hover', container: 'body' })
+                }
+                
                 if(/customerSex|cardStatus/.test(key))
                     val = staticData[key][val];
                 else if(/saveMoneyTotal|moneyBalance|giveBalance|consumptionTotal|pointBalance/.test(key))

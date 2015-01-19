@@ -21,10 +21,21 @@
     var Funcs = {
         date: function(v){ return formatDateStr(v.replace(/-/g, ''), 12); },
         number: function(v, item, keyInfo, $td){ $td.addClass('t-r'); return prettyNumeric(v); },
-        transType: function(v, item) { return CrmTypeDef.transWay[item['transWay']] + v; },
+        mobile: function(v, item, keyInfo, $td)
+        {
+            if(item.cardNO)
+            {
+                v += '(卡号)';
+                $td.attr('title', '卡号：' + item.cardNO).attr('data-toggle', 'tooltip')
+                .tooltip({ trigger: 'click | hover', container: 'body' });
+            }
+            
+            return v; 
+        },
+        transType: function(v, item) { return CrmTypeDef.transType[v]; },
         viewDetail: function(v, item) { return $('<a href="javascript:;">详情</a>').data('transid', item.transID) },
         sum: function(v, item, keyInfo) { return sumWay[item[keyInfo['sumWay']]] + (keyInfo.count ? ('(共' + v + '笔)') : '') },
-        shopName: function(v, item, keyInfo ,c, i) { return (keyInfo.count ? i + '. ' : '') + (+item[keyInfo['shopID']] ? v : '线上') }
+        shopName: function(v, item, keyInfo ,c, i) { return (keyInfo.count ? i + '. ' : '') + (+item[keyInfo['shopID']] ? v : '网上储值') }
     };
     
     var keys, fkeys, module, params, transRecords,
@@ -85,12 +96,12 @@
             params.queryEndTime = params.queryEndTime.replace(/\//g, '');
         }
         G['getCrm' + module](params, function(rsp)
-        {//console.log(JSON.stringify(params))
+        {
             if(rsp.resultcode != '000')
             {
                 rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
                 return;
-            }//console.log(JSON.stringify(rsp))
+            }
             var records = rsp.data.records || [],
                 sumRecords = rsp.data.datasets[sumSets[module]].data.records || [],
                 page = rsp.data.page;
@@ -176,18 +187,21 @@
     Hualala.CRM.initTransSum = function($mbody)
     {
         keys = {
-            transShopName: { title: '店铺', type: 'shopName', shopID: 'transShopID', count: 1 },
-            shopChargeSum: { title: '储值金额', type: 'number', sort: 1 },
-            shopChargeCount: { title: '储值笔数', type: 'number', sort: 1 },
-            shopChargeGiftSum: { title: '储值赠送金额', type: 'number', sort: 1 },
-            shopChargeReturnPointSum: { title: '储值返积分数', type: 'number', sort: 1 },
-            shopMinusMoneySum: { title: '储值减少金额', type: 'number', sort: 1 },
-            shopMinusMoneyCount: { title: '储值减少笔数', type: 'number', sort: 1 },
-            shopConsumeDeductPointSum: { title: '消费积分抵扣', type: 'number', sort: 1 },
-            shopConsumeDeductPointCount: { title: '积分抵笔数', type: 'number', sort: 1 },
+            transShopName: { title: '店铺', type: 'shopName', shopID: 'transShopID', count: 1, rowspan: 2 },
+            
+            shopCharge: { title: '储值业务', ignore: 1, colspan: 4 },
+            shopConsumption: { title: '消费业务', ignore: 1, colspan: 5 },
+            //储值业务
+            shopChargeCount: { title: '笔数', type: 'number', sort: 1, newRow: 1 },
+            shopChargeSum: { title: '现金金额', type: 'number', sort: 1 },
+            shopChargeGiftSum: { title: '赠送金额', type: 'number', sort: 1 },
+            shopChargeReturnPointSum: { title: '返积分数', type: 'number', sort: 1 },
+            //消费业务
+            shopConsumptionCount: { title: '笔数', type: 'number', sort: 1 },
             shopconsumptionAmountSum: { title: '消费金额', type: 'number', sort: 1 },
-            shopConsumptionCount: { title: '消费笔数', type: 'number', sort: 1 },
-            shopConsumptionReturnPointSum: { title: '消费返积分数', type: 'number', sort: 1 }
+            shopMinusMoneySum: { title: '余额支付', type: 'number', sort: 1 },
+            shopConsumeDeductPointSum: { title: '积分抵扣', type: 'number', sort: 1 },
+            shopConsumptionReturnPointSum: { title: '返积分', type: 'number', sort: 1 }
         };
         initModule('TransSum', $mbody);
     }
@@ -195,15 +209,14 @@
     Hualala.CRM.initTransDetail = function($mbody)
     {
         keys = {
-            transShopName: { title: '交易店铺', type: 'shopName', shopID: 'transShopID' },
-            transTypeName: { title: '交易类型', type: 'transType' },
-            cardNO: { title: '卡号' },
-            customerMobile: { title: '手机号' },
-            customerName: { title: '会员姓名' },
-            consumptionAmount: { title: '消费金额', type: 'number', sort: 1 },
-            moneyChange: { title: '储值金额变动', type: 'number', sort: 1 },
-            pointChange: { title: '积分余额变动', type: 'number', sort: 1 },
             transTime: { title: '交易时间', type: 'date', sort: 1 },
+            transShopName: { title: '交易店铺', type: 'shopName', shopID: 'transShopID' },
+            customerName: { title: '会员姓名' },
+            customerMobile: { title: '手机号(卡号)', type: 'mobile' },
+            transType: { title: '交易类型', type: 'transType' },
+            consumptionAmount: { title: '消费金额', type: 'number', sort: 1 },
+            moneyChange: { title: '储值余额变动', type: 'number', sort: 1 },
+            pointChange: { title: '积分余额变动', type: 'number', sort: 1 },
             transRemark: { title: '交易备注' },
             action: { title: '操作', type: 'viewDetail' }
         };
@@ -218,8 +231,8 @@
         
         initModule('TransDetail', $mbody);
         
-        $form.prepend('<label>关键字<input type="text" name="keyword" placeholder="手机号/卡号" class="form-control"></label>');
-        U.fillSelect($('<label>类型<select name="transType" class="form-control"></label>').appendTo($form).find('select'), CrmTypeDef.transType).prepend('<option value="">不限</option>').val('');
+        $form.prepend('<span>关键字<input type="text" name="keyword" placeholder="手机号/卡号" class="form-control"></span>');
+        U.fillSelect($('<span>类型<select name="transType" class="form-control"></span>').appendTo($form).find('select'), CrmTypeDef.transType).prepend('<option value="">不限</option>').val('');
         
         $tbody.on('click', 'a', function()
         {
@@ -253,9 +266,9 @@
     {
         keys = {
             transShopName: { title: '店铺', type: 'shopName', shopID: 'transShopID', rowspan: '2' },
-            saveMoneyCount: { title: '储值笔数小计', type: 'number', rowspan: '2'  },
-            saveMoneyAmountSum: { title: '储值金额小计', type: 'number', rowspan: '2' },
-            saveReturnMoneyAmountSum: { title: '储值赠送金额小计', type: 'number', rowspan: '2' },
+            saveMoneyCount: { title: '笔数', type: 'number', rowspan: '2'  },
+            saveMoneyAmountSum: { title: '现金储值金额', type: 'number', rowspan: '2' },
+            saveReturnMoneyAmountSum: { title: '赠送储值金额', type: 'number', rowspan: '2' },
             rechargeWay: { title: '收款方式', ignore: 1, colspan: 5 },
             saveMoneyCashSum: { title: '现金', type: 'number', newRow: 1 },
             saveMoneyCardSum: { title: '银行卡', type: 'number' },

@@ -291,7 +291,9 @@
 							takeawayParamJson = !takeawayParamJson ? {} : JSON.parse(takeawayParamJson);
 							if (serviceID == 20 || serviceID == 21) {
 								takeawayParamJson = IX.inherit(takeawayParamJson, newData);
-								self.set('revParamJson', JSON.stringify(takeawayParamJson));
+								// self.set('revParamJson', JSON.stringify(takeawayParamJson));
+								self.set('takeawayParamJson', JSON.stringify(takeawayParamJson));
+
 							} else {
 								revParamJson = IX.inherit(revParamJson, newData);
 								self.set('revParamJson', JSON.stringify(revParamJson));

@@ -1278,7 +1278,7 @@
     /**
       * 获取会员交易汇总信息
       * @param {Object} params 参数{queryStartTime, ...}
-	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data]}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data}
 	  * @return {NULL}
       * 服务调用 URL: /crm/crmTransDetailSummrizing.ajax
 	  */
@@ -1300,7 +1300,7 @@
     /**
       * 获取会员办卡统计信息
       * @param {Object} params 参数{queryStartTime, ...}
-	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data]}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data}
 	  * @return {NULL}
       * 服务调用 URL: /crm/crmCustomerCardCreateSummarize.ajax
 	  */
@@ -1322,7 +1322,7 @@
     /**
       * 获取会员储值对账信息
       * @param {Object} params 参数{queryStartTime, ...}
-	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data]}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data}
 	  * @return {NULL}
       * 服务调用 URL: /crm/crmTransDetailSaveMoneyReconcile.ajax
 	  */
@@ -1338,6 +1338,310 @@
                 rsp.data.records = srcRecords.slice(startIndex, startIndex + params.pageSize);
             }
             fn(rsp);
+        });
+	};
+    
+    /**
+      * 获取微信公共账号
+      * @param {Object} params 参数{mpID, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatListMp.ajax
+	  */
+	Hualala.Global.getWeixinAccounts = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/weixin/accounts.js'], function(){
+            var rsp = Test.wxAccounts;
+                srcRecords = rsp.data.records;
+            if(params.mpID)
+                rsp.data.records = [_.findWhere(srcRecords, {mpID: params.mpID})];
+            fn(rsp);
+        });
+	};
+    
+    /**
+      * 获取微信自动回复信息列表
+      * @param {Object} params 参数{mpID, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatGetShopAutoReply.ajax
+	  */
+	Hualala.Global.getWeixinAutoReplyList = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/weixin/replies.js', '/test/data/weixin/resources.js'], function(){
+            var rsp = Test.wxReplies,
+                replies = Test.wxReplies.data.records,
+                resources = Test.wxResources.data.records,
+                l = resources.length;
+            _.each(replies, function(reply)
+            {
+                reply.resourceID = resources[_.random(l - 1)].itemID;
+                reply.pushContentType = _.random(1) + '';
+            });
+            if(params.pageNo)
+            {
+                var srcRecords = rsp.data.records;
+                var startIndex = (params.pageNo - 1) * params.pageSize;
+                rsp.data.page.pageNo = params.pageNo;
+                rsp.data.records = srcRecords.slice(startIndex, startIndex + params.pageSize);
+            }
+            fn(rsp);
+        });
+	};
+    
+    /**
+      * 删除一条微信自动回复信息规则
+      * @param {Object} params 参数{itemID, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatDelAutoReplyRule.ajax
+	  */
+	Hualala.Global.deleteWeixinAutoReplyRole = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 获取微信图文文本资源集合
+      * @param {Object} params 参数{isActive, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatResourceAll.ajax
+	  */
+	Hualala.Global.getWeixinResources = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/weixin/resources.js'], function(){
+            fn(Test.wxResources);
+        });
+	};
+    
+    /**
+      * 修改一条微信自动回复信息规则
+      * @param {Object} params 参数{itemID, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatUpdateAutoReplyRule.ajax
+	  */
+	Hualala.Global.updateWeixinAutoReplyRole = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 添加一条微信自动回复信息规则
+      * @param {Object} params 参数{mpID, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatAddAutoReplyRule.ajax
+	  */
+	Hualala.Global.addWeixinAutoReplyRole = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: 'itemID=' + _.random(10000, 20000)
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 通过itemID获取微信一条自动回复规则
+      * @param {Object} params 参数{itemID}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatGetAutoReplyById.ajax
+	  */
+	Hualala.Global.getWeixinReply = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/weixin/resources.js', '/test/data/weixin/replies.js'], function(){
+            var replies = Test.wxReplies.data.records,
+                resources = Test.wxResources.data.records, 
+                resource = resources[_.random(resources.length - 1)],
+                reply = _.findWhere(replies, {itemID: params.itemID});
+            reply.resourceID = resource.itemID;
+            reply.resourceVaule = _.random(1);
+            fn({
+                resultcode: '000', 
+                resultmsg: '',
+                data: { records: [reply] }
+            });
+        });
+	};
+    
+    /**
+      * 查询微信订阅消息
+      * @param {Object} params 参数{mpID, ...}
+	  * @param {Function} cbFn   回调函数{data, resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatEventByMpid.ajax
+	  */
+	Hualala.Global.getWeixinSubscribe = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+            "data" :
+            {
+                "records" : [
+                    {
+                        "action" : "0",
+                        "actionTime" : "20141224170601",
+                        "createTime" : "20141224170601",
+                        "isActive" : "1",
+                        "itemID" : "133",
+                        "mpID" : "hualala_com",
+                        "pushContent" : "",
+                        "pushContentType" : "0",
+                        "pushEvent" : "subscribe",
+                        "pushEventKey" : "",
+                        "pushMsgType" : "event",
+                        "replyContent" : "布丁",
+                        "replyMsgType" : "news",
+                        "resourceID" : "78",
+                        "resourceVaule" : "1",
+                        "serviceName" : ""
+                    }
+                ],
+            },
+            "resultcode" : "000",
+            "resultmsg" : ""
+        };
+		fn(rsp);
+	};
+    
+    /**
+      * 添加微信订阅消息规则
+      * @param {Object} params 参数{mpID, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatCreateAutoReplyRule.ajax
+	  */
+	Hualala.Global.addWeixinSubscribe = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                data: {records: [{ itemID: _.random(10000, 20000) }]},
+                resultcode: '000', 
+                resultmsg: 'itemID=' + _.random(10000, 20000)
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 修改微信订阅消息规则
+      * @param {Object} params 参数{mpID, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatUpdateAutoReplyRule.ajax
+	  */
+	Hualala.Global.updateWeixinSubscribe = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 保存微信自定义菜单
+      * @param {Object} params 参数{mpID, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatUpdateMp.ajax
+	  */
+	Hualala.Global.saveWinxinMenu = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 导入微信自定义菜单
+      * @param {Object} params 参数{mpID, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatGetMenu.ajax
+	  */
+	Hualala.Global.importWinxinMenu = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        IX.Net.loadJsFiles(['/test/data/weixin/accounts.js'], function(){
+            var rsp = Test.wxAccounts;
+                srcRecords = rsp.data.records;
+            if(params.mpID)
+                rsp.data.records = [_.findWhere(srcRecords, {mpID: params.mpID})];
+            fn(rsp);
+        });
+	};
+    
+    /**
+      * 发布微信自定义菜单
+      * @param {Object} params 参数{mpID, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatCreatMenu.ajax
+	  */
+	Hualala.Global.publishWinxinMenu = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 获取微信软文列表
+      * @param {Object} params 参数{}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /sysbase/sysbaseQuerySysMobileAds.ajax
+	  */
+	Hualala.Global.getAdvertorials = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        $.ajax('/test/data/weixin/advertorial.js')
+        .done(function()
+        {
+            fn(Test.wxAdvertorials);
+        });
+	};
+    
+    /**
+      * 获取会员活动列表
+      * @param {Object} params 参数{}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /pay/queryCrmCustomerEvent.ajax
+	  */
+	Hualala.Global.getCrmEvents = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        $.ajax('/test/data/weixin/crm_events.js')
+        .done(function()
+        {
+            fn(Test.crmEvents);
+        });
+	};
+    
+    /**
+      * 获取用户活动列表
+      * @param {Object} params 参数{eventStatus}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /sysbase/querySysEventItemList.ajax
+	  */
+	Hualala.Global.getUserEvents = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        $.ajax('/test/data/weixin/user_events.js')
+        .done(function()
+        {
+            fn(Test.userEvents);
         });
 	};
     

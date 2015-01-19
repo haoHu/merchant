@@ -578,7 +578,7 @@
 					settleName : $XP(shop, 'settleName', ''),
 					btn : {
 						clz : 'bind-settle',
-						label : IX.isEmpty('settleID') ? '绑定结算账户' : '修改'
+						label : (IX.isEmpty(settleUnitID) || settleUnitID == 0) ? '绑定结算账户' : '修改'
 					},
 					switcherName : 'switcher_status',
 					shopOpen : $XP(shop, 'status') == 1 ? 'checked' : '',

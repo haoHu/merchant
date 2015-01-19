@@ -19,7 +19,7 @@
             itemID = crmParams.itemID;
             crmParams.serviceStartTime = formatDate(crmParams.serviceStartTime);
             crmParams.serviceEndTime = formatDate(crmParams.serviceEndTime);
-            crmParams.pointClearDate = formatDate(crmParams.pointClearDate);
+            crmParams.pointClearDate = +crmParams.pointClearDate == 0 ? '不清零' : formatDate(crmParams.pointClearDate);
             crmParams.isPointCanPay = crmParams.isPointCanPay == 0 ? 'minus' : 'ok';
             
             $form = $(Handlebars.compile(Hualala.TplLib.get('tpl_crm_params'))(crmParams)).appendTo($crm);

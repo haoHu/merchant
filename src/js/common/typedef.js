@@ -25,16 +25,34 @@
 				{name : "crmDealSummary", label : "交易报表", type : "link", src : "CRMDealSubNavType"},
 				{name : "crmParameter", label : "参数设置", type : "link", src : "CRMParamsSubNavType"}
 			]
+		},
+        {name : 'weixin', label : '微信', type:"subnav",
+			subnavs : [
+				{name : "wxReply", label : "微信管理", type : "link", src : "WeixinAdminSubNavType"},
+				{name : "wxAdvertorial", label : "素材管理", type : "link", src : "WeixinMaterialSubNavType"}
+			]
 		}
+	];
+    
+    Hualala.TypeDef.WeixinAdminSubNavType = [
+		{name : "wxReply", label : "自动回复"},
+		{name : "wxSubscribe", label : "订阅消息"},
+		{name : "wxMenu", label : "自定义菜单"}//,
+        //{name : "wxQrCode", label : "二维码维护"}
+	];
+    Hualala.TypeDef.WeixinMaterialSubNavType = [
+        {name : "wxAdvertorial", label : "软文管理"},
+		{name : "wxContent", label : "图文管理"},
+		{name : "wxText", label : "文本管理"}
 	];
 
 	Hualala.TypeDef.CRMMemberSubNavType = [
 		{name : "crmMemberSchema", label : "会员概览", pkeys : []},
 		{name : "crmQueryMember", label : "会员查询", pkeys : []},
-		{name : "crmCardStats", label : "办卡统计", pkeys : []}
+		{name : "crmCardStats", label : "入会统计", pkeys : []}
 	];
 	Hualala.TypeDef.CRMDealSubNavType = [
-		{name : "crmDealSummary", label : "交易汇总", pkeys : []},
+		{name : "crmDealSummary", label : "储值消费汇总", pkeys : []},
 		{name : "crmDealDetail", label : "交易明细", pkeys : []},
 		{name : "crmRechargeReconciliation", label : "储值对账", pkeys : []}
 	];
@@ -219,6 +237,12 @@
 		{value : 1, label : "个人"}
 	];
 
+	Hualala.TypeDef.ShopOperationMode = [
+		{value : 0, label : "正餐"},
+		{value : 1, label : "快餐"},
+		{value : 2, label : "美食广场"}
+	];
+
 	/**
 	 * 店铺业务类型
 	 * 10：常规预订，11：闪吃，20：外送，21：到店自提，41：店内点菜，42：店内买单
@@ -261,7 +285,8 @@
 				0 : 'payBeforeCommit',
 				// 快餐
 				// @Note for 1.1 delete supportCommitToSoftware(#4105)
-				1 : 'fetchFoodMode'
+				1 : 'fetchFoodMode',
+				2 : 'payBeforeCommit'
 			}
 		},
 		{
@@ -517,14 +542,12 @@
         transType: {
             '10': '初始转入', 
             '20': '储值', 
-            '30': '支付', 
-            '31': '消费', 
-            '40': '调账', 
+            '30': '消费', 
             '50': '活动赠积分', 
             '60': '积分兑换', 
             '70': '积分清零', 
             '80': '活动赠余额', 
-            '90': '消费退款'
+            '90': '消费撤销'
         },
         //会员活动类型
         eventWay: {
@@ -554,7 +577,7 @@
             '100': '批量导入'
         },
         //会员优惠券状态
-        giftStatus: { '1': '可使用', '2': '已使用', '3': '已过期', '4': '已退订' },
+        giftStatus: { '1': '未使用', '2': '已使用', '3': '已过期', '4': '已退订' },
         //会员卡日志类型
         logType: {
             '0': '其他', 

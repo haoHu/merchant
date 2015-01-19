@@ -205,7 +205,7 @@
 				}, 1000);
 				return;
 			}
-			$img.attr('src', code);
+			$img.attr('src', code + '?' + (new Date()).getTime());
 			// FOR TEST
 			setTimeout(function () {
 				toggleProgress();

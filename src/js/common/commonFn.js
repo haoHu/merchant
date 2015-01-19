@@ -485,7 +485,8 @@
 	var prettyNumeric = function (num, separator) {
 		if (isNaN(num)) return num.toString();
 		var s = num.toString().split('.'),
-			s1 = s[0],
+			isNegative = num < 0 ? true : false,
+			s1 = isNegative ? s[0].replace('-', '') : s[0],
 			s2 = s[1] || '',
 			l = s1.length,
 			r = '';
@@ -497,7 +498,7 @@
 			for (var i = 0; i < l1; i++) {
 				r += s1.slice(idx + (i * 3), (idx + (i + 1) * 3)) + separator;
 			}
-			r = r.slice(0, -1) + (s2.length > 0 ? ('.' + s2) : '');
+			r = (isNegative ? '-' : '') + r.slice(0, -1) + (s2.length > 0 ? ('.' + s2) : '');
 		} else {
 			r = num;
 		}
@@ -707,10 +708,12 @@
 	 * @param {String} api Hualala.Globel命名空间下的AJAX接口名称
 	 * @param {Object} params 调用AJAX接口传递的参数
 	 */
-    function loadData(api, params)
+    function loadData(api, params, data, path)
     {
         var df = $.Deferred();
-        Hualala.Global[api](params, function(rsp)
+        
+        if(data) df.resolve(data);
+        else Hualala.Global[api](params, function(rsp)
         {
             if(rsp.resultcode != '000')
             {
@@ -718,9 +721,21 @@
                 df.reject(rsp);
                 return;
             }
-            
-            df.resolve(rsp);
+            if(path === false)
+            {
+                df.resolve(rsp); return;
+            }
+            path = path || 'data.records';
+            var sucData = rsp,
+                paths = path.split('.'),
+                l = paths.length - 1;
+                
+            for(var i = 0; i < l; i++)
+                sucData = sucData[paths[i]] || {};
+                
+            df.resolve(sucData[paths[l]]);
         });
+        
         return df.promise();
     }
     Hualala.Common.loadData = loadData;

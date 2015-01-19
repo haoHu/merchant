@@ -14,16 +14,11 @@
         
         var $subscribe = $(tplLib.get('tpl_wx_subscribe')).appendTo($pageBody),
             $select = $subscribe.find('select'),
-            $resWiew = $subscribe.find('.form-control-static'),
+            $resView = $subscribe.find('.form-control-static'),
             $save = $subscribe.find('#saveBtn');
             
         var subscribe = { mpID: mpID, pushMsgType: 'event', pushEvent: 'subscribe' },
-            resources = [], emotions = emotions || W.getEmotions();
-        
-        $select.on('change', function()
-        {
-            $resWiew.html(W.createResourceView(_.findWhere(resources, { itemID: this.value }), emotions));
-        });
+            resources = [];
         
         G.getWeixinSubscribe({mpID: mpID, pushEvent: "('subscribe')"}, function(rsp)
         {
@@ -36,12 +31,8 @@
             var records = rsp.data.records || [],
                 subsc = records[0];
             subscribe = subsc || subscribe;
-            W.createResourceChosen($select, resources, subscribe.resourceID)
-            .done(function(res)
-            {
-                resources = res;
-                $select.change();
-            });
+            W.createResourceChosen($select, $resView, resources, subscribe.resourceID)
+            .done(function(res){ resources = res; });
         });
         
         $save.on('click', function()

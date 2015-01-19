@@ -13,6 +13,7 @@ S.initInfo = function ($container, pageType, params)
     var $shopFuncNav = S.createShopFuncNav(pageType, params, $container);
     
     var shopID = params, shopInfo = null,
+        operationModeType = Hualala.Shop.Typedef.operationMode,
         $form = null, $city = null, $area = null, 
         $cuisine1 = null, $cuisine2 = null,
         imagePath = '', $img = null,
@@ -37,7 +38,7 @@ S.initInfo = function ($container, pageType, params)
         var openTime = shopInfo.openingHours.split('-');
         shopInfo.openingHoursStart = openTime[0];
         shopInfo.openingHoursEnd = openTime[1];
-        shopInfo.operationModeName = shopInfo.operationMode == '1' ? '快餐' : '正餐';
+        shopInfo.operationModeName = operationModeType[shopInfo.operationMode];
         
         var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_info'));
         $form = $(tpl(shopInfo)).appendTo($container);
@@ -46,6 +47,7 @@ S.initInfo = function ($container, pageType, params)
         $cuisine1 = $form.find('#cuisineID1'),
         $cuisine2 = $form.find('#cuisineID2');
         
+        U.fillSelect($form.find('#operationMode'), operationModeType).val(shopInfo.operationMode);
         // 初始化城市列表下拉框
         $city.on('change', function (e, areaID, cuisineID1, cuisineID2)
         {

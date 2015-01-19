@@ -218,6 +218,7 @@ module.exports = function (grunt) {
                     "<%= pkg.srcPath.jsPath %>/weixin/subscribe.js",
                     "<%= pkg.srcPath.jsPath %>/weixin/menu.js",
                     "<%= pkg.srcPath.jsPath %>/weixin/qrcode.js",
+                    "<%= pkg.srcPath.jsPath %>/weixin/advertorial.js",
                     "<%= pkg.srcPath.jsPath %>/weixin/content.js",
                     "<%= pkg.srcPath.jsPath %>/weixin/text.js",
                     "<%= pkg.srcPath.jsPath %>/weixin/typedef.js",
@@ -261,7 +262,7 @@ module.exports = function (grunt) {
 					],
 					"<%= pkg.destPath.jsPath %>/dep/deplib.min.js" : [
 						"<%= pkg.destPath.jsPath %>/dep/deplib.js"
-					],
+                        ],
 					"<%= pkg.destPath.jsPath %>/common.min.js" : [
 						"<%= pkg.destPath.jsPath %>/common.js"
 					],
