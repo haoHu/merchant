@@ -95,10 +95,13 @@
             $.extend(reply, parseForm($replyForm));
             reply.replyContent = res.resTitle;
             reply.mpID = mpID;
+            reply.itemID = reply.itemID || '';
             reply.pushMsgType = reply.replyMsgType = res.resType == '2' ? 'text' : 'news';
             reply.resourceVaule = 1;
             
-            G[itemID ? 'updateWeixinAutoReplyRole' : 'addWeixinAutoReplyRole'](reply, function(rsp)
+            var pReply = _.pick(reply, 'itemID', 'pushContentType', 'replyContent', 'resourceID', 'resourceVaule', 'replyMsgType', 'pushContent');
+            
+            G[itemID ? 'updateWeixinAutoReplyRole' : 'addWeixinAutoReplyRole'](pReply, function(rsp)
             {
                 if(rsp.resultcode != '000')
                 {

@@ -70,9 +70,23 @@
             for(var i = 0, menu; menu = menus[i]; i++)
             {
                 menu.id = '' + i;
+                if(menu.url)
+                {
+                    menu.softType = '22';
+                    menu.softWenChoose = menu.url;
+                    delete menu.url;
+                }
                 var subMenus = menu.sub_button || [];
                 for(var j = 0, sm; sm = subMenus[j]; j++)
+                {
                     sm.id = i + '' + j;
+                    if(sm.url)
+                    {
+                        sm.softType = '22';
+                        sm.softWenChoose = sm.url;
+                        delete sm.url;
+                    }
+                }
             }
             renderMenu();
         }

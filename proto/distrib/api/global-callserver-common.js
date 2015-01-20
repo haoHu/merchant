@@ -90,7 +90,7 @@
         ["getWeixinAutoReplyList", "/wechat/wechatGetShopAutoReply.ajax", "", "POST"],
         ["deleteWeixinAutoReplyRole", "/wechat/wechatDelAutoReplyRule.ajax", "", "POST"],
         ["getWeixinResources", "/wechat/wechatResourceAll.ajax", "", "POST"],
-        ["updateWeixinAutoReplyRole", "/wechat/wechatUpdateAutoReplyRule.ajax", "", "POST"],
+        ["updateWeixinAutoReplyRole", "/wechat/wechatUpdateAutoReplyRuleShop.ajax", "", "POST"],
         ["addWeixinAutoReplyRole", "/wechat/wechatAddAutoReplyRule.ajax", "", "POST"],
         ["getWeixinReply", "/wechat/wechatGetAutoReplyById.ajax", "", "POST"],
         

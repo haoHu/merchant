@@ -20,7 +20,7 @@
         var subscribe = { mpID: mpID, pushMsgType: 'event', pushEvent: 'subscribe' },
             resources = [];
         
-        G.getWeixinSubscribe({mpID: mpID, pushEvent: "('subscribe')"}, function(rsp)
+        G.getWeixinSubscribe({mpID: mpID, pushEvent: '(\"subscribe\")'}, function(rsp)
         {
             $save.prop('disabled', false);
             if(rsp.resultcode != '000')
