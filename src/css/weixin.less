@@ -20,9 +20,11 @@
 .bs-callout.weixin-brand 
 {
     padding: 15px; margin-bottom: 15px;
-    select { font-size: 20px; }
-    .chosen-container { margin-right: 25px; }
-    .chosen-single span { color: #f0ad4e; font-size: 20px; margin-top: -2px; }
+    select 
+    { font-size: 20px; height: 44px; width: auto; .d-ib; 
+      margin-right: 25px; color: #f0ad4e;
+      option { color: #333 }
+    }
 }
 
 .wx-reply
@@ -144,6 +146,19 @@
         #scanCode .btn { margin-top: 20px; }
     }
     form.menu-edit p { color: #c00; margin-top: 12px; }
+}
+
+.wx-advertorial
+{
+    .panel-head 
+    { background-color: #ccc; //background-color: #f8f8f8; 
+      border-bottom: 4px solid #bce8f1;
+      margin-bottom: 15px; padding: 15px;
+      .btn { margin-top: -7px; padding: 3px 12px; font-size: 18px; }
+    }
+    
+    #adList, #adCont { padding: 0; }
+    #adList { padding-right: 15px; }
 }
 
 .qq-emotions

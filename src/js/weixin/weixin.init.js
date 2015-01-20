@@ -62,8 +62,8 @@
         
         function renderData()
         {
-            var $select = $('<div class="bs-callout weixin-brand"><select />微信公共账号</div>').insertAfter('.page-subnav').find('select');
-            U.createChosen($select, accounts, 'mpID', 'mpName', {width: 'auto'}, false, mpID || '').on('change', function()
+            var $select = $('<div class="bs-callout weixin-brand"><select class="form-control" />微信公共账号</div>').insertAfter('.page-subnav').find('select');
+            U.fillSelect($select, accounts, 'mpID', 'mpName', false).val(mpID).on('change', function()
             { 
                 mpID = $(this).val();
                 mpID && callback && callback($pageBody.empty(), mpID);
@@ -81,7 +81,7 @@
         
         function fn()
         {
-            U.createChosen($select, resources, 'itemID', 'resTitle', cfg, false, cv || '')
+            U.createChosen($select, resources, 'itemID', 'resName', cfg, false, cv || '')
             .on('change', function()
             {
                 $resView.html(WX.createResourceView(_.findWhere(resources, { itemID: this.value }), emotions));
@@ -99,6 +99,7 @@
                 return;
             }
             resources = rsp.data.records || [];
+            _.each(resources, function(item){ item.resName = (item.resType == '2' ? '(文本)' : '(图文)') + item.resTitle });
             if(!resources.length)
             {
                 var $msg = $('<div>尚无可用素材资源，无法进行此操作！您可以先在<a href="" data-page="wxContent" />或者<a href="" data-page="wxText" />下添加一些素材资源。</div>');
@@ -218,8 +219,8 @@
             });
         }
         
-        Hualala.UI.createChosen($selectWrap.html('<select class="form-control"></select>').find('select'), 
-        linkTypes, 'value', 'title', { width: '100%' }, false, linkID)
+        Hualala.UI.fillSelect($selectWrap.html('<select class="form-control"></select>').find('select'), 
+        linkTypes, 'value', 'title', false).val(linkID)
         .on('change', function()
         {
             that.renderLinkContent(linkTypes[this.value - 1], $contentWrap, dataHolder, linkCont);
