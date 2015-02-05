@@ -114,7 +114,7 @@
 								'</div>',
 							'{{/checkFormElementType}}',
 							'{{#checkFormElementType type type="button"}}',
-								'<button type="button" class="btn {{clz}}">{{{label}}}</button>',
+								'<button type="button" class="btn {{clz}}" name="{{name}}">{{{label}}}</button>',
 							'{{/checkFormElementType}}',
 						'{{/each}}',
 					'</div>',

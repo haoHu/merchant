@@ -1645,6 +1645,167 @@
         });
 	};
     
+    /**
+     * 获取营销活动礼品列表数据
+     * @param  {[Obj]} params 参数 {giftName, giftType, pageNo, pageSize}
+     *        
+     * @param  {[type]} cbFn   [description]
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.getMCMGifts = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	var data = Test.getGiftList(params);
+    	setTimeout(function () {
+			fn(IX.inherit(res, {
+				data : data
+			}));
+		}, 1000);	
+    };
+
+    /**
+     * 删除礼品
+     * @param  {Obj} params {giftItemID}
+     * @param  {[type]} cbFn   
+     * @return {[type]}        
+     */
+    Hualala.Global.deleteMCMGift = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	setTimeout(function () {
+    		fn(res);
+    	}, 200);
+    };
+
+    /**
+     * 添加礼品
+     * @param  {[type]} params {}
+     * @param  {[type]} cbFn   [description]
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.createMCMGift = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	setTimeout(function () {
+    		fn(res);
+    	}, 200);
+    };
+
+    /**
+     * 编辑礼品
+     * @param  {[type]} params {}
+     * @param  {[type]} cbFn   [description]
+     * @return {[type]}        [description]
+     */
+	Hualala.Global.editMCMGift = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	setTimeout(function () {
+    		fn(res);
+    	}, 200);
+    };   
+
+    /**
+     * 获取活动列表数据
+     * @param  {[Obj]} params {eventName, eventWay, isActive, pageNo, pageSize, eventStartDate, eventEndDate}
+     * @param  {[type]} cbFn   
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.getMCMEvents = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	var data = Test.getEventList(params);
+    	setTimeout(function () {
+			fn(IX.inherit(res, {
+				data : data
+			}));
+		}, 1000);
+    };
+
+    /**
+     * 删除活动
+     * @param  {Obj} params {eventID}
+     * @param  {[type]} cbFn   
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.deleteMCMEvent = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	setTimeout(function () {
+    		fn(res);
+    	}, 200);
+    };
+
+
+    /**
+     * 活动开关操作
+     * @param  {[type]} params {eventID, isActive}
+     * @param  {[type]} cbFn   
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.switchMCMEvent = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	setTimeout(function () {
+    		fn(res);
+    	}, 200);
+    };
+
+    /**
+     * 根据ID获取活动信息
+     * @param  {Object} params {eventID}
+     * @param  {[type]} cbFn   [description]
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.getMCMEventByID = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	var data = Test.getEventDataByID(params);
+    	setTimeout(function () {
+			fn(IX.inherit(res, {
+				data : {
+					records : [data]
+				}
+			}));
+		}, 1000);
+    };
+
+
+    /**
+     * 创建活动
+     * @param  {Object} params {}
+     * @param  {Function} cbFn   [description]
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.createEvent = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	var data = Test.getEventDataByID(params);
+    	setTimeout(function () {
+			fn(IX.inherit(res, {
+				data : data
+			}));
+		}, 1000);
+    };
+
+    /**
+     * 编辑活动信息
+     * @param  {[type]} params {}
+     * @param  {[type]} cbFn   [description]
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.editEvent = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	var data = Test.getEventDataByID(params);
+    	setTimeout(function () {
+			fn(IX.inherit(res, {
+				data : data
+			}));
+		}, 1000);
+    };
+
+     
 })();
 
 

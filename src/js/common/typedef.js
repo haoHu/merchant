@@ -14,24 +14,31 @@
 
 	// 站点导航数据
 	Hualala.TypeDef.SiteNavType = [
-		{name : 'order', label : '订单报表', type:"link"},
-		{name : 'account', label : '资金结算', type:"link"},
-		{name : 'shop', label : '店铺管理', type:"link"},
-		{name : 'setting', label : '业务设置', type:"link"},
-		{name : 'user', label : '用户管理', type:"link"},
-		{name : 'crm', label : '会员管理', type:"subnav",
+		{name : 'shop', label : '店铺', type:"link"},
+		{name : 'setting', label : '业务', type:"link"},
+		{name : 'order', label : '订单', type:"link"},
+		{name : 'account', label : '结算', type:"link"},
+		{name : 'crm', label : '会员', type:"subnav",
 			subnavs : [
 				{name : "crmMemberSchema", label : "会员概况", type : "link", src : "CRMMemberSubNavType"},
 				{name : "crmDealSummary", label : "交易报表", type : "link", src : "CRMDealSubNavType"},
 				{name : "crmParameter", label : "参数设置", type : "link", src : "CRMParamsSubNavType"}
 			]
 		},
-        {name : 'weixin', label : '微信', type:"subnav",
+		{name : 'mcm', label : '营销', type : "subnav",
+			subnavs : [
+				{name : "mcmGiftsMgr", label : "礼品管理", type : "link", src : ""},
+				{name : "mcmEventMgr", label : "活动管理", type : "link", src : ""}
+			]
+		},
+		{name : 'weixin', label : '微信', type:"subnav",
 			subnavs : [
 				{name : "wxReply", label : "微信管理", type : "link", src : "WeixinAdminSubNavType"},
 				{name : "wxAdvertorial", label : "素材管理", type : "link", src : "WeixinMaterialSubNavType"}
 			]
-		}
+		},
+		{name : 'user', label : '权限', type:"link"}
+        
 	];
     
     Hualala.TypeDef.WeixinAdminSubNavType = [
@@ -513,7 +520,150 @@
 		{value : 0, label : "停用"},
 		{value : 1, label : "正常"}
 	];
-    
+
+	Hualala.TypeDef.MCMDataSet = {
+		/*礼品类型*/
+		GiftTypes : [
+			{value : '', label : "全部"},
+			{value : 10, label : "电子代金券", type : 'voucher', unit : '元', bgColor : "#ff6600"},
+			// {value : 20, label : "菜品优惠券"},
+			// {value : 30, label : "实物礼品"},
+			{value : 40, label : "会员充值", type : 'card', unit : '元', bgColor : "#cc0000"},
+			{value : 42, label : "会员积分", type : 'point', unit : '点', bgColor : "#009999"}
+		],
+		/*礼品发出方式*/
+		GiftDistributeTypes : [
+			{value : "", label : "全部"},
+			{value : "10", label : "消费返券"},
+			{value : "20", label : "摇奖活动"},
+			{value : "30", label : "积分摇奖"},
+			{value : "40", label : "积分兑换"},
+			{value : "50", label : "订单摇奖"},
+			{value : "60", label : "免费领取"},
+			{value : "70", label : "商家赠送"},
+			{value : "80", label : "商家支付"},
+			{value : "90", label : "商家卖出"},
+			{value : "91", label : "会员摇奖"},
+			{value : "92", label : "免费领取"},
+			{value : "93", label : "积分兑换"},
+			{value : "94", label : "参与活动"},
+			{value : "95", label : "有奖竞猜"},
+			{value : "96", label : "套餐充值"}
+		],
+		/*礼品使用状态*/
+		GiftStatus : [
+			{value : "", label : "全部"},
+			{value : "1", label : "可使用"},
+			{value : "2", label : "已使用"},
+			{value : "3", label : "已过期"},
+			{value : "4", label : "已退订"}
+		],
+		/*礼品业务支持*/
+		GiftSupportOrderTypes : [
+			{value : 2, label : "全部支持"},
+			{value : 0, label : "堂食"},
+			{value : 1, label : "外送"}
+		],
+		/*礼品使用时段限制*/
+		GiftUsingTimeTypes : [
+			{value : "1", label : "早餐"},
+			{value : "2", label : "午餐"},
+			{value : "3", label : "下午茶"},
+			{value : "4", label : "晚餐"},
+			{value : "5", label : "夜宵"}
+		],
+		/*实物礼品派发状态*/
+		GiftIsSended : [
+			{value : "0", label : "待发送"},
+			{value : "1", label : "已发送"}
+		],
+		/*消费金额限制类型*/
+		GiftMonetaryLimitTypes : [
+			{value : "0", label : "不限"},
+			{value : "1", label : "每满"},
+			{value : "2", label : "满"}
+		],
+		/*电子礼品类，是否支持线下使用*/
+		GiftIsOfflineUsing : [
+			{value : "0", label : "不支持"},
+			{value : "1", label : "支持"}
+		],
+		/*电子礼品类，节假日使用限制*/
+		GiftIsHolidayUsing : [
+			{value : "0", label : "不限制"},
+			{value : "1", label : "不含节假日"},
+			{value : "2", label : "仅节假日"}
+		],
+		/*电子礼品类，菜品范围限制*/
+		GiftFoodScope : [
+			{value : "0", label : "不限"},
+			{value : "1", label : "仅可打折菜品"}
+		],
+		/*礼品审核状态*/
+		GiftAuditStatus : [
+			{value : "0", label : "未提交审核"},
+			{value : "1", label : "审核未通过"},
+			{value : "2", label : "审核通过"},
+			{value : "3", label : "审核中"}
+		],
+		/*营销活动类型定义*/
+		EventTypes : [
+			{value : "", label : "全部"},
+			{value : "20", label : "摇奖活动", type : "lucky-joy", bgColor : "rgb(204, 0, 0)"},
+			{value : "21", label : "免费领取", type : "free-get", bgColor : "rgb(102, 153, 0)"},
+			{value : "22", label : "报名活动", type : "apply-evt", bgColor : "rgb(102, 51, 102)"},
+			{value : "30", label : "积分兑换", type : "credit-exchange", bgColor : "rgb(0, 153, 204)"},
+			{value : "40", label : "营销红包", type : "marketing-redenvelope", bgColor : "rgb(156, 111, 109)"},
+			{value : "41", label : "消费红包", type : "consume-redenvelope", bgColor : "rgb(199, 148, 148)"}
+		],
+		/*营销活动摇奖方式*/
+		EventLuckJoyTypes : [
+			{value : "0", label : "大转盘"},
+			{value : "1", label : "老虎机"},
+			{value : "2", label : "刮刮卡"}
+		],
+		/*营销活动用户参与终端限制*/
+		EventJoinClientTypes : [
+			{value : "0", label : "不限制"},
+			{value : "1", label : "仅限PC客户端"},
+			{value : "2", label : "仅限手机客户端"},
+			{value : "3", label : "仅限Pad客户端"},
+			{value : "4", label : "仅限手机和Pad客户端"}
+		],
+		/*营销活动用户参与范围*/
+		EventJoinUserRange : [
+			{value : "0", label : "不限制"},
+			{value : "1", label : "仅限绑定手机号码的用户"},
+			{value : "2", label : "仅限在本集团订过餐的用户"}
+		],
+		/*营销活动开关*/
+		EventIsActive : [
+			{value : "", label : "不限"},
+			{value : "0", label : "未启用"},
+			{value : "1", label : "已启用"}
+		],
+		/*营销活动状态定义*/
+		EventStatus : [
+
+		],
+		EventCardLevels : [
+			{value : "-1", label : "所有顾客参与（含非会员）"},
+			{value : "0", label : "仅会员"}
+		],
+		EventCountCycleDays : [
+			{value : 0, label : "不限次数"},
+			{value : 1, label : "限制次数"},
+			{value : 2, label : "限制参与次数的周期"}
+		],
+		IsVIPBirthdayMonth : [
+			{value : 0, label : "不限制"},
+			{value : 1, label : "仅本月生日的会员可参与"}
+		]
+
+	};
+
+	
+
     Hualala.TypeDef.CRM = {
         //会员来源类型
         sourceType: {

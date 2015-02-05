@@ -1,14 +1,19 @@
 (function ($, window) {
 	IX.ns("Hualala.Common");
 	var pageBrickConfigs = [
+		{name : 'setting', title : '业务', label : '开通业务•业务参数', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-setting'},
 		{name : 'account', title : '结算', label : '账户设置•提现•结算报表', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-pay'},
-		{name : 'order', title : '订单', label : '查询•报表•菜品排行', brickClz : 'home-brick-md-3', itemClz : 'brick-item', icon : 'icon-order'},
-		{name : 'shop', title : '店铺管理', label : '开店•信息•菜谱', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-home'},
+		{name : 'order', title : '订单', label : '查询•报表•菜品排行', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-order'},
+		{name : 'shop', title : '店铺', label : '开店•信息•菜谱', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-home'},
+
+		{name : 'pcclient', title : '下载', label : '哗啦啦代理程序', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-download'},
+		{name : 'user', title : '权限', label : '用户•权限', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-lock'},
         {name : 'weixin', title : '微信', label : '网络餐厅•营销', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-weixin'},
-		{name : 'crm', title : '会员', label : '概览•报表•参数•营销', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-crm'},		
-		{name : 'pcclient', title : '下载哗啦啦', label : '哗啦啦代理程序', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-download'},
-		{name : 'user', title : '用户管理', label : '用户•权限', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-lock'},
-		{name : 'setting', title : '业务设置', label : '开通业务•业务参数', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-setting'}
+		{name : 'crm', title : '会员', label : '概览•报表•参数•营销', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-crm'},
+		{name : 'mcm', title : '营销', label : '礼品•营销活动', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-crm'}
+		
+		
+		
 	];
 	function isSupportedBrowser () {
 		var bd = Hualala.Common.Browser;

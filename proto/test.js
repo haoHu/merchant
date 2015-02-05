@@ -13,7 +13,8 @@
 		Test.TestRoot + "/order.js",
         Test.TestRoot + "/foods.js",
         Test.TestRoot + "/user.js",
-        Test.TestRoot + "/crm.js"
+        Test.TestRoot + "/crm.js",
+        Test.TestRoot + "/mcm.js"
 	];
 
 	Test.readyToTest = function (pageFn) {

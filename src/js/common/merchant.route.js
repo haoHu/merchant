@@ -255,6 +255,33 @@
 			PageInitiator : "Hualala.Order.QueryOrderCustomerInit", parentName : "main", label : "顾客统计"
 		},
 
+		// 营销活动管理模块(MCM)
+		{
+			name : "mcm", path : "/#mcm",
+			reg : /mcm$/, bodyClz : "",
+			PageInitiator : "Hualala.MCM.MCMHomePageInit", parentName : "main", label : "营销"
+		},
+		{
+			name : "mcmGiftsMgr", path : "/#mcm/gifts",
+			reg : /mcm\/gifts$/, bodyClz : "",
+			PageInitiator : "Hualala.MCM.MCMGiftsMgrInit", parentName : "mcm", label : "礼品管理"
+		},
+		{
+			name : "mcmGiftDetail", path : "/#mcm/gift/{giftItemID}/detail",
+			reg : /mcm\/gift\/(.*)\/detail$/, bodyClz : "",
+			PageInitiator : "Hualala.MCM.MCMGiftDetailInit", parentName : "mcmGiftsMgr", label : "礼品使用详情"
+		},
+		{
+			name : "mcmEventMgr", path : "/#mcm/evts",
+			reg : /mcm\/evts$/, bodyClz : "",
+			PageInitiator : "Hualala.MCM.MCMEventMgrInit", parentName : "mcm", label : "营销活动管理"
+		},
+		{
+			name : "mcmEventTrack", path : "/#mcm/evt/{eventID}/track",
+			reg : /mcm\/evt\/{eventID}\/track$/, bodyClz : "",
+			PageInitiator : "Hualala.MCM.MCMEventTrackInit", parentName : "mcmEventMgr", label : "活动跟踪"
+		},
+
 		// 会员系统管理
 		/*
 			
@@ -477,5 +504,8 @@
         return cfg.label;
     };
     
+    Hualala.PageRoute.jumpPage = function (path) {
+    	document.location.href = path;
+    };
 
 })(jQuery, window);

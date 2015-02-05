@@ -674,7 +674,7 @@
 			'</div>',
 			'<div class="panel-body ix-card-body">',
 				'<div class="media">',
-					'<a class="pull-left" href="javascript:void(0);">',
+					'<a class="media-left" href="javascript:void(0);">',
 						'<img class="media-object" alt="{{name}}" src="{{img}}" />',
 					'</a>',
 					'<div class="media-body">',
