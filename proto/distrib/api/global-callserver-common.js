@@ -62,53 +62,63 @@
 		["queryRoleBinding", "/shop/queryChildAccount.ajax", "", "POST"],
 		["bindMobileInShopGroupChildAccount", "/shop/boundMobile.ajax", "", "POST"],
 
-		
-		/*CRM Module*/
+        /*CRM Module*/
 		["queryCrmMemberSchema", "/crm/cardOverView.ajax", "", "POST"],
-		["getCrmParams", "/crm/crmGroupParamsQuery.ajax", "", "POST"],
-		["setCrmParams", "/crm/crmGroupParamsUPdateOrAdd.ajax", "", "POST"],
-		["getCrmRechargeSets", "/crm/crmSaveMoneySetQuery.ajax", "", "POST"],
-		["switchCrmRechargeSetState", "/crm/crmSaveMoneyIsActive.ajax", "", "POST"],
-		["addCrmRechargeSet", "/crm/crmSaveMoneySetAdd.ajax", "", "POST"],
-		["updateCrmRechargeSet", "/crm/crmSaveMoneySetUpdate.ajax", "", "POST"],
-		["getVipLevels", "/crm/crmLevelQuery.ajax", "", "POST"],
-		
-		["queryCrm", "/crm/crmCustomerCardComplexQuery.ajax", "", "POST"],
-		["getCrmDetail", "/crm/crmCustomerCardDetailInfo.ajax", "", "POST"],
-		["getCrmTransDetail", "/crm/crmTransDetailQuery.ajax", "", "POST"],
-		["getCrmUserEvents", "/crm/crmEventUserQuery.ajax", "", "POST"],
-		["getCrmUserGifts", "/crm/crmEGiftDetailQuery.ajax", "", "POST"],
-		["getCrmCardLogs", "/crm/crmCustomerCardLogQuery.ajax", "", "POST"],
-		["getCrmPreferential", "/crm/crmShopParamsQuery.ajax", "", "POST"],
-		["updateCrmPreferential", "/crm/crmShopParamsUpdate.ajax", "", "POST"],
-		["getCrmTransSum", "/crm/crmTransDetailSummrizing.ajax", "", "POST"],
-		["getCrmCardSum", "/crm/crmCustomerCardCreateSummarize.ajax", "", "POST"],
-		["getCrmRechargeSum", "/crm/crmTransDetailSaveMoneyReconcile.ajax", "", "POST"],
-		
-		
-		["getWeixinAccounts", "/wechat/wechatListMp.ajax", "", "POST"],
-		["getWeixinAutoReplyList", "/wechat/wechatGetShopAutoReply.ajax", "", "POST"],
-		["deleteWeixinAutoReplyRole", "/wechat/wechatDelAutoReplyRule.ajax", "", "POST"],
-		["getWeixinResources", "/wechat/wechatResourceAll.ajax", "", "POST"],
-		["updateWeixinAutoReplyRole", "/wechat/wechatUpdateAutoReplyRuleShop.ajax", "", "POST"],
-		["addWeixinAutoReplyRole", "/wechat/wechatAddAutoReplyRule.ajax", "", "POST"],
-		["getWeixinReply", "/wechat/wechatGetAutoReplyById.ajax", "", "POST"],
-		
-		["getWeixinSubscribe", "/wechat/wechatEventByMpid.ajax", "", "POST"],
-		["addWeixinSubscribe", "/wechat/wechatCreateAutoReplyRule.ajax", "", "POST"],
-		["updateWeixinSubscribe", "/wechat/wechatUpdateAutoReplyRule.ajax", "", "POST"],
-		
-		["saveWinxinMenu", "/wechat/wechatUpdateMp.ajax", "", "POST"],
-		["importWinxinMenu", "/wechat/wechatGetMenu.ajax", "", "POST"],
-		["publishWinxinMenu", "/wechat/wechatCreatMenu.ajax", "", "POST"],
-		
-		["getAdvertorials", "/sysbase/sysbaseQuerySysMobileAds.ajax", "", "POST"],
-		
-		["getCrmEvents", "/pay/queryCrmCustomerEvent.ajax", "", "POST"],
-		
-		["getUserEvents", "/sysbase/querySysEventItemList.ajax", "", "POST"],
+        ["getCrmParams", "/crm/crmGroupParamsQuery.ajax", "", "POST"],
+        ["setCrmParams", "/crm/crmGroupParamsUPdateOrAdd.ajax", "", "POST"],
+        ["getCrmRechargeSets", "/crm/crmSaveMoneySetQuery.ajax", "", "POST"],
+        ["switchCrmRechargeSetState", "/crm/crmSaveMoneyIsActive.ajax", "", "POST"],
+        ["addCrmRechargeSet", "/crm/crmSaveMoneySetAdd.ajax", "", "POST"],
+        ["updateCrmRechargeSet", "/crm/crmSaveMoneySetUpdate.ajax", "", "POST"],
+        ["getVipLevels", "/crm/crmLevelQuery.ajax", "", "POST"],
+        
+        ["queryCrm", "/crm/crmCustomerCardComplexQuery.ajax", "", "POST"],
+        ["getCrmDetail", "/crm/crmCustomerCardDetailInfo.ajax", "", "POST"],
+        ["getCrmTransDetail", "/crm/crmTransDetailQuery.ajax", "", "POST"],
+        ["getCrmUserEvents", "/crm/crmEventUserQuery.ajax", "", "POST"],
+        ["getCrmUserGifts", "/crm/crmEGiftDetailQuery.ajax", "", "POST"],
+        ["getCrmCardLogs", "/crm/crmCustomerCardLogQuery.ajax", "", "POST"],
+        ["getCrmPreferential", "/crm/crmShopParamsQuery.ajax", "", "POST"],
+        ["updateCrmPreferential", "/crm/crmShopParamsUpdate.ajax", "", "POST"],
+        ["getCrmTransSum", "/crm/crmTransDetailSummrizing.ajax", "", "POST"],
+        ["getCrmCardSum", "/crm/crmCustomerCardCreateSummarize.ajax", "", "POST"],
+        ["getCrmRechargeSum", "/crm/crmTransDetailSaveMoneyReconcile.ajax", "", "POST"],
+        
+        /*Weixin Module*/
+        ["getWeixinAccounts", "/wechat/wechatListMp.ajax", "", "POST"],
+        ["getWeixinAutoReplyList", "/wechat/wechatGetShopAutoReply.ajax", "", "POST"],
+        ["deleteWeixinAutoReplyRole", "/wechat/wechatDelAutoReplyRule.ajax", "", "POST"],
+        ["getWeixinResources", "/wechat/wechatResourceAll.ajax", "", "POST"],
+        ["updateWeixinAutoReplyRole", "/wechat/wechatUpdateAutoReplyRuleShop.ajax", "", "POST"],
+        ["addWeixinAutoReplyRole", "/wechat/wechatAddAutoReplyRule.ajax", "", "POST"],
+        ["getWeixinReply", "/wechat/wechatGetAutoReplyById.ajax", "", "POST"],
+        
+        ["getWeixinSubscribe", "/wechat/wechatEventByMpid.ajax", "", "POST"],
+        ["addWeixinSubscribe", "/wechat/wechatCreateAutoReplyRule.ajax", "", "POST"],
+        ["updateWeixinSubscribe", "/wechat/wechatUpdateAutoReplyRule.ajax", "", "POST"],
+        
+        ["saveWinxinMenu", "/wechat/wechatUpdateMp.ajax", "", "POST"],
+        ["importWinxinMenu", "/wechat/wechatGetMenu.ajax", "", "POST"],
+        ["publishWinxinMenu", "/wechat/wechatCreatMenu.ajax", "", "POST"],
+        
+        ["getAdvertorials", "/sysbase/sysbaseQuerySysMobileAds.ajax", "", "POST"],
+        ["deleteAdvertorial", "/sysbase/sysbaseDeleteSysMobileAds.ajax", "", "POST"],
+        ["updateAdvertorial", "/sysbase/sysbaseUpdateSysMobileAds.ajax", "", "POST"],
+        ["createAdvertorial", "/sysbase/sysbaseAddSysMobileAds.ajax", "", "POST"],
+        
+        ["getWeixinContents", "/wechat/wechatResourceFind.ajax", "", "POST"],
+        ["deleteWeixinContent", "/wechat/wechatResourceDelete.ajax", "", "POST"],
+        ["updateWeixinContent", "/wechat/wechatResourceUpdate.ajax", "", "POST"],
+        ["createWeixinContent", "/wechat/wechatResourceInsert.ajax", "", "POST"],
+        
+        ["getWeixinTexts", "/wechat/wechatResourceTextFind.ajax", "", "POST"],
+        ["deleteWeixinText", "/wechat/wechatResourceTextDel.ajax", "", "POST"],
+        
+        ["getCrmEvents", "/pay/queryCrmCustomerEvent.ajax", "", "POST"],
+        
+        ["getUserEvents", "/sysbase/querySysEventItemList.ajax", "", "POST"],
 
-		/*MCM Module*/
+        /*MCM Module*/
 		["getMCMGifts", "/sysbase/sysEventGiftDetailList.ajax", "", "POST"],
 		["deleteMCMGift", "/sysbase/deleteSysGift.ajax", "", "POST"],
 		["createMCMGift", "/sysbase/insertSysEventGiftDetail.ajax", "", "POST"],
@@ -149,30 +159,34 @@
 		"updateShopGroupChildAccount", "addShopGroupChildAccount",
 		"updateRoleBinding", "queryRoleBinding", "bindMobileInShopGroupChildAccount",
 		"queryCrmMemberSchema",
-		"getCrmParams", "setCrmParams", "getCrmRechargeSets", "switchCrmRechargeSetState", "addCrmRechargeSet", "updateCrmRechargeSet", "getVipLevels",
-		"queryCrm", "getCrmDetail", "getCrmTransDetail",
-		"getCrmUserEvents", "getCrmUserGifts", "getCrmCardLogs",
-		"getCrmPreferential", "updateCrmPreferential",
-		"getCrmTransSum", "getCrmCardSum", "getCrmRechargeSum",
-		
-		"getWeixinAccounts", "getWeixinAutoReplyList", 
-		"deleteWeixinAutoReplyRole", "getWeixinResources",
-		"updateWeixinAutoReplyRole", "addWeixinAutoReplyRole",
-		"getWeixinReply", 
-		
-		"getWeixinSubscribe", "addWeixinSubscribe",
-		"updateWeixinSubscribe",
-		
-		"saveWinxinMenu", "importWinxinMenu",
-		"publishWinxinMenu",
-		
-		"getAdvertorials",
-		
-		"getCrmEvents",
-		
-		"getUserEvents",
 
-		"getMCMGifts", "deleteMCMGift", "createMCMGift", "editMCMGift", "getMCMEvents", "deleteMCMEvent", "switchMCMEvent",
+        "getCrmParams", "setCrmParams", "getCrmRechargeSets", "switchCrmRechargeSetState", "addCrmRechargeSet", "updateCrmRechargeSet", "getVipLevels",
+        "queryCrm", "getCrmDetail", "getCrmTransDetail",
+        "getCrmUserEvents", "getCrmUserGifts", "getCrmCardLogs",
+        "getCrmPreferential", "updateCrmPreferential",
+        "getCrmTransSum", "getCrmCardSum", "getCrmRechargeSum",
+        
+        "getWeixinAccounts", "getWeixinAutoReplyList", 
+        "deleteWeixinAutoReplyRole", "getWeixinResources",
+        "updateWeixinAutoReplyRole", "addWeixinAutoReplyRole",
+        "getWeixinReply", 
+        
+        "getWeixinSubscribe", "addWeixinSubscribe",
+        "updateWeixinSubscribe",
+        
+        "saveWinxinMenu", "importWinxinMenu",
+        "publishWinxinMenu",
+        
+        "getAdvertorials", "deleteAdvertorial", "updateAdvertorial", "createAdvertorial",
+        
+        "getWeixinContents", "deleteWeixinContent", "updateWeixinContent", "createWeixinContent",
+        "getWeixinTexts", "deleteWeixinText",
+        
+        "getCrmEvents",
+        
+        "getUserEvents",
+
+        "getMCMGifts", "deleteMCMGift", "createMCMGift", "editMCMGift", "getMCMEvents", "deleteMCMEvent", "switchMCMEvent",
 		"getMCMEventByID", "createEvent", "editEvent"
 	]);
 
@@ -467,9 +481,45 @@
 	Hualala.Global.getAdvertorials = function (params, cbFn) {
 		Hualala.Global.commonCallServer("getAdvertorials", params, cbFn);
 	};
-	
-	//会员营销活动
-	Hualala.Global.getCrmEvents = function (params, cbFn) {
+    
+    Hualala.Global.deleteAdvertorial = function (params, cbFn) {
+		Hualala.Global.commonCallServer("deleteAdvertorial", params, cbFn);
+	};
+    
+    Hualala.Global.updateAdvertorial = function (params, cbFn) {
+		Hualala.Global.commonCallServer("updateAdvertorial", params, cbFn);
+	};
+    
+    Hualala.Global.createAdvertorial = function (params, cbFn) {
+		Hualala.Global.commonCallServer("createAdvertorial", params, cbFn);
+	};
+    
+    Hualala.Global.getWeixinContents = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getWeixinContents", params, cbFn);
+	};
+    
+    Hualala.Global.deleteWeixinContent = function (params, cbFn) {
+		Hualala.Global.commonCallServer("deleteWeixinContent", params, cbFn);
+	};
+    
+    Hualala.Global.updateWeixinContent = function (params, cbFn) {
+		Hualala.Global.commonCallServer("updateWeixinContent", params, cbFn);
+	};
+    
+    Hualala.Global.createWeixinContent = function (params, cbFn) {
+		Hualala.Global.commonCallServer("createWeixinContent", params, cbFn);
+	};
+    
+    Hualala.Global.getWeixinTexts = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getWeixinTexts", params, cbFn);
+	};
+    
+    Hualala.Global.deleteWeixinText = function (params, cbFn) {
+		Hualala.Global.commonCallServer("deleteWeixinText", params, cbFn);
+	};
+    
+    //会员营销活动
+    Hualala.Global.getCrmEvents = function (params, cbFn) {
 		Hualala.Global.commonCallServer("getCrmEvents", params, cbFn);
 	};
 	//哗啦啦营销活动
