@@ -62,7 +62,6 @@
 		["queryRoleBinding", "/shop/queryChildAccount.ajax", "", "POST"],
 		["bindMobileInShopGroupChildAccount", "/shop/boundMobile.ajax", "", "POST"],
 
-        
         /*CRM Module*/
 		["queryCrmMemberSchema", "/crm/cardOverView.ajax", "", "POST"],
         ["getCrmParams", "/crm/crmGroupParamsQuery.ajax", "", "POST"],
@@ -85,7 +84,7 @@
         ["getCrmCardSum", "/crm/crmCustomerCardCreateSummarize.ajax", "", "POST"],
         ["getCrmRechargeSum", "/crm/crmTransDetailSaveMoneyReconcile.ajax", "", "POST"],
         
-        
+        /*Weixin Module*/
         ["getWeixinAccounts", "/wechat/wechatListMp.ajax", "", "POST"],
         ["getWeixinAutoReplyList", "/wechat/wechatGetShopAutoReply.ajax", "", "POST"],
         ["deleteWeixinAutoReplyRole", "/wechat/wechatDelAutoReplyRule.ajax", "", "POST"],
@@ -103,6 +102,17 @@
         ["publishWinxinMenu", "/wechat/wechatCreatMenu.ajax", "", "POST"],
         
         ["getAdvertorials", "/sysbase/sysbaseQuerySysMobileAds.ajax", "", "POST"],
+        ["deleteAdvertorial", "/sysbase/sysbaseDeleteSysMobileAds.ajax", "", "POST"],
+        ["updateAdvertorial", "/sysbase/sysbaseUpdateSysMobileAds.ajax", "", "POST"],
+        ["createAdvertorial", "/sysbase/sysbaseAddSysMobileAds.ajax", "", "POST"],
+        
+        ["getWeixinContents", "/wechat/wechatResourceFind.ajax", "", "POST"],
+        ["deleteWeixinContent", "/wechat/wechatResourceDelete.ajax", "", "POST"],
+        ["updateWeixinContent", "/wechat/wechatResourceUpdate.ajax", "", "POST"],
+        ["createWeixinContent", "/wechat/wechatResourceInsert.ajax", "", "POST"],
+        
+        ["getWeixinTexts", "/wechat/wechatResourceTextFind.ajax", "", "POST"],
+        ["deleteWeixinText", "/wechat/wechatResourceTextDel.ajax", "", "POST"],
         
         ["getCrmEvents", "/pay/queryCrmCustomerEvent.ajax", "", "POST"],
         
@@ -154,7 +164,10 @@
         "saveWinxinMenu", "importWinxinMenu",
         "publishWinxinMenu",
         
-        "getAdvertorials",
+        "getAdvertorials", "deleteAdvertorial", "updateAdvertorial", "createAdvertorial",
+        
+        "getWeixinContents", "deleteWeixinContent", "updateWeixinContent", "createWeixinContent",
+        "getWeixinTexts", "deleteWeixinText",
         
         "getCrmEvents",
         
@@ -451,6 +464,42 @@
     
     Hualala.Global.getAdvertorials = function (params, cbFn) {
 		Hualala.Global.commonCallServer("getAdvertorials", params, cbFn);
+	};
+    
+    Hualala.Global.deleteAdvertorial = function (params, cbFn) {
+		Hualala.Global.commonCallServer("deleteAdvertorial", params, cbFn);
+	};
+    
+    Hualala.Global.updateAdvertorial = function (params, cbFn) {
+		Hualala.Global.commonCallServer("updateAdvertorial", params, cbFn);
+	};
+    
+    Hualala.Global.createAdvertorial = function (params, cbFn) {
+		Hualala.Global.commonCallServer("createAdvertorial", params, cbFn);
+	};
+    
+    Hualala.Global.getWeixinContents = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getWeixinContents", params, cbFn);
+	};
+    
+    Hualala.Global.deleteWeixinContent = function (params, cbFn) {
+		Hualala.Global.commonCallServer("deleteWeixinContent", params, cbFn);
+	};
+    
+    Hualala.Global.updateWeixinContent = function (params, cbFn) {
+		Hualala.Global.commonCallServer("updateWeixinContent", params, cbFn);
+	};
+    
+    Hualala.Global.createWeixinContent = function (params, cbFn) {
+		Hualala.Global.commonCallServer("createWeixinContent", params, cbFn);
+	};
+    
+    Hualala.Global.getWeixinTexts = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getWeixinTexts", params, cbFn);
+	};
+    
+    Hualala.Global.deleteWeixinText = function (params, cbFn) {
+		Hualala.Global.commonCallServer("deleteWeixinText", params, cbFn);
 	};
     
     //会员营销活动

@@ -29,7 +29,7 @@ module.exports = function (grunt) {
 			combine : {
 				files : {
 					"<%= pkg.destPath.cssPath %>/bootstrap.min.css" : ["<%= pkg.srcPath.jsPath %>/dep/bootstrap/css/bootstrap.css"],
-					"<%= pkg.destPath.cssPath %>/deplib.min.css" : ["<%= pkg.srcPath.jsPath %>/datepicker/css/datetimepicker.css", "<%= pkg.srcPath.jsPath %>/timepicker/css/timepicker.css", "<%= pkg.srcPath.jsPath %>/validator/css/validator.css"]
+					"<%= pkg.destPath.cssPath %>/deplib.min.css" : ["<%= pkg.srcPath.jsPath %>/datepicker/css/datetimepicker.css", "<%= pkg.srcPath.jsPath %>/timepicker/css/timepicker.css", "<%= pkg.srcPath.jsPath %>/validator/css/validator.css","<%= pkg.srcPath.jsPath %>/dep/umeditor/themes/default/css/umeditor.css"]
 				}
 			}
 		},
@@ -90,7 +90,10 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/timepicker/timepicker.js",
 					"<%= pkg.srcPath.jsPath %>/validator/validator.js",
 					"<%= pkg.srcPath.jsPath %>/validator/local/validator.zh-CN.js",
-                    "<%= pkg.srcPath.jsPath %>/dep/jquery/jquery.form.js"
+                    "<%= pkg.srcPath.jsPath %>/dep/jquery/jquery.form.js",
+                    "<%= pkg.srcPath.jsPath %>/dep/umeditor/umeditor.config.js",
+                    "<%= pkg.srcPath.jsPath %>/dep/umeditor/umeditor.js",
+                    "<%= pkg.srcPath.jsPath %>/dep/umeditor/lang/zh-cn/zh-cn.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/dep/deplib.js",
 				nonull : true
@@ -139,7 +142,6 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/ui/switch.js",
 					"<%= pkg.srcPath.jsPath %>/ui/wizard.js",
 					"<%= pkg.srcPath.jsPath %>/ui/chosen.jquery.js",
-					"<%= pkg.srcPath.jsPath %>/ui/jquery.lazyload.js",
 					"<%= pkg.srcPath.jsPath %>/ui/wizard.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/ui.js",

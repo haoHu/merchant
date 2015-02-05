@@ -9,27 +9,27 @@
                 '关键词',
                 '<input type="text" name="pushContent" class="form-control" />',
             '</span> ',
-            '<span>',
+            /*'<span>',
                 '匹配类型',
                 '<select name="pushContentType" class="form-control">',
                     '<option value="0">全匹配</option>',
                     '<option value="1">包含</option>',
                 '</select>',
-            '</span>',
+            '</span>',*/
         '</form> ',
-        '<button class="btn btn-warning">添加</button>',
-        '<button class="btn btn-info">查询</button>',
+        '<button class="btn btn-success">添加</button>',
+        '<button class="btn btn-warning">查询</button>',
     '</div>',
     '<table class="table table-bordered table-striped table-hover">',
-        '<thead><tr><th>关键词</th><th>匹配类型</th><th>操作</th></tr></thead>',
+        '<thead><tr><th>用户发送消息</th><th>回复内容</th><th>操作</th></tr></thead>',
         '<tbody></tbody>',
     '</table>'].join('');
     TplLib.register('tpl_wx_reply_query', tpl_wx_reply_query);
     
     var tpl_wx_reply_query_item = [
     '<tr>',
-        '<td>{{pushContent}}</td>',
-        '<td>{{pushContentTypeName}}</td>',
+        '<td>{{{pushMsg}}}</td>',
+        '<td>{{replyContent}}</td>',
         '<td>',
             '<a href="javascript:;" class="update-reply" data-itemid={{itemID}}>修改</a>',
             '<a href="javascript:;" class="delete-reply" data-itemid={{itemID}}>删除</a>',
@@ -40,7 +40,7 @@
     var tpl_wx_reply_add_update = [
 	'<form class="form-horizontal">',
 		'<div class="form-group">',
-			'<label class="col-sm-3 control-label">关键词</label>',
+			'<label class="col-sm-3 control-label">用户发送消息</label>',
 			'<div class="col-sm-7">',
 				'<input type="text" name="pushContent" class="form-control" value="{{pushContent}}" />',
 			'</div>',
@@ -59,14 +59,14 @@
 		'</div>',
         
 		'<div class="form-group">',
-			'<label class="col-sm-3 control-label">回复信息</label>',
+			'<label class="col-sm-3 control-label">回复内容标题</label>',
 			'<div class="col-sm-7">',
 				'<select name="resourceID" class="form-control" />',
 			'</div>',
 		'</div>',
         
         '<div class="form-group">',
-			'<label class="col-sm-3 control-label">内容信息</label>',
+			'<label class="col-sm-3 control-label">回复内容</label>',
 			'<div class="col-sm-7 form-control-static"></div>',
 		'</div>',
 	'</form>'].join('');
@@ -74,7 +74,7 @@
 
     var tpl_wx_subscribe = [
     '<div class="well well-sm query-panel clearfix">',
-        '请选择回复信息，并点击右侧“保存”按钮以添加或修改订阅消息。',
+        //'请选择回复信息，并点击右侧“保存”按钮以添加或修改订阅消息。',
         '<button id="saveBtn" disabled class="btn btn-warning">保存</button>',
     '</div>',
     '<form class="form-horizontal">',
@@ -180,8 +180,176 @@
         '</div>',
     '</form>'].join('');
 	TplLib.register('tpl_wx_menu_edit', tpl_wx_menu_edit);
-	
-	
+    
+    var tpl_wx_advertorial = [
+    '<aside id="adList" class="col-sm-4">',
+        '<h4 class="panel-head clearfix">',
+            '<span class="p-title">软文列表</span>',
+            '<button class="btn btn-warning pull-right" title="添加软文" data-action="addAd">',
+                '<span class="glyphicon glyphicon-plus"></span>',
+            '</button>',
+        '</h4>',
+        '<ul class="ad-ul"></ul>',
+        '<div class="ad-loading t-c dn">加载中 . . .</div>',
+        '<div class="ad-pager t-r hidden"></div>',
+        '<div class="alert alert-warning dn">',
+            '还没有软文，点击“+”按钮可添加软文。',
+        '</div>',
+    '</aside>',
+    '<div id="adCont" class="col-sm-8">',
+        '<h4 class="panel-head clearfix">',
+            '<span class="p-title">软文预览与操作</span>',
+            '<button class="btn btn-warning btn-edit pull-right" data-action="editAd">编辑</button>',
+            '<button class="btn btn-default btn-del pull-right" data-action="delAd" data-deleting-text="删除中...">删除</button>',
+        '</h4>',
+        '<article class="dn">',
+            '<h3 class="ad-title"></h3>',
+            '<input type="text" class="form-control ad-title-input" placeholder="请输入软文标题" title="软文标题" />',
+            '<h6 class="ad-sub-title"></h6>',
+            '<div class="ad-preview"></div>',
+            '<script type="text/plain" id="adEditor"></script>',
+            '<div class="btn-wrap">',
+                '<button class="btn btn-warning btn-save" data-action="saveAd" data-saving-text="保存中...">保存</button>',
+                '<button class="btn btn-default btn-concel" data-action="concelEdit">取消</button>',
+            '</div>',
+        '</article>',
+    '</div>'].join('');
+	TplLib.register('tpl_wx_advertorial', tpl_wx_advertorial);
+    
+    var tpl_wx_content = [
+    '<div class="ph has-btn clearfix">',
+        '<h4 class="pt">图文列表</h4>',
+        '<span class="fr">',
+            '<button id="addContOne" class="btn btn-warning">添加单图文</button>',
+            '<button id="addContMulti" class="btn btn-warning">添加多图文</button>',
+        '</span>',
+    '</div>',
+    '<div class="fall clearfix"></div>',
+    '<div class="alert alert-warning t-c no-cont dn">还没有添加任何图文哦！~</div>',
+    '<div class="loading-tip dn">加载中 . . .</div>'].join('');
+	TplLib.register('tpl_wx_content', tpl_wx_content);
+    
+    var tpl_wx_res_action = [
+    '<div class="res-action clearfix">',
+        '<div class="col-xs-6">',
+            '<i class="glyphicon glyphicon-pencil edit-res" title="编辑"></i>',
+        '</div>',
+        '<div class="col-xs-6">',
+            '<i class="glyphicon glyphicon-trash del-res" title="删除"></i>',
+        '</div>',
+    '</div>'].join('');
+	TplLib.register('tpl_wx_res_action', tpl_wx_res_action);
+    
+    var tpl_wx_res_edit = [
+    '<div class="col-sm-5 res-wrap"></div>',
+    '<div class="form-horizontal col-sm-7 res-form">',
+        '<div class="form-group">',
+            '<label class="col-sm-3 control-label">标题</label>',
+            '<div class="col-sm-9">',
+                '<input type="text" class="form-control res-title" value="{{resTitle}}" />',
+            '</div>',
+        '</div>',
+        '<div class="form-group">',
+            '<label class="col-sm-3 control-label">图片</label>',
+            '<div class="col-sm-9">',
+                '<button class="btn btn-default">上传图片</button>',
+            '</div>',
+        '</div>',
+        '<div class="form-group digest-wrap">',
+            '<label class="col-sm-3 control-label">摘要</label>',
+            '<div class="col-sm-9">',
+                '<textarea class="form-control res-digest">{{digest}}</textarea>',
+            '</div>',
+        '</div>',
+        '<div class="form-group">',
+            '<label class="col-sm-3 control-label">链接类型</label>',
+            '<div class="col-sm-9 link-select-wrap"></div>',
+        '</div>',
+        '<div class="form-group link-content-wrap">',
+            '<label class="col-sm-3 control-label link-name"></label>',
+            '<div class="col-sm-9 link-content"></div>',
+        '</div>',
+    '</div>'].join('');
+	TplLib.register('tpl_wx_res_edit', tpl_wx_res_edit);
+    
+    var tpl_wx_res_sub = [
+    '<div class="res-sub">',
+        '<div class="img">缩略图</div>',
+        '<h6></h6>',
+        '<div class="res-mask">',
+            '<i class="glyphicon glyphicon-pencil" title="编辑"></i>',
+        '</div>',
+    '</div>'].join('');
+	TplLib.register('tpl_wx_res_sub', tpl_wx_res_sub);
+    
+	var tpl_wx_text = [
+    '<div id="viewing">',
+        '<div class="ph has-btn clearfix">',
+            '<h4 class="pt">文本列表</h4>',
+            '<button class="btn btn-warning fr" title="添加文本消息" data-action="addTxt">',
+                '<i class="glyphicon glyphicon-plus"></i>',
+            '</button>',
+        '</div>',
+        '<ul id="txts"></ul>',
+        '<div id="loading" class="alert t-c dn">加载中 . . .</div>',
+        '<div class="txt-pager t-r"></div>',
+        '<div class="alert alert-warning t-c m-t dn">还没有文本消息哦！~</div>',
+    '</div>',
+    '<div id="editing" class="dn">',
+        '<div class="ph has-btn m-b clearfix">',
+            '<h4 class="pt">编辑文本消息</h4>',
+            '<span class="fr">',
+                '<button class="btn btn-default" data-action="concelEdit">取消</button>',
+                '<button class="btn btn-warning" data-action="saveTxt" data-saving-text="保存中...">保存</button>',
+            '</span>',
+        '</div>',
+        '<div class="form-horizontal">',
+            '<div class="form-group">',
+                '<label class="col-sm-3 control-label">标题</label>',
+                '<div class="col-sm-7">',
+                    '<input id="txtTitle" type="text" class="form-control" />',
+                '</div>',
+            '</div>',
+            '<div class="form-group">',
+                '<label class="col-sm-3 control-label">内容</label>',
+                '<div class="col-sm-7">',
+                    '<script type="text/plain" id="txtEditor" style="height: 300px"></script>',
+                '</div>',
+            '</div>',
+        '</div>',
+    '</div>'
+    ].join('');
+	TplLib.register('tpl_wx_text', tpl_wx_text);
+    
+    var tpl_wx_txts = [
+    '{{#each this}}',
+    '<li itemid={{itemID}}>',
+        '<h4 class="txt-title">',
+            '<span class="t-icos">',
+                '<i data-action="editTxt" class="glyphicon glyphicon-pencil" title="修改"></i>',
+                '<i data-action="delTxt" class="glyphicon glyphicon-trash" title="删除"></i>',
+            '</span>',
+            '<span class="t-txt">{{resTitle}}</span>',
+        '</h4>',
+        '<p class="txt-cont">{{{txtCont}}}</p>',
+    '</li>',
+    '{{/each}}'].join('');
+    TplLib.register('tpl_wx_txts', tpl_wx_txts);
+    
+    var tpl_wx_txt_link = [
+    '<div class="form-horizontal">',
+        '<div class="form-group">',
+            '<label class="col-sm-3 control-label">链接类型</label>',
+            '<div class="col-sm-7 link-select-wrap"></div>',
+        '</div>',
+        '<div class="form-group link-content-wrap">',
+            '<label class="col-sm-3 control-label link-name"></label>',
+            '<div class="col-sm-7 link-content"></div>',
+        '</div>',
+    '</div>',
+    ].join('');
+    TplLib.register('tpl_wx_txt_link', tpl_wx_txt_link);
+    
 })(jQuery, window);
 
 

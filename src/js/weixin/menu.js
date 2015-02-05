@@ -151,7 +151,6 @@
                 $('<dl>').append($menu).appendTo($menuWrap);
                 $noMenuTip.toggleClass('hidden', !!menus.length);
                 resovleMenuClick.call($menu, {target: $menu});
-                console.log(menus)
                 modal.hide();
             });
         }

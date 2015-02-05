@@ -1443,10 +1443,12 @@
       * 服务调用 URL: /wechat/wechatAddAutoReplyRule.ajax
 	  */
 	Hualala.Global.addWeixinAutoReplyRole = function (params, cbFn) {
-		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        params.itemID = _.random(10000, 20000) + '';
         var rsp = {
                 resultcode: '000', 
-                resultmsg: 'itemID=' + _.random(10000, 20000)
+                resultmsg: '',
+                data: {records: [params]}
             };
 		fn(rsp);
 	};
@@ -1609,8 +1611,181 @@
         $.ajax('/test/data/weixin/advertorial.js')
         .done(function()
         {
-            fn(Test.wxAdvertorials);
+            var rsp = Test.wxAdvertorials;
+            if(params.pageNo)
+            {
+                var srcRecords = rsp.data.records;
+                var startIndex = (params.pageNo - 1) * params.pageSize;
+                rsp.data.page.pageNo = params.pageNo;
+                rsp.data.records = srcRecords.slice(startIndex, startIndex + params.pageSize);
+            }
+            fn(rsp);
         });
+	};
+    
+    /**
+      * 删除软文
+      * @param {Object} params 参数{itemID}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /sysbase/sysbaseDeleteSysMobileAds.ajax
+	  */
+	Hualala.Global.deleteAdvertorial = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 修改软文
+      * @param {Object} params 参数{itemID, title, groupName, body}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /sysbase/sysbaseUpdateSysMobileAds.ajax
+	  */
+	Hualala.Global.updateAdvertorial = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 添加软文
+      * @param {Object} params 参数{title, groupName, body}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /sysbase/sysbaseAddSysMobileAds.ajax
+	  */
+	Hualala.Global.createAdvertorial = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        params.actionTime = '20150129',
+        params.itemID = _.random(10000, 20000) + '';
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: '',
+                data: {records: [params]}
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 获取图文列表
+      * @param {Object} params 参数{itemID?, pageNo?, pageSize?}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatResourceFind.ajax
+	  */
+	Hualala.Global.getWeixinContents = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        $.ajax('/test/data/weixin/contents.js')
+        .done(function()
+        {
+            var rsp = Test.wxContents;
+            if(params.pageNo)
+            {
+                var srcRecords = rsp.data.records;
+                var startIndex = (params.pageNo - 1) * params.pageSize;
+                rsp.data.page.pageNo = params.pageNo;
+                rsp.data.records = srcRecords.slice(startIndex, startIndex + params.pageSize);
+            }
+            fn(rsp);
+        });
+	};
+    
+    /**
+      * 删除图文
+      * @param {Object} params 参数{itemID}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatResourceDelete.ajax
+	  */
+	Hualala.Global.deleteWeixinContent = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 修改图文
+      * @param {Object} params 参数{...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatResourceUpdate.ajax
+	  */
+	Hualala.Global.updateWeixinContent = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 创建图文
+      * @param {Object} params 参数{resType, resTitle, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatResourceInsert.ajax
+	  */
+	Hualala.Global.createWeixinContent = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        params.itemID = _.random(10000, 20000) + '';
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: '',
+                data: {records: [params]}
+            };
+		fn(rsp);
+	};
+    
+    /**
+      * 获取微信文本消息列表
+      * @param {Object} params 参数{itemID?, pageNo?, pageSize?}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatResourceTextFind.ajax
+	  */
+	Hualala.Global.getWeixinTexts = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        $.ajax('/test/data/weixin/text.js')
+        .done(function()
+        {
+            var rsp = Test.wxTexts;
+            if(params.pageNo)
+            {
+                var srcRecords = rsp.data.records;
+                var startIndex = (params.pageNo - 1) * params.pageSize;
+                rsp.data.page.pageNo = params.pageNo;
+                rsp.data.records = srcRecords.slice(startIndex, startIndex + params.pageSize);
+            }
+            fn(rsp);
+        });
+	};
+    
+    /**
+      * 删除一条微信文本消息
+      * @param {Object} params 参数{itemID}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatResourceTextDel.ajax
+	  */
+	Hualala.Global.deleteWeixinText = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
 	};
     
     /**

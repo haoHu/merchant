@@ -129,36 +129,63 @@
         {
             var eTitle = match.slice(1);
             for(var i = 0, em; em = emotions[i++];)
-                if(eTitle = em.title) return imgTpl({url: imgHost + em.url, title: em.title});
+            {
+                if(eTitle.indexOf(em.title) == 0) 
+                    return eTitle.replace(em.title, imgTpl({url: imgHost + em.url, title: em.title}));
+            }
                 
             return match;
         });
     }
     
-    function createResourceView(res, emotions)
+    function createResourceView(res, emotions, editing)
     {
-        var emotions = emotions || WX.getEmotions(),
-            resType = res.resType;
-        if(resType == 2)  return parseEmotions(res.resContent, emotions);
+        var resType = res.resType;
+        if(resType == 2)
+        {
+            emotions = emotions || WX.getEmotions();
+            return parseEmotions(res.resContent, emotions)
+        };
         
-        var resContent = $.parseJSON(res.resContent),
-            $resWiew = $('<div>').data('resid', res.itemID).addClass('res-view ' + (resType == 1 ? 'multi' : '')),
-            retView = resContent,
+        var itemID = res.itemID,
+            resContent = $.parseJSON(res.resContent),
+            $resWiew = $('<div>').attr('resid', itemID).addClass('res-view ' + (resType == 1 ? 'multi' : '')),
             resArr = resContent.resources || [],
-            imgHost = Hualala.Global.IMAGE_RESOURCE_DOMAIN + '/',
-            singleView = Handlebars.compile('<h4>{{resTitle}}</h4><img src="{{imgUrl}}"><p>{{digest}}</p>'),
-            cover = Handlebars.compile('<div class="res-cover"><img src="{{imgUrl}}"><h4>{{resTitle}}</h4></div>'),
-            subView = Handlebars.compile('<div class="res-sub"><img src="{{imgUrl}}"><h6>{{resTitle}}</h6></div>');
+            imgHost = Hualala.Global.IMAGE_RESOURCE_DOMAIN + '/';
         
         for(var i = 0, r; r = resArr[i]; i++)
         {
-            r.imgUrl = imgHost + r.imgPath + '?quality=70';
-            if(resType == 0) retView = singleView(r);
-            else if(resType == 1) retView = i == 0 ? cover(r) : retView + subView(r);
+            var $resItem = $('<div>'),
+                imgUrl = imgHost + r.imgPath + '?quality=70';
+            if(resType == 0)
+            {
+                $resItem.addClass('res-single')
+                .append($('<h4>').text(r.resTitle))
+                .append(itemID ? $('<img>').attr('src', imgUrl) : '<div class="img">封面图片</div>')
+                .append($('<p>').text(r.digest));
+            }
+            else if(i == 0)
+            {
+                $resItem.addClass('res-cover')
+                .append(itemID ? $('<img>').attr('src', imgUrl) : '<div class="img">封面图片</div>')
+                .append($('<h4>').text(r.resTitle));
+                if(editing)
+                    $resItem.addClass('active').append('<div class="res-mask"><i class="glyphicon glyphicon-pencil"></i></div>');
+            }
+            else
+            {
+                $resItem.addClass('res-sub')
+                .append(itemID ? $('<img>').attr('src', imgUrl) : '<div class="img">缩略图</div>')
+                .append($('<h6>').text(r.resTitle));
+                if(editing)
+                    $resItem.append('<div class="res-mask"><i class="glyphicon glyphicon-pencil" title="编辑"></i></div>');
+            }
+            $resWiew.append($resItem);
         }
-        
-        return $resWiew.html(retView);
-
+        if(resType == 1 && editing)
+            $resWiew.append('<div class="add-sub-res"><div><i class="glyphicon glyphicon-plus"></i></div></div>');
+            
+        return $resWiew;
     }
     
     function createLinkSelector($selectWrap, $contentWrap, dataHolder, linkID, linkCont)
@@ -207,8 +234,9 @@
                     {
                         return api == 'getCrmEvents' ? {
                             eventIdWay: record.eventID + '-' + record.eventWay,
-                            eventName: record.eventName
-                        } : _.pick(record, keys);
+                            eventName: record.eventName,
+                            py: record.py
+                        } : _.pick(record, keys.concat(['py']));
                     });
                 }
                 
@@ -228,11 +256,151 @@
         }).change();
     }
     
+    function createQQEmotionPanel(emotions)
+    {
+        emotions = emotions || WX.getEmotions();
+        var $ret = $('<ul></ul><div></div>'),
+            $ul = $ret.filter('ul');
+        for(var i = 0, em; em = emotions[i]; i++)
+        {
+            $('<li>').attr('title', em.title).data('url', em.url)
+            .append($('<i>').css('background-position', -i * 24 +'px 0'))
+            .appendTo($ul);
+        }
+        
+        return $ret;
+    }
+    
+    function createWeixinUrl(linkType, param)
+    {
+        var groupID = Hualala.getSessionSite().groupID,
+            chref = location.href,
+            env = chref.indexOf('mu.dianpu') > -1 ? 'mu.' :
+                  chref.indexOf('dohko.dianpu') > -1 ? 'dohko.' : '',
+            urlHost = 'http://' + env + 'm.hualala.com/',
+            linkTypes = createLinkSelector.linkTypes || WX.getLinkTypes(),
+            urlTpl = Handlebars.compile(linkTypes[linkType - 1].urlTpl),
+            args = { arg1: param, g: groupID };
+            
+        if(linkType == 3 || linkType == 5) 
+            args.arg2 = param == 0 ? 't=near' : 'c=' + param;
+        else if(linkType == 16) 
+        {
+            var _args = param.split('-'),
+                eventID = _args[0],
+                eventWay = _args[1];
+            args.arg1 = eventID;
+            args.arg3 = eventWay == 20 ? '_turntable' : '';
+        }
+        
+        var urlPart = urlTpl(args);
+        
+        return linkType == 22 ? urlPart : urlHost + urlPart;
+    }
+    
+    function extendUM(emotions, dataHolder)
+    {
+        emotions && UM.registerUI( 'qqemotion', function(name)
+        {
+            var me = this;
+            var $btn = $.eduibutton({ icon: 'emotion', title: '表情' });
+            var edui = $.eduipopup().css('zIndex',me.options.zIndex + 1)
+                .addClass('edui-popup-' + name).edui();
+            var $popupBody = edui.getBodyContainer()
+                    .html(createQQEmotionPanel(emotions))
+                    .on('click', function(){ return false; }),
+                $preview = $popupBody.find('div'),
+                imgHost = Hualala.Global.IMAGE_RESOURCE_DOMAIN + '/group1/M00/00/';
+            $popupBody.on('mouseenter', 'li', function()
+            {
+                var $li = $(this), url = $li.data('url');
+                $preview.show().html($('<img>').attr('src', imgHost + url));
+            })
+            $popupBody.on('mouseleave', 'li', function()
+            {
+                $preview.hide();
+            })
+            .on('click', 'li', function()
+            {
+                var $li = $(this), url = $li.data('url'), title = $li.attr('title');
+                me.execCommand( 'insertimage', { src: imgHost + url, alt: title });
+                edui.hide();
+            });
+            
+            edui.on('beforeshow',function()
+            {
+                var $root = this.root();
+                if(!$root.parent().length)
+                    me.$container.find('.edui-dialog-container').append($root);
+                    
+                $preview.empty();
+                UM.setTopEditor(me);
+            })
+            .attachTo($btn, {offsetTop: -5, offsetLeft: 10, caretLeft: 11, caretTop: -8});
+            
+            me.addListener('selectionchange', function ()
+            {
+                var state = this.queryCommandState(name);
+                $btn.edui().disabled(state == -1).active(state == 1);
+            });
+            
+            return $btn;
+        });
+        
+        dataHolder && UM.registerUI( 'wxlink', function(name)
+        {
+            var me = this;
+                $btn = $.eduibutton({ icon: 'link', title: '链接' });
+            var U = Hualala.UI,
+                linkTpl = Hualala.TplLib.get('tpl_wx_txt_link');
+            $btn.on('click', function()
+            {
+                var $link = $(linkTpl),
+                    $selectWrap = $link.find('.link-select-wrap'),
+                    $contentWrap = $link.find('.link-content-wrap'),
+                    modal = new U.ModalDialog({title: '添加链接', html: $link}).show();
+                
+                createLinkSelector($selectWrap, $contentWrap, dataHolder);
+                modal._.footer.find('.btn-ok').text('确定').on('click', function()
+                {
+                    var linkType = $selectWrap.find('select').val(),
+                        linkCont = $contentWrap.find('select, input').val();
+                    if(!linkType)
+                    {
+                        U.TopTip({msg: '请选择链接类型！', type: 'warning'});
+                        return;
+                    }
+                    if(linkCont !== undefined && !linkCont)
+                    {
+                        U.TopTip({msg: '请选择或输入链接！', type: 'warning'});
+                        return;
+                    }
+                    var url = createWeixinUrl(linkType, linkCont).replace(/^\s+|\s+$/g, '');
+                    if(url) me.execCommand('link', {'href': url, '_href': url});
+                    modal.hide();
+                });
+            });
+            
+            me.addListener('selectionchange', function ()
+            {
+                var state = this.queryCommandState(name);
+                $btn.edui().disabled(state == -1).active(state == 1);
+            });
+            
+            return $btn;
+        });
+        
+        var toolbar = UMEDITOR_CONFIG.toolbar.slice();
+        toolbar[3] = toolbar[3].replace('link', 'wxlink');
+        return toolbar;
+    }
+    
     $.extend(WX, {
         createResourceChosen: createResourceChosen,
         parseEmotions: parseEmotions,
         createResourceView: createResourceView,
         createLinkSelector: createLinkSelector,
+        extendUM: extendUM,
         //微信首页
         homeInit: function() { location.href = Hualala.PageRoute.createPath('wxReply')},
         //自动回复页面
@@ -266,6 +434,22 @@
             var $container = $('#ix_wrapper > .ix-body > .container');
             initWeixinPageLayout(pageName, $container, Hualala.TypeDef.WeixinMaterialSubNavType);
             WX.initAdvertorial($container.find('.page-body'));
+        },
+        //软文管理
+        contentInit: function()
+        {
+            var pageName = Hualala.PageRoute.getPageContextByPath().name;
+            var $container = $('#ix_wrapper > .ix-body > .container');
+            initWeixinPageLayout(pageName, $container, Hualala.TypeDef.WeixinMaterialSubNavType);
+            WX.initContent($container.find('.page-body'));
+        },
+        //文本管理
+        textInit: function()
+        {
+            var pageName = Hualala.PageRoute.getPageContextByPath().name;
+            var $container = $('#ix_wrapper > .ix-body > .container');
+            initWeixinPageLayout(pageName, $container, Hualala.TypeDef.WeixinMaterialSubNavType);
+            WX.initText($container.find('.page-body'));
         }
         
     });

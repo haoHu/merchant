@@ -334,7 +334,7 @@
 		{
 			name : "wxSubscribe", path : "/#weixin/admin/subscribe",
 			reg : /weixin\/admin\/subscribe$/, bodyClz : "wx-subscribe",
-			PageInitiator : "Hualala.Weixin.subscribeInit", parentName : "weixin", label : "订阅消息"
+			PageInitiator : "Hualala.Weixin.subscribeInit", parentName : "weixin", label : "关注自动回复"
 		},
 		{
 			name : "wxMenu", path : "/#weixin/admin/menu",

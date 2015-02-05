@@ -26,7 +26,7 @@
         
         getReplies();
         
-        $queryReply.on('click', '.btn-info', function()
+        $queryReply.on('click', '.btn-warning', function()
         {
             $.extend(queryParams, parseForm($queryForm));
             queryParams.pageNo = 1;
@@ -62,7 +62,7 @@
             });
         }
         
-        $queryReply.on('click', '.update-reply, .btn-warning', function()
+        $queryReply.on('click', '.update-reply, .btn-success', function()
         {
             var itemID = $(this).data('itemid'),
                 reply = itemID ? findReply(itemID) : {},
@@ -96,10 +96,11 @@
             reply.replyContent = res.resTitle;
             reply.mpID = mpID;
             reply.itemID = reply.itemID || '';
-            reply.pushMsgType = reply.replyMsgType = res.resType == '2' ? 'text' : 'news';
+            reply.pushMsgType = 'text';
+            reply.replyMsgType = res.resType == '2' ? 'text' : 'news';
             reply.resourceVaule = 1;
             
-            var pReply = _.pick(reply, 'itemID', 'pushContentType', 'replyContent', 'resourceID', 'resourceVaule', 'replyMsgType', 'pushContent');
+            var pReply = _.pick(reply, 'itemID', 'mpID', 'pushContentType', 'replyContent', 'resourceID', 'resourceVaule', 'replyMsgType', 'pushMsgType', 'pushContent');
             
             G[itemID ? 'updateWeixinAutoReplyRole' : 'addWeixinAutoReplyRole'](pReply, function(rsp)
             {
@@ -108,21 +109,13 @@
                     rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
                     return;
                 }
-                reply.pushContentTypeName = reply.pushContentType == 0 ? '全匹配' : '包含';
+                /*reply.pushMsg = reply.pushContentType == 0 ?
+                '消息为“<b>' + reply.pushContent + '</b>”' :
+                '消息中含“<b>' + reply.pushContent + '</b>”';*/
                 topTip({msg: (itemID ? '修改' : '添加') + '成功！', type: 'success'});
+                queryParams = { mpID: mpID, pageNo: 1, pageSize: 15 };
+                getReplies();
                 modal.hide();
-                if(!itemID)
-                {
-                    var match = rsp.resultmsg.match(/itemID=(\d+)/);
-                    if(match && match[1])
-                    {
-                        reply.itemID = match[1];
-                        replies.unshift(reply);
-                        renderReplies();
-                    }
-                    else getReplies();
-                }
-                else renderReplies();
             });
         }
         
@@ -138,7 +131,12 @@
                 var records = rsp.data.records || [],
                     page = rsp.data.page;
                 replies = records;
-                _.each(replies, function(reply){ reply.pushContentTypeName = reply.pushContentType == 0 ? '全匹配' : '包含'});
+                _.each(replies, function(reply)
+                {
+                    reply.pushMsg = reply.pushContentType == 0 ?
+                    '消息为“<b>' + reply.pushContent + '</b>”' :
+                    '消息中含“<b>' + reply.pushContent + '</b>”';
+                });
                 renderReplies();
                 $pager.IXPager({total : page.pageCount, page: page.pageNo, maxVisible: 10, href : 'javascript:;'});
             });

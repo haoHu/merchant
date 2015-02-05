@@ -36,7 +36,7 @@
     
     Hualala.TypeDef.WeixinAdminSubNavType = [
 		{name : "wxReply", label : "自动回复"},
-		{name : "wxSubscribe", label : "订阅消息"},
+		{name : "wxSubscribe", label : "关注自动回复"},
 		{name : "wxMenu", label : "自定义菜单"}//,
         //{name : "wxQrCode", label : "二维码维护"}
 	];

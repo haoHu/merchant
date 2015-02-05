@@ -137,7 +137,7 @@
 			title : '',
 			hideWithRemove : true,
 			clz : '',
-            sizeCls: '',
+            sizeCls: '', //modal-lg | modal-sm | ''
 			afterRemove : IX.emptyFn,
 			afterHide : IX.emptyFn,
 			afterShow : IX.emptyFn,
@@ -303,6 +303,7 @@
 			clz : 'x-confirm',
 			title : title,
 			showTitle : true,
+            hideCloseBtn: true,
 			backdrop : 'static',
 			afterRemove : function () {
 
@@ -523,6 +524,81 @@
         window.uploadStart = function(swfId) { opts.onStart(); };
         
     }
+    /**
+	 * 加载等待模态窗 
+	 * @param {jQuery Object} $elem 点击此元素会执行上传动作
+	 * @param {Function} onSuccess 上传成功回调函数
+	 * @param {Object} options 配置参数 {
+                action: form的action属性的值 '/imageUpload.action',
+                inputFileName: file控件的名称 'myFile',
+                accept: file控件accept 'image/gif,image/jpeg,image/png,image/jpg,image/bmp',
+                dataType: 相当于$.ajsx的dataType 'json'
+                onFail: 上传失败回调函数
+                onProgress: 上传进行中回调函数
+            }
+	 */
+    function imgUpload($elem, onSuccess, options)
+    {
+        var defaults = {
+                action: '/imageUpload.action',
+                inputFileName: 'myFile',
+                accept: 'image/gif,image/jpeg,image/png,image/jpg,image/bmp',
+                dataType: 'json'
+            },
+            cfg = $.extend({}, defaults, options);
+            
+        var $form = $('<form method="post" enctype="multipart/form-data">')
+                .attr('action', cfg.action);
+                
+        var isBtn = $elem.is('button');
+        if(isBtn) $elem.attr('data-uploading-text', '上传中...');
+        
+        $elem.click(function()
+        {
+            $('<input type="file">')
+            .attr('name', cfg.inputFileName)
+            .attr('accept', cfg.accept)
+            .appendTo($form.empty())
+            .change(function()
+            {
+                if(isBtn) $elem.attr('disabled', 'disabled').button('uploading');
+                var jqxhr = $form.ajaxSubmit({
+                    dataType: cfg.dataType,
+                    uploadProgress: cfg.onProgress || function(){}
+                }).data('jqxhr');
+                jqxhr.done(function(rsp)
+                {
+                    if(rsp.status == 'success')
+                    {
+                        setTimeout(function()
+                        {
+                            TopTip({msg: '上传成功！', type: 'success'}); 
+                        }, 1000);
+                        onSuccess && onSuccess(rsp);
+                    }
+                    else
+                    {
+                        TopTip({msg: '上传失败！', type: 'danger'});
+                        cfg.onFail && cfg.onFail(rsp);
+                    }
+                })
+                .fail(function(rsp)
+                {
+                    TopTip({msg: '上传失败！', type: 'danger'});
+                    cfg.onFail && cfg.onFail(rsp);
+                })
+                .always(function()
+                {
+                    if(isBtn)
+                        setTimeout(function()
+                        {
+                            $elem.removeAttr('disabled').button('reset');
+                        }, 1000);
+                });
+            })
+            .click();
+        });
+    }
     
     function fillSelect($select, items, k, t, dk, dt)
     {
@@ -585,6 +661,9 @@
                 getMatchedFn : getMatchedFn
             };
         fillSelect($select, items, k, t, false);
+        var obj = {};
+        obj[k] = cv;
+        cv = _.findWhere(items, obj) ? cv : items[0] ? items[0][k] : '';
         cv && $select.val(cv);
         return $select.chosen($.extend(opts, cfg || {}));
     };
@@ -629,6 +708,7 @@
 	Hualala.UI.LoadingModal = LoadingModal;
     
     Hualala.UI.uploadImg = uploadImg;
+    Hualala.UI.imgUpload = imgUpload;
     Hualala.UI.fillSelect = fillSelect;
     Hualala.UI.createChosen = createChosen;
     Hualala.UI.createSchemaChosen = createSchemaChosen;
