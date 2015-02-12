@@ -484,10 +484,20 @@
     }*/
     var uploadImg = function uploadImg(options)
     {
+        var defaults = {
+            onSuccess: function () {},
+            onTooLarge: function () {},
+            onTooSmall: function () {},
+            onStart: function () {},
+            onBefore: function () {},
+            minSize: 100,
+            saveSize: 600
+        };
+        var opts = $.extend(defaults, options);
         var G = Hualala.Global,
             swfRoot = G.SWF_ROOT + '/',
             swfSrc = swfRoot + 'hualalaImageUpload.swf',
-            args = 'swfId=txsc&uploadDataFieldName=upload&uploadSvrURL=http://file.hualala.com/upload&iconsURL=' + swfRoot +'icons&avaQuality=70&minImgFRule=100&saveImgRule=600';
+            args = 'swfId=txsc&uploadDataFieldName=upload&uploadSvrURL=http://file.hualala.com/upload&iconsURL=' + swfRoot +'icons&avaQuality=70&minImgFRule=' + opts.minSize + '&saveImgRule=' + opts.saveSize;
             
         var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_uploadimg')),
             $tpl = $(tpl({swfSrc: swfSrc, args: args}));
@@ -495,13 +505,8 @@
         var $dialog = $tpl.appendTo('body')
             .modal({backdrop : 'static', keyboard: false});
         
-        var defaults = {
-            onSuccess: function () {},
-            onTooLarge: function () {},
-            onConcel: function () { $dialog.modal('hide'); },
-            onStart: function () {}
-        };
-        var opts = $.extend(defaults, options);
+        opts.onConcel = opts.onConcel || function () { $dialog.modal('hide'); };
+        if(typeof opts.onBefore == 'function') opts.onBefore($dialog);
         
         var topTip = Hualala.UI.TopTip;
         window.Head_Pic_Rece_URL = function (imgPath, swfId) 
@@ -517,8 +522,13 @@
         };
         window.imageTooLarge = function (swfId) 
         {
-            topTip({msg: '您上传的图片过大，请换一张'});
+            topTip({msg: '您上传的图片过大，请换一张！'});
             opts.onTooLarge();
+        };
+        window.imageTooSmall = function (swfId) 
+        {
+            topTip({msg: '您上传的图片过小，请换一张！'});
+            opts.onTooSmall();
         };
         window.Head_Pic_Cancel = function(swfId) { opts.onConcel($dialog); };
         window.uploadStart = function(swfId) { opts.onStart(); };
@@ -625,6 +635,7 @@
     function createChosen($select, items, k, t, cfg, defaultItem, cv)
     {
         items = items.slice();
+        cfg = cfg || {};
         if(defaultItem !== false)
         {
             defaultItem = defaultItem || {};
@@ -640,7 +651,7 @@
                 matcher.setNames(_.map(items, function (el)
                 {
                     return IX.inherit(el, {
-                        name : el[t],
+                        name : el[cfg.matchField || t],
                         py : el.py
                     });
                 }));

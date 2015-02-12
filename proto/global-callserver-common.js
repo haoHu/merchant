@@ -1600,6 +1600,22 @@
 	};
     
     /**
+      * 菜单动作为发送消息时的确认动作
+      * @param {Object} params 参数{mpID, ...}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/wechatAutoReplyForClick.ajax
+	  */
+	Hualala.Global.WeixinMenuClick = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
+    
+    /**
       * 获取微信软文列表
       * @param {Object} params 参数{}
 	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}

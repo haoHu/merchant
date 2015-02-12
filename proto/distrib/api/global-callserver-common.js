@@ -100,6 +100,7 @@
         ["saveWinxinMenu", "/wechat/wechatUpdateMp.ajax", "", "POST"],
         ["importWinxinMenu", "/wechat/wechatGetMenu.ajax", "", "POST"],
         ["publishWinxinMenu", "/wechat/wechatCreatMenu.ajax", "", "POST"],
+        ["WeixinMenuClick", "/wechat/wechatAutoReplyForClick.ajax", "", "POST"],
         
         ["getAdvertorials", "/sysbase/sysbaseQuerySysMobileAds.ajax", "", "POST"],
         ["deleteAdvertorial", "/sysbase/sysbaseDeleteSysMobileAds.ajax", "", "POST"],
@@ -181,7 +182,7 @@
         "updateWeixinSubscribe",
         
         "saveWinxinMenu", "importWinxinMenu",
-        "publishWinxinMenu",
+        "publishWinxinMenu", "WeixinMenuClick",
         
         "getAdvertorials", "deleteAdvertorial", "updateAdvertorial", "createAdvertorial",
         
@@ -483,6 +484,10 @@
 	
 	Hualala.Global.publishWinxinMenu = function (params, cbFn) {
 		Hualala.Global.commonCallServer("publishWinxinMenu", params, cbFn);
+	};
+    
+    Hualala.Global.WeixinMenuClick = function (params, cbFn) {
+		Hualala.Global.commonCallServer("WeixinMenuClick", params, cbFn);
 	};
 	
 	Hualala.Global.getAdvertorials = function (params, cbFn) {
