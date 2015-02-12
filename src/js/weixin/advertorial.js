@@ -23,9 +23,13 @@
             $adPreview = $adCont.find('.ad-preview');
         
         UM.delEditor('adEditor');
-        var dataHolder = {},
-            toolbar = W.extendUM(null, dataHolder),
-            adEditor = UM.getEditor('adEditor', { toolbar: toolbar });
+        var emotions = W.getEmotions(); dataHolder = {},
+            toolbar = W.extendUM(emotions, dataHolder),
+            adEditor = UM.getEditor('adEditor', { toolbar: ['source | undo redo | bold italic underline strikethrough | superscript subscript | forecolor backcolor | removeformat |',
+            'insertorderedlist insertunorderedlist | selectall cleardoc paragraph | fontfamily fontsize' ,
+            '| justifyleft justifycenter justifyright justifyjustify |',
+            'wxlink unlink | image video | map',
+            '| horizontal print preview', 'drafts'] });
         
         var adTpl = Handlebars.compile([
         '{{#each records}}',

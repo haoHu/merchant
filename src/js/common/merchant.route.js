@@ -125,7 +125,7 @@
 		},
 		// home page主页
 		{
-			name : "main", path : "/#home", reg : /home$/, bodyClz : "",
+			name : "main", path : "/#home", reg : /home$/, bodyClz : "home",
 			PageInitiator : "Hualala.Common.HomePageInit", label : "首页"
 		},
 

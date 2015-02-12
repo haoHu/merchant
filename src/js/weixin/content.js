@@ -29,7 +29,7 @@
         
         var params = { pageNo: 0, pageSize: 50 }, 
             allConts = [], index = 0, size = 20,
-            isLoading, isLoaded;
+            isLoading, isLoaded, maxMutilContSize = 8;
         
         layout();
         loadConts(renderConts);
@@ -85,7 +85,7 @@
                 : !resItem.resType ? '请选择当前图文的链接类型！'
                 : noLinkCont ? '请选择或输入当前图文的链接内容！' : '';
             
-            if(!ret) topTip({msg: msg, type: 'warning'});
+            if(!ret) topTip({msg: msg});
             
             return ret;
         }
@@ -159,6 +159,7 @@
                 
                 _cont.resTitle = resArr[0].resTitle;
                 _cont.resContent = JSON.stringify(resContent);
+                _cont = _.pick(_cont, 'itemID', 'resTitle', 'resType', 'resContent');
                 submitFunc(_cont, cont, modal);
                 
             });
@@ -169,6 +170,9 @@
             
             if(resArr.length > 2)
                 $resWrap.find('.res-mask').last().append($icoDel);
+            var $addSubRes = $resWrap.find('.add-sub-res');
+            if(resArr.length >= maxMutilContSize)
+                $addSubRes.addClass('disabled');
             $resWrap.on('click', '.res-mask', function(e)
             {
                 var $res = $(this).parent(), i = $res.index(), $target = $(e.target);
@@ -183,6 +187,8 @@
                         activeRes = resArr[i - 1];
                         $lastMask.click();
                     }
+                    if(resArr.length < maxMutilContSize)
+                        $addSubRes.removeClass('disabled');
                     return;
                 }
                 if($res.is('.active') || !checkResItem(activeRes, resType, $contentWrap)) return;
@@ -198,6 +204,11 @@
             $resWrap.on('click', '.add-sub-res', function(e)
             {
                 if(!checkResItem(activeRes, resType, $contentWrap)) return;
+                if($addSubRes.is('.disabled'))
+                {
+                    topTip({msg: '多图文最多只能添加8项！'});
+                    return;
+                }
                 var res = { resType: 1, resTypeContent: {} };
                 res.resTitle = '标题' + ($resWrap.find('.res-mask').length + 1);
                 resArr.push(res);
@@ -208,6 +219,8 @@
                 var $mask = $res.find('.res-mask').click();
                 if(resArr.length > 2) 
                     $mask.append($icoDel);
+                if(resArr.length >= maxMutilContSize)
+                    $addSubRes.addClass('disabled');
             })
         }
         

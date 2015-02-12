@@ -231,8 +231,8 @@
                         center = widget.map.getCenter(),
                         zoom = widget.map.getZoom(),
                         size = widget.map.getSize(),
-                        point = widget.marker.P;
-
+                        point = widget.marker.point;
+                    
                     if (widget.root().find(".edui-map-dynamic")[0].checked) {
                         var URL = editor.getOpt('UMEDITOR_HOME_URL'),
                             url = [URL + (/\/$/.test(URL) ? '':'/') + "dialogs/map/map.html" +

@@ -108,6 +108,8 @@
 		$('body > #ix_wrapper').remove();
 		if (isSupportedBrowser()) {
 			$wrapper.appendTo($('body'));
+            if(/main|pcclient|about|contact|login/.test(pageType))
+                $wrapper.addClass('no-nav');
 			if (isLogin) {
 				userMgr = new Hualala.User.UserMgrModal({
 					$btnGrp : $wrapper.find('.user-mgr')

@@ -162,7 +162,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                 imageHWP = json.imageHWP || '';
             ef.imagePath = url;
             if(imageHWP) ef.imageHWP = imageHWP;
-            if(!FileReader)
+            if(!window.FileReader)
             {
                 $foodPic.find('img').attr('src', imgHost + url.replace(/\.\w+$/, (imageHWP ? '=200x' + Math.round(200 * imageHWP) : '') + '$&?quality=70'));
             }

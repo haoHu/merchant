@@ -67,6 +67,12 @@
                 menuObj = menuJson.menu || {};
                 
             menus = menuObj.button || [];
+            renderMenu();
+        }
+        
+        function renderMenu()
+        {
+            var dls = [];
             for(var i = 0, menu; menu = menus[i]; i++)
             {
                 menu.id = '' + i;
@@ -76,7 +82,8 @@
                     menu.softWenChoose = menu.url;
                     delete menu.url;
                 }
-                var subMenus = menu.sub_button || [];
+                var $dl = $('<dl>').append(dt(menu)),
+                    subMenus = menu.sub_button || [];
                 for(var j = 0, sm; sm = subMenus[j]; j++)
                 {
                     sm.id = i + '' + j;
@@ -86,29 +93,17 @@
                         sm.softWenChoose = sm.url;
                         delete sm.url;
                     }
-                }
-            }
-            renderMenu();
-        }
-        
-        function renderMenu()
-        {
-            var dls = [];
-            for(var i = 0, menu; menu = menus[i]; i++)
-            {
-                var $dl = $('<dl>').append(dt(menu)),
-                    subMenus = menu.sub_button || [];
-                for(var j = 0, sm; sm = subMenus[j]; j++)
                     $dl.append(dd(sm));
+                }
                 
                 dls.push($dl);
             }
             $menuWrap.html(dls);
             $noMenuTip.toggleClass('hidden', !!menus.length);
             
-            if(selectedMenu)
-                $menuWrap.find('#' + selectedMenu.id)
-                .addClass('selected').append($menuClick);
+            var $menu = selectedMenu ? $menuWrap.find('#' + selectedMenu.id) : null;
+            if($menu && $menu[0])
+                 resovleMenuClick.call($menu, {target: $menu});
             else
                 toAction(null, 'showTip', '请选择某个菜单项，然后在此选择或者设置相关动作。');
         }
@@ -144,13 +139,10 @@
             modal._.footer.find('.btn-ok').text('确定').on('click', function()
             {
                 var val = $.trim($input.val());
-                if(!val) { modal.hide(); return; }
-                var menu = { name: val, id: '' + menuCount };
+                if(!val) { topTip({msg: '请输入菜单名称！'}); return; }
+                var menu = selectedMenu = { name: val};
                 menus.push(menu);
-                var $menu = $(dt(menu));
-                $('<dl>').append($menu).appendTo($menuWrap);
-                $noMenuTip.toggleClass('hidden', !!menus.length);
-                resovleMenuClick.call($menu, {target: $menu});
+                renderMenu();
                 modal.hide();
             });
         }
@@ -169,28 +161,30 @@
             .always(function(){ resetButtons($target) });
         }
         
-        function saveMenu($target, pdata)
+        function saveMenu($target)
         {
+            var params = procPostMenuData();
+            if(!params) return;
             if($target)
             {
                 $target.button('saving');
                 $buttons.attr('disabled', 'disabled');
             }
-            var params = pdata || procPostMenuData();
             loadData('saveWinxinMenu', params, null, false)
             .done(function()
             {
-                if(!pdata) topTip({msg: '保存成功！', type: 'success'}); 
+                topTip({msg: '保存成功！', type: 'success'}); 
             })
             .always(function(){ resetButtons($target) });
         }
         
         function publishMenu($target)
         {
+            var params = procPostMenuData();
+            if(!params) return;
+            //saveMenu(null, params);
             $target.button('publishing');
             $buttons.attr('disabled', 'disabled');
-            var params = procPostMenuData();
-            saveMenu(null, params);
             loadData('publishWinxinMenu', params, null, false)
             .done(function()
             {
@@ -214,10 +208,24 @@
             var _menus = JSON.parse(JSON.stringify(menus));
             for(var i = 0, menu; menu = _menus[i]; i++)
             {
+                menu.sub_button = menu.sub_button || [];
+                var subMenus = menu.sub_button;
+                if(!menu.type && !subMenus.length)
+                {
+                    topTip({msg: '一级菜单“' + menu.name + '”没有设置动作，也没有添加二级菜单！', type: 'warning'});
+                    return false;
+                }
                 delete menu.id;
-                var subMenus = menu.sub_button || [];
                 for(var j = 0, sm; sm = subMenus[j]; j++)
+                {
+                    if(!sm.type)
+                    {
+                        topTip({msg: '二级菜单“' + sm.name + '”没有设置动作！', type: 'warning'});
+                        return false;
+                    }
+                    sm.sub_button = [];
                     delete sm.id;
+                }
             }
             
             return {
@@ -348,7 +356,7 @@
         function addSubMenu($menu, menuInfo)
         {
             var menu = menuInfo.menu,
-                id = menuInfo.id,
+                id = menu.id,
                 subMenus = menu.sub_button || [],
                 subMenuCount = subMenus.length;
             if(menu.type) {
@@ -366,13 +374,11 @@
             modal._.footer.find('.btn-ok').text('确定').on('click', function()
             {
                 var val = $.trim($input.val());
-                if(!val) { modal.hide(); return; }
-                var subMenu = { name: val, id: id + '' + subMenuCount };
+                if(!val) { topTip({msg: '请输入菜单名称！'}); return; }
+                var subMenu = selectedMenu = { name: val };
                 subMenus.push(subMenu);
                 menu.sub_button = subMenus;
-                var $subMenu = $(dd(subMenu));
-                $menu.parent().append($subMenu);
-                resovleMenuClick.call($subMenu, {target: $subMenu});
+                renderMenu();
                 modal.hide();
             });
         }
@@ -388,7 +394,7 @@
             modal._.footer.find('.btn-ok').text('确定').on('click', function()
             {
                 var val = $.trim($input.val());
-                if(!val) { modal.hide(); return; }
+                if(!val) { topTip({msg: '请输入菜单名称！'}); return; }
                 menu.name = val;
                 $menu.find('b').text(val);
                 modal.hide();
@@ -399,14 +405,9 @@
         {
             U.Confirm({msg: '确定删除？', okFn: function()
             { 
-                var $remove = menuInfo.menu.id.length == 1 ? $menu.parent() : $menu;
-                
                 menuInfo.menus.splice(menuInfo.index, 1);
-                if($remove.is('.selected') || $remove.find('.selected').length)
-                {
-                    selectedMenu = null;
-                    toAction(null, 'showTip', '请选择某个菜单项，然后在此选择或者设置相关动作。');
-                }
+                if(selectedMenu && !getMenuInfo(selectedMenu.id)) selectedMenu = null;
+                
                 renderMenu();
             }});
         }

@@ -77,7 +77,7 @@
     {
         var U = Hualala.UI, R = Hualala.PageRoute, 
             emotions = WX.getEmotions(),
-            cfg = {width: '100%'}, df = $.Deferred();
+            cfg = {width: '100%', matchField: 'resTitle'}, df = $.Deferred();
         
         function fn()
         {
@@ -242,7 +242,8 @@
                 
                 var firstItem = linkInfo.firstItem || false;
                 U.createChosen($linkContent.find('select'), 
-                dataHolder[api], keys[0], keys[1], { width: '100%' }, firstItem, linkCont);
+                dataHolder[api], keys[0], keys[1], { width: '100%' }, firstItem, linkCont)
+                .change();
                 
             });
         }
@@ -323,7 +324,8 @@
             .on('click', 'li', function()
             {
                 var $li = $(this), url = $li.data('url'), title = $li.attr('title');
-                me.execCommand( 'insertimage', { src: imgHost + url, alt: title });
+                //me.execCommand( 'insertimage', { src: imgHost + url, alt: title, 'class': 'qqemotion' });
+                me.execCommand( 'inserthtml', '<img src="' + imgHost + url + '" alt="' + title + '" style="width: 24px; height: 24px" />');
                 edui.hide();
             });
             
@@ -390,9 +392,11 @@
             return $btn;
         });
         
-        var toolbar = UMEDITOR_CONFIG.toolbar.slice();
-        toolbar[3] = toolbar[3].replace('link', 'wxlink');
-        return toolbar;
+        return ['source | undo redo | bold italic underline strikethrough | superscript subscript | forecolor backcolor | removeformat |',
+            'insertorderedlist insertunorderedlist | selectall cleardoc paragraph | fontfamily fontsize' ,
+            '| justifyleft justifycenter justifyright justifyjustify |',
+            'wxlink unlink | qqemotion image video  | map',
+            '| horizontal print preview', 'drafts']; 
     }
     
     $.extend(WX, {
