@@ -278,7 +278,7 @@
 		},
 		{
 			name : "mcmEventTrack", path : "/#mcm/evt/{eventID}/track",
-			reg : /mcm\/evt\/{eventID}\/track$/, bodyClz : "",
+			reg : /mcm\/evt\/(.*)\/track$/, bodyClz : "",
 			PageInitiator : "Hualala.MCM.MCMEventTrackInit", parentName : "mcmEventMgr", label : "活动跟踪"
 		},
 

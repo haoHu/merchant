@@ -202,7 +202,11 @@
 			self.container.find(':radio[name=radioCountCycleDays]').on('change', function (e) {
 				self.setRadioCountCycleDaysLayout($(this));
 			});
-			
+			self.container.find('form [data-type=datetimepicker]').on('change', function (e) {
+				var $this = $(this),
+					name = $this.attr('name');
+				self.container.find('form').bootstrapValidator('revalidateField', name);
+			});
 		},
 		setSwitcherLayout : function ($chk) {
 			var checked = $chk.is(':checked');

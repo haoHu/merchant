@@ -1980,6 +1980,117 @@
 		}, 1000);
     };
 
+    /**
+     * 获取礼品详情信息
+     * @param  {[type]} params {giftItemID}
+     * @param  {[type]} cbFn   [description]
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.getMCMGiftDetail = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	var data = Test.getGiftDataByID(params);
+    	var myGiftDataset = Test.getGiftDataset();
+    	setTimeout(function () {
+    		fn(IX.inherit(res, {
+				data : IX.inherit({
+					records : [data]
+				}, myGiftDataset)
+			}));
+    	}, 200);
+    };
+
+    /**
+     * 获取礼品详情->礼品发送数统计信息
+     * @param  {[type]} params [description]
+     * @param  {[type]} cbFn   [description]
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.queryMCMGiftDetailGetWayInfo = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	var items = Test.getGiftGetWayData(params);
+    	setTimeout(function () {
+    		fn(IX.inherit(res, {
+				data : {
+					records : items,
+					pageNo : 1,
+					pageSize : 15,
+					totalSize : 15
+				}
+			}));
+    	}, 200);
+
+    };
+
+    /**
+     * 获取礼品详情->礼品使用数的统计数据信息
+     * @param  {[type]} params [description]
+     * @param  {[type]} cbFn   [description]
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.queryMCMGiftDetailUsedInfo = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	var items = Test.getGiftUsedData(params);
+    	setTimeout(function () {
+    		fn(IX.inherit(res, {
+				data : {
+					records : items,
+					pageNo : 1,
+					pageSize : 15,
+					totalSize : 15
+				}
+			}));
+    	}, 200);
+    };
+
+    /**
+     * 礼品详情->赠送|支付礼品操作
+     * @param {[type]} params [description]
+     * @param {[type]} cbFn   [description]
+     */
+    Hualala.Global.giftDetailDonateGift = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	setTimeout(function () {
+    		fn(res);
+    	}, 200);
+    };
+
+    /**
+     * 礼品详情->网上出售礼品操作
+     * @param {[type]} params [description]
+     * @param {[type]} cbFn   [description]
+     */
+    Hualala.Global.giftDetailPayGiftOnline = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	setTimeout(function () {
+    		fn(res);
+    	}, 200);
+    };
+
+    /**
+     * 获取活动跟踪数据
+     * @param  {[type]} params {eventID}
+     * @param  {[type]} cbFn   [description]
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.getMCMEventTrack = function (params, cbFn) {
+    	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+    	var res = {resultcode : '000', resultmsg : ''};
+    	var items = Test.getEventTrackData(params);
+    	setTimeout(function () {
+    		fn(IX.inherit(res, {
+				data : items
+			}));
+    	}, 200);
+   
+    };
+
+    
+
      
 })();
 

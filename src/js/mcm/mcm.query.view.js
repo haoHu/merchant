@@ -10,7 +10,10 @@
 	 */
 	Hualala.MCM.QueryFormKeys = {
 		GiftMgrQueryKeys : ['giftName', 'giftType'],
-		EventMgrQueryKeys : ['eventName', 'eventWay', 'isActive', 'eventStartDate', 'eventEndDate']
+		GiftSendStatisticQueryKeys : ['startTime', 'endTime', 'getWay', 'giftStatus', 'giftItemID'],
+		GiftUsedStatisticQueryKeys : ['startTime', 'endTime', 'usingShopID', 'giftItemID'],
+		EventMgrQueryKeys : ['eventName', 'eventWay', 'isActive', 'eventStartDate', 'eventEndDate'],
+		EventTrackBaseQueryKeys : ['eventID', 'keyword', 'cardLevelID']
 	};
 
 	/**
@@ -44,6 +47,60 @@
 			clz : 'btn btn-warning',
 			label : '添加礼品'
 		},
+
+		// 礼品详情->发送数统计
+		giftItemID : {
+			type : 'hidden',
+			defaultVal : '',
+			validCfg : {
+				validators : {}
+			}
+		},
+		timeRange : {
+			type : 'section',
+			label : '发出时间',
+			min : {
+				type : 'datetimepicker',
+				defaultVal : '',
+				validCfg : {
+					group : '.min-input',
+					validators : {}
+				}
+			},
+			max : {
+				type : 'datetimepicker',
+				defaultVal : '',
+				validCfg : {
+					group : '.max-input',
+					validators : {}
+				}
+			}
+		},
+		getWay : {
+			type : 'combo',
+			label : '发出方式',
+			defaultVal : '',
+			validCfg : {
+				validators : {}
+			}
+		},
+		giftStatus : {
+			type : 'combo',
+			label : '状态',
+			defaultVal : '',
+			validCfg : {
+				validators : {}
+			}
+		},
+		usingShopID : {
+			type : 'combo',
+			label : '适用店铺',
+			defaultVal : '',
+			validCfg : {
+				validators : {}
+			}
+		},
+
 		// 活动列表搜索栏
 		eventName : {
 			type : 'text',
@@ -93,8 +150,38 @@
 			type : 'button',
 			clz : 'btn btn-warning',
 			label : '添加活动'
+		},
+		winFlag : {
+			type : 'combo',
+			label : "中奖情况",
+			defaultVal : "",
+			validCfg : {
+				validators : {}
+			}
+		},
+		eventID : {
+			type : 'hidden',
+			defaultVal : '',
+			validCfg : {
+				validators : {}
+			}
+		},
+		keyword : {
+			type : 'text',
+			label : '关键字',
+			defaultVal : "",
+			validCfg : {
+				validators : {}
+			}
+		},
+		cardLevelID : {
+			type : 'combo',
+			label : '会员等级',
+			defaultVal : "-1",
+			validCfg : {
+				validators : {}
+			}
 		}
-
 	};
 	var QueryFormElsHT = new IX.IListManager();
 	_.each(Hualala.MCM.QueryFormElsCfg, function (el, k) {
@@ -102,13 +189,13 @@
 		var labelClz = 'col-xs-2 col-sm-2 col-md-4 control-label';
 		if (type == 'section') {
 			var id = minID = k + '_min_' + IX.id(), maxID = k + '_max_' + IX.id(),
-				minName = 'eventStartDate',
-				maxName = 'eventEndDate',
+				minName = k == 'eventTime' ? 'eventStartDate' : 'startTime',
+				maxName = k == 'eventTime' ? 'eventEndDate' : 'endTime',
 				min = IX.inherit($XP(el, 'min', {}), {
-					id : minID, name : minName, clz : 'col-xs-5 col-sm-5 col-md-5'
+					id : minID, name : minName, clz : 'col-xs-5 col-sm-5 col-md-4'
 				}),
 				max = IX.inherit($XP(el, 'max', {}), {
-					id : maxID, name : maxName, clz : 'col-xs-5 col-sm-5 col-md-5'
+					id : maxID, name : maxName, clz : 'col-xs-5 col-sm-5 col-md-4'
 				});
 			QueryFormElsHT.register(k, IX.inherit(el, {
 				id : id,
@@ -279,6 +366,106 @@
 		};
 	};
 
+	Hualala.MCM.mapGiftDetailGetWayQueryFormRenderData = function () {
+		var self = this;
+		var queryKeys = self.model.queryKeys;
+		var query = {
+			cols : [
+				{
+					colClz : 'col-md-4',
+					items : QueryFormElsHT.getByKeys(['timeRange'])
+				},
+				{
+					colClz : 'col-md-3',
+					items : QueryFormElsHT.getByKeys(['getWay'])
+				},
+				{
+					colClz : 'col-md-3',
+					items : QueryFormElsHT.getByKeys(['giftStatus'])
+				},
+				{
+					colClz : 'col-md-2',
+					items : QueryFormElsHT.getByKeys(['search', 'giftItemID'])
+				}
+			]
+		};
+		return {
+			query : query
+		};
+	};
+
+	Hualala.MCM.mapGiftDetailUsedQueryFormRenderData = function () {
+		var self = this;
+		var queryKeys = self.model.queryKeys;
+		var query = {
+			cols : [
+				{
+					colClz : 'col-md-4',
+					items : QueryFormElsHT.getByKeys(['timeRange'])
+				},
+				{
+					colClz : 'col-md-3',
+					items : QueryFormElsHT.getByKeys(['usingShopID'])
+				},
+				{
+					colClz : 'col-md-offset-1 col-md-2',
+					items : QueryFormElsHT.getByKeys(['search', 'giftItemID'])
+				}
+			]
+		};
+		return {
+			query : query
+		};
+	};
+
+	Hualala.MCM.mapEventTrackQueryFormRenderData = function () {
+		var self = this;
+		var queryKeys = self.model.queryKeys;
+		var eventDetail = self.$container.data('eventDetail'),
+			eventWay = $XP(eventDetail, 'eventWay');
+		var query = {
+			cols : [
+				{
+					colClz : 'col-md-4',
+					items : QueryFormElsHT.getByKeys(['keyword'])
+				},
+				{
+					colClz : 'col-md-3',
+					items : QueryFormElsHT.getByKeys(['cardLevelID'])
+				},
+				{
+					colClz : 'col-md-2',
+					items : QueryFormElsHT.getByKeys(['search', 'eventID'])
+				}
+			]
+		};
+		if (eventWay == '20' || eventWay == '22') {
+			query = {
+				cols : [
+					{
+						colClz : 'col-md-4',
+						items : QueryFormElsHT.getByKeys(['keyword'])
+					},
+					{
+						colClz : 'col-md-3',
+						items : QueryFormElsHT.getByKeys(['cardLevelID'])
+					},
+					{
+						colClz : 'col-md-3',
+						items : QueryFormElsHT.getByKeys(['winFlag'])
+					},
+					{
+						colClz : 'col-md-2',
+						items : QueryFormElsHT.getByKeys(['search', 'eventID'])
+					}
+				]
+			}
+		}
+		return {
+			query : query
+		};
+	};
+
 	var QueryView = Hualala.Order.QueryView.subclass({
 		/**
 		 * 搜索栏View层构造函数
@@ -364,11 +551,68 @@
 			if (pageName == 'mcmGiftsMgr') {
 				self.initGiftTypeComboOpts($XP(els, 'giftType', ''));
 			}
+			if (pageName == 'mcmGiftDetail') {
+				var tabCntID = self.$container.attr('id');
+				var ctx = Hualala.PageRoute.getPageContextByPath(), pageName = $XP(ctx, 'name');
+				self.initEventTimePicker($XP(els, 'startTime', ''), $XP(els, 'endTime', ''));
+				self.$queryBox.find(':hidden[name=giftItemID]').val($XP(ctx, 'params', [])[0]);
+				console.info(self.container);
+				if (tabCntID == 'tab_send') {
+					self.initGiftDetailGetWayComboOpts($XP(els, 'getWay', ''));
+					self.initGiftDetailGiftStatusComboOpts($XP(els, 'giftStatus', ''));
+				} else {
+					self.initShopChosenPanel($XP(els, 'usingShopID', ''));
+				}
+			}
+			if (pageName == 'mcmEventTrack') {
+				self.initCardLevelComboOpts();
+				self.initWinTypeComboOpts();
+			}
 			// _.each(els, function (v, k) {
 			// 	if (k == 'giftType') {
 			// 		self.initGiftTypeComboOpts(v);
 			// 	}
 			// });
+		},
+		// 加载礼品发出方式下拉列表选项
+		initGiftDetailGetWayComboOpts : function (curGetWay) {
+			var self = this,
+				getWayTypes = Hualala.TypeDef.MCMDataSet.GiftDistributeTypes;
+			if (IX.isEmpty(getWayTypes)) return;
+			getWayTypes = _.map(getWayTypes, function (item) {
+				var value = $XP(item, 'value'), label = $XP(item, 'label');
+				return {
+					value : value,
+					label : label,
+					selected : value == curGetWay ? 'selected' : ''
+				};
+			});
+			var optTpl = self.get('comboOptsTpl'),
+				htm = optTpl({
+					opts : getWayTypes
+				}),
+				$combo = self.$queryBox.find('select[name=getWay]');
+			$combo.html(htm);
+		},
+		// 加载礼品状态下拉列表选项
+		initGiftDetailGiftStatusComboOpts : function (curVal) {
+			var self = this,
+				options = Hualala.TypeDef.MCMDataSet.GiftStatus;
+			if (IX.isEmpty(options)) return;
+			options = _.map(options, function (item) {
+				var value = $XP(item, 'value'), label = $XP(item, 'label');
+				return {
+					value : value,
+					label : label,
+					selected : value == curVal ? 'selected' : ''
+				};
+			});
+			var optTpl = self.get('comboOptsTpl'),
+				htm = optTpl({
+					opts : options
+				}),
+				$combo = self.$queryBox.find('select[name=giftStatus]');
+			$combo.html(htm);
 		},
 		// 加载礼品类型下拉列表选项
 		initGiftTypeComboOpts : function (curGiftType) {
@@ -442,6 +686,125 @@
 				todayHighlight : true,
 				language : 'zh-CN'
 			});
+		},
+		renderShopChosenRenderOptions : function (sections) {
+			var self = this;
+			var optTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_optgroup'));
+			var shops = _.groupBy(sections, function (el) {
+				return $XP(el, 'cityID');
+			});
+			var renderData = [];
+			_.each(shops, function (els, cityID) {
+				var cityName = $XP(els[0], 'cityName', '');
+				var options = _.map(els, function (el) {
+					return IX.inherit(el, {
+						clz : ''
+					});
+				});
+				renderData.push({
+					cityName : cityName,
+					cityID : cityID,
+					options : options
+				})
+			});
+			
+			self.$queryBox.find('select[name=usingShopID]').html(optTpl({
+				items : renderData
+			}));
+			self.$queryBox.find('select[name=usingShopID]').prepend('<option value="" selected></option>');
+		},
+		// 加载选择店铺控件
+		initShopChosenPanel : function (curUsingShopID) {
+			var self = this;
+			var matcher = (new Pymatch([]));
+			var sections = [];
+			Hualala.Global.getShopQuerySchema({}, function (res) {
+				if ($XP(res, 'resultcode') == '000') {
+					sections = $XP(res, 'data.shops', []);
+					self.renderShopChosenRenderOptions(sections);
+					var getMatchedFn = function (searchText) {
+						matcher.setNames(_.map(sections, function(el) {
+							return IX.inherit(el, {
+								name : $XP(el, 'shopName'),
+								value : $XP(el, 'shopID')
+							});
+						}));
+						var matchedSections = matcher.match(searchText);
+						var matchedOptions = {};
+						_.each(matchedSections, function (el, i) {
+							matchedOptions[el[0].shopID] = true;
+						});
+						return matchedOptions;
+					};
+
+					self.$queryBox.find('select[name=usingShopID]').chosen({
+						width : '200px',
+						placeholder_text : "请选择店铺",
+						no_results_text : "抱歉，没有找到！",
+						allow_single_deselect : false,
+						getMatchedFn : getMatchedFn
+					});
+				}
+			});
+		},
+		// 加载会员等级选择控件
+		initCardLevelComboOpts : function () {
+			var self = this,
+				cardLevels = Hualala.TypeDef.MCMDataSet.EventCardLevels;
+			var renderCombo = function () {
+				var optTpl = self.get('comboOptsTpl'),
+					htm = optTpl({
+						opts : cardLevels
+					}),
+					$combo = self.$queryBox.find('select[name=cardLevelID]');
+				$combo.html(htm);
+			};
+			Hualala.Global.getVipLevels({}, function (res) {
+				if ($XP(res, 'resultcode') == '000') {
+					var _cardLevels = _.filter($XP(res, 'data.records', []), function (el) {
+						return $XP(el, 'isActive') == 1;
+					});
+					cardLevels = cardLevels.concat(_.map(_cardLevels, function (el) {
+						return {
+							value : $XP(el, 'cardLevelID'),
+							label : $XP(el, 'cardLevelName')
+						};
+					}));
+					renderCombo();
+				} else {
+					renderCombo();
+				}
+			});
+		},
+		// 加载中奖情况选择控件
+		initWinTypeComboOpts : function () {
+			var self = this,
+				winTypes = null,
+				label = '';
+			var eventDetail = self.$container.data('eventDetail');
+			var eventWay = $XP(eventDetail, 'eventWay');
+			if (eventWay == '20') {
+				winTypes = Hualala.TypeDef.MCMDataSet.WinTypes;
+				label = "中奖情况";
+			} else if (eventWay == '22') {
+				winTypes = Hualala.TypeDef.MCMDataSet.JoinTypes;
+				label = "参与状态";
+			}
+			if (IX.isEmpty(winTypes)) return;
+			winTypes = _.map(winTypes, function (item) {
+				var value = $XP(item, 'value'), label = $XP(item, 'label');
+				return {
+					value : value,
+					label : label
+				};
+			});
+			var optTpl = self.get('comboOptsTpl'),
+				htm = optTpl({
+					opts : winTypes
+				}),
+				$combo = self.$queryBox.find('select[name=winFlag]');
+			$combo.html(htm);
+			$combo.parents('.form-group').find('label').html(label);
 		}
 
 	});

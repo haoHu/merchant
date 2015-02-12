@@ -32,7 +32,8 @@
 		remark : "",
 		action : "1",
 		actionTime : "20140822182920",
-		createTime : " 20120806190323"
+		createTime : " 20120806190323",
+		py : "dou;lao;fang;bei;jing;fen;gong;si"
 	};
 	var accountHT = new IX.IListManager();
 	var genAccountList = function (total) {
@@ -40,18 +41,20 @@
 		var banks = Hualala.TypeDef.BankOptions;
 		for (var i = 0; i < total; i++) {
 			var bank = banks[Test.getRandom(0, banks.length - 1)];
-			var settleBalance = Test.getRandom(0, 10000) / 100
+			var settleBalance = Test.getRandom(0, 10000) / 100;
+			var nameSurfix = Test.getRandom(0, 1000);
 			var account = IX.inherit(accountTpl, {
 					defaultAccount : Test.getRandom(0, 10) > 5 ? 1 : 0,
 					shopCount : Test.getRandom(0, 100),
 					settleUnitID : IX.UUID.generate(),
-					settleUnitName : $XP(accountTpl, 'settleUnitName') + Test.getRandom(0, 1000),
+					settleUnitName : $XP(accountTpl, 'settleUnitName') + nameSurfix,
 					settleIncomTotal : Test.getRandom(0, 10000000) / 100,
 					settleBalance : Test.getRandom(0, 10) < 5 ? (-1 * settleBalance) : settleBalance,
 					bankCode : bank['value'],
 					bankAccount : $XP(accountTpl, 'bankAccount').slice(0, -4) + Test.getRandom(0, 9000),
 					bankName : bank['label'] + $XP(accountTpl, 'bankName'),
-					receiverType : Test.getRandom(1, 2)
+					receiverType : Test.getRandom(1, 2),
+					py : $XP(accountTpl, 'py') + ";" + nameSurfix
 				});
 			ret.push(account);
 			accountHT.register($XP(account, 'settleUnitID'), account);

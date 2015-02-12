@@ -525,24 +525,42 @@
 		/*礼品类型*/
 		GiftTypes : [
 			{value : '', label : "全部"},
-			{value : 10, label : "电子代金券", type : 'voucher', unit : '元', bgColor : "#ff6600"},
+			{value : 10, label : "电子代金券", type : 'voucher', unit : '元', bgColor : "#ff6600",
+				 navs : [
+				 	{label : "发送数", value : "tab_send"},
+				 	{label : "使用数", value : "tab_used"},
+				 	{label : "赠送", value : "tab_give"},
+				 	{label : "支付", value : "tab_pay"},
+				 	{label : "网上出售", value : "tab_onlinesale"}
+				 ]
+			},
 			// {value : 20, label : "菜品优惠券"},
 			// {value : 30, label : "实物礼品"},
-			{value : 40, label : "会员充值", type : 'card', unit : '元', bgColor : "#cc0000"},
-			{value : 42, label : "会员积分", type : 'point', unit : '点', bgColor : "#009999"}
+			{value : 40, label : "会员充值", type : 'card', unit : '元', bgColor : "#cc0000",
+				navs : [
+					{label : "发送数", value : "tab_send"},
+				 	{label : "使用数", value : "tab_used"}
+				]
+			},
+			{value : 42, label : "会员积分", type : 'point', unit : '点', bgColor : "#009999",
+				navs : [
+					{label : "发送数", value : "tab_send"},
+				 	{label : "使用数", value : "tab_used"}
+				]
+			}
 		],
 		/*礼品发出方式*/
 		GiftDistributeTypes : [
 			{value : "", label : "全部"},
-			{value : "10", label : "消费返券"},
-			{value : "20", label : "摇奖活动"},
-			{value : "30", label : "积分摇奖"},
-			{value : "40", label : "积分兑换"},
+			{value : "10", label : "消费返券", include : true},
+			{value : "20", label : "摇奖活动", include : true},
+			{value : "30", label : "积分摇奖", include : true},
+			{value : "40", label : "积分兑换", include : true},
 			{value : "50", label : "订单摇奖"},
-			{value : "60", label : "免费领取"},
-			{value : "70", label : "商家赠送"},
-			{value : "80", label : "商家支付"},
-			{value : "90", label : "商家卖出"},
+			{value : "60", label : "免费领取", include : true},
+			{value : "70", label : "商家赠送", include : true},
+			{value : "80", label : "商家支付", include : true},
+			{value : "90", label : "商家卖出", include : true},
 			{value : "91", label : "会员摇奖"},
 			{value : "92", label : "免费领取"},
 			{value : "93", label : "积分兑换"},
@@ -658,6 +676,15 @@
 		IsVIPBirthdayMonth : [
 			{value : 0, label : "不限制"},
 			{value : 1, label : "仅本月生日的会员可参与"}
+		],
+		WinTypes : [
+			{value : '', label : "不限"},
+			{value : '0', label : "未中奖"}
+		],
+		JoinTypes : [
+			{value : '', label : "不限"},
+			{value : '0', label : "未入围"},
+			{value : '0', label : "已入围"}
 		]
 
 	};

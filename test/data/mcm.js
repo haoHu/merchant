@@ -167,7 +167,206 @@
 		return eventData;
 	};
 
+	var  getGiftDataByID = function (params) {
+		var giftItemID = $XP(params, 'giftItemID');
+		var giftData = _.find(giftRecords, function (el, idx) {
+			return $XP(el, 'giftItemID') == giftItemID;
+		});
+		return giftData;
+	};
+
+	var getGiftDataset = function () {
+		var getways = _.reject(Hualala.TypeDef.MCMDataSet.GiftDistributeTypes, function (el) {
+			return IX.isEmpty(el.value) || !el.include;
+		});
+		var giftStatus = _.reject(Hualala.TypeDef.MCMDataSet.GiftStatus, function (el) {
+			return IX.isEmpty(el.value);
+		});
+		var records = _.map(giftStatus, function (el) {
+			var giftstatus = $XP(el, 'value');
+			var totalCount = 0;
+			var ret = {
+				giftstatus : giftstatus
+			};
+			_.each(getways , function (item) {
+				var key = 'sum_' + $XP(item, 'value'),
+					count = Test.getRandom(1, 100);
+				ret[key] = count;
+				totalCount += count;
+			});
+			return IX.inherit(ret, {
+				totalCount : totalCount
+			});
+		});
+		var total = {};
+		var totalval = 0;
+		_.each(getways, function (item) {
+			var key = 'count_' + $XP(item, 'value'),
+				count = 0;
+			_.each(records, function (el) {
+				var v = $XP(el, 'sum_' + $XP(item, 'value'));
+				count += v;
+			});
+			total[key] = count;
+			totalval += count;
+		});
+		total = IX.inherit(total, {
+			totalCount : totalval
+		});
+		return {
+			myGiftDataset : {
+				data : {
+					records : records,
+					total : total
+				}
+			}
+		};
+	};
+
+	var getGiftGetWayData = function (params) {
+		var giftTpl = {
+			createTime: "20141105143232",
+			eventItemID: "0",
+			foodScope: "0",
+			getRemark: "",
+			getWay: "70",
+			giftGroupTempPWD: "",
+			giftItemID: "277",
+			giftName: "豆捞坊10元电子代金券",
+			giftPWD: "042100274965",
+			giftStatus: "3",
+			giftTransStatus: "0",
+			giftType: "10",
+			giftValue: "10.00",
+			groupID: "5",
+			groupName: "豆捞坊",
+			isHolidaysUsing: "0",
+			isOfflineCanUsing: "1",
+			isSameTimeUsing: "0",
+			itemID: "203720",
+			moenyLimitValue: "100",
+			moneyLimitType: "0",
+			recirculable: "0",
+			recirculeTimes: "0",
+			supportOrderType: "2",
+			sysItemID: "0",
+			timeMillis: "1415169108038",
+			transID: "0",
+			transName: "【6店通用】",
+			userID: "3573345",
+			userInfo : {"userLoginName" : "abc","userName" : "abc", "userSex" : "1", "userMobile" : "133222222222", "userEmail" : ""},
+			usingCityIDs: "1021",
+			usingOrderKey: "",
+			usingRemark: "",
+			usingShopID: "0",
+			usingShopName: "",
+			usingTime: "0",
+			usingTimeType: "1,2,3,4,5",
+			validUntilDate: "20141205",
+			voucherOrderkey: "",
+			voucherPrice: "0.00",
+		};
+		var count = 15;
+		var ret = [];
+		for (var i = 0; i < count; i++) {
+			var item = IX.inherit(giftTpl, {
+				giftItemID : $XP(params, 'giftItemID')
+			});
+			ret.push(item);
+		}
+		return ret;
+	};
+
+	var getGiftUsedData = function (params) {
+		var giftTpl = {
+			createTime: "20141105143232",
+			eventItemID: "0",
+			foodScope: "0",
+			getRemark: "",
+			getWay: "70",
+			giftGroupTempPWD: "",
+			giftItemID: "277",
+			giftName: "豆捞坊10元电子代金券",
+			giftPWD: "042100274965",
+			giftStatus: "3",
+			giftTransStatus: "0",
+			giftType: "10",
+			giftValue: "10.00",
+			groupID: "5",
+			groupName: "豆捞坊",
+			isHolidaysUsing: "0",
+			isOfflineCanUsing: "1",
+			isSameTimeUsing: "0",
+			itemID: "203720",
+			moenyLimitValue: "100",
+			moneyLimitType: "0",
+			recirculable: "0",
+			recirculeTimes: "0",
+			supportOrderType: "2",
+			sysItemID: "0",
+			timeMillis: "1415169108038",
+			transID: "0",
+			transName: "【6店通用】",
+			userID: "3573345",
+			userInfo : {"userLoginName" : "abc","userName" : "abc", "userSex" : "1", "userMobile" : "133222222222", "userEmail" : ""},
+			usingCityIDs: "1021",
+			usingOrderKey: "",
+			usingRemark: "",
+			usingShopID: "0",
+			usingShopName: "",
+			usingTime: "0",
+			usingTimeType: "1,2,3,4,5",
+			validUntilDate: "20141205",
+			voucherOrderkey: "",
+			voucherPrice: "0.00",
+		};
+		var count = 15;
+		var ret = [];
+		for (var i = 0; i < count; i++) {
+			var item = IX.inherit(giftTpl, {
+				giftItemID : $XP(params, 'giftItemID')
+			});
+			ret.push(item);
+		}
+		return ret;
+	};
+
+	var getEventTrackData = function (params) {
+		var pageSize = $XP(params, 'pageSize', 15),
+			pageNo = $XP(params, 'pageNo', 1);
+		var evtTrackTpl = {
+			itemID : IX.id().replaceAll('ix_', ''),
+			customerName : "会员姓名",
+			customerSex : "女",
+			cardID : '1',
+			cardNO : "10000",
+			customerMobile : "13322222222",
+			cardLevelName : "VIP1",
+			consumptionTotal : "100",
+			consumptionCount : "12",
+			createTime : "20150122112020"
+		};
+		var count = 30;
+		var ret = [];
+		for (var i = 0; i < count; i++) {
+			ret.push(evtTrackTpl);
+		}
+		return {
+			pageSize : pageSize,
+			pageNo : pageNo,
+			records : ret
+		};
+	};
+
 	Test.getGiftList = getGiftList;
 	Test.getEventList = getEventList;
 	Test.getEventDataByID = getEventDataByID;
+	Test.getGiftDataByID = getGiftDataByID;
+	Test.getGiftDataset = getGiftDataset;
+	Test.getGiftGetWayData = getGiftGetWayData;
+	Test.getGiftUsedData = getGiftUsedData;
+	Test.getEventTrackData = getEventTrackData;
+
+
+
 })();

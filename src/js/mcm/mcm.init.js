@@ -43,6 +43,9 @@
 		var ctx = Hualala.PageRoute.getPageContextByPath(),
 			$body = $('#ix_wrapper > .ix-body > .container');
 		$body.html('<h1>礼品详情页</h1>');
+		var panel = new HMCM.GiftDetailPage({
+			container : $body
+		});
 
 	};
 
@@ -86,6 +89,9 @@
 		var ctx = Hualala.PageRoute.getPageContextByPath(),
 			$body = $('#ix_wrapper > .ix-body > .container');
 		$body.html('<h1>活动跟踪页</h1>');
+		var panel = new HMCM.EventTrackPage({
+			container : $body
+		});
 	};
 
 	HMCM.MCMHomePageInit = MCMHomePageInit;

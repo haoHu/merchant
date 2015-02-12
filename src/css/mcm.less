@@ -1,4 +1,4 @@
-.query-form > form .section {
+.query-form > form .section, .detail-tabs form .section {
 	.max-input {position : relative;}
 	.to-label {
 		position : absolute; left : -4px; line-height : 3rem;
@@ -173,11 +173,12 @@
 	}
 }
 
-.mcm-event-info {
+.mcm-event-info, .mcm-detail-info {
 	margin-bottom : 2rem;
 	.media-body > .form-horizontal {
 		.form-group {
 			margin-bottom : 0;
+			.control-label, .form-control-static {padding-top : 0px;}
 		}
 	}
 }
@@ -272,4 +273,13 @@
 		max-height: 500px; overflow-y : auto;
 	}
 	.mcm-grid tr:hover {cursor : pointer;}
+}
+
+.detail-tabs {
+	form textarea {
+		height : 8em;
+	}
+	.tab-pane {
+		margin-top : 2em;
+	}
 }

@@ -244,6 +244,7 @@
 			return $XP(el, 'value') == giftType;
 		});
 	};
+	HMCM.getGiftTypeSet = getGiftTypeSet;
 
 	/**
 	 * 整理礼品基本信息表单渲染数据

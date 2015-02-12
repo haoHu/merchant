@@ -354,7 +354,8 @@
 					break;
 				case 'detail':
 				// TODO preview gift detail
-				// 
+					var path = Hualala.PageRoute.createPath('mcmGiftDetail', [giftItemID]);
+					Hualala.PageRoute.jumpPage(path);
 					break;
 			}
 		});
@@ -439,6 +440,8 @@
 					break;
 				case 'track':
 				// TODO track event info
+					var path = Hualala.PageRoute.createPath('mcmEventTrack', [eventID]);
+					Hualala.PageRoute.jumpPage(path);
 					break;
 			}
 		});
@@ -525,7 +528,9 @@
 						break;
 				}
 			});
-			return ret;
+			return IX.inherit(ret, {
+				infoLabelClz : 'col-sm-3'
+			});
 		};
 		var mapGiftsData = function () {
 			var giftKeys = 'EGiftID,EGiftName,EGiftOdds,EgiftSendCount,EGiftSingleCount,EGiftTotalCount,EGiftEffectTimeHours,EGiftValidUnitDayCount'.split(',');
