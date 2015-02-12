@@ -311,12 +311,22 @@
             var val = $resWrap.find('select').val();
             if(!val)
             {
-                topTip({msg: '未选择任何事件回复内容！', type: 'warning'});
+                topTip({msg: '未选择任何事件回复内容！'});
                 return;
             }
-            selectedMenu.type = 'click';
-            selectedMenu.key = 'Resources:' + val;
-            topTip({msg: '菜单设置成功！（保存菜单后生效）', type: 'success'});
+            
+            var res = _.find(resources, {itemID: val}),
+                pres = _.pick(res, 'mpID', 'resTitle', );
+            pres.resourceID = val;
+            pres.resType = res.resType == 2 ? 'text' : 'news';
+            pres.pushEvent = "('CLICK')";
+            loadData('WeixinMenuClick', pres, null, false)
+            .done(function()
+            {
+                selectedMenu.type = 'click';
+                selectedMenu.key = 'Resources:' + val;
+                topTip({msg: '菜单设置成功！（保存菜单后生效）', type: 'success'});
+            });
         }
         
         function toPage()
