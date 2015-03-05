@@ -160,7 +160,7 @@ body.login {
 	}
 	#site_navbar .nav-pills {
 		> li > a {color : @site-nav-color; .x-font-size(16px);}
-		> li.active > a, > li.active > a:hover, > li.active > a:focus {
+		li.active > a, li.active > a:hover, li.active > a:focus {
 			color : #fff;
 			background-color : @site-nav-bg;
 		}
@@ -295,6 +295,7 @@ body.login {
 	}
 	.brick-item {height : @brick-height; border : 0 none;}
 	.brick-item-2 {height : (@brick-height * 2 + 10);}
+    .brick-item-low {height : (@brick-height / 2);}
 
 	@shop-bg : rgb(0, 142, 176);
 	@order-bg : rgb(252, 181, 65);
@@ -304,6 +305,7 @@ body.login {
 	@pcclient-bg : rgb(95, 172, 160);
 	@crm-bg : rgb(0, 142, 176);
     @weixin-bg : rgb(84, 185, 122);
+    @mcm-bg : rgb(214, 89, 42);
 	@font-color : #fff;
 	@ficon-size : 60px;
 	.brick-item {
@@ -326,6 +328,7 @@ body.login {
 		.icon-setting {.x-icon-60_setting();}
 		.icon-crm {.x-icon-60_crm();}
         .icon-weixin {.x-icon-60_weixin();}
+        .icon-mcm {.x-icon-60_marketing();}
 		&.disabled {
 			background-color : #eee!important; cursor : not-allowed;
 			// .x-filter(.5);
@@ -360,7 +363,7 @@ body.login {
 				background: fade(@user-bg, 80%);
 			}
 		}
-		&[data-pagename=pcclient] {
+		&[data-pagename=agent] {
 			background : @pcclient-bg;
 			&.hover {
 				background: fade(@pcclient-bg, 80%);
@@ -379,9 +382,15 @@ body.login {
 			}
 		}
 		&[data-pagename=mcm] {
-			background : @weixin-bg;
+			background : @mcm-bg;
 			&.hover {
-				background: fade(@weixin-bg, 80%);
+				background: fade(@mcm-bg, 80%);
+			}
+		}
+        &[data-pagename=boss] {
+			background : @setting-bg;
+			&.hover {
+				background: fade(@setting-bg, 80%);
 			}
 		}
 	}

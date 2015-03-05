@@ -75,6 +75,8 @@
 		{name : 'contact', url : '/#contact'},
 		{name : 'crm', url : '/#crm'},
 		{name : 'mcm', url : '/#mcm'},
+        {name : 'agent', url : '/#agent'},
+        {name : 'boss', url : '/#boss'},
         {name : 'weixin', url : '/#weixin'}
 	];
 	Test.PCClient = {

@@ -6,14 +6,15 @@
 		{name : 'order', title : '订单', label : '查询•报表•菜品排行', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-order'},
 		{name : 'shop', title : '店铺', label : '开店•信息•菜谱', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-home'},
 
-		{name : 'pcclient', title : '下载', label : '哗啦啦代理程序', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-download'},
+		{name : 'agent', title : '代理程序', label : '下载•监控', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-agent'},
 		{name : 'user', title : '权限', label : '用户•权限', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-lock'},
         {name : 'weixin', title : '微信', label : '网络餐厅•营销', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-weixin'},
 		{name : 'crm', title : '会员', label : '概览•报表•参数•营销', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-crm'},
-		{name : 'mcm', title : '营销', label : '礼品•营销活动', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-crm'}
-		
-		
-		
+		{name : 'mcm', title : '营销', label : '礼品•营销活动', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-crm'}//,
+        
+        /*{brickClz : 'home-brick-md-3'},
+        {brickClz : 'home-brick-md-1'},
+		{name : 'boss', title : '老板通', label : '下载', brickClz : 'home-brick-md-2', itemClz : 'brick-item brick-item-low', icon : 'icon-boss'}*/
 	];
 	function isSupportedBrowser () {
 		var bd = Hualala.Common.Browser;
@@ -198,19 +199,32 @@
 			// });
 			var navs = _.map(Hualala.TypeDef.SiteNavType, function (v, i, list) {
 				var hasRight = !rightHT.get(v.name) ? false : true;
+                var currentPageName = Hualala.PageRoute.getPageContextByPath().name;
+                var isMore = v.name == 'more';
 				var subnavs = $XP(v, 'subnavs', []);
+                var isMoreSubNav = false;
+                for(var i = 0, subnav; subnav = subnavs[i++];)
+                {
+                    if(isMoreSubNav = (isMore && subnav.name == currentPageName)) break;
+                }
+                
 				subnavs = _.map(subnavs, function (s) {
+                    var hasRight = !rightHT.get(s.name) ? false : true;
+                    var disabled = isMore && !hasRight ? 'disabled' : '';
 					return {
-						path : Hualala.PageRoute.createPath(s.name) || '#',
+						path : disabled ? 'javascript:;' : Hualala.PageRoute.createPath(s.name) || '#',
 						name : s.name,
+                        active: isMore && s.name == currentPageName ? 'active' : '',
+                        disabled : disabled,
 						label : s.label
 					};
 				});
+                
 				var list = {
-					active : !Hualala.Global.isCurrentPage(v.name) ? '' : 'active',
-					disabled : !hasRight ? 'disabled' : '',
-					noPath : !hasRight ? true : false,
-					path : Hualala.PageRoute.createPath(v.name) || '#',
+					active : isMoreSubNav || !isMore && Hualala.Global.isCurrentPage(v.name) ? 'active' : '',
+					disabled : isMore || hasRight ? '' : 'disabled',
+					noPath : isMore || !hasRight ? true : false,
+					path : isMore ? '#' : Hualala.PageRoute.createPath(v.name) || '#',
 					name : v.name,
 					label : v.label,
 					isSubNav : v.type == 'subnav' ? true : false,

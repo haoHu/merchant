@@ -87,7 +87,7 @@
 	function getPathByName (name, params) {
 		var cfg = PageConfigurations[name];
 		if (!cfg) 
-			return console.err("Can't find route : " + name);
+			return console.error("Can't find route : " + name);
 		var path = $XP(cfg, 'path'), reg = $XP(cfg, 'reg'),
 			match = path.match(reg);
 		var genPath = function (p) {
@@ -389,10 +389,16 @@
 			PageInitiator : "Hualala.Weixin.textInit", parentName : "weixin", label : "文本管理"
 		},
 
-		// PC客户端下载页面
+        // 代理程序信息页面
+		{
+			name : "agent", path : "/#agent", reg : /agent$/, bodyClz : "agent",
+			PageInitiator : "Hualala.Agent.AgentInfoInit", parentName : "main", label : "代理程序"
+		},
+
+		// 代理程序下载页面
 		{
 			name : "pcclient", path : "/#download", reg : /download$/, bodyClz : "",
-			PageInitiator : "Hualala.Common.PCClientDownloadInit", parentName : "main", label : "客户端下载"
+			PageInitiator : "Hualala.Common.PCClientDownloadInit", parentName : "main", label : "代理程序下载"
 		},
 
 		// 关于商户中心

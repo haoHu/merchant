@@ -31,13 +31,18 @@
 				{name : "mcmEventMgr", label : "活动管理", type : "link", src : ""}
 			]
 		},
-		{name : 'weixin', label : '微信', type:"subnav",
+		{name : 'weixin', label : '微信', type: "subnav",
 			subnavs : [
 				{name : "wxReply", label : "微信管理", type : "link", src : "WeixinAdminSubNavType"},
 				{name : "wxAdvertorial", label : "素材管理", type : "link", src : "WeixinMaterialSubNavType"}
 			]
 		},
-		{name : 'user', label : '权限', type:"link"}
+        {name : 'more', label : '更多', type: "subnav",
+			subnavs : [
+				{name : "agent", label : "代理程序", type : "link"},
+				{name : "user", label : "权限", type : "link"}
+			]
+		}
         
 	];
     
