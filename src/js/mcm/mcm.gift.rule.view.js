@@ -94,9 +94,9 @@
 				});
 			self.container.html(htm);
 			if (giftType == 40) {
-				self.container.append('<p>顾客在获取会员充值类礼品后，将直接充入其会员储值余额账户中！');
+				self.container.append('<p class="alert alert-warning">顾客在获取会员充值类礼品后，将直接充入其会员储值余额账户中！</p>');
 			} else if (giftType == 42) {
-				self.container.append('<p>顾客在获取会员积分类礼品后，将直接充入其会员积分余额账户中！');
+				self.container.append('<p class="alert alert-warning">顾客在获取会员积分类礼品后，将直接充入其会员积分余额账户中！</p>');
 			}
 			
 		},
@@ -124,7 +124,11 @@
 						self.failFn.call(self);
 					},
 					successFn : function () {
+						var resultController = self.parentView.parentView.$container.data('resultController');
 						self.successFn.call(self);
+						if (resultController) {
+							resultController.emit('load');
+						}
 						self.parentView.modal.hide();
 					}
 				});
@@ -164,6 +168,8 @@
 						ret[key] = self.getCheckboxVal(key);
 					} else if (type == 'radiogrp') {
 						ret[key] = self.getRadiboxVal(key);
+					} else if (type == 'selectShops') {
+						ret[key] = $('[name=shopNames] .choose-shop-val', self.container).text();
 					} else {
 						ret[key] = $('[name=' + key + ']', self.container).val() || '';	
 					}

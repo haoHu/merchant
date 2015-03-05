@@ -13,6 +13,7 @@
 	var EventGiftSetFormKeys = "EGiftID,EGiftName,EGiftTotalCount,EGiftValidUntilDayCount,EGiftOdds,EGiftEffectTimeHours".split(',');
 	var EventGiftLevelCount = 3;
 	var GiftLevelNames = ["", "一等奖","二等奖","三等奖"];
+	HMCM.GiftLevelNames = GiftLevelNames;
 	var EventGiftSetFormElsCfg = {
 		EGiftID : {
 			type : 'hidden',
@@ -45,9 +46,9 @@
 						message : "奖品总数必须为数字"
 					},
 					greaterThan : {
-						inclusive : true,
+						inclusive : false,
 						value : 0,
-						message : "奖品总数必须大于或等于0"
+						message : "奖品总数必须大于0"
 					}
 				}
 			}
@@ -67,9 +68,9 @@
 						message : "有效天数必须为数字"
 					},
 					greaterThan : {
-						inclusive : true,
+						inclusive : false,
 						value : 0,
-						message : "有效天数必须大于或等于0"
+						message : "有效天数必须大于0"
 					}
 				}
 			}
@@ -165,6 +166,12 @@
 					return IX.inherit(elCfg, {
 						value : v,
 						options : options
+					});
+				} else if (k == 'EGiftOdds') {
+					v = self.model.get(key) || $XP(elCfg, 'defaultVal');
+					v = isNaN(v) ? 0 : parseFloat(v);
+					return IX.inherit(elCfg, {
+						value : v
 					});
 				} else {
 					return IX.inherit(elCfg, {
@@ -278,6 +285,12 @@
 				});
 			});
 
+			self.container.on('change', ':text[name^=EGiftName]', function (e) {
+				var $txt = $(this),
+					name = $txt.attr('name');
+				self.container.find('form').bootstrapValidator('revalidateField', name);
+			});
+
 			self.container.on('click', '.btn[name=pickgift]', function (e) {
 				var $btn = $(this);
 				var modal = new HMCM.PickGiftModal({
@@ -288,7 +301,7 @@
 						var panel = $triggerEl.parents('.mcm-evtgift-panel'),
 							idx = parseInt(panel.attr('data-index')) + 1;
 						$('[name=EGiftID_' + idx + ']', panel).val(giftID);
-						$('[name=EGiftName_' + idx + ']', panel).val(giftName);
+						$('[name=EGiftName_' + idx + ']', panel).val(giftName).trigger('change');
 					}
 				});
 			});

@@ -503,7 +503,8 @@
             $tpl = $(tpl({swfSrc: swfSrc, args: args}));
         
         var $dialog = $tpl.appendTo('body')
-            .modal({backdrop : 'static', keyboard: false});
+            .modal({backdrop : 'static', keyboard: false})
+            .on('hidden.bs.modal', function () { $(this).remove(); });
         
         opts.onConcel = opts.onConcel || function () { $dialog.modal('hide'); };
         if(typeof opts.onBefore == 'function') opts.onBefore($dialog);
@@ -532,43 +533,60 @@
         };
         window.Head_Pic_Cancel = function(swfId) { opts.onConcel($dialog); };
         window.uploadStart = function(swfId) { opts.onStart(); };
-        
+        return $dialog;
     }
     /**
-	 * 加载等待模态窗 
+	 * 文件上传组件
 	 * @param {jQuery Object} $elem 点击此元素会执行上传动作
+            若要兼容 IE<=8，elem须是label元素
 	 * @param {Function} onSuccess 上传成功回调函数
 	 * @param {Object} options 配置参数 {
                 action: form的action属性的值 '/imageUpload.action',
                 inputFileName: file控件的名称 'myFile',
                 accept: file控件accept 'image/gif,image/jpeg,image/png,image/jpg,image/bmp',
-                dataType: 相当于$.ajsx的dataType 'json'
-                onFail: 上传失败回调函数
+                dataType: 相当于$.ajsx的dataType 'json',
+                container: 承载file控件的form所在的容器 'body',
+                onFail: 上传失败回调函数,
                 onProgress: 上传进行中回调函数
             }
+        @return {jQuery Object} $form 承载file控件的$form
 	 */
-    function imgUpload($elem, onSuccess, options)
+    function fileUpload($elem, onSuccess, options)
     {
         var defaults = {
+                formId: 'hllFileForm',
                 action: '/imageUpload.action',
                 inputFileName: 'myFile',
                 accept: 'image/gif,image/jpeg,image/png,image/jpg,image/bmp',
-                dataType: 'json'
+                dataType: 'json',
+                container: 'body'
             },
             cfg = $.extend({}, defaults, options);
-            
-        var $form = $('<form method="post" enctype="multipart/form-data">')
+        
+        var $_form = $('#' + cfg.formId);
+        var $form = $_form[0] ? $_form : 
+                $('<form method="post" enctype="multipart/form-data"></form>')
+                .attr('id', cfg.formId)
                 .attr('action', cfg.action);
                 
-        var isBtn = $elem.is('button');
+        var isBtn = $elem.is('.btn'), isLabel = $elem.is('label');
         if(isBtn) $elem.attr('data-uploading-text', '上传中...');
+        if(isLabel)
+        {
+            $elem.attr('for', cfg.inputFileName);
+            $form.attr('style', 'width: 0; height: 0; overflow: hidden')
+            .appendTo(cfg.container);
+        }
         
         $elem.click(function()
         {
-            $('<input type="file">')
-            .attr('name', cfg.inputFileName)
-            .attr('accept', cfg.accept)
-            .appendTo($form.empty())
+            var $file = $('<input type="file">')
+                .attr('name', cfg.inputFileName)
+                .attr('accept', cfg.accept);
+                
+            if(isLabel) $file.attr('id', cfg.inputFileName);
+            
+            $file.appendTo($form.empty())
             .change(function()
             {
                 if(isBtn) $elem.attr('disabled', 'disabled').button('uploading');
@@ -578,6 +596,8 @@
                 }).data('jqxhr');
                 jqxhr.done(function(rsp)
                 {
+                    if(typeof rsp == 'string') rsp = $.parseJSON(rsp);
+                    // rsp = { url, imgHWP, imgWidth, imgHeight, status, resultMsg }
                     if(rsp.status == 'success')
                     {
                         setTimeout(function()
@@ -605,9 +625,12 @@
                             $elem.removeAttr('disabled').button('reset');
                         }, 1000);
                 });
-            })
-            .click();
+            });
+            
+            if(!isLabel) $file.click();
         });
+        
+        return $form;
     }
     
     function fillSelect($select, items, k, t, dk, dt)
@@ -719,7 +742,7 @@
 	Hualala.UI.LoadingModal = LoadingModal;
     
     Hualala.UI.uploadImg = uploadImg;
-    Hualala.UI.imgUpload = imgUpload;
+    Hualala.UI.fileUpload = fileUpload;
     Hualala.UI.fillSelect = fillSelect;
     Hualala.UI.createChosen = createChosen;
     Hualala.UI.createSchemaChosen = createSchemaChosen;

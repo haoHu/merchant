@@ -80,6 +80,12 @@
             });
             modal = new U.ModalDialog({title: '会员促销参数设置', html: $form}).show();
             
+            $form.find('[type=radio]').on('change', function(e)
+            {
+                if(this.checked)
+                    $(this).parent().parent().find('div').text($(this).data('tip'));
+            }).change();
+            
             $form.bootstrapValidator({
                 fields: {
                     startDate: {

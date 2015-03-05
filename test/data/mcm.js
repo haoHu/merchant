@@ -18,7 +18,7 @@
 		giftRemark : "支持线下，满120元可使用1张",
 		giftTotalCount : 0,
 		giftType : 10,
-		giftValue : 50,
+		giftValue : 50.00,
 		groupID : 5,
 		groupName : "豆捞坊",
 		"isHolidaysUsing": "0",
@@ -126,10 +126,12 @@
 			return idx >= start && idx <= end;
 		});
 		return {
-			pageCount : Math.ceil(totalCount / pageSize),
-			pageNo : pageNo,
-			pageSize : pageSize,
-			totalSize : totalCount,
+			page : {
+				pageCount : Math.ceil(totalCount / pageSize),
+				pageNo : pageNo,
+				pageSize : pageSize,
+				totalSize : totalCount
+			},
 			records : gifts	
 		};
 	};
@@ -143,10 +145,12 @@
 			return idx >= start && idx <= end;
 		});
 		return {
-			pageCount : Math.ceil(totalCount / pageSize),
-			pageNo : pageNo,
-			pageSize : pageSize,
-			totalSize : totalCount,
+			page : {
+				pageCount : Math.ceil(totalCount / pageSize),
+				pageNo : pageNo,
+				pageSize : pageSize,
+				totalSize : totalCount,
+			},
 			records : events	
 		};
 	};
@@ -334,17 +338,21 @@
 	var getEventTrackData = function (params) {
 		var pageSize = $XP(params, 'pageSize', 15),
 			pageNo = $XP(params, 'pageNo', 1);
+		var eventID = $XP(params, 'eventID');
+		var eventData = getEventDataByID({eventID : eventID});
+		var eventWay = $XP(eventData, 'eventWay');
 		var evtTrackTpl = {
 			itemID : IX.id().replaceAll('ix_', ''),
 			customerName : "会员姓名",
-			customerSex : "女",
+			customerSex : "2",
 			cardID : '1',
 			cardNO : "10000",
 			customerMobile : "13322222222",
 			cardLevelName : "VIP1",
 			consumptionTotal : "100",
 			consumptionCount : "12",
-			createTime : "20150122112020"
+			createTime : "20150122112020",
+			winFlag : eventWay == 22 ? Test.getRandom(0,1) : ('EGifttName_' + Test.getRandom(1, 3))
 		};
 		var count = 30;
 		var ret = [];
@@ -352,8 +360,10 @@
 			ret.push(evtTrackTpl);
 		}
 		return {
-			pageSize : pageSize,
-			pageNo : pageNo,
+			page : {
+				pageSize : pageSize,
+				pageNo : pageNo
+			},
 			records : ret
 		};
 	};

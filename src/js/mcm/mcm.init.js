@@ -10,7 +10,7 @@
 		var ctx = Hualala.PageRoute.getPageContextByPath(),
 			$body = $('#ix_wrapper > .ix-body > .container');
 		var queryKeys = Hualala.MCM.QueryFormKeys.GiftMgrQueryKeys;
-		$body.html('<h1>礼品管理页</h1>');
+		// $body.html('<h1>礼品管理页</h1>');
 		var panel = new HMCM.QueryController({
 			container : $body,
 			resultController : new HMCM.QueryResultControler({
@@ -42,7 +42,7 @@
 	var MCMGiftDetailInit = function () {
 		var ctx = Hualala.PageRoute.getPageContextByPath(),
 			$body = $('#ix_wrapper > .ix-body > .container');
-		$body.html('<h1>礼品详情页</h1>');
+		// $body.html('<h1>礼品详情页</h1>');
 		var panel = new HMCM.GiftDetailPage({
 			container : $body
 		});
@@ -53,7 +53,7 @@
 		var ctx = Hualala.PageRoute.getPageContextByPath(),
 			$body = $('#ix_wrapper > .ix-body > .container');
 		var queryKeys = Hualala.MCM.QueryFormKeys.EventMgrQueryKeys;
-		$body.html('<h1>活动管理页</h1>');
+		// $body.html('<h1>活动管理页</h1>');
 		var panel = new HMCM.QueryController({
 			container : $body,
 			resultController : new HMCM.QueryResultControler({
@@ -88,7 +88,7 @@
 	var MCMEventTrackInit = function () {
 		var ctx = Hualala.PageRoute.getPageContextByPath(),
 			$body = $('#ix_wrapper > .ix-body > .container');
-		$body.html('<h1>活动跟踪页</h1>');
+		// $body.html('<h1>活动跟踪页</h1>');
 		var panel = new HMCM.EventTrackPage({
 			container : $body
 		});

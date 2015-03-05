@@ -420,17 +420,27 @@
 				var formParams = self.serializeForm();
 				IX.Debug.info("DEBUG: Event Wizard Form Params:");
 				IX.Debug.info(formParams);
-				
-				self.model.emit('saveCache', {
+				self.model.emit(act, {
 					params : formParams,
 					failFn : function () {
 						self.failFn.call(self);
 					},
 					successFn : function () {
+						self.switchViewMode('edit');
 						self.successFn.call(self);
-
+						
 					}
-				})
+				});
+				// self.model.emit('saveCache', {
+				// 	params : formParams,
+				// 	failFn : function () {
+				// 		self.failFn.call(self);
+				// 	},
+				// 	successFn : function () {
+				// 		self.successFn.call(self);
+
+				// 	}
+				// })
 			});
 		},
 		initValidFieldOpts : function () {
@@ -557,18 +567,37 @@
 			var curIdx = wizardModalView.$wizard.bsWizard('currentIndex'), 
 				cntID = wizardModalView.getTabContentIDByIndex(wizardModalView.$wizard.find('.wizard-nav'), curIdx),
 				stepView = wizardModalView.stepViewHT.get(cntID);
-			var accountID = wizardModalView.model.get('accountID');
-			if (!accountID && curIdx == 0) {
+			var eventID = wizardModalView.model.get('eventID');
+			if (!eventID && curIdx == 0) {
 				wizardModalView.modal.hide();
-			} else {
+			} else if (!eventID && curIdx == 1) {
 				Hualala.UI.Confirm({
-					title : '取消创建活动',
+					title : '取消创建活动配置',
 					msg : '是否取消创建活动的操作？<br/>之前的操作将不生效！',
 					okLabel : '确定',
 					okFn : function () {
 						wizardModalView.modal.hide();
 					}
 				});
+			} else if (eventID && curIdx != 0) {
+				Hualala.UI.Confirm({
+					title : '取消编辑活动配置',
+					msg : '是否取消当前步骤的操作？<br/>当前的修改将不保存！',
+					okLabel : '确定',
+					okFn : function () {
+						var pContainer = wizardModalView.parentView.$container;
+						var pResultController = pContainer.data('resultController'),
+							pResultView = null;
+						if (!pResultController) {
+							wizardModalView.parentView.model.emit('load');
+						} else {
+							pResultView = pResultController.model.emit('load');
+						}
+						wizardModalView.modal.hide();
+					}
+				});
+			} else {
+				wizardModalView.modal.hide();
 			}
 		});
 	}

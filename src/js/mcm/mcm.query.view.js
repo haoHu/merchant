@@ -301,28 +301,33 @@
 	Hualala.MCM.mapGiftQueryFormRenderData = function () {
 		var self = this;
 		var queryKeys = self.model.queryKeys;
-		var query = {
-			cols : [
-				{
-					colClz : 'col-md-4',
-					items : QueryFormElsHT.getByKeys(['giftName'])
-				},
-				{
-					colClz : 'col-md-4',
-					items : QueryFormElsHT.getByKeys(['giftType'])
-				},
-				{
-					colClz : 'col-md-2',
-					items : QueryFormElsHT.getByKeys(['search'])
-				},
-				{
-					colClz : 'col-md-2 ' + (self.hasAddBtn ? '' : 'hidden'),
-					items : QueryFormElsHT.getByKeys(['addGift'])
-				}
-			]
-		};
+		var queryElsClz = self.hasAddBtn ? 'col-md-4' : 'col-md-5',
+			queryBtnClz = 'col-md-2';
+		var cols = [
+			{
+				colClz : queryElsClz,
+				items : QueryFormElsHT.getByKeys(['giftName'])
+			},
+			{
+				colClz : queryElsClz,
+				items : QueryFormElsHT.getByKeys(['giftType'])
+			},
+			{
+				colClz : queryBtnClz,
+				items : QueryFormElsHT.getByKeys(['search'])
+			}
+		];
+		if (self.hasAddBtn) {
+			cols.push({
+				colClz : queryBtnClz,
+				items : QueryFormElsHT.getByKeys(['addGift'])
+			});
+		}
+		
 		return {
-			query : query
+			query : {
+				cols : cols
+			}
 		};
 	};
 
@@ -423,6 +428,12 @@
 		var queryKeys = self.model.queryKeys;
 		var eventDetail = self.$container.data('eventDetail'),
 			eventWay = $XP(eventDetail, 'eventWay');
+		var searchBtnCol = _.map(QueryFormElsHT.getByKeys(['search', 'eventID']), function (el, i) {
+			if (i == 0) return el;
+			return IX.inherit(el, {
+				value : $XP(eventDetail, 'eventID')
+			});
+		});
 		var query = {
 			cols : [
 				{
@@ -435,7 +446,7 @@
 				},
 				{
 					colClz : 'col-md-2',
-					items : QueryFormElsHT.getByKeys(['search', 'eventID'])
+					items : searchBtnCol
 				}
 			]
 		};
@@ -456,7 +467,7 @@
 					},
 					{
 						colClz : 'col-md-2',
-						items : QueryFormElsHT.getByKeys(['search', 'eventID'])
+						items : searchBtnCol
 					}
 				]
 			}

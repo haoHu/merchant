@@ -66,7 +66,7 @@
 			var self = this;
 			var eventID = self.model.get('eventID');
 			self.model.emit('switchEvent', {
-				params : {
+				post : {
 					eventID : eventID,
 					isActive : 1
 				},
@@ -75,6 +75,7 @@
 				},
 				successFn : function () {
 					self.successFn.call(self);
+					self.parentView.parentView.emit('render');
 					self.parentView.modal.hide();
 				}
 			});

@@ -2,6 +2,7 @@
 	IX.ns("Hualala.Account");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
+	var CMath = Hualala.Common.Math;
 	var CardListView = Hualala.Shop.CardListView;
 	var AccountListView = CardListView.subclass({
 		constructor : CardListView.prototype.constructor
@@ -65,8 +66,9 @@
 			self.on({
 				'updateSettleBalance' : function (mAccount) {
 					var settleUnitID = mAccount.get('settleUnitID'),
-						settleBalance = mAccount.get('settleBalance');
-					self.$container.find('[data-id=' + settleUnitID + '] .cash > strong').html(settleBalance);
+						settleBalance = mAccount.get('settleBalance'),
+						settleBalanceStr = CMath.prettyNumeric(CMath.standardPrice(settleBalance));
+					self.$container.find('[data-id=' + settleUnitID + '] .cash > strong').html(settleBalanceStr);
 				}
 			});
 		},
@@ -90,14 +92,15 @@
 					hasDefault = $XP(account, 'defaultAccount', 0) == 0 ? false : true,
 					bankInfo = Hualala.Common.mapBankInfo($XP(account, 'bankCode')),
 					bankAccountStr = Hualala.Common.codeMask($XP(account, 'bankAccount', ''), 0, -4),
-					settleBalance = parseFloat($XP(account, 'settleBalance', 0));
+					settleBalance = parseFloat($XP(account, 'settleBalance', 0)),
+					settleBalanceStr = CMath.prettyNumeric(CMath.standardPrice(settleBalance));
 
 				return {
 					settleUnitID : settleUnitID,
 					hasDefault : hasDefault,
 					settleUnitName : $XP(account, 'settleUnitName', ''),
 					disableWithdraw : settleBalance <= 0 ? 'disabled' : '',
-					settleBalance : settleBalance,
+					settleBalance : settleBalanceStr,
 					bankIcon : $XP(bankInfo, 'icon_16', ''),
 					bankComName : $XP(bankInfo, 'name', ''),
 					bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
@@ -681,14 +684,14 @@
 			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', ''), clz : 'text'};
 		},
 		mapCashData : function (s) {
-			return {text : Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(s)), value : s, clz : 'number'};
+			return {text : CMath.prettyNumeric(CMath.standardPrice(s)), value : s, clz : 'number'};
 		},
 		mapTransChanged : function (r) {
 			var transAmount = $XP(r, 'transAmount', 0),
 				transSalesCommission = $XP(r, 'transSalesCommission', 0),
 				transPoundage = $XP(r, 'transPoundage', 0),
-				transChanged = Hualala.Common.Math.sub(transAmount, transSalesCommission, transPoundage);
-			return {value : transChanged, text : Hualala.Common.Math.prettyNumeric(transChanged), clz : 'number'};
+				transChanged = CMath.sub(transAmount, transSalesCommission, transPoundage);
+			return {value : transChanged, text : CMath.prettyNumeric(transChanged), clz : 'number'};
 		},
 		mapColsRenderData : function (row) {
 			var self = this;
@@ -718,7 +721,7 @@
 						break;
 					case 'transactionCost':
 						var transSalesCommission = $XP(row, 'transSalesCommission', 0), transPoundage = $XP(row, 'transPoundage', 0);
-						var transactionCost = Hualala.Common.Math.add(transSalesCommission, transPoundage);
+						var transactionCost = CMath.add(transSalesCommission, transPoundage);
 						r = self.mapCashData(transactionCost);
 						break;
 					case 'transChanged':

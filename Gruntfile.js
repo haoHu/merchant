@@ -29,7 +29,7 @@ module.exports = function (grunt) {
 			combine : {
 				files : {
 					"<%= pkg.destPath.cssPath %>/bootstrap.min.css" : ["<%= pkg.srcPath.jsPath %>/dep/bootstrap/css/bootstrap.css"],
-					"<%= pkg.destPath.cssPath %>/deplib.min.css" : ["<%= pkg.srcPath.jsPath %>/datepicker/css/datetimepicker.css", "<%= pkg.srcPath.jsPath %>/timepicker/css/timepicker.css", "<%= pkg.srcPath.jsPath %>/validator/css/validator.css","<%= pkg.srcPath.jsPath %>/dep/umeditor/themes/default/css/umeditor.css"]
+					"<%= pkg.destPath.cssPath %>/deplib.min.css" : ["<%= pkg.srcPath.jsPath %>/datepicker/css/datetimepicker.css", "<%= pkg.srcPath.jsPath %>/timepicker/css/timepicker.css", "<%= pkg.srcPath.jsPath %>/colorpicker/css/bootstrap-colorpicker.css", "<%= pkg.srcPath.jsPath %>/validator/css/validator.css","<%= pkg.srcPath.jsPath %>/dep/umeditor/themes/default/css/umeditor.css"]
 				}
 			}
 		},
@@ -88,6 +88,7 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/datepicker/datetimepicker.js",
 					"<%= pkg.srcPath.jsPath %>/datepicker/local/datetimepicker.zh-CN.js",
 					"<%= pkg.srcPath.jsPath %>/timepicker/timepicker.js",
+                    "<%= pkg.srcPath.jsPath %>/colorpicker/js/bootstrap-colorpicker.js",
 					"<%= pkg.srcPath.jsPath %>/validator/validator.js",
 					"<%= pkg.srcPath.jsPath %>/validator/local/validator.zh-CN.js",
                     "<%= pkg.srcPath.jsPath %>/dep/jquery/jquery.form.js",
@@ -129,7 +130,8 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.order.js",
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.user.js",
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.crm.js",
-                    "<%= pkg.srcPath.jsPath %>/tpl/tpl.weixin.js"
+                    "<%= pkg.srcPath.jsPath %>/tpl/tpl.weixin.js",
+                    "<%= pkg.srcPath.jsPath %>/tpl/tpl.mcm.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/tpl.js",
 				nonull : true
@@ -225,6 +227,35 @@ module.exports = function (grunt) {
                     "<%= pkg.srcPath.jsPath %>/weixin/text.js",
                     "<%= pkg.srcPath.jsPath %>/weixin/typedef.js",
                     "<%= pkg.srcPath.jsPath %>/weixin/weixin.init.js",
+
+                    // MCM Moudle
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.gift.model.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.gift.view.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.gift.controler.js",
+
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.query.model.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.query.view.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.query.controler.js",
+
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.mgr.view.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.gift.base.view.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.gift.rule.view.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.query.shop.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.event.base.view.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.event.rule.view.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.event.gift.view.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.pick.gift.view.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.event.open.view.js",
+
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.gift.detail.send.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.gift.detail.used.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.gift.detail.form.js",
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.gift.detail.js",
+
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.event.track.js",
+
+
+                    "<%= pkg.srcPath.jsPath %>/mcm/mcm.init.js",
 
 					// Merchant init
 					"<%= pkg.srcPath.jsPath %>/common/merchant.layout.js",
@@ -339,7 +370,7 @@ module.exports = function (grunt) {
 					{
 						expand : true,
 						cwd : "<%= pkg.srcPath.fontPath %>/",
-						src : ["*.*"],
+						src : ["**"],
 						dest : "<%= pkg.destPath.fontPath %>/",
 						filter : "isFile"
 
@@ -380,7 +411,7 @@ module.exports = function (grunt) {
 					{
 						expand : true,
 						cwd : "<%= pkg.srcPath.fontPath %>/",
-						src : ["*.*"],
+						src : ["**"],
 						dest : "<%= pkg.distribPath.fontPath %>/",
 						filter : "isFile"
 

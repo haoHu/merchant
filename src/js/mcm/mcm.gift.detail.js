@@ -209,7 +209,9 @@
 		},
 		mapLayoutRenderData : function (data) {
 			var self = this;
-			var giftData = $XP(data, 'records', [])[0];
+			var giftData = $XP(data, 'records', [])[0],
+				giftValue = $XP(giftData, 'giftValue', 0),
+				createTime = $XP(giftData, 'createTime', '');
 			var giftTypeSet = getGiftTypeSet($XP(giftData, 'giftType')),
 				navs = $XP(giftTypeSet, 'navs', []);
 			var ret = {};
@@ -218,11 +220,15 @@
 				label : $XP(giftData, 'giftValue', ''),
 				unit : $XP(giftTypeSet, 'unit', '')
 			};
+			createTime = (IX.isEmpty(createTime) || createTime == 0) ? '' : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(createTime), 'yyyy/MM/dd HH:mm');
 			ret = IX.inherit(giftData, {
 				card : card,
 				giftTypeLabel : $XP(giftTypeSet, 'label', ''),
 				giftTypeUnit : $XP(giftTypeSet, 'unit', ''),
-				infoLabelClz : 'col-sm-2',
+				giftValue : Hualala.Common.Math.prettyPrice(giftValue),
+				createTime : createTime,
+				infoLabelClz : 'col-sm-3',
+				infoTextClz : 'col-sm-7',
 				navs : self.mapTabNavData(navs),
 				grid : self.mapGiftStatisticGridData($XP(data, 'myGiftDataset.data', {}))
 			});

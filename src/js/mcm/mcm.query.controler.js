@@ -15,6 +15,10 @@
 			if (!this.container || !this.model || !this.view || !this.resultController) {
 				throw("QueryController init faild!");
 			}
+			this.container.data({
+				queryController : this,
+				resultController : this.resultController
+			});
 			this.init();
 		}
 	});

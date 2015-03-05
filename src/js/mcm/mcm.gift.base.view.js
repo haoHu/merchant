@@ -517,8 +517,8 @@
 			var curIdx = wizardModalView.$wizard.bsWizard('currentIndex'), 
 				cntID = wizardModalView.getTabContentIDByIndex(wizardModalView.$wizard.find('.wizard-nav'), curIdx),
 				stepView = wizardModalView.stepViewHT.get(cntID);
-			var accountID = wizardModalView.model.get('accountID');
-			if (!accountID && curIdx == 0) {
+			var giftItemID = wizardModalView.model.get('giftItemID');
+			if (!giftItemID && curIdx == 0) {
 				wizardModalView.modal.hide();
 			} else {
 				Hualala.UI.Confirm({

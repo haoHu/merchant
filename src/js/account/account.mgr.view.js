@@ -2,6 +2,7 @@
 	IX.ns("Hualala.Account");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
+	var CMath = Hualala.Common.Math;
 
 	var AccountActs = [
 		{clz : 'btn-success withdraw', act : 'withdraw', label : '提现'},
@@ -127,7 +128,7 @@
 			self.on({
 				'updateSettleBalance' : function (mAccount) {
 					var settleUnitID = mAccount.get('settleUnitID'),
-						settleBalance = Hualala.Common.Math.prettyNumeric(mAccount.get('settleBalance'));
+						settleBalance = CMath.prettyNumeric(CMath.standardPrice(mAccount.get('settleBalance')));
 					self.$container.find('[data-id=' + settleUnitID + '] .cash > strong').html(settleBalance);
 				}
 			});
@@ -189,6 +190,7 @@
 				bankInfo = Hualala.Common.mapBankInfo(model.get('bankCode')),
 				bankAccountStr = Hualala.Common.codeMask((model.get('bankAccount') || ''), 0, -4),
 				settleBalance = parseFloat(model.get('settleBalance') || 0),
+				settleBalanceStr =  CMath.prettyNumeric(CMath.standardPrice(settleBalance)),
 				shopCount = parseInt(model.get('shopCount') || 0),
 				disableWithdraw = settleBalance <= 0 ? 'disabled' : '';
 
@@ -198,7 +200,7 @@
 				hasDefault : hasDefault,
 				settleUnitName : model.get('settleUnitName') || '',
 				disableWithdraw : disableWithdraw,
-				settleBalance : settleBalance,
+				settleBalance : settleBalanceStr,
 				bankIcon : $XP(bankInfo, 'icon_16', ''),
 				bankComName : $XP(bankInfo, 'name', ''),
 				bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
@@ -937,7 +939,7 @@
 						unit = !IX.isEmpty(OrderPayFieldLabelLib[k]) && !IX.isEmpty(OrderPayFieldLabelLib[k]['unit']) && k != "foodAmount" ?
 							OrderPayFieldLabelLib[k]['unit'] : '';
 					if (k == "foodAmount") {
-						v = Hualala.Common.Math.prettyPrice(v);
+						v = CMath.prettyPrice(v);
 					}
 					if (k == 'foodCategoryName') {
 						foodCategoryName = v;
@@ -1160,7 +1162,7 @@
 			settleUnitDetail = IX.each(settleUnitDetail, {}, function (acc, el, k) {
 				var cashKeys = 'transAfterBalance,transAmount,transSalesCommission';
 				if (cashKeys.indexOf(k) >= 0) {
-					acc[k] = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.prettyPrice(el));
+					acc[k] = CMath.prettyNumeric(CMath.prettyPrice(el));
 				} else if (k == 'transType') {
 					acc = IX.inherit(acc, {
 						transType : el,
@@ -1174,7 +1176,7 @@
 			customerCard = IX.each(customerCard, {}, function (acc, el, k) {
 				var cashKeys = 'saveCashTotal,saveMoneyTotal,moneyBalance';
 				if (cashKeys.indexOf(k) >= 0) {
-					acc[k] = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.prettyPrice(el));
+					acc[k] = CMath.prettyNumeric(CMath.prettyPrice(el));
 				} else {
 					acc[k] = el;
 				}

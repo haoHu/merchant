@@ -135,7 +135,11 @@
 		["queryMCMGiftDetailUsedInfo", "/sysbase/queryPayUderGiftDetailUsingInfo.ajax", "", "POST"],
 		["giftDetailDonateGift", "/shop/donateGift.ajax", "", "POST"],
 		["giftDetailPayGiftOnline", "/sysbase/insertPayShopVoucherTrans.ajax", "", "POST"],
-		["getMCMEventTrack", "/crm/crmUserQuery.ajax", "", "POST"]
+		["getMCMEventTrack", "/crm/crmUserQuery.ajax", "", "POST"],
+        
+        ["getGroupInfo", "/shop/queryGroupInfoByID.ajax", "", "POST"],
+        ["setBrandLogo", "/shop/setGroupLOGO.ajax", "", "POST"]
+        
 
 	]);
 	Hualala.Global.commonCallServer = ajaxEngine.createCaller([
@@ -195,7 +199,9 @@
 
         "getMCMGifts", "deleteMCMGift", "createMCMGift", "editMCMGift", "getMCMEvents", "deleteMCMEvent", "switchMCMEvent",
 		"getMCMEventByID", "createEvent", "editEvent", "getMCMGiftDetail", "queryMCMGiftDetailGetWayInfo", "queryMCMGiftDetailUsedInfo",
-		"giftDetailDonateGift", "giftDetailPayGiftOnline", "getMCMEventTrack"
+		"giftDetailDonateGift", "giftDetailPayGiftOnline", "getMCMEventTrack",
+        
+        "getGroupInfo", "setBrandLogo"
 	]);
 
 	/*Login CallServer*/
@@ -603,6 +609,14 @@
 
 	Hualala.Global.getMCMEventTrack = function (params, cbFn) {
 		Hualala.Global.commonCallServer("getMCMEventTrack", params, cbFn);
+	};
+    
+    Hualala.Global.getGroupInfo = function (params, cbFn) {
+		Hualala.Global.commonCallServer("getGroupInfo", params, cbFn);
+	};
+
+	Hualala.Global.setBrandLogo = function (params, cbFn) {
+		Hualala.Global.commonCallServer("setBrandLogo", params, cbFn);
 	};
 
 

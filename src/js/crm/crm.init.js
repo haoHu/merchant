@@ -29,7 +29,7 @@
 			};
 		};
 		var $navbar = $body.find('.crm-subnav'),
-			$pageBody = $body.find('.crm-body').addClass('table-responsive');
+			$pageBody = $body.find('.crm-body');
 		$navbar.html(navTpl(mapNavRenderData()));
 	};
 

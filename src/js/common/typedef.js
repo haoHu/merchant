@@ -684,7 +684,7 @@
 		JoinTypes : [
 			{value : '', label : "不限"},
 			{value : '0', label : "未入围"},
-			{value : '0', label : "已入围"}
+			{value : '1', label : "已入围"}
 		]
 
 	};

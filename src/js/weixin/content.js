@@ -135,7 +135,7 @@
             W.createLinkSelector($selectWrap, $contentWrap, dataHolder, 
                 activeRes.resType, activeRes.resTypeContent.urlOrCity);
             
-            U.imgUpload($resForm.find('.btn'), function(rsp)
+            U.fileUpload($resForm.find('.btn'), function(rsp)
             {
                 activeRes.imgPath = rsp.url;
                 var i = $activeRes.index(),
@@ -143,7 +143,7 @@
                     replaceStr = (hwp ? '=' + (i == 0 ? Math.round(160 / hwp) + 'x' + 160 : '75x75' ) : '') + '$&',
                     imgUrl = imgHost + rsp.url.replace(/\.\w+$/, replaceStr) + '?quality=70';
                 $activeRes.find('img, .img').replaceWith($('<img>').attr('src', imgUrl));
-            });
+            }, {container: modal._.body});
             
             modal._.footer.find('.btn-ok').on('click', function()
             {
@@ -153,11 +153,21 @@
                     $resWrap.find('.res-mask').eq(1).click();
                     if(!checkResItem(activeRes, resType, $contentWrap)) return;
                 }
+                
                 var submitFunc = itemID ? updateCont : createCont,
                     _cont = $.extend({}, cont),
-                    resContent = { isMul: cont.resType, resources: resArr };
+                    _resArr = JSON.parse(JSON.stringify(resArr)),
+                    resContent = { isMul: cont.resType, resources: _resArr };
                 
-                _cont.resTitle = resArr[0].resTitle;
+                _.each(_resArr, function(res)
+                {
+                    res.resTitle = res.resTitle.replace(/[\\]/g, '\\\\').replace(/["']/g, '\\$&');
+                    
+                    if(resType == 0)
+                        res.digest = res.digest.replace(/[\\]/g, '\\\\').replace(/"/g, '\\$&');
+                });
+                
+                _cont.resTitle = _resArr[0].resTitle;
                 _cont.resContent = JSON.stringify(resContent);
                 _cont = _.pick(_cont, 'itemID', 'resTitle', 'resType', 'resContent');
                 submitFunc(_cont, cont, modal);
@@ -206,7 +216,7 @@
                 if(!checkResItem(activeRes, resType, $contentWrap)) return;
                 if($addSubRes.is('.disabled'))
                 {
-                    topTip({msg: '多图文最多只能添加8项！'});
+                    topTip({msg: '多图文最多只能添加' + maxMutilContSize + '项！'});
                     return;
                 }
                 var res = { resType: 1, resTypeContent: {} };
@@ -240,14 +250,9 @@
             C.loadData('createWeixinContent', _cont)
             .done(function(records)
             {
+                resetConts();
                 topTip({msg: '添加成功!', type: 'success'});
                 modal.hide();
-                if(!isLoaded) return resetConts();
-                
-                allConts.unshift(records[0]);
-                $cols.empty();
-                renderConts();
-                $noCont.hide();
             });
         }
         
@@ -344,11 +349,12 @@
                     page = data.page || {};
                 allConts.push.apply(allConts, records);
                 if(page.pageNo >= page.pageCount) isLoaded = true;
-                if(!records.length)
+                if(!page.totalSize)
                 {
                     $noCont.show();
                     return;
                 }
+                $noCont.hide();
                 callback && callback(allConts.slice(index, index + size));
             })
             .always(function()

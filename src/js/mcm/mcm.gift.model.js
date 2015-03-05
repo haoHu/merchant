@@ -80,8 +80,8 @@
 			self.updatePagerParams(params);
 			self.callServer(self.getPagerParams(), function (res) {
 				if (res.resultcode == '000') {
-					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.pageNo'));
-					self.updatePagerParams($XP(res, 'data', {}));
+					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.page.pageNo'));
+					self.updatePagerParams($XP(res, 'data.page', {}));
 					// self.updateItemDataStore($XP(res, 'data', {}));
 				} else {
 					toptip({
@@ -129,7 +129,7 @@
 		bindEvent : function () {
 			var self = this;
 			self.on({
-				delete : function (params) {
+				deleteItem : function (params) {
 					var giftItemID = $XP(params, 'itemID');
 					var successFn = $XF(params, 'successFn'),
 						faildFn = $XF(params, 'faildFn');
@@ -233,7 +233,7 @@
 		bindEvent : function () {
 			var self = this;
 			self.on({
-				delete : function (params) {
+				deleteItem : function (params) {
 					var eventID = $XP(params, 'itemID');
 					var successFn = $XF(params, 'successFn'),
 						faildFn = $XF(params, 'faildFn');
@@ -253,6 +253,9 @@
 						faildFn = $XF(params, 'faildFn');
 					Hualala.Global.switchMCMEvent(post, function (res) {
 						if ($XP(res, 'resultcode') == '000') {
+							self.set({
+								isActive : $XP(post, 'isActive')
+							});
 							successFn(res);
 						} else {
 							faildFn(res);

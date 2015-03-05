@@ -1027,6 +1027,12 @@
                 resultmsg: '',
                 data: {
                     itemID: 63,
+                    logoImage: "group1/M00/00/C6/wKgCIVM5PJ2w9TcpAABu3oLN9LY618.png",
+                    cardBackgroundImage: "",
+                    cardBackgroundColor: "#990000",
+                    cardForegroundColor: "#ffcc00",
+                    onlineSaveMoneyRate: "0.0100",
+                    onlineSaveMoneySettleUnitID: "6",
                     serviceStartTime: "20140810",
                     serviceEndTime: "20150810",
                     isPointCanPay: "1",
@@ -1508,7 +1514,7 @@
                         "resourceVaule" : "1",
                         "serviceName" : ""
                     }
-                ],
+                ]
             },
             "resultcode" : "000",
             "resultmsg" : ""
@@ -2105,7 +2111,67 @@
    
     };
 
+    /**
+      * 查询集团信息
+      * @param {Object} params 参数{groupID?}
+	  * @param {Function} cbFn   回调函数{data, resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /shop/queryGroupInfoByID.ajax
+	  */
+	Hualala.Global.getGroupInfo = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+            "data" :
+            {
+                "records" : [
+                    {
+                        "action": "1",
+                        "actionTime": "20141210110037",
+                        "address": "",
+                        "brandLogoHWP": "0.0",
+                        "brandLogoImg": "group1/M00/00/99/wKgCH1J7CQ3Qgx5HAAFkZr-puE0934.jpg",
+                        "createTime": "20120321115954",
+                        "developerID": "0",
+                        "email": "",
+                        "emailStatus": "0",
+                        "fax": "",
+                        "groupID": "5",
+                        "groupLoginName": "doulaofang",
+                        "groupLoginPWD": "",
+                        "groupName": "豆捞坊",
+                        "groupSecret": "",
+                        "groupShortName": "豆捞坊有限公司",
+                        "isTestGroup": "0",
+                        "linkman": "",
+                        "mobile": "13671268301",
+                        "mobileStatus": "0",
+                        "netAddress": "",
+                        "postCode": "",
+                        "tel": "" 
+                    }
+                ]
+            },
+            "resultcode" : "000",
+            "resultmsg" : ""
+        };
+		fn(rsp);
+	};
     
+    /**
+      * 设置品牌logo
+      * @param {Object} params 参数{brandLogoImg, brandLogoHWP}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg}
+	  * @return {NULL}
+      * 服务调用 URL: /shop/setGroupLOGO.ajax
+	  */
+	Hualala.Global.setBrandLogo = function (params, cbFn) {
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+	};
 
      
 })();

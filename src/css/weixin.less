@@ -214,7 +214,7 @@
             li:hover { cursor: pointer; background: #fcf8e3; }
             li.current { background: #faebcc; }
             h3, h6 { line-height: 1.5; }
-            h3 { font-size: 18px; }
+            h3 { font-size: 18px; word-break: break-all; }
             h6 { color: #999; white-space: pre; }
         }
         .ad-loading, .alert { margin-top: 20px; }
@@ -223,8 +223,9 @@
     #adCont
     {
         .panel-head { margin-bottom: 12px; }
-        article { padding: 0 15px; }
-        .ad-title, .ad-sub-title { line-height: 1.5; }
+        .p-tip { font-size: 12px; color: #999; }
+        article { padding: 0 15px; } 
+        .ad-title, .ad-sub-title { line-height: 1.5; word-break: break-all; }
         .ad-title-input { margin: 20px 0 6px 0; }
         .ad-sub-title { color: #999; white-space: pre; margin-bottom: 12px; }
         .btn-wrap { margin-top: 15px; }
@@ -246,6 +247,7 @@
     background-color: #f8f8f8; 
     border-bottom: 4px solid #bce8f1; padding: 10px 15px;
     .pt { .d-ib; }
+    .p-tip { font-size: 12px; color: #999; }
     .btn { margin-left: 15px; }
 }
 .ph.has-btn { .pt { padding: 6px 0; } }

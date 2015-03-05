@@ -205,6 +205,11 @@
         
         function procPostMenuData()
         {
+            if(!menus.length)
+            {
+                topTip({msg: '还没有添加菜单！'});
+                return false;
+            }
             var _menus = JSON.parse(JSON.stringify(menus));
             for(var i = 0, menu; menu = _menus[i]; i++)
             {
@@ -212,7 +217,7 @@
                 var subMenus = menu.sub_button;
                 if(!menu.type && !subMenus.length)
                 {
-                    topTip({msg: '一级菜单“' + menu.name + '”没有设置动作，也没有添加二级菜单！', type: 'warning'});
+                    topTip({msg: '一级菜单“' + menu.name + '”没有设置动作，也没有添加二级菜单！'});
                     return false;
                 }
                 delete menu.id;
@@ -220,7 +225,7 @@
                 {
                     if(!sm.type)
                     {
-                        topTip({msg: '二级菜单“' + sm.name + '”没有设置动作！', type: 'warning'});
+                        topTip({msg: '二级菜单“' + sm.name + '”没有设置动作！'});
                         return false;
                     }
                     sm.sub_button = [];
@@ -315,11 +320,12 @@
                 return;
             }
             
-            var res = _.find(resources, {itemID: val}),
-                pres = _.pick(res, 'mpID', 'resTitle', );
+            var res = _.findWhere(resources, {itemID: val}),
+                pres = _.pick(res, 'resTitle');
+            pres.mpID = mpID;
             pres.resourceID = val;
             pres.resType = res.resType == 2 ? 'text' : 'news';
-            pres.pushEvent = "('CLICK')";
+            pres.pushEvent = '("CLICK")';
             loadData('WeixinMenuClick', pres, null, false)
             .done(function()
             {

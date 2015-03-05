@@ -20,12 +20,46 @@
 	.crm-schema-chart .ix-chart-canvas {width : 100%; height : auto; margin : 0 0 2rem; padding : .5rem; border : 1px solid #eee;}
 }
 
+@font-face 
+{ font-family: 'ocr_a_extendedregular';
+  src: url('../font/ocraext/ocraext.eot');
+  src: url('../font/ocraext/ocraext.eot?#iefix') format('embedded-opentype'),
+       url('../font/ocraext/ocraext.woff') format('woff'),
+       url('../font/ocraext/ocraext.svg#ocr_a_extendedregular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
 
-.crm-params .form-control-static
-{
-    .glyphicon { font-size: 18px; top: -1px }
-    .glyphicon-ok { color: #390 }
-	.glyphicon-minus { color: @x-font-color-lightGray }
+.crm-params {
+    .form-control-static
+    {
+        .glyphicon { font-size: 18px; top: -1px }
+        .glyphicon-ok { color: #390 }
+        .glyphicon-minus { color: @x-font-color-lightGray }
+    }
+    
+    .vip-card
+    { background: #900; background-size: 300px 188px;
+      font-size: 0; color: #fc0; overflow: hidden;
+      width: 300px; height: 188px; line-height: 188px;
+      position: relative; text-align: center;
+      border-radius: 6px;
+      img 
+      { vertical-align: middle;
+        max-height: 100%; max-width: 100%;
+      }
+      p
+      { position: absolute; top: 8px; left: 0; 
+        width: 100%; line-height: 1.5; .t-l;
+      }
+      span { margin: 0 12px; font-weight: bold; font-size: 14px; }
+      div
+      { position: absolute; bottom: 8px; left: 0; 
+        width: 100%; line-height: 1.5;
+        font: 14px 'ocr_a_extendedregular';
+      }
+    }
+    .vip-card-tip { width: 300px; color: #999; margin-top: 6px; }
 }
 #crmRechargeSetsTable td { .v-m; }
 

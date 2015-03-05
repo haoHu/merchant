@@ -20,6 +20,8 @@
 			if (type == 'section') {
 				var eventStartDate = self.model.get('eventStartDate') || '',
 					eventEndDate = self.model.get('eventEndDate') || '';
+				eventStartDate = (IX.isEmpty(eventStartDate) || eventStartDate == 0) ? '' : eventStartDate;
+				eventEndDate = (IX.isEmpty(eventEndDate) || eventEndDate == 0) ? '' : eventEndDate;
 				return IX.inherit(elCfg, {
 					min : IX.inherit($XP(elCfg, 'min'), {
 						value : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(eventStartDate), 'yyyy/MM/dd')
@@ -54,7 +56,7 @@
 					v = 0;
 				if (countCycleDays == 0 && partInTimes == 0) {
 					v = 0;
-				} else if (countCycleDays !== 0 && partInTimes != 0) {
+				} else if (countCycleDays != 0 && partInTimes != 0) {
 					v = 2;
 				} else {
 					v = 1;
@@ -180,7 +182,18 @@
 				var formParams = self.serializeForm();
 				IX.Debug.info("DEBUG: Event Wizard Form Params:");
 				IX.Debug.info(formParams);
-				self.model.emit(act, {
+				// self.model.emit(act, {
+				// 	params : formParams,
+				// 	failFn : function () {
+				// 		self.failFn.call(self);
+				// 	},
+				// 	successFn : function () {
+				// 		self.successFn.call(self);
+				// 		self.switchViewMode('edit');
+				// 		// self.parentView.modal.hide();
+				// 	}
+				// });
+				self.model.emit('editEvent', {
 					params : formParams,
 					failFn : function () {
 						self.failFn.call(self);

@@ -159,7 +159,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         if(status == 'success')
         {
             var url = json.url,
-                imageHWP = json.imageHWP || '';
+                imageHWP = json.imgHWP || '';
             ef.imagePath = url;
             if(imageHWP) ef.imageHWP = imageHWP;
             if(!window.FileReader)

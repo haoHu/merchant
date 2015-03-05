@@ -343,6 +343,10 @@
 
 	// 首页
 	var tpl_site_homepage = [
+        '<div id="brandLogo">',
+            '<img src="" alt="" width="64" height="64" />',
+            '<a href="javascript:;" class="btn btn-link">编辑logo图片</a>',
+        '</div>',
 		'<div class="home-page home-brick">',
 			'{{#each bricks}}',
 				'<div class="{{brickClz}}">',

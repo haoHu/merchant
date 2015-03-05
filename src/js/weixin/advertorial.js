@@ -24,8 +24,9 @@
         
         UM.delEditor('adEditor');
         var emotions = W.getEmotions(); dataHolder = {},
-            toolbar = W.extendUM(emotions, dataHolder),
-            adEditor = UM.getEditor('adEditor', { toolbar: ['source | undo redo | bold italic underline strikethrough | superscript subscript | forecolor backcolor | removeformat |',
+            toolbar = W.extendUM(emotions, dataHolder);
+        
+        var adEditor = UM.getEditor('adEditor', { toolbar: ['source | undo redo | bold italic underline strikethrough | superscript subscript | forecolor backcolor | removeformat |',
             'insertorderedlist insertunorderedlist | selectall cleardoc paragraph | fontfamily fontsize' ,
             '| justifyleft justifycenter justifyright justifyjustify |',
             'wxlink unlink | image video | map',

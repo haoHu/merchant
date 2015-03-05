@@ -81,7 +81,7 @@
 						successFn = $XF(params, 'successFn'),
 						faildFn = $XF(params, 'faildFn');
 					var itemModel = self.model.getRecordModelByID(id);
-					itemModel.emit('delete', {
+					itemModel.emit('deleteItem', {
 						itemID : key,
 						successFn : function (res) {
 							successFn(res);

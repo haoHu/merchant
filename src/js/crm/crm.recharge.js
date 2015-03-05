@@ -106,6 +106,8 @@
         {
             if(!bv.validate().isValid()) return;
             var data = parseForm($editSet);
+            data.returnMoney = data.returnMoney || 0;
+            data.returnPoint = data.returnPoint || 0;
             if(!isAdd) data.saveMoneySetID = setId;
             G[isAdd ? 'addCrmRechargeSet' : 'updateCrmRechargeSet'](data, function(rsp)
             {

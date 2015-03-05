@@ -268,6 +268,54 @@
 			}
 			
 		});
+        
+        var G = Hualala.Global,
+            C = Hualala.Common,
+            U = Hualala.UI;
+        var $brand = $bricks.filter('#brandLogo'),
+            $img = $brand.find('img').attr('src', G.IMAGE_ROOT + '/brand_logo.png');
+        var brandLogoImg = '';
+        C.loadData('getGroupInfo').done(function(records)
+        {
+            var logoPath = records[0].brandLogoImg;
+            if(!logoPath) return;
+            brandLogoImg = logoPath;
+            var logoUrl = C.getSourceImage(logoPath, {width: 128, height: 128});
+            $img.attr('src', logoUrl);
+        });
+        
+        $brand.find('a').on('click', function()
+        {
+            var logoPath = '';
+            var $dialog = U.uploadImg({
+                    onSuccess: function (imgPath){ logoPath = imgPath; },
+                    minSize: '128',
+                    saveSize: '512'
+                });
+            
+            $dialog.find('.modal-content').append('<div class="modal-footer"><button class="btn btn-warning btn-ok">保存</button></div>');
+            
+            $dialog.on('click', '.btn-ok', function()
+            {
+                if(!logoPath)
+                {
+                    U.TopTip({msg: '请先上传logo图片！'});
+                    return;
+                }
+                
+                var params = {brandLogoImg: logoPath, brandLogoHWP: 1};
+                C.loadData('setBrandLogo', params, null, false)
+                .done(function()
+                {
+                    U.TopTip({msg: '保存成功！', type: 'success'});
+                    brandLogoImg = logoPath;
+                    var logoUrl = C.getSourceImage(brandLogoImg, {width: 128, height: 128});
+                    $img.attr('src', logoUrl);
+                    $dialog.modal('hide');
+                });
+            });
+            
+        });
 	}
 
 	function initLoginPage (pageType, params) {
