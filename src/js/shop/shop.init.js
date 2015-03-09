@@ -5,6 +5,64 @@
         operationMode: { '0': '正餐', '1': '快餐', '2': '美食广场' }
     };
     
+    Hualala.Shop.resetAngentPwd = function(shopID)
+    {
+        var resetPwdTpl = Handlebars.compile(Hualala.TplLib.get('tpl_set_shop_client_pwd'));
+        var $resetPwdForm = $(resetPwdTpl({shopID: shopID}));
+        //弹出重置代理程序密码模态框
+        var modal = new Hualala.UI.ModalDialog({
+            id: 'resetCltPwdDlg',
+            title: '重置代理程序密码',
+            html: $resetPwdForm,
+            sizeCls: 'modal-sm',
+            hideCloseBtn: false
+        }).show();
+        var $feedback = $resetPwdForm.find('.has-feedback'),
+            $feedbackIcon = $feedback.find('.form-control-feedback'),
+            $errMsg = $feedback.find('small');
+        var $pwd = $resetPwdForm.find('#shopClinetPwd').data('validate', false).on('blur', function ()
+        {//验证密码输入
+            var $this = $(this),
+                l = $.trim($this.val()).length;
+            $this.data('validate', false);
+            if(!l)
+                $errMsg.text('密码不能为空');
+            else if(l < 6 || l > 16)
+                $errMsg.text('密码长度必须在6到16个字符之间');
+            else
+            {
+                $errMsg.text('');
+                $this.data('validate', true);
+            }
+                
+            var isValid = $this.data('validate');
+            $feedback.toggleClass('has-success', isValid).toggleClass('has-error', !isValid);
+            $feedbackIcon.toggleClass('glyphicon-ok', isValid).toggleClass('glyphicon-remove', !isValid);
+        });
+        //密码/明文切换
+        $resetPwdForm.find('#showPwd').change(function()
+        {
+            $pwd.attr('type', this.checked ? 'text' : 'password');
+        });
+        //提交密码重设请求
+        modal._.footer.find('.btn-ok').on('click', function ()
+        {
+            if(!$pwd.trigger('blur').data('validate')) return;
+            
+            Hualala.Global.setShopClientPwd({shopID: shopID, hLLAgentLoginPWD: $pwd.val()}, function (rsp)
+            {
+                if(rsp.resultcode != '000')
+                {
+                    rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                modal.hide();
+                Hualala.UI.TopTip({msg: '重置代理程序密码成功！', type: 'success'});
+            });
+            
+        });
+    }
+    
     /**
 	  * 渲染店铺详情页头部
 	  * @param {Object | String} shopInfo 店铺ID或者店铺详情信息对象
@@ -53,61 +111,7 @@
             //重置代理程序密码
             $shopInfoHead.find('#resetPwd').on('click', function ()
             {
-                var resetPwdTpl = Handlebars.compile(Hualala.TplLib.get('tpl_set_shop_client_pwd'));
-                var $resetPwdForm = $(resetPwdTpl(shopInfo));
-                //弹出重置代理程序密码模态框
-                var modal = new Hualala.UI.ModalDialog({
-                    id: 'resetCltPwdDlg',
-                    title: '重置代理程序密码',
-                    html: $resetPwdForm,
-                    sizeCls: 'modal-sm',
-                    hideCloseBtn: false
-                }).show();
-                var $feedback = $resetPwdForm.find('.has-feedback'),
-                    $feedbackIcon = $feedback.find('.form-control-feedback'),
-                    $errMsg = $feedback.find('small');
-                var $pwd = $resetPwdForm.find('#shopClinetPwd').data('validate', false).on('blur', function ()
-                {//验证密码输入
-                    var $this = $(this),
-                        l = $.trim($this.val()).length;
-                    $this.data('validate', false);
-                    if(!l)
-                        $errMsg.text('密码不能为空');
-                    else if(l < 6 || l > 16)
-                        $errMsg.text('密码长度必须在6到16个字符之间');
-                    else
-                    {
-                        $errMsg.text('');
-                        $this.data('validate', true);
-                    }
-                        
-                    var isValid = $this.data('validate');
-                    $feedback.toggleClass('has-success', isValid).toggleClass('has-error', !isValid);
-                    $feedbackIcon.toggleClass('glyphicon-ok', isValid).toggleClass('glyphicon-remove', !isValid);
-                });
-                //密码/明文切换
-                $resetPwdForm.find('#showPwd').change(function()
-                {
-                    $pwd.attr('type', this.checked ? 'text' : 'password');
-                });
-                //提交密码重设请求
-                modal._.footer.find('.btn-ok').on('click', function ()
-                {
-                    if(!$pwd.trigger('blur').data('validate')) return;
-                    
-                    Hualala.Global.setShopClientPwd({shopID: shopInfo.shopID, hLLAgentLoginPWD: $pwd.val()}, function (rsp)
-                    {
-                        if(rsp.resultcode != '000')
-                        {
-                            rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
-                            return;
-                        }
-                        modal.hide();
-                        Hualala.UI.TopTip({msg: '重置代理程序密码成功！', type: 'success'});
-                    });
-                    
-                });
-                
+                Hualala.Shop.resetAngentPwd(shopInfo.shopID);
             });
             //执行回调函数
             callback && callback($shopInfoHead);

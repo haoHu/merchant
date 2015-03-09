@@ -10,7 +10,7 @@
 		{name : 'user', title : '权限', label : '用户•权限', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-lock'},
         {name : 'weixin', title : '微信', label : '网络餐厅•营销', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-weixin'},
 		{name : 'crm', title : '会员', label : '概览•报表•参数•营销', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-crm'},
-		{name : 'mcm', title : '营销', label : '礼品•营销活动', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-crm'}//,
+		{name : 'mcm', title : '营销', label : '礼品•营销活动', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-mcm'}//,
         
         /*{brickClz : 'home-brick-md-3'},
         {brickClz : 'home-brick-md-1'},

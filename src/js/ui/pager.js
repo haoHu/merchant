@@ -27,7 +27,7 @@
 			$self.data('settings') || {}, 
 			options || {});
         
-        this.toggleClass('hidden', settings.total <= 1);
+        this[settings.total <= 1 ? 'hide' : 'show']();
 		if (settings.total <= 1 ) {
 			return this;
 		}

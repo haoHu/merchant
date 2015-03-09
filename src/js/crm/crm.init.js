@@ -7,7 +7,7 @@
 		var navTpl = Handlebars.compile(Hualala.TplLib.get('tpl_order_subnav'));
 		Handlebars.registerPartial("toggle", Hualala.TplLib.get('tpl_site_navbarToggle'));
 		$body.empty();
-		$body.html('<div class="crm-subnav clearfix" /><div class="crm-body" ><div class="crm-query-box"></div><div class="crm-result-box"></div></div>');
+		$body.html('<div class="crm-subnav clearfix" /><div class="crm-body table-responsive" ><div class="crm-query-box"></div><div class="crm-result-box"></div></div>');
 		var mapNavRenderData = function () {
 			var navs = _.map(subNavCfg, function (v) {
 				var params = _.map($XP(v, 'pkeys', []), function (v) {

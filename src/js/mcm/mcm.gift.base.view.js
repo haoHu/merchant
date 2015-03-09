@@ -487,6 +487,8 @@
 		if (!nextView) {
 			nIdx == 1 && HMCM.initGiftRuleStep.call(wizardModalView, $nextCnt, nextID, wizardModalView.mode);
 			nIdx == 0 && HMCM.initGiftBaseInfoStep.call(wizardModalView, $nextCnt, nextID, wizardModalView.mode);
+		} else {
+			nIdx == 1 && nextView.emit('reRender');
 		}
 		return true;
 	};

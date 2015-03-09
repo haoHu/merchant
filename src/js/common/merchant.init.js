@@ -35,7 +35,7 @@
 				return;	
 			}
 			loadSession($XP(appData, 'data', {}), function () {
-				log("Merchant Sys INIT DONE in (ms): " + (IX.getTimeInMS() - tick));
+				//log("Merchant Sys INIT DONE in (ms): " + (IX.getTimeInMS() - tick));
 				cbFn();
 			});
 		}, function () {
@@ -83,7 +83,7 @@
 			// });
 
 			Hualala.PageRoute.start(function (pageName, pageParams, pageInitFn) {
-				var hasNoNavPages = 'main,pcclient,about,contact,login';
+				var hasNoNavPages = 'main,pcclient,about,contact,login,boss';
 				var commonPages = _.filter(hasNoNavPages.split(','), function (v) {return v != 'main'}).join(',');
 				if (commonPages.indexOf(pageName) >= 0) {
 					Hualala.Common.initPageLayout({}, pageName);

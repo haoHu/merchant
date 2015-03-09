@@ -497,7 +497,7 @@
 	var tpl_user_mgr_layout = [
 		'<div class="panel-group" id="{{panelGrpID}}" role="tablist" aria-multiselectable="true">',
 			'{{#each panels}}',
-				'<div class="panel panel-default">',
+				'<div class="panel panel-default {{hidden}}">',
 					'<div class="panel-heading">',
                         '<h4 class="panel-title">',
                             '<a data-toggle="collapse" data-parent="#{{../panelGrpID}}" href="#{{id}}" aria-expande="{{expanded}}" aria-controls="{{id}}">',

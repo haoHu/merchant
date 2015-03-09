@@ -131,7 +131,8 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.user.js",
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.crm.js",
                     "<%= pkg.srcPath.jsPath %>/tpl/tpl.weixin.js",
-                    "<%= pkg.srcPath.jsPath %>/tpl/tpl.mcm.js"
+                    "<%= pkg.srcPath.jsPath %>/tpl/tpl.mcm.js",
+                    "<%= pkg.srcPath.jsPath %>/tpl/tpl.agent.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/tpl.js",
 				nonull : true
@@ -256,6 +257,9 @@ module.exports = function (grunt) {
 
 
                     "<%= pkg.srcPath.jsPath %>/mcm/mcm.init.js",
+                    
+                    // Agent Moudle
+                    "<%= pkg.srcPath.jsPath %>/agent/agent.js",
 
 					// Merchant init
 					"<%= pkg.srcPath.jsPath %>/common/merchant.layout.js",

@@ -400,6 +400,12 @@
 			name : "pcclient", path : "/#download", reg : /download$/, bodyClz : "",
 			PageInitiator : "Hualala.Common.PCClientDownloadInit", parentName : "main", label : "代理程序下载"
 		},
+        
+        // 老板通下载页面
+		{
+			name : "boss", path : "/#boss", reg : /boss$/, bodyClz : "",
+			PageInitiator : "Hualala.Common.BossClientDownloadInit", parentName : "main", label : "老板通下载"
+		},
 
 		// 关于商户中心
 		{

@@ -63,7 +63,43 @@
 			} else {
 				this.formKeys = [];
 			}
-			
+			this.on({
+				reRender : function () {
+					var self = this,
+						giftType = self.model.get('giftType'); 
+					if (giftType == 10) {
+						this.formKeys = GiftRuleFormKeys;
+					} else {
+						this.formKeys = [];
+					}
+					if (self.container.find('.wizard-step-form :text').length > 0) {
+						self.emit('switchGiftRuleForm');
+					} else {
+						self.renderForm();
+						self.initUIComponents();
+						self.bindEvent();
+					}
+				},
+				switchGiftRuleForm : function () {
+					var self = this,
+						giftType = self.model.get('giftType');
+					var $alertWarning = self.container.find('.alert-warning');
+					var $form = self.container.find('.wizard-step-form');
+					var alertMsg = giftType == 40 ? '顾客在获取会员充值类礼品后，将直接充入其会员储值余额账户中！' 
+						: (giftType == 42 ? '顾客在获取会员积分类礼品后，将直接充入其会员积分余额账户中！' : '');
+					if ($alertWarning.length == 0) {
+						$alertWarning = $('<p class="alert alert-warning alert-gift-rule"></p>');
+						self.container.append($alertWarning);
+					}
+					if (giftType == 10) {
+						$alertWarning.html(alertMsg).hide();
+						$form.show();
+					} else {
+						$alertWarning.html(alertMsg).show();
+						$form.hide();
+					}
+				}
+			}, this);
 		},
 		initUIComponents : function () {
 			var self = this,
@@ -93,11 +129,17 @@
 					items : renderData
 				});
 			self.container.html(htm);
-			if (giftType == 40) {
-				self.container.append('<p class="alert alert-warning">顾客在获取会员充值类礼品后，将直接充入其会员储值余额账户中！</p>');
-			} else if (giftType == 42) {
-				self.container.append('<p class="alert alert-warning">顾客在获取会员积分类礼品后，将直接充入其会员积分余额账户中！</p>');
-			}
+			self.emit('switchGiftRuleForm');
+			// var $form = self.container.find('.wizard-step-form');
+			// if (giftType == 40) {
+			// 	$form.hide();
+			// 	self.container.append('<p class="alert alert-warning">顾客在获取会员充值类礼品后，将直接充入其会员储值余额账户中！</p>');
+			// } else if (giftType == 42) {
+			// 	$form.hide();
+			// 	self.container.append('<p class="alert alert-warning">顾客在获取会员积分类礼品后，将直接充入其会员积分余额账户中！</p>');
+			// } else {
+			// 	$form.show();
+			// }
 			
 		},
 		bindEvent : function () {

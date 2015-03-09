@@ -1171,9 +1171,14 @@
 		},
 		mapLayoutRenderData : function () {
 			var self = this;
+			var loginName = $XP(Hualala.getSessionUser(), 'loginName', '');
 			var data = _.map(PanelGroupCfg, function (el) {
-				var id = $XP(el, 'id');
+				var id = $XP(el, 'id'), c = '';
+				if (id == 'bind_mobile' && loginName == 'admin') {
+					c = 'hidden';
+				}
 				return IX.inherit(el, {
+					hidden : c,
 					panelClz : id == self.curPanelName ? 'in' : '',
 					expanded : id == self.curPanelName ? 'true' : ''
 				});
