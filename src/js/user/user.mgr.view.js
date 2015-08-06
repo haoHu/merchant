@@ -8,7 +8,7 @@
 		loginName : {
 			type : "text",
 			label : "账号名称",
-			mode : "readonly",
+			mode : "disabled",
 			defaultVal : "",
 			prefix : '<span class="glyphicon glyphicon-user"></span>',
 			validCfg : {
@@ -21,9 +21,13 @@
 						max : 50,
 						message : "账号名称长度在3-50个字符之间"
 					},
-					loginName : {
-						message : "账号名称只能包含数字、英文字母和下划线(_)"
+					regexp: {
+						regexp: /^[a-zA-Z0-9]{1,}$/,
+						message: '账号名称只能包含数字和英文字母'
 					}
+					//loginName : {
+					//	message : "账号名称只能包含数字、英文字母和下划线(_)"
+					//}
 				}
 			}
 		},

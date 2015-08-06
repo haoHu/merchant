@@ -514,7 +514,8 @@
             $tpl = $(tpl({swfSrc: swfSrc, args: args}));
         
         var $dialog = $tpl.appendTo('body')
-            .modal({backdrop : 'static', keyboard: false});
+            .modal({backdrop : 'static', keyboard: false})
+            .on('hidden.bs.modal', function () { $(this).remove(); });
         
         opts.onConcel = opts.onConcel || function () { $dialog.modal('hide'); };
         if(typeof opts.onBefore == 'function') opts.onBefore($dialog);
@@ -543,87 +544,128 @@
         };
         window.Head_Pic_Cancel = function(swfId) { opts.onConcel($dialog); };
         window.uploadStart = function(swfId) { opts.onStart(); };
-        
+        return $dialog;
     }
     /**
-	 * 加载等待模态窗 
+	 * 文件上传组件
 	 * @param {jQuery Object} $elem 点击此元素会执行上传动作
+            若要兼容 IE<=8，elem须是label元素
 	 * @param {Function} onSuccess 上传成功回调函数
 	 * @param {Object} options 配置参数 {
                 action: form的action属性的值 '/imageUpload.action',
                 inputFileName: file控件的名称 'myFile',
                 accept: file控件accept 'image/gif,image/jpeg,image/png,image/jpg,image/bmp',
-                dataType: 相当于$.ajsx的dataType 'json'
-                onFail: 上传失败回调函数
-                onProgress: 上传进行中回调函数
+                dataType: 相当于$.ajsx的dataType 'json',
+                container: 承载file控件的form所在的容器 'body',
+                noUploading: $elem 是否无“上传中”的状态提示 false,
+                onBefore: 选择文件后，执行上传动作之前的回调函数，
+                          如果返回false，则需要手动调用upload()执行上传动作,
+                onFail: 上传失败回调函数,
+                onProgress: 上传进行中回调函数,
+                onAlways: 上传动作完成的回调函数
             }
+        @return {Object} {
+            upload: Function 类型，此方法用于执行上传动作
+            $form: jQuery 对象，承载上传file控件的 form
+        }
 	 */
-    function imgUpload($elem, onSuccess, options)
+    function fileUpload($elem, onSuccess, options)
     {
+        var isBtn = $elem.is('.btn'), isLabel = $elem.is('label');
         var defaults = {
+                formId: 'hllFileForm',
                 action: '/imageUpload.action',
                 inputFileName: 'myFile',
                 accept: 'image/gif,image/jpeg,image/png,image/jpg,image/bmp',
-                dataType: 'json'
+                dataType: 'json',
+                container: 'body',
+                noUploading: false,
+                onProgress: function(){}
             },
             cfg = $.extend({}, defaults, options);
-            
-        var $form = $('<form method="post" enctype="multipart/form-data">')
+
+        var $_form = $('#' + cfg.formId);
+        var $form = $_form[0] ? $_form : 
+                $('<form method="post" enctype="multipart/form-data"></form>')
+                .attr('id', cfg.formId)
                 .attr('action', cfg.action);
-                
-        var isBtn = $elem.is('button');
+        
         if(isBtn) $elem.attr('data-uploading-text', '上传中...');
+        if(isLabel)
+        {
+            $elem.attr('for', cfg.inputFileName);
+            $form.attr('style', 'width: 0; height: 0; overflow: hidden')
+            .appendTo(cfg.container);
+        }
+        
+        function onFail(rsp, $form, $elem)
+        {
+            TopTip({msg: '上传失败！', type: 'danger'});
+            cfg.onFail && cfg.onFail(rsp, $form, $elem);
+        }
+        
+        cfg.onBefore = cfg.onBefore || function($elem)
+        {
+            if(isBtn && !cfg.noUploading) $elem.attr('disabled', 'disabled').button('uploading'); 
+        }
+        
+        cfg.onAlways = cfg.onAlways || function(rsp, $form, $elem)
+        {
+            if(isBtn && !cfg.noUploading) setTimeout(function()
+            {
+                $elem.removeAttr('disabled').button('reset');
+            }, 1000);
+        }
+        
+        function upload()
+        {
+            $form.ajaxSubmit({
+                dataType: cfg.dataType,
+                uploadProgress: cfg.onProgress
+            }).data('jqxhr').done(function(rsp)
+            {
+                if(typeof rsp == 'string') rsp = $.parseJSON(rsp);
+                if(rsp.status != 'success')
+                {
+                    onFail(rsp, $form, $elem);
+                    return;
+                }
+                // rsp = { url, imgHWP, imgWidth, imgHeight, status, resultMsg }
+                setTimeout(function()
+                {
+                    TopTip({msg: '上传成功！', type: 'success'}); 
+                }, 1000);
+                onSuccess && onSuccess(rsp, $form, $elem);
+            })
+            .fail(function(rsp){ onFail(rsp, $form, $elem); })
+            .always(function(rsp){ cfg.onAlways(rsp, $form, $elem); });
+        }
         
         $elem.click(function()
         {
-            $('<input type="file">')
-            .attr('name', cfg.inputFileName)
-            .attr('accept', cfg.accept)
-            .appendTo($form.empty())
-            .change(function()
+            var $file = $('<input type="file">')
+                .attr('name', cfg.inputFileName)
+                .attr('accept', cfg.accept);
+                
+            if(isLabel) $file.attr('id', cfg.inputFileName);
+            
+            $file.appendTo($form.empty()).change(function()
             {
-                if(isBtn) $elem.attr('disabled', 'disabled').button('uploading');
-                var jqxhr = $form.ajaxSubmit({
-                    dataType: cfg.dataType,
-                    uploadProgress: cfg.onProgress || function(){}
-                }).data('jqxhr');
-                jqxhr.done(function(rsp)
-                {
-                    if(rsp.status == 'success')
-                    {
-                        setTimeout(function()
-                        {
-                            TopTip({msg: '上传成功！', type: 'success'}); 
-                        }, 1000);
-                        onSuccess && onSuccess(rsp);
-                    }
-                    else
-                    {
-                        TopTip({msg: '上传失败！', type: 'danger'});
-                        cfg.onFail && cfg.onFail(rsp);
-                    }
-                })
-                .fail(function(rsp)
-                {
-                    TopTip({msg: '上传失败！', type: 'danger'});
-                    cfg.onFail && cfg.onFail(rsp);
-                })
-                .always(function()
-                {
-                    if(isBtn)
-                        setTimeout(function()
-                        {
-                            $elem.removeAttr('disabled').button('reset');
-                        }, 1000);
-                });
-            })
-            .click();
+                if(cfg.onBefore($elem, $file, $form, cfg) === false) return;
+                
+                upload();
+            });
+            
+            if(!isLabel) $file.click();
         });
+        
+        return {upload: upload, $form: $form};
     }
     
     function fillSelect($select, items, k, t, dk, dt)
     {
         var options = [];
+        var optgroup = [];
         if(dk !== false && $.isArray(items))
         {
             items = items.slice();
@@ -633,12 +675,21 @@
             items.unshift(firstItem);
         }
         
-        if($.isArray(items))
-            for(var i = 0, item; item = items[i++];)
-                options.push($('<option>').val(item[k]).text(item[t]));
-        else if($.isPlainObject(items))
+        if($.isArray(items)) {
+            for(var i = 0, j = 0, item; item = items[i++];){
+                if (k == 'value' && item[k] == '0') {
+                    optgroup.push($('<optgroup>').attr('label', item[t]).html(options));
+                    j++;
+                    options = [];
+                } else {
+                    options.push($('<option>').val(item[k]).text(item[t]));
+                }
+            }
+            if(optgroup.length > 0) options = optgroup;
+        } else if($.isPlainObject(items)) {
             for(var key in items)
                 options.push($('<option>').val(key).text(items[key]));
+        }
         
         return $select.html(options);
     };
@@ -682,11 +733,11 @@
                 allow_single_deselect : true,
                 getMatchedFn : getMatchedFn
             };
-        fillSelect($select, items, k, t, false);
+        if(!cfg.noFill) fillSelect($select, items, k, t, false);
         var obj = {};
         obj[k] = cv;
         cv = _.findWhere(items, obj) ? cv : items[0] ? items[0][k] : '';
-        cv && $select.val(cv);
+        if(cv && !cfg.noCurrent) $select.val(cv);
         return $select.chosen($.extend(opts, cfg || {}));
     };
     
@@ -720,6 +771,29 @@
         });
     }
 
+    function createEditor(editorId, toolbar)
+    {
+        if(!editorId) return;
+        toolbar = toolbar || ['source | undo redo | bold italic underline strikethrough | superscript subscript | forecolor backcolor | removeformat |',
+            'insertorderedlist insertunorderedlist | selectall cleardoc paragraph | fontfamily fontsize' ,
+            '| justifyleft justifycenter justifyright justifyjustify |',
+            'wxlink unlink | image video | map',
+            '| horizontal print preview', 'drafts'];
+        
+        UM.delEditor(editorId);
+        var editor = UM.getEditor(editorId, {toolbar: toolbar});
+        Hualala.UI.EditorList.push(editor);
+        return editor;
+    }
+
+    function clearEditors() {
+        Hualala.UI.EditorList = _.uniq(Hualala.UI.EditorList);
+        _.each(Hualala.UI.EditorList, function (editor) {
+            editor.destroy();
+        });
+        Hualala.UI.EditorList = [];
+    }
+
 	Hualala.UI.PopoverMsgTip = PopoverMsgTip;
 	Hualala.UI.TopTip = TopTip;
 	Hualala.UI.ModalDialog = ModalDialog;
@@ -730,10 +804,13 @@
 	Hualala.UI.LoadingModal = LoadingModal;
     
     Hualala.UI.uploadImg = uploadImg;
-    Hualala.UI.imgUpload = imgUpload;
+    Hualala.UI.fileUpload = fileUpload;
     Hualala.UI.fillSelect = fillSelect;
     Hualala.UI.createChosen = createChosen;
     Hualala.UI.createSchemaChosen = createSchemaChosen;
+    Hualala.UI.createEditor = createEditor;
+    Hualala.UI.clearEditors = clearEditors;
+    Hualala.UI.EditorList = [];
     
     
 })(jQuery, window);
@@ -1098,7 +1175,7 @@
 			$self.data('settings') || {}, 
 			options || {});
         
-        this.toggleClass('hidden', settings.total <= 1);
+        this[settings.total <= 1 ? 'hide' : 'show']();
 		if (settings.total <= 1 ) {
 			return this;
 		}

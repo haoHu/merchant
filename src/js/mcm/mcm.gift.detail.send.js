@@ -61,6 +61,13 @@
 		var self = this;
 		var r = {value : '', text : ''}, v = $XP(row, colKey, '');
 		var userInfo = $XP(row, 'userInfo', {});
+			// userInfo = !IX.isEmpty(userInfo) && IX.isString(userInfo) ? JSON.parse(userInfo) : {};
+			try {
+			  //userinfo有可能不是合法的JSON字符串，便会产生异常
+			  userInfo = !IX.isEmpty(userInfo) && IX.isString(userInfo) ? JSON.parse(userInfo) : {};
+			} catch (e) {
+			  userInfo = {};
+			}
 		var formatDateTimeValue = Hualala.Common.formatDateTimeValue;
 		switch(colKey) {
 			case "getWay":
@@ -75,7 +82,8 @@
 				break;
 			case "validUntilDate":
 				r.value = v;
-				r.text = IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd');
+				r.text=(IX.isEmpty(v) || v== 0) ? '' : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd')
+				// r.text = IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd');
 				break;
 			case "giftStatus":
 				v = getGiftStatusTypeSet(v);
@@ -83,7 +91,7 @@
 				r.text = $XP(v, 'label', '');
 				break;
 			case "userName":
-				r.value = r.text = $XP(userInfo, 'userName', '');
+				r.value = r.text = $XP(userInfo, 'userName')?$XP(userInfo, 'userName',''):$XP(userInfo, 'nickname','');
 				break;
 			case "userSex":
 				v = _.find(Hualala.TypeDef.GENDER, function (el) {

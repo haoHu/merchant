@@ -128,7 +128,8 @@
 				model : new Hualala.Order.OrderQueryResultModel({
 					callServer : Hualala.Global.queryOrderDuringDetail,
 					queryKeys : queryKeys,
-					initQueryParams : Hualala.Order.initQueryParams
+					initQueryParams : Hualala.Order.initQueryParams,
+					statisticKeys : Hualala.Order.QueryOrderDuringStatisticKeys
 				}),
 				view : new Hualala.Order.OrderQueryResultView({
 					mapResultRenderData : Hualala.Order.mapQueryOrderDuringRenderData,

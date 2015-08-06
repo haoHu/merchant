@@ -139,7 +139,7 @@
 			fileName = path.slice(lastSlash + 1),
 			suffix = '',
 			path = path.slice(0, lastSlash);
-		suffix = fileName.replace(/^(.*)\.(jpg|jpeg|png|gif|ico)/i, '$2').toLowerCase();
+		suffix = fileName.replace(/^(.*)\.(jpg|jpeg|png|gif|ico)/i, '$2');
 		fileName = fileName.replace(/^(.*)\.(jpg|jpeg|png|gif|ico)/i, '$1');
 
 		var w = $XP(settings, 'width', null), h = $XP(settings, 'height', null),
@@ -739,7 +739,25 @@
         return df.promise();
     }
     Hualala.Common.loadData = loadData;
-    
+
+    /*
+    处理textarea空行问题
+    参数：string
+    返回 string
+    */
+    //编码textarea的内容
+    function encodeTextEnter(text) {
+        if (!text || typeof text != 'string') return text;
+        return text.trim().replace(/[\n]/g, '<br/>');
+    }
+    Hualala.Common.encodeTextEnter = encodeTextEnter;
+    //解码textarea的内容
+    function decodeTextEnter(text) {
+        if (!text) return text;
+        return text.replace(/<br\/>/g, '\n');
+    }
+    Hualala.Common.decodeTextEnter = decodeTextEnter;
+
 })(jQuery);
 
 

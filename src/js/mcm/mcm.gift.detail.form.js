@@ -24,6 +24,21 @@
 					},
 					mobile : {
 						message : "请输入正确的手机号"
+					},
+					ajaxValid : {
+						api : "queryUserBaseInfoByMobile",
+						name : 'regMobile',
+						data : {
+							regMobileStatus : 1
+						},
+						cbFn : function (res, $field) {
+							if (res.resultcode == '000') {
+								$field.data({
+									userBaseInfo : $XP(res, 'data.records')[0] || {}
+								});
+							}
+						},
+						message : "该手机号未注册为会员"
 					}
 				}
 			}
@@ -38,13 +53,13 @@
 						message : "请输入赠送张数"
 					},
 					integer : {
-						message : "请输入正确的赠送张数"
+						message : "赠送张数必须为整数"
 					},
 					between : {
 						inclusive : true,
 						min : 1,
-						max : 100000,
-						message : "请输入大于1到100000之间的整数"
+						max : 10,
+						message : "赠送张数为1到10之间的整数"
 					}
 				}
 			}
@@ -155,6 +170,11 @@
 					},
 					numeric : {
 						message : "请输数字"
+					},
+					greaterThan : {
+						inclusive : true,
+						value : 0,
+						message : "请输入大于等于0的数"
 					},
 					callback : {
 						message : "请输入正确格式的单价",
@@ -297,8 +317,9 @@
 			return IX.inherit(elCfg, {
 				id : $XP(elCfg, 'id', '') + '_' + IX.id().replaceAll('ix', ''),
 				value : key == 'giftItemID' ? $XP(parentView, 'giftItemID', '') : $XP(elCfg, 'defaultVal', ''),
+				validCfg : $XP(elCfg, 'validCfg', ''),
 				label : key == 'giftCount' ? '支付张数' : $XP(elCfg, 'label', '')
-			});
+			});  
 		});
 		return ret;
 	};
@@ -445,6 +466,7 @@
 			var $form = $(e.target),
 				bv = $form.data('bootstrapValidator');
 			var formParams = serializeDonateGiftForm.call(self);
+
 			IX.Debug.info("DEBUG: Donate Gift Form Params:");
 			IX.Debug.info(formParams);
 			Hualala.Global.giftDetailDonateGift(formParams, function (res) {
@@ -453,6 +475,33 @@
 						msg : "提交成功",
 						type : 'success'
 					});
+					
+					// TODO send sms
+					var $regMobile = $form.find('[name=regMobile]'),
+						userBaseInfo = $regMobile.data('userBaseInfo');
+					var chkSendSms = $XP(formParams, 'chkSendSms');
+					if (chkSendSms == 1) {
+						Hualala.Global.sendSMS({
+							userID : $XP(userBaseInfo, 'userID', ''),
+							userMobile : $XP(userBaseInfo, 'regMobile', ''),
+							content : $form.find('[name=smsContent]').val(),
+							giftItemID : $form.find('[name=giftItemID]').val()
+						}, function (res) {
+							if ($XP(res, 'resultcode', '000')) {
+								toptip({
+									msg : "发送完成",
+									type : 'success'
+								});
+							} else {
+								toptip({
+									msg : $XP(res, 'resultmsg', ''),
+									type : 'danger'
+								});
+							}
+
+							$regMobile.data('userBaseInfo', null);
+						});
+					}
 					self.initFormPanel();
 				} else {
 					toptip({
@@ -500,6 +549,7 @@
 			var $form = $(e.target),
 				bv = $form.data('bootstrapValidator');
 			var formParams = serializePayGiftForm.call(self);
+				formParams .validUntilDate= (formParams .validUntilDate|| '0').replace(/\//g, '');
 			
 			IX.Debug.info("DEBUG: Pay Gift Form Params:");
 			IX.Debug.info(formParams);
@@ -509,6 +559,32 @@
 						msg : "提交成功",
 						type : 'success'
 					});
+					// TODO send sms
+					var $regMobile = $form.find('[name=regMobile]'),
+						userBaseInfo = $regMobile.data('userBaseInfo');
+					var chkSendSms = $XP(formParams, 'chkSendSms');
+					if (chkSendSms == 1) {
+						Hualala.Global.sendSMS({
+							userID : $XP(userBaseInfo, 'userID', ''),
+							userMobile : $XP(userBaseInfo, 'regMobile', ''),
+							content : $form.find('[name=smsContent]').val(),
+							giftItemID : $form.find('[name=giftItemID]').val()
+						}, function (res) {
+							if ($XP(res, 'resultcode', '000')) {
+								toptip({
+									msg : "发送完成",
+									type : 'success'
+								});
+							} else {
+								toptip({
+									msg : $XP(res, 'resultmsg', ''),
+									type : 'danger'
+								});
+							}
+
+							$regMobile.data('userBaseInfo', null);
+						});
+					}
 					self.initFormPanel();
 				} else {
 					toptip({
@@ -668,7 +744,22 @@
 		_.each(formKeys, function (key) {
 			var elCfg = FormElsHT.get(key),
 				type = $XP(elCfg, 'type');
-			ret[key] = $XP(elCfg, 'validCfg', {});
+			ret[key] = key == 'giftCount' ? {
+				validators : {
+					notEmpty : {
+						message : "请输入支付张数"
+					},
+					integer : {
+						message : "支付张数为整数"
+					},
+					between : {
+						inclusive : true,
+						min : 1,
+						max : 10,
+						message : "支付张数为1到10之间的整数"
+					}
+				}
+			} : $XP(elCfg, 'validCfg', {});
 		});
 		return ret;
 	};
@@ -700,7 +791,12 @@
 			formEls = _.map(formKeys, function (key) {
 				var elCfg = FormElsHT.get(key),
 					type = $XP(elCfg, 'type');
-				ret[key] = $('[name=' + key + ']', self.$form).val();
+				if (type == 'switcher') {
+					ret[key] = $('[name=' + key + ']', self.$form).bootstrapSwitch('state') == true ? 1 : 0;
+				} else {
+					ret[key] = $('[name=' + key + ']', self.$form).val();
+				}
+				
 			});
 		return ret;
 	};
@@ -712,7 +808,11 @@
 			formEls = _.map(formKeys, function (key) {
 				var elCfg = FormElsHT.get(key),
 					type = $XP(elCfg, 'type');
-				ret[key] = $('[name=' + key + ']', self.$form).val();
+				if (type == 'switcher') {
+					ret[key] = $('[name=' + key + ']', self.$form).bootstrapSwitch('state') == true ? 1 : 0;
+				} else {
+					ret[key] = $('[name=' + key + ']', self.$form).val();
+				}
 			});
 		return ret;
 	};

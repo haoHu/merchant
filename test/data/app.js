@@ -75,9 +75,12 @@
 		{name : 'contact', url : '/#contact'},
 		{name : 'crm', url : '/#crm'},
 		{name : 'mcm', url : '/#mcm'},
+		{name : 'mcmEventMgr', url : '/#mcm/evts'},
+		{name : 'mcmGiftsMgr', url : '/#mcm/gifts'},
         {name : 'agent', url : '/#agent'},
         {name : 'boss', url : '/#boss'},
-        {name : 'weixin', url : '/#weixin'}
+        {name : 'weixin', url : '/#weixin'},
+        {name : 'saas', url : '/#saas'}
 	];
 	Test.PCClient = {
 		downloadClientAddress : '/pcclient/download/1.0.1-release.zip',

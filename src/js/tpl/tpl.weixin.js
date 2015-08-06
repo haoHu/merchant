@@ -2,6 +2,45 @@
 	IX.ns("Hualala");
 	var TplLib = Hualala.TplLib;
     
+    var tpl_wx_accounts = [
+        '<div class="well well-sm clearfix">',
+            '<button class="btn btn-warning fr">添加微信公众账号</button>',
+        '</div>',
+        '<div class="table-responsive">',
+            '<table class="table table-bordered table-striped table-hover crm-report-table dn">',
+                '<thead></thead><tbody></tbody>',
+            '</table>',
+        '</div>',
+        '<div id="pager" class="t-r"></div>',
+        '<div id="loading" class="alert t-c">加载中 . . .</div>',
+        '<div id="noTip" class="alert alert-warning t-c m-t dn">没有查询到相关结果！~</div>',
+    ].join('');
+    TplLib.register('tpl_wx_accounts', tpl_wx_accounts);
+    
+    var tpl_wx_accounts_edit = [
+	'<form class="form-horizontal form-feedback-out">',
+        '{{#each fields}}',
+		'<div class="form-group">',
+			'<label class="col-sm-3 control-label">{{title}}</label>',
+			'<div class="col-sm-7">',
+				'<input type="text" name="{{name}}" class="form-control" {{disabled}} value="{{value}}" />',
+			'</div>',
+		'</div>',
+        '{{/each}}',
+        '<div class="form-group">',
+			'<label class="col-sm-3 control-label">认证状态</label>',
+			'<div class="col-sm-7">',
+				'<label class="radio-inline">',
+                    '<input type="radio" name="oauth" value="0" checked /> 未认证',
+                '</label>',
+                '<label class="radio-inline">',
+                    '<input type="radio" name="oauth" value="1" /> 已认证',
+                '</label>',
+			'</div>',
+		'</div>',
+	'</form>'].join('');
+	TplLib.register('tpl_wx_accounts_edit', tpl_wx_accounts_edit);
+    
 	var tpl_wx_reply_query = [
     '<div class="well well-sm query-panel clearfix">',
         '<form class="d-i">',
@@ -191,7 +230,7 @@
         '</h4>',
         '<ul class="ad-ul"></ul>',
         '<div class="ad-loading t-c dn">加载中 . . .</div>',
-        '<div class="ad-pager t-r hidden"></div>',
+        '<div class="ad-pager t-r"></div>',
         '<div class="alert alert-warning dn">',
             '还没有软文，点击“+”按钮可添加软文。',
         '</div>',
@@ -249,12 +288,6 @@
                 '<input type="text" maxlength="64" class="form-control res-title" value="{{resTitle}}" />',
             '</div>',
         '</div>',
-        '<div class="form-group">',
-            '<label class="col-sm-3 control-label">图片</label>',
-            '<div class="col-sm-9">',
-                '<label class="btn btn-default">上传图片</label>',
-            '</div>',
-        '</div>',
         '<div class="form-group digest-wrap">',
             '<label class="col-sm-3 control-label">摘要</label>',
             '<div class="col-sm-9">',
@@ -268,6 +301,24 @@
         '<div class="form-group link-content-wrap">',
             '<label class="col-sm-3 control-label link-name"></label>',
             '<div class="col-sm-9 link-content"></div>',
+        '</div>',
+        '<div class="form-group">',
+            '<label class="col-sm-3 control-label">图片</label>',
+            '<div class="col-sm-9">',
+                '<label class="btn btn-default">上传图片</label>',
+            '</div>',
+        '</div>',
+        '<div class="form-group">',
+            '<label class="col-sm-3 control-label"></label>',
+                '<div class="col-sm-9">',
+                    '<span class="text-warning">',
+                        '{{#if isSingle}}',
+                        '封面图片建议尺寸：400像素*222像素',
+                        '{{else}}',
+                        '封面图片建议尺寸：360像素*240像素<br/>小图片建议尺寸：200像素 * 200像素',
+                        '{{/if}}',
+                    '</span>',
+                '</div>',
         '</div>',
     '</div>'].join('');
 	TplLib.register('tpl_wx_res_edit', tpl_wx_res_edit);

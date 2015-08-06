@@ -48,11 +48,11 @@
 				validators : {}
 			}
 		},
-		orderStatus : {
+		queryStatus : {
 			type : 'combo',
 			label : '状态',
 			defaultVal : '',
-			options : Hualala.TypeDef.OrderStatus,
+			options : Hualala.TypeDef.queryStatus,
 			validCfg : {
 				validators : {}
 			}
@@ -121,6 +121,15 @@
 				}
 			}
 		},
+		vipOrder : {
+			type : 'checkboxgrp',
+			label : '仅会员支付',
+			value : '1',
+			defaultVal : '1',
+			validCfg : {
+				validators : {}
+			}
+		},
 		userLoginMobile : {
 			type : 'text',
 			label : '手机号',
@@ -141,6 +150,15 @@
 				validators : {}
 			}
 		},
+		grouping : {
+			type : 'combo',
+			label : '查询条件',
+			defaultVal : '',
+			options : Hualala.TypeDef.foodCountStatus,
+			validCfg : {
+				validators : {}
+			}
+		},
 		userName : {
 			type : 'text',
 			label : '订餐人',
@@ -151,8 +169,13 @@
 		},
 		button : {
 			type : 'button',
-			clz : 'btn btn-block btn-warning',
+			clz : 'btn  btn-warning ordersearch',
 			label : '查询'
+		},
+		excelbutton : {
+			type : 'button',
+			clz : 'btn  btn-warning orderexport',
+			label : '导出'
 		}
 	};
 	var QueryFormElsHT = new IX.IListManager();
@@ -219,7 +242,7 @@
 			},
 			{
 				colClz : 'col-md-2',
-				items : QueryFormElsHT.getByKeys(['cityID', 'orderStatus'])
+				items : QueryFormElsHT.getByKeys(['cityID', 'queryStatus'])
 			},
 			{
 				colClz : 'col-md-3',
@@ -227,11 +250,11 @@
 			},
 			{
 				colClz : 'col-md-3',
-				items : QueryFormElsHT.getByKeys(['userMobile'])
+				items : QueryFormElsHT.getByKeys(['userMobile','vipOrder'])
 			},
 			{
-				colClz : 'col-md-offset-1 col-md-2',
-				items : QueryFormElsHT.getByKeys(['button'])
+				colClz : 'col-md-offset-1 col-md-5 pull-right',
+				items : QueryFormElsHT.getByKeys(['excelbutton','button'])
 			}
 		]};
 		return {
@@ -252,20 +275,20 @@
 				items : QueryFormElsHT.getByKeys(['orderTime'])
 			},
 			{
-				colClz : 'col-md-2',
+				colClz : 'col-md-3',
 				items : QueryFormElsHT.getByKeys(['cityID'])
 			},
 			{
-				colClz : 'col-md-2',
+				colClz : 'col-md-3',
 				items : QueryFormElsHT.getByKeys(['shopID'])
 			},
 			{
 				colClz : 'col-md-2',
-				items : QueryFormElsHT.getByKeys(['orderStatus'])
+				items : QueryFormElsHT.getByKeys(['queryStatus'])
 			},
 			{
-				colClz : 'col-md-2',
-				items : QueryFormElsHT.getByKeys(['button'])
+				colClz : 'col-md-offset-1 col-md-5 pull-right',
+				items : QueryFormElsHT.getByKeys(['excelbutton','button'])
 			}
 		]};
 		return {
@@ -282,23 +305,23 @@
 		var queryKeys = self.model.queryKeys;
 		var query = {cols : [
 			{
-				colClz : 'col-md-2',
-				items : QueryFormElsHT.getByKeys(['cityID'])
-			},
-			{
-				colClz : 'col-md-2',
-				items : QueryFormElsHT.getByKeys(['shopID'])
+				colClz : 'col-md-3',
+				items : QueryFormElsHT.getByKeys(['cityID','shopID'])
 			},
 			{
 				colClz : 'col-md-4',
 				items : QueryFormElsHT.getByKeys(['orderTime'])
 			},
 			{
+				colClz : 'col-md-3',
+				items : QueryFormElsHT.getByKeys(['grouping'])
+			},
+			{
 				colClz : 'col-md-2',
 				items : QueryFormElsHT.getByKeys(['foodCategoryName'])
 			},
 			{
-				colClz : 'col-md-2',
+				colClz : 'col-md-offset-1 col-md-2 pull-right',
 				items : QueryFormElsHT.getByKeys(['button'])
 			}
 		]};
@@ -403,6 +426,12 @@
 			_.each(els, function (v, k) {
 				if (k == 'startDate' || k == 'endDate') {
 					v = IX.isEmpty(v) ? '' : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd');
+				}
+				if(k=='queryStatus'){
+					v = '2';
+				}
+				if(k=='grouping'){
+					v = '1';
 				}
 				self.$queryBox.find('[name=' + k + ']').val(v);
 			});
@@ -561,15 +590,61 @@
 				self.initShopComboOpts(v, '');
 			});
 			self.$queryBox.on('click', '.btn.btn-warning', function (e) {
-				var $this = $(this);
-				self.emit('query', self.getQueryParams());
+				if(this.name=="button"){
+					var $this = $(this);
+					self.emit('query', self.getQueryParams());
+				}
+				else{
+					var pagename=Hualala.PageRoute.getPageContextByPath().name;
+					var serviceName,templateName;
+					if(pagename=="orderQuery"){
+						serviceName = "order_report_orderDetail";
+						templateName = "orderDetailReport.xml";
+					}
+					else if(pagename=="orderQueryDay"){
+						serviceName = "order_report_dayofReconciliation";
+						templateName ="dayofReconciliationReport.xml";
+					}
+					else if(pagename=="orderQueryDuring"){
+						serviceName = "order_report_DuringTheBill";
+						templateName ="duringTheBillReport.xml";
+					}
+					var	group = $XP(Hualala.getSessionData(),'site',''),
+						groupName = $XP(group,'groupName','');
+						currentNav = Hualala.PageRoute.getPageContextByPath(),
+						currentLabel = $XP(currentNav,'label',''),
+						fileName =groupName+currentLabel+".xls";
+						shopName = $('[name=shopID]').next().find('span').text()=="全部" ? "": $('[name=shopID]').next().find('span').text();
+					var params ={serviceName:serviceName,templateName:templateName,fileName:fileName,shopName:shopName},
+						ExcelfilePath;
+					var globalparams=_.extend(self.getQueryParams(),params);
+					Hualala.Global.OrderExport(globalparams, function (rsp) {
+	                    if(rsp.resultcode != '000'){
+	                        rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+	                        return;
+	                    }
+	                	ExcelfilePath =rsp.data.filePath || [];
+						var dowloadhref=ExcelfilePath;
+						window.open(dowloadhref); 
+	                })
+				}
 			});
 		},
 		getQueryParams : function () {
 			var self = this,
 				keys = self.model.queryKeys,
 				$form = self.$queryBox.find('form'),
-				els = $form.serializeArray();
+				val = $('[name=vipOrder]:checked').length? '1': '';
+				$('[name=vipOrder]').val(val);
+			var els = $form.serializeArray();
+			//serializeArray方法对于checkbox只有勾选才有效，没有勾选的情况下无效。
+			if(els.length!=9){
+				els=els;
+			}
+			else{
+				vipOrder=[{name:"vipOrder",value:""}];
+				els = els.concat(vipOrder);
+			}
 			els = _.map(els, function (el) {
 				var n = $XP(el, 'name'), v = $XP(el, 'value', '');
 				if (n == 'startDate' || n == 'endDate') {

@@ -10,12 +10,12 @@
 		{name : 'user', title : '权限', label : '用户•权限', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-lock'},
         {name : 'weixin', title : '微信', label : '网络餐厅•营销', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-weixin'},
 		{name : 'crm', title : '会员', label : '概览•报表•参数•营销', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-crm'},
-		{name : 'mcm', title : '营销', label : '礼品•营销活动', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-mcm'}//,
+		{name : 'mcm', title : '营销', label : '礼品•营销活动', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-mcm'},
         
-        /*{brickClz : 'home-brick-md-3'},
-        {brickClz : 'home-brick-md-1'},
-		{name : 'boss', title : '老板通', label : '下载', brickClz : 'home-brick-md-2', itemClz : 'brick-item brick-item-low', icon : 'icon-boss'}*/
-	];
+        {brickClz : 'home-brick-md-3'},
+        {name : 'saas', title : '收银软件', label : '商品', brickClz : 'home-brick-md-1', itemClz : 'brick-item brick-item-low'},
+        {name : 'boss', title : '老板通', label : '下载', brickClz : 'home-brick-md-2', itemClz : 'brick-item brick-item-low', icon : 'icon-boss'}
+    ];
 	function isSupportedBrowser () {
 		var bd = Hualala.Common.Browser;
 		var isIE = !$XP(bd, 'ie', null) ? false : true,
@@ -109,7 +109,7 @@
 		$('body > #ix_wrapper').remove();
 		if (isSupportedBrowser()) {
 			$wrapper.appendTo($('body'));
-            if(/main|pcclient|about|contact|login/.test(pageType))
+            if(/main|pcclient|about|contact|login|boss/.test(pageType))
                 $wrapper.addClass('no-nav');
 			if (isLogin) {
 				userMgr = new Hualala.User.UserMgrModal({
@@ -200,7 +200,7 @@
 			var navs = _.map(Hualala.TypeDef.SiteNavType, function (v, i, list) {
 				var hasRight = !rightHT.get(v.name) ? false : true;
                 var currentPageName = Hualala.PageRoute.getPageContextByPath().name;
-                var isMore = v.name == 'more';
+                var isMore = (v.name == 'more'|| v.name == 'mcm');
 				var subnavs = $XP(v, 'subnavs', []);
                 var isMoreSubNav = false;
                 for(var i = 0, subnav; subnav = subnavs[i++];)
@@ -249,6 +249,7 @@
 			user = Hualala.getSessionUser(),
 			roles = Hualala.getSessionRoles(),
 			pcclient = Hualala.getSessionPCClient(),
+            agentPath = Hualala.PageRoute.createPath('pcclient'),
 			rights = Hualala.getSessionUserRight();
 		var $body = $('#ix_wrapper > .ix-body > .container');
 		var mapRanderData = function () {
@@ -268,7 +269,7 @@
 		};
 		// Home Page 
 		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_homepage'));
-		var $bricks = $(tpl({bricks : mapRanderData()}));
+		var $bricks = $(tpl({bricks : mapRanderData(), agentPath: agentPath}));
 		$body.html($bricks);
 		$bricks.on('mouseenter mouseleave click', '.brick-item', function (e) {
 			var $this = $(this), pageName = $this.attr('data-pagename'),
@@ -298,7 +299,7 @@
             $img.attr('src', logoUrl);
         });
         
-        $brand.find('a').on('click', function()
+        $brand.find('a.btn-link').on('click', function()
         {
             var logoPath = '';
             var $dialog = U.uploadImg({
@@ -369,7 +370,20 @@
 		}));
 		$page.replaceAll($body);
 	}
+    
+    function initBossClientDownloadPage () {
+		var $body = $('#ix_wrapper > .ix-body');
+		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_boss_download'));
+		var imgPath = Hualala.Global.IMAGE_ROOT + '/boss/';
 
+		var $page = $(tpl({
+			logo: imgPath + 'boss_logo.png',
+			qrcode: imgPath + 'qrcode_boss.png',
+            dragon: imgPath + 'dragon.png',
+            starfish: imgPath + 'starfish.png',
+		}));
+		$page.replaceAll($body);
+	}
 
 	Hualala.Common.LoginInit = initLoginPage;
 	Hualala.Common.initPageLayout = initPageLayout;
@@ -378,10 +392,11 @@
 	Hualala.Common.AboutInit = initAboutPage;
 	Hualala.Common.ContactInit = initContactPage;
 	Hualala.Common.PCClientDownloadInit = initPCClientDownloadPage;
+    Hualala.Common.BossClientDownloadInit = initBossClientDownloadPage;
 	
 
 	Hualala.Common.IndexInit = function () {
 		document.location.href = Hualala.PageRoute.createPath("main");
 	}
-	
+
 })(jQuery, window);

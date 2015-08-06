@@ -9,9 +9,9 @@
             tplLib = Hualala.TplLib,
             U = Hualala.UI,
             topTip = Hualala.UI.TopTip;
-        
+
         $pageBody.html(tplLib.get('tpl_wx_text'));
-        
+
         var $viewing = $pageBody.find('#viewing'),
             $txts = $viewing.find('#txts'),
             $loading = $viewing.find('#loading'),
@@ -20,15 +20,14 @@
             $editing = $pageBody.find('#editing'),
             $editNavTitle = $editing.find('.pt'),
             $txtTitle = $editing.find('#txtTitle');
-        
+
         var txtsTpl = Handlebars.compile(tplLib.get('tpl_wx_txts'));
         var txts = [], params = { pageNo: 1, pageSize: 10 }, current,
-            emotions = W.getEmotions(), isAllLoaded, dataHolder = {};
-        
-        UM.delEditor('txtEditor');
-        W.extendUM(emotions, dataHolder);
-        var txtEditor = UM.getEditor('txtEditor', {toolbar: ['qqemotion wxlink unlink | undo redo | selectall cleardoc'] });
+            emotions = W.getEmotions(), isAllLoaded;
+
+        var txtEditor = U.createEditor('txtEditor', ['qqemotion wxlink unlink | undo redo | selectall cleardoc']);
         txtEditor.execCommand('cleardoc');
+        Hualala.UI.EditorList.push(txtEditor);
         var actions = {
                 editTxt: editTxt,
                 delTxt: delTxt,
@@ -121,6 +120,7 @@
                 resContent = $.trim(filterTxt(txtEditor.getContent())),
                 msg = !resTitle ? '请输入标题' :
                       !resContent ? '请输入内容！' : '';
+            if(/<br\/>$/.test(resContent)) resContent = resContent.substr(0, resContent.lastIndexOf('<br/>'));
             if(msg)
             {
                 topTip({msg: msg, type: 'warning'});
@@ -192,6 +192,10 @@
                     ret += '/' + cont.alt;
                 else if(cont.nodeName.toLowerCase() == 'a')
                     ret += '<a href="' + cont.href + '">' + filterTxt(cont.innerHTML) + '</a>';
+                else if(cont.nodeName.toLowerCase() == 'p')
+                    ret += filterTxt(cont.innerHTML) + '<br/>';
+                else if(cont.nodeName.toLowerCase() == 'br')
+                    ret += '<br/>';
                 else
                     ret += filterTxt(cont.innerHTML);
             }

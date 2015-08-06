@@ -4,10 +4,25 @@
 	var popoverMsg = Hualala.UI.PopoverMsgTip,
 		toptip = Hualala.UI.TopTip;
 
-	var giftEffectTimeHours = Hualala.Common.getMinuteIntervalOptions({
+	HMCM.giftEffectTimeHours = Hualala.Common.getMinuteIntervalOptions({
 		startLabel : '立即生效',
 		end : Hualala.Constants.SecondsOfDay / 60
 	});
+
+	HMCM.mapEGiftEffectTimeHourOptions = function (data) {
+		var opts = _.reduce(data, function (memo, el, i) {
+			if (i == 1) {
+				memo = [memo];
+			}
+			return el.value >= 180 ? memo.concat(el) : memo;
+		});
+		opts = _.map(opts, function (el) {
+			return IX.inherit(el, {
+				value : parseInt($XP(el, 'value')) / 60
+			});
+		});
+		return opts;
+	};
 
 	var GiftSetFormElsCfg = {
 		giftItemID : {
@@ -75,6 +90,16 @@
 				}
 			}
 		},
+		giftImagePath: {
+			type: 'uploadImage',
+			label: '图片',
+			defaultValue: '',
+			validCfg: {
+				validators: {
+					notEmpty: {message: '图片不能为空'}
+				}
+			}
+		},
 		validityDays : {
 			type : "text",
 			label : "有效天数",
@@ -95,7 +120,7 @@
 						inclusive : false,
 						min : 0,
 						max : 10000,
-						message : "礼品价值必须在0到10000天之间"
+						message : "有效天数必须在1到9999天之间"
 					}
 				}
 			}
@@ -104,12 +129,13 @@
 			type : "combo",
 			label : "生效时间",
 			defaultVal : "0",
-			options : _.reduce(giftEffectTimeHours, function (memo, el, i) {
-				if (i == 1) {
-					memo = [memo];
-				}
-				return el.value >= 180 ? memo.concat(el) : memo;
-			}),
+			options : HMCM.mapEGiftEffectTimeHourOptions(HMCM.giftEffectTimeHours),
+			// options : _.reduce(giftEffectTimeHours, function (memo, el, i) {
+			// 	if (i == 1) {
+			// 		memo = [memo];
+			// 	}
+			// 	return el.value >= 180 ? memo.concat(el) : memo;
+			// }),
 			validCfg : {
 				validators : {}
 			}
@@ -181,15 +207,16 @@
 			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "请输入限制金额"
+						message : "请输入金额限制"
 					},
 					numeric : {
-						message : "限制金额必须为数字"
+						message : "金额限制必须为数字"
 					},
+					integer: { message:'金额限制必须为整数' },
 					greaterThan : {
 						inclusive : false,
 						value : 0,
-						message : "现值金额必须大于0"
+						message : "限制金额必须为大于0的整数"
 					}
 				}
 			}
@@ -269,11 +296,12 @@
 					options : options
 				});
 			} if (type == 'text' && key == 'giftName') {
-				var groupName = $XP(Hualala.getSessionSite(), 'groupName', ''),
+				var v = self.model.get(key) || $XP(elCfg, 'defaultVal', ''),
+					groupName = $XP(Hualala.getSessionSite(), 'groupName', ''),
 					giftType = self.model.get('giftType') || $XP(GiftSetFormElsHT.get('giftType'), 'defaultVal'),
 					giftLabel = $XP(getGiftTypeSet(giftType), 'label');
 				return IX.inherit(elCfg, {
-					value : groupName + giftLabel,
+					value : v.length == 0 ? (groupName + giftLabel) : v,
 					disabled : 'disabled'
 				});
 			} if (type == 'text' && key == 'giftValue') {
@@ -281,6 +309,12 @@
 					value : self.model.get(key) || $XP(elCfg, 'dafaultVal'),
 					disabled : (self.mode == 'edit') ? 'disabled' : ''
 				});
+			} if(type == 'textarea') {
+                return IX.inherit(elCfg, {
+                    value : Hualala.Common.decodeTextEnter(self.model.get(key) || '') || $XP(elCfg, 'dafaultVal')
+                });
+            } if(type == 'uploadImage'){
+				return IX.inherit(elCfg, {hiddenGiftImage: self.model.get('giftType') == 30 ? '' : 'hidden', giftImagePath: self.getGiftImageUrl()});
 			} else {
 				return IX.inherit(elCfg, {
 					value : self.model.get(key) || $XP(elCfg, 'dafaultVal')
@@ -290,10 +324,11 @@
 		return ret;
 	};
 
-	var GiftBaseInfoFormKeys = 'giftItemID,giftType,giftValue,giftName,giftRemark'.split(',');
+	var GiftBaseInfoFormKeys = 'giftItemID,giftType,giftValue,giftName,giftRemark,giftImagePath'.split(',');
 
 	var GiftBaseInfoStepView = Stapes.subclass({
 		constructor : function (cfg) {
+			var self = this;
 			this.mode = $XP(cfg, 'mode', '');
 			this.container = $XP(cfg, 'container', '');
 			this.parentView = $XP(cfg, 'parentView');
@@ -309,7 +344,9 @@
 			this.loadTemplates();
 			this.initBaseCfg();
 			this.formParams = this.model.getAll();
-			this.renderForm();
+			this.renderForm(function() {
+				self.bindUploadImage();
+			});
 			this.initUIComponents();
 			this.bindEvent();
 		}
@@ -332,7 +369,7 @@
 		initBaseCfg : function () {
 			this.formKeys = GiftBaseInfoFormKeys;
 		},
-		renderForm : function () {
+		renderForm : function (cbFn) {
 			var self = this,
 				renderData = self.mapFormElsData.call(self),
 				tpl = self.get('layoutTpl'),
@@ -342,6 +379,7 @@
 					items : renderData
 				});
 			self.container.html(htm);
+			if(IX.isFn(cbFn)) cbFn();
 		},
 		initUIComponents : function () {
 
@@ -374,6 +412,11 @@
 
 				// 	}
 				// });
+				if(formParams.giftType == 30 && !self.model.get('giftImagePath')) {
+					toptip({msg: '必须上传实物图片', type: 'danger'});
+					self.parentView.switchWizardCtrlStatus('reset');
+					return;
+				}
 				self.model.emit('saveCache', {
 					params : formParams,
 					failFn : function () {
@@ -390,10 +433,19 @@
 				var $select = $(this),
 					giftType = $select.val();
 				var $giftValue = $(':text[name=giftValue]', self.container);
-				var $giftValueLabel = $giftValue.parents('.form-group').find('> label');
+				var $giftValueLabel = $giftValue.parents('.form-group').find('> label'),
+					$giftValueSurfix = $giftValue.parents('.form-group').find('.input-group-addon:last'),
+					$giftName = self.container.find(':text[name=giftName]'),
+					$giftImage = self.container.find('form .gift-pic');
+				if(giftType == 30) {
+					$giftImage.removeClass('hidden');
+					$giftName.val('')
+				} else {
+					$giftImage.addClass('hidden');
+				}
 				$giftValueLabel.text(giftType == 42 ? '积分点数' : '礼品价值');
-				
-				self.container.find(':text[name=giftName]').trigger('change');
+				$giftValueSurfix.text(giftType == 42 ? '点' : '元');
+				$giftName.trigger('change');
 
 			});
 			self.container.on('change', ':text[name=giftValue]', function (e) {
@@ -407,11 +459,16 @@
 				var $txt = $(this),
 					giftValue = $(':text[name=giftValue]', self.container).val(),
 					giftType = $('select[name=giftType]', self.container).val(),
-					giftTypeSet = getGiftTypeSet(giftType);
+					giftTypeSet = getGiftTypeSet(giftType),
 					groupName = $XP(Hualala.getSessionSite(), 'groupName', ''),
-					val = groupName + giftValue 
+					val = giftType == 30 ? $txt.val() : (groupName + giftValue
 						+ (IX.isEmpty(giftValue) ? '' : $XP(giftTypeSet, 'unit'))
-						+ $XP(giftTypeSet, 'label', '');
+						+ $XP(giftTypeSet, 'label', ''));
+				if(giftType == 30){
+					$txt.removeAttr('disabled');
+				} else {
+					$txt.prop('disabled', true);
+				}
 				$txt.val(val);
 			});
 		},
@@ -435,7 +492,58 @@
 						type = $XP(elCfg, 'type');
 					ret[key] = $('[name=' + key + ']', self.container).val();
 				});
+			if(ret.giftType != 30) {
+				ret = _.omit(ret, 'giftImagePath');
+				self.model.remove('giftImagePath');
+			} else {
+                ret.giftImagePath = self.model.get('giftImagePath');
+            }
 			return ret;
+		},
+		getGiftImageUrl: function(hwp) {
+			var self = this,
+				h = hwp ? parseInt(200 * hwp) : 200,
+				cfg = hwp ? {width: 200, height: h} : {},
+				giftImagePath = self.model.get('giftImagePath');
+			return giftImagePath ? Hualala.Common.getSourceImage(giftImagePath, cfg) : Hualala.Global.IMAGE_ROOT + '/food_bg.png'
+		},
+		bindUploadImage: function() {
+			var self = this,
+				$giftPic = self.container.find('form .gift-pic'),
+				$giftImgDiv = $giftPic.find('gift-img'),
+				$uploadLabel = $giftPic.find('.btn-link'),
+				$img = $giftPic.find('img'),
+				imgSrc = $img.attr('src');
+			Hualala.UI.fileUpload($uploadLabel, function(rsp) {
+					var path = rsp.url, hwp = self.imgHWP || '';
+					self.model.set({giftImagePath: path});
+					if(!window.FileReader) $img.attr('src', self.getGiftImageUrl(hwp));
+				},
+				{
+					onBefore: function ($elem, $file) {
+						imgSrc = $img.attr('src');
+						$giftImgDiv.addClass('loading');
+						if (window.FileReader) self.previewImg($file[0], $img);
+					},
+					onFail: function () {
+						if (window.FileReader) $img.attr('src', imgSrc);
+					},
+					onAlways: function () {
+						$giftImgDiv.removeClass('loading');
+					},
+					accept: 'image/png,image/jpeg,image/jpg'
+				}
+			);
+		},
+		previewImg: function (fileInput, $img) {
+			if (fileInput.files && fileInput.files[0])
+			{
+				var reader = new FileReader();
+				reader.onload = function(e){
+					$img.attr('src', e.target.result);
+				}
+				reader.readAsDataURL(fileInput.files[0]);
+			}
 		}
 	});
 
@@ -457,8 +565,8 @@
 				model : wizardModalView.model,
 				successFn : function () {
 					var self = this;
-					self.parentView.switchWizardCtrlStatus('reset');
 					self.parentView.getNextStep();
+					self.parentView.switchWizardCtrlStatus('reset');
 				},
 				failFn : function () {
 					var self = this;
@@ -490,6 +598,7 @@
 		} else {
 			nIdx == 1 && nextView.emit('reRender');
 		}
+		wizardModalView.switchWizardCtrlStatus('reset');
 		return true;
 	};
 
@@ -516,16 +625,26 @@
 		var wizardModalView = this;
 		wizardModalView.$wizard.find('.wizard-ctrl .btn-cancel').on('click', function (e) {
 			var $btn = $(this);
+			var wizardType = wizardModalView.wizardType;
 			var curIdx = wizardModalView.$wizard.bsWizard('currentIndex'), 
 				cntID = wizardModalView.getTabContentIDByIndex(wizardModalView.$wizard.find('.wizard-nav'), curIdx),
 				stepView = wizardModalView.stepViewHT.get(cntID);
 			var giftItemID = wizardModalView.model.get('giftItemID');
 			if (!giftItemID && curIdx == 0) {
 				wizardModalView.modal.hide();
-			} else {
+			} else if (giftItemID && wizardType == 'create') {
 				Hualala.UI.Confirm({
 					title : '取消创建礼品',
 					msg : '是否取消创建礼品的操作？<br/>之前的操作将不生效！',
+					okLabel : '确定',
+					okFn : function () {
+						wizardModalView.modal.hide();
+					}
+				});
+			} else {
+				Hualala.UI.Confirm({
+					title : '取消编辑礼品',
+					msg : '是否取消当前步骤的操作？<br/>当前步骤的修改将不保存！',
 					okLabel : '确定',
 					okFn : function () {
 						wizardModalView.modal.hide();

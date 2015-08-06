@@ -95,12 +95,13 @@ module.exports = function (grunt) {
                     "<%= pkg.srcPath.jsPath %>/dep/umeditor/umeditor.config.js",
                     "<%= pkg.srcPath.jsPath %>/dep/umeditor/umeditor.js",
                     "<%= pkg.srcPath.jsPath %>/dep/umeditor/lang/zh-cn/zh-cn.js"
-				],
+                ],
 				dest : "<%= pkg.destPath.jsPath %>/dep/deplib.js",
 				nonull : true
 			},
 			common : {
 				src : [
+					"<%= pkg.srcPath.jsPath %>/common/jquery.insertAtCaret.js",
 					"<%= pkg.srcPath.jsPath %>/common/stapes.js",
 					"<%= pkg.srcPath.jsPath %>/common/ixutils.js",
 					"<%= pkg.srcPath.jsPath %>/common/commonFn.js",
@@ -108,6 +109,7 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/common/datatype.js",
 					"<%= pkg.srcPath.jsPath %>/common/router.js",
 					"<%= pkg.srcPath.jsPath %>/pymatch/pymatch.js",
+					"<%= pkg.srcPath.jsPath %>/uuid/Math.uuid.js",
 					"<%= pkg.srcPath.jsPath %>/common/matcher.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/common.js",
@@ -132,7 +134,9 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/tpl/tpl.crm.js",
                     "<%= pkg.srcPath.jsPath %>/tpl/tpl.weixin.js",
                     "<%= pkg.srcPath.jsPath %>/tpl/tpl.mcm.js",
-                    "<%= pkg.srcPath.jsPath %>/tpl/tpl.agent.js"
+                    "<%= pkg.srcPath.jsPath %>/tpl/tpl.agent.js",
+                    "<%= pkg.srcPath.jsPath %>/tpl/tpl.saas.js",
+                    "<%= pkg.srcPath.jsPath %>/tpl/tpl.channel.js"
 				],
 				dest : "<%= pkg.destPath.jsPath %>/tpl.js",
 				nonull : true
@@ -163,11 +167,28 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/shop/shop.list.view.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.list.controler.js",
 
+					"<%= pkg.srcPath.jsPath %>/shop/food.create.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.map.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.create.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.info.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.menu.js",
-					"<%= pkg.srcPath.jsPath %>/shop/shop.mgr.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.member.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.table.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.table.area.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.printer.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.printerArea.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.discountManage.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.timeManage.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.saasParams.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.promotion.model.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.promotion.view.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.promotion.controller.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.mgrWizard.view.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.promotion.way.view.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.refshop.bind.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.refshop.model.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.refshop.view.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.refshop.controller.js",
 
 					"<%= pkg.srcPath.jsPath %>/shop/shop.init.js",
 
@@ -210,7 +231,8 @@ module.exports = function (grunt) {
 
 					"<%= pkg.srcPath.jsPath %>/crm/crm.params.js",
                     "<%= pkg.srcPath.jsPath %>/crm/crm.card.levels.js",
-					"<%= pkg.srcPath.jsPath %>/crm/crm.recharge.js",
+                    "<%= pkg.srcPath.jsPath %>/crm/crm.recharge.gift.js",
+                    "<%= pkg.srcPath.jsPath %>/crm/crm.recharge.js",
 					"<%= pkg.srcPath.jsPath %>/crm/crm.query.js",
 					"<%= pkg.srcPath.jsPath %>/crm/crm.detail.js",
                     "<%= pkg.srcPath.jsPath %>/crm/crm.preferential.js",
@@ -218,7 +240,7 @@ module.exports = function (grunt) {
 
 					"<%= pkg.srcPath.jsPath %>/crm/crm.init.js",
                     
-                    
+                    "<%= pkg.srcPath.jsPath %>/weixin/accounts.js",
                     "<%= pkg.srcPath.jsPath %>/weixin/reply.js",
                     "<%= pkg.srcPath.jsPath %>/weixin/subscribe.js",
                     "<%= pkg.srcPath.jsPath %>/weixin/menu.js",
@@ -260,6 +282,17 @@ module.exports = function (grunt) {
                     
                     // Agent Moudle
                     "<%= pkg.srcPath.jsPath %>/agent/agent.js",
+
+                    // SAAS Moudle
+                    "<%= pkg.srcPath.jsPath %>/saas/saas.list.model.js",
+                    "<%= pkg.srcPath.jsPath %>/saas/saas.list.view.js",
+                    "<%= pkg.srcPath.jsPath %>/saas/saas.list.controller.js",
+                    "<%= pkg.srcPath.jsPath %>/saas/saas.category.js",
+                    "<%= pkg.srcPath.jsPath %>/saas/saas.channel.js",
+                    "<%= pkg.srcPath.jsPath %>/saas/saas.department.js",
+                    "<%= pkg.srcPath.jsPath %>/saas/saas.subject.js",
+                    "<%= pkg.srcPath.jsPath %>/saas/saas.remarks.js",
+                    "<%= pkg.srcPath.jsPath %>/saas/saas.init.js",
 
 					// Merchant init
 					"<%= pkg.srcPath.jsPath %>/common/merchant.layout.js",

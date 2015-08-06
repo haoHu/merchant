@@ -14,7 +14,18 @@
 		bindEvent : function () {
 			var self = this;
 			self.on({
-
+                switchWin: function (params) {
+                    //更改入围状态
+                    Hualala.Global.switchMCMTrackItem(_.pick(params, 'itemID', 'winFlag'), function (rsp) {
+                        if (rsp.resultcode != '000') {
+                            var failFn = $XF(params, 'failFn');
+                            failFn();
+                            return;
+                        }
+                        var successFn = $XF(params, 'successFn');
+                        successFn();
+                    });
+                }
 			}, self);
 		}
 	});
@@ -31,6 +42,14 @@
 		{key : "consumptionCount", clz : "number", label : "消费次数"},
 		{key : "createTime", clz : "date", label : "参与时间"}
 	];
+	var MCMQueryEventTrackSmsBaseHeaderCfg = [
+		{key : "customerName", clz : "text", label : "姓名"},
+		{key : "customerSex", clz : "text", label : "性别"},
+		{key : "cardNO", clz : "number", label : "卡号"},
+		{key : "customerMobile", clz : "text", label : "手机号"},
+		{key : "cardLevelName", clz : "text", label : "等级"},
+		{key : "smsContent", clz : "text", label : "短信内容"}
+	];
 
 	var mapColItemRenderData = function (row, rowIdx, colKey, eventWay) {
 		var self = this;
@@ -39,7 +58,7 @@
 		var HCMath = Hualala.Common.Math;
 		var mapWinLevel = function (winLevel) {
 			var n = winLevel.split('_')[1];
-			return HMCM.GiftLevelNames[n];
+			return n == undefined ? HMCM.GiftLevelNames[winLevel] : HMCM.GiftLevelNames[n];
 		};
 		switch(colKey) {
 			case "createTime":
@@ -54,6 +73,14 @@
 				r.value = v;
 				r.text = HCMath.prettyNumeric(HCMath.standardPrice(v));
 				break;
+			case "status":
+				var opts = Hualala.TypeDef.MCMDataSet.SmsSendStatus;
+				var label = _.find(opts, function (el) {
+						return $XP(el, 'value') == v;
+					});
+				r.value = v;
+				r.text = label;
+				break;
 			case "winFlag":
 				var opts = Hualala.TypeDef.MCMDataSet.JoinTypes;
 				if (eventWay == 20) {
@@ -64,7 +91,10 @@
 						return $XP(el, 'value') == v;
 					});
 					r.value = $XP(v, 'value');
-					r.text = IX.isEmpty(v.value) ? '' : $XP(v, 'label');
+					//r.text = IX.isEmpty(v.value) ? '' : $XP(v, 'label');
+					r.text = '<input type="checkbox" name="switch_win_status" data-status="' +
+                        + v.value + '" data-itemid="' + row.itemID + '"'
+                    + ' data-key="' + $XP(row, '__id__', '') + '" ' + (v.value == 1 ? 'checked ' : '') + '/>';
 				}
 				break;
 			default:
@@ -81,7 +111,10 @@
 			tblHeaders = _.clone(MCMQueryEventTrackBaseHeaderCfg);
 		var eventDetail = self.$container.data('eventDetail'),
 			eventWay = $XP(eventDetail, 'eventWay');
-		if (eventWay == 20) {
+		if (eventWay== 50) {
+			tblHeaders = _.clone(MCMQueryEventTrackSmsBaseHeaderCfg);
+
+		} else if (eventWay == 20) {
 			tblHeaders.push({
 				key : "winFlag", clz : "status", label : "中奖情况"
 			});
@@ -222,6 +255,7 @@
 			return IX.inherit(renderData, {
 				evtBaseClz : 'col-sm-12 col-md-6',
 				evtRulesClz : 'col-sm-12 col-md-6',
+				SmsTemplateClz : 'col-sm-12 col-md-6',
 				evtGiftsClz : 'col-sm-12 col-md-12'
 			})
 		},

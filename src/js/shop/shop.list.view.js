@@ -1,7 +1,6 @@
 (function ($, window) {
 	IX.ns("Hualala.Shop");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
-	var toptip = Hualala.UI.TopTip;
 	var CardListView = Stapes.subclass({
 		constructor : function () {
 			// View层容器
@@ -124,6 +123,7 @@
 					address : address,
 					slugAddr : slugAddr,
 					tel : $XP(shop, 'tel', ''),
+					shopID : $XP(shop, 'shopID', ''),
 					infoHref : Hualala.PageRoute.createPath('shopInfo', [$XP(shop, 'shopID', '')]),
 					menuHref : Hualala.PageRoute.createPath('shopMenu', [$XP(shop, 'shopID', '')]),
 					checked : $XP(shop, 'status') == 1 ? 'checked' : ''
@@ -242,6 +242,41 @@
 					serviceFeatures = mShop.get('serviceFeatures');
 				self.initBusinessModal($btn, shopID, businessName, businessID, serviceFeatures);
 			});
+			self.$list.on('click','.dowloadhref',function (e){
+				var $btn = $(this),
+					shopID = $btn.attr('data-shop'),
+					mShop = self.model.getShopModelByShopID(shopID),
+					businessID = $btn.attr('data-business-id');
+					size="200";
+				var params ={shopID:shopID,size:size},
+					Address;
+				Hualala.Global.getQRcode(params, function (rsp) {
+                    if(rsp.resultcode != '000'){
+                        rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                	Address =rsp.data.zipAddr || [];
+					var dowloadhref=Address;
+					window.open(dowloadhref);
+					// document.location.href = Hualala.PageRoute.createPath('dowloadhref');
+                    
+                })
+					  // $.ajax({
+					  //    type : "POST",
+					  //    url :"/zipTblQrCode.action",
+						 // data:"shopID=shopID&size=200",
+					  //    async:false,
+					  //    cache:false,
+					  //    success : function(msg) {
+					  //     alert(msg);
+					  //    },
+					  //    error : function(e) {
+					  //     alert("error");
+					  //    }
+					  //   });
+					
+					// $Downloadhref.href="http://mu.dianpu.hualala.com/zipTblQrCode.action";
+			});
 			self.$list.on('click', '.bind-settle', function (e) {
 				var $btn = $(this),
 					settleID = $btn.attr('data-id'),
@@ -303,7 +338,7 @@
 			var businessStatus = self.getBusinessSwitcherStatus(shopID, businessName),
 				businessDesc = $XP(self.getBusinessSwitcherTipsByName(businessName), 'desc', '');
 			switch(businessID) {
-				// 常规预定点菜
+				// 常规预订点菜
 				case 10:
 					tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_commonreserve_desc'));
 					renderKeys = 'advanceTime,noticeTime,minAmount,reserveTableTime,reserveTableDesc,payMethod'.split(',');
@@ -311,7 +346,7 @@
 						var r = $XP(businessInfo, k, '');
 						switch(k) {
 							case "advanceTime":
-								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预订时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
 								break;
 							case "noticeTime":
 								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅, ' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
@@ -340,7 +375,7 @@
 						var r = $XP(businessInfo, k, '');
 						switch(k) {
 							case "servicePeriods" :
-								r = '开放时间段：' + r.replace(',', '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
+								r = '开放时间段：' + r.replace(/,/g, '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
 								break;
 							case "holidayFlag" : 
 								r = (r == 0 ? '工作日及节假日均开放' : (r == 1 ? '仅节假日开放' : '仅工作日开放')) + ', ';
@@ -349,7 +384,7 @@
 								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + Hualala.Constants.CashUnit + ', ');
 								break;
 							case "advanceTime" : 
-								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预订时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
 								break;
 							case "noticeTime" : 
 								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅, ' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
@@ -412,7 +447,7 @@
 						var r = $XP(businessInfo, k, '');
 						switch(k) {
 							case "servicePeriods" :
-								r = '开放时间段：' + r.replace(',', '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
+								r = '开放时间段：' + r.replace(/,/g, '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
 								break;
 							case "holidayFlag" : 
 								r = (r == 0 ? '工作日及节假日均开放' : (r == 1 ? '仅节假日开放' : '仅工作日开放')) + ', ';
@@ -450,13 +485,13 @@
 						var r = $XP(businessInfo, k, '');
 						switch(k) {
 							case "servicePeriods" :
-								r = '开放时间段：' + r.replace(',', '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
+								r = '开放时间段：' + r.replace(/,/g, '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
 								break;
 							case "holidayFlag" : 
 								r = (r == 0 ? '工作日及节假日均开放' : (r == 1 ? '仅节假日开放' : '仅工作日开放')) + ', ';
 								break;
 							case "advanceTime":
-								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预订时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
 								break;
 							case "noticeTime" : 
 								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅, ' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
@@ -546,7 +581,8 @@
 					open : open,
 					desc : $XP(el, 'desc', ''),
 					serviceFeatures : $XP(shop, 'serviceFeatures', ''),
-					hideBtn : (name == 'bi' || name == 'crm') ? 'disabled hidden' : ''
+					hideBtn : (name == 'bi' || name == 'crm') ? 'disabled hidden' : '',
+					hide :(name!='spot_order') ?'disabled hidden':''
 				};
 			});
 		},
@@ -776,8 +812,10 @@
 				successFn : function (mShop, $trigger, settleInfo) {
 					var settleUnitID = $XP(settleInfo, 'settleUnitID'),
 						settleUnitName = $XP(settleInfo, 'settleUnitName', '');
+						bindOperateName=(settleUnitID!= undefined && settleUnitID.length!=0)? '修改' : '绑定结算账户';
 					$trigger.attr('data-id', settleUnitID);
 					$trigger.parent().find('.account-name').html(settleUnitName);
+					$trigger.parent().find('.bind-settle').html(bindOperateName);
 					mShop.set({
 						settleID : settleUnitID,
 						settleName : settleUnitName

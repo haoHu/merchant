@@ -1,7 +1,15 @@
 (function ($, window) {
 	IX.ns("Hualala.MCM");
 	var HMCM = Hualala.MCM;
+	var U = Hualala.UI,
+		topTip = U.TopTip;
 
+    function encodeTextareaItem(data, textareaName) {
+        if (data[textareaName]) {
+            data[textareaName] = Hualala.Common.encodeTextEnter(data[textareaName]);
+        }
+        return data;
+    }
 	var GiftMgrResultModel = Stapes.subclass({
 		/**
 		 * 构造礼品查询结果的数据模型
@@ -78,13 +86,16 @@
 		load : function (params, cbFn) {
 			var self = this;
 			self.updatePagerParams(params);
-			self.callServer(self.getPagerParams(), function (res) {
+			var loginName = Hualala.getSessionData().user.loginName,
+			    role = Hualala.getSessionData().user.role[0];
+			var queryParams = _.extend(self.getPagerParams(),{loginName:loginName,role:role})
+			self.callServer(queryParams, function (res) {
 				if (res.resultcode == '000') {
 					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.page.pageNo'));
 					self.updatePagerParams($XP(res, 'data.page', {}));
 					// self.updateItemDataStore($XP(res, 'data', {}));
 				} else {
-					toptip({
+					topTip({
 						msg : $XP(res, 'resultmsg', ''),
 						type : 'danger'
 					});
@@ -151,8 +162,9 @@
 					self.set(post);
 					// Post Model Data Set to Server
 					IX.Debug.info("DEBUG: Gift Wizard Form Post Params:");
-					IX.Debug.info(self.getAll());
-					Hualala.Global.createMCMGift(self.getAll(), function (res) {
+                    var postData = IX.inherit({}, self.getAll());
+                    IX.Debug.info(encodeTextareaItem(postData, 'giftRemark'));
+                    Hualala.Global.createMCMGift(encodeTextareaItem(postData, 'giftRemark'), function (res) {
 						if ($XP(res, 'resultcode') == '000') {
 							successFn(res);
 						} else {
@@ -169,7 +181,8 @@
 					// Post Model Data Set to Server
 					IX.Debug.info("DEBUG: Gift Wizard Form Post Params:");
 					IX.Debug.info(self.getAll());
-					Hualala.Global.editMCMGift(self.getAll(), function (res) {
+                    var postData = IX.inherit({}, self.getAll());
+					Hualala.Global.editMCMGift(encodeTextareaItem(postData, 'giftRemark'), function (res) {
 						if ($XP(res, 'resultcode') == '000') {
 							successFn(res);
 						} else {
@@ -209,6 +222,7 @@
 	var BaseEventModel = Stapes.subclass({
 		constructor : function (evt) {
 			self.CardLevelIDSet = null;
+            self.SMSInfo = null;
 			this.set(evt);
 			this.bindEvent();
 		}
@@ -287,7 +301,7 @@
 				loadCardLevelIDs : function (params) {
 					var successFn = $XF(params, 'successFn'),
 						faildFn = $XF(params, 'faildFn');
-					Hualala.Global.getVipLevels({}, function (res) {
+					Hualala.Global.getVipLevels({isActive: '1'}, function (res) {
 						if ($XP(res, 'resultcode') == '000') {
 							self.CardLevelIDSet = $XP(res, 'data.records', []);
 							successFn(res);
@@ -297,10 +311,25 @@
 						}
 					});
 				},
+				loadSMSShops: function(params) {
+					var successFn = $XF(params, 'successFn'),
+						faildFn = $XF(params, 'faildFn'),
+                        sessionUser = Hualala.getSessionUser(),
+                        roleType = $XP(sessionUser, 'role', []).join(','),
+                        accountID = $XP(sessionUser, 'accountID', '');
+					Hualala.Global.getSMSShops({roleType: roleType, accountID: accountID}, function(rsp) {
+						if(rsp.resultcode == '000'){
+							successFn(rsp);
+						} else {
+							failFn(rsp);
+						}
+					});
+				},
 				createEvent : function (params) {
 					var successFn = $XF(params, 'successFn'),
-						faildFn = $XF(params, 'faildFn');
-					Hualala.Global.createEvent($XP(params, 'params'), function (res) {
+						faildFn = $XF(params, 'faildFn'),
+                        postParams = IX.inherit({}, $XP(params, 'params'));
+                    Hualala.Global.createEvent(encodeTextareaItem(postParams, 'eventRemark'), function (res) {
 						if ($XP(res, 'resultcode') == '000') {
 							var d = $XP(res, 'data');
 							self.set(d);
@@ -314,8 +343,9 @@
 				editEvent : function (params) {
 					var successFn = $XF(params, 'successFn'),
 						faildFn = $XF(params, 'faildFn');
-					var setData = self.getAll();
-					Hualala.Global.editEvent(IX.inherit(setData, $XP(params, 'params')), function (res) {
+					var setData = self.getAll(),
+                        postParams = IX.inherit(setData, $XP(params, 'params'));
+					Hualala.Global.editEvent(encodeTextareaItem(postParams, 'eventRemark'), function (res) {
 						if ($XP(res, 'resultcode') == '000') {
 							var d = $XP(res, 'data');
 							self.set(d);
@@ -323,6 +353,20 @@
 						} else {
 							faildFn(res);
 						}
+					});
+				},
+				editSMS: function(params) {
+					var successFn = $XF(params, 'successFn'),
+						failFn = $XF(params, 'faildFn'),
+						formParams = $XP(params, 'params', {});
+					Hualala.Global.editSMSTemplate(formParams, function (rsp) {
+						var smsEvt = $XP(rsp, 'data.records', []);
+						if(rsp.resultcode == '000' && smsEvt.length > 0){
+                            self.set(smsEvt[0]);
+							successFn(rsp);
+                        } else {
+                            failFn(rsp);
+                        }
 					});
 				}
 			}, this);

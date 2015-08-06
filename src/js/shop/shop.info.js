@@ -4,13 +4,14 @@ var G = Hualala.Global,
     U = Hualala.UI,
     S = Hualala.Shop,
     topTip = U.TopTip,
-    parseForm = Hualala.Common.parseForm;
+    C = Hualala.Common,
+    parseForm = C.parseForm;
 // 初始化店铺店铺详情页面
-S.initInfo = function ($container, pageType, params)
+S.initInfo = function ($container, pageType, params, saasStatus)
 {
     if(!params) return;
     // 渲染店铺功能导航
-    var $shopFuncNav = S.createShopFuncNav(pageType, params, $container);
+    var $shopFuncNav = S.createShopFuncNav(pageType, params, $container, saasStatus.can == 1);
     
     var shopID = params, shopInfo = null,
         operationModeType = Hualala.Shop.Typedef.operationMode,
@@ -30,7 +31,7 @@ S.initInfo = function ($container, pageType, params)
         shopInfo = rsp.data.records[0];
         
         // 渲染店铺详情头部
-        S.createShopInfoHead(shopInfo, $container, function($shopInfoHead)
+        S.createShopInfoHead(shopInfo, $container, saasStatus, function($shopInfoHead)
         {
             $shopFuncNav.before($shopInfoHead);
         });
@@ -68,85 +69,13 @@ S.initInfo = function ($container, pageType, params)
             showInputs : false
         });
         // 初始化表单验证
-        $form.bootstrapValidator({
-            excluded: ':disabled',
-            fields: {
-                shopName: {
-                    message: '店铺名无效',
-                    validators: {
-                        notEmpty: {
-                            message: '店铺名不能为空'
-                        },
-                        stringLength: {
-                            min: 2,
-                            max: 100,
-                            message: '店铺名长度必须在2到100个字符之间'
-                        }
-                    }
-                },
-                cityID: {
-                    validators: { notEmpty: { message: '请选择店铺所在城市' } }
-                },
-                tel: {
-                    validators: {
-                        notEmpty: { message: '店铺电话不能为空' },
-                        telOrMobile: { message: '' }
-                    }
-                },
-                address: {
-                    validators: {
-                        notEmpty: { message: '店铺地址不能为空' },
-                        stringLength: {
-                            min: 1,
-                            max: 80,
-                            message: '店铺地址不能超过80个字符'
-                        }
-                    }
-                },
-                PCCL: {
-                    validators: {
-                        notEmpty: { message: '人均消费不能为空' },
-                        numeric: { message: '人均消费必须是金额数字' }
-                    }
-                },
-                operationMode: {
-                    validators: {
-                        notEmpty: { message: '请选择店铺运营模式' }
-                    }
-                },
-                openingHoursStart: {
-                    validators: {
-                        notEmpty: { message: '每天营业开始时间不能空' },
-                        time: { message: '' }
-                    }
-                },
-                openingHoursEnd: {
-                    validators: {
-                        notEmpty: { message: '每天营业结束时间不能空' },
-                        time: {
-                            message: '',
-                            startTimeField: 'openingHoursStart'
-                        }
-                    }
-                },
-                areaID: {
-                    validators: {
-                        notEmpty: { message: '请选择店铺所在地标' }
-                    }
-                },
-                cuisineID1: {
-                    validators: {
-                        notEmpty: { message: '请选择菜系1' }
-                    }
-                }
-            }
-        }).on('submit', function(){ return false });
+        $form.bootstrapValidator(S.validators).on('submit', function(){ return false });
         bv = $form.data('bootstrapValidator');
         
         var $uploadImg = $form.find('#uploadImg');
         $img = $uploadImg.find('img').attr('src', G.IMAGE_ROOT + '/shop_head_img_default.png');
         imagePath = shopInfo.imagePath;
-        imagePath && $img.attr('src', imgHost + imagePath + '?quality=70');
+        imagePath && $img.attr('src', C.getSourceImage(imagePath, {width: 200, height: 200}));
 
         map = S.map({data: {
             isSearchMap: false,

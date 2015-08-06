@@ -105,7 +105,7 @@
 					bankComName : $XP(bankInfo, 'name', ''),
 					bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
 					shopCount : parseInt($XP(account, 'shopCount', 0)),
-					path : Hualala.PageRoute.createPath('accountDetail', [settleUnitID])
+					path : Hualala.PageRoute.createPath('accountDailyReport', [settleUnitID])
 				};
 			});
 			return {
@@ -232,6 +232,7 @@
 					.replaceAll('{poundageMinAmount}', poundageMinAmount)
 					.replaceAll('{settleUnitName}', self.model.get('settleUnitName'));
 			}
+			var noticeAcctountText='<p class="alert alert-warning t-c">请您最好在非用餐高峰期提现，以免新增订单给您对账带来不便！</p>';
 			var accountInfo = _.map(accountInfoKeys, function (el) {
 				var k = $XP(el, 'key');
 				var valStr = '';
@@ -258,6 +259,7 @@
 			return {
 				accountInfo : accountInfo,
 				warningText : warningText,
+				noticeAcctountText :noticeAcctountText,
 				formClz : 'account-withdraw-form form-feedback-out',
 				labelClz : 'col-sm-4 control-label',
 				clz : 'col-sm-7',
@@ -452,6 +454,11 @@
 			type : 'button',
 			clz : 'btn btn-block btn-warning',
 			label : '查询'
+		},
+		excelbutton : {
+			type : 'button',
+			clz : 'btn btn-block btn-warning',
+			label : '导出'
 		}
 	};
 	var QueryTransFormElsHT = new IX.IListManager();
@@ -482,17 +489,23 @@
 		}
 	});
 	var TransResultCols = [
-		{clz : '', label : '时间'},
-		{clz : '', label : '流水号'},
-		{clz : '', label : '交易状态'},
-		{clz : '', label : '交易类型'},
-		{clz : '', label : '交易金额'},
-		// {clz : '', label : '佣金'},
-		// {clz : '', label : '手续费'},
-		{clz : '', label : '交易费用'},
-		{clz : '', label : '余额变动'},
-		{clz : '', label : '交易后余额'},
-		{clz : '', label : '操作'}
+		{
+			clz : '',
+			cols : [
+				{clz : '', label : '时间',colspan : '', rowspan : ''},
+				{clz : '', label : '流水号',colspan : '', rowspan : ''},
+				{clz : '', label : '交易状态',colspan : '', rowspan : ''},
+				{clz : '', label : '交易类型',colspan : '', rowspan : ''},
+				{clz : '', label : '交易金额',colspan : '', rowspan : ''},
+				// {clz : '', label : '佣金'},
+				// {clz : '', label : '手续费'},
+				{clz : '', label : '交易费用',colspan : '', rowspan : ''},
+				{clz : '', label : '余额变动',colspan : '', rowspan : ''},
+				{clz : '', label : '交易后余额',colspan : '', rowspan : ''},
+				{clz : '', label : '交易备注',colspan : '', rowspan : ''},
+				{clz : '', label : '操作',colspan : '', rowspan : ''}
+			]
+		}
 	];
 
 	var AccountTransListView = CardListView.subclass({
@@ -541,7 +554,7 @@
 					},
 					{
 						colClz : 'col-sm-2',
-						items : QueryTransFormElsHT.getByKeys(['button'])
+						items : QueryTransFormElsHT.getByKeys(['button','excelbutton'])
 					}
 				]};
 			var htm = layoutTpl({
@@ -556,9 +569,9 @@
 			this.$queryForm = this.$container.find('.query-form');
 			this.$resultBox = this.$container.find('.query-result');
 			this.$pager = this.$container.find('.page-selection');
-			this.render();
 			// this.initPager();
 			this.initQueryEls();
+			this.render();
 			this.bindEvent();
 			this.bindQueryEvent();
 		},
@@ -579,6 +592,20 @@
 				if ($picker.length > 0) {
 					$picker.datetimepicker('show');
 				}
+			});
+			var els = Hualala.Common.parseForm(self.$queryForm.find('form'));
+			var now = new Date(),
+				curDateStamp = IX.Date.getDateByFormat(new Hualala.Date(now.getTime() / 1000).toText(), 'yyyy/MM/dd'),
+				lastMonth = new Date(now.getFullYear(),now.getMonth()-1,now.getDate()),
+				lastMonthDateStamp =IX.Date.getDateByFormat(new Hualala.Date(lastMonth.getTime() / 1000).toText(), 'yyyy/MM/dd');
+			_.each(els, function (v, k) {
+				if (k == 'transCreateBeginTime') {
+					v = IX.isEmpty(v) ? lastMonthDateStamp: IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd');
+				}
+				if(k=='transCreateEndTime'){
+					v = IX.isEmpty(v) ? curDateStamp : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd');
+				}
+				self.$queryForm.find('[name=' + k + ']').val(v);
 			});
 		},
 		bindEvent : function () {
@@ -622,7 +649,37 @@
 			self.$queryForm.on('click', '.btn', function (e) {
 				// TODO Update modal params and render query result
 				var params = self.getQueryFormParams();
-				self.model.emit('load', params);
+				var data=self.model.getPagerParams();
+				if(this.name=="button"){
+					var $this = $(this);
+					self.model.emit('load', IX.inherit(params, {
+						pageNo : $XP(params, 'pageNo', 1),
+						pageSize : $XP(params, 'pageSize', 15)
+					}));
+				}
+				else{
+					var serviceName,templateName,ExcelfilePath;
+						serviceName = "fsm_queryFsmSettleUnitAccountTransDetail";
+						templateName = "dianpuFsmAccountTransDetailReport.xml";
+					var	group = $XP(Hualala.getSessionData(),'site',''),
+						groupName = $XP(group,'groupName','');
+						currentNav = Hualala.PageRoute.getPageContextByPath(),
+						currentLabel = $XP(currentNav,'label',''),
+						fileName =groupName+currentLabel+".xls",
+						settleUnitID =data.settleUnitID;
+					var extraparams ={settleUnitID:settleUnitID,serviceName:serviceName,templateName:templateName,fileName:fileName};
+					var globalparams=_.extend(extraparams,params);
+					Hualala.Global.OrderExport(globalparams, function (rsp) {
+	                    if(rsp.resultcode != '000'){
+	                        rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+	                        return;
+	                    }
+	                	ExcelfilePath =rsp.data.filePath || [];
+						var dowloadhref=ExcelfilePath;
+						window.open(dowloadhref); 
+	                })
+				}
+			
 			});
 		},
 		getQueryFormParams : function () {
@@ -674,6 +731,9 @@
 		},
 		mapTransType : function (s) {
 			s = s || '';
+			if(s=="101"||s=="410"){
+				s="511";
+			}
 			var types = Hualala.TypeDef.FSMTransType;
 			var m = _.filter(types, function (el) {
 				return $XP(el, 'value', '') == s;
@@ -695,7 +755,7 @@
 		},
 		mapColsRenderData : function (row) {
 			var self = this;
-			var colKeys = 'transCreateTime,SUATransItemID,transStatus,transType,transAmount,transactionCost,transChanged,transAfterBalance,rowControl';
+			var colKeys = 'transCreateTime,SUATransItemID,transStatus,transType,transAmount,transactionCost,transChanged,transAfterBalance,empRemark,rowControl';
 			var col = {clz : '', type : 'text'};
 
 			var cols = _.map(colKeys.split(','), function (k, i) {
@@ -713,33 +773,40 @@
 					case 'transType':
 						r = self.mapTransType($XP(row, k, ''));
 						break;
+					//交易金额
 					case 'transAmount':
 					// case 'transSalesCommission':
 					// case 'transPoundage':
+					//交易后余额
 					case 'transAfterBalance':
-						r = self.mapCashData($XP(row, k, ''));
+						r = self.mapCashData($XP(row, k));
 						break;
+					//交易费用
 					case 'transactionCost':
 						var transSalesCommission = $XP(row, 'transSalesCommission', 0), transPoundage = $XP(row, 'transPoundage', 0);
 						var transactionCost = CMath.add(transSalesCommission, transPoundage);
 						r = self.mapCashData(transactionCost);
 						break;
+					//余额变动
 					case 'transChanged':
 						r = self.mapTransChanged(row);
 						break;
 					case 'rowControl':
 						var transType = $XP(row, 'transType', ''),
 							transStatus = $XP(row, 'transStatus', '');
-						var hideBtnTransType = "104,199,202,203,204,205,206,299";
+						var hideBtnTransType = "104,105,199,202,203,204,205,206,208,299";
 						r = {
 							type : 'button',
-							btnClz : (hideBtnTransType.indexOf(transType) >= 0 || (transType == "203" && transStatus < 1)) ? 'hidden' : '',
+							btnClz : (hideBtnTransType.indexOf(transType) >= 0 || ((transType == "203" && transStatus < 1)||(transType == "105" && transStatus < 1)))? 'hidden' : '',
 							label : '查看',
 							SUATransItemID : $XP(row, 'SUATransItemID', ''),
 							transType : transType,
 							orderKey : $XP(row, 'orderKey', ''),
 							orderID : $XP(row, 'orderID', '')
 						};
+						break;
+					default :
+						r = {value : $XP(row, k, ''), text : $XP(row, k, ''), clz : ''};
 						break;
 				}
 				return IX.inherit(col, r);
@@ -749,7 +816,11 @@
 		mapRenderData : function (data) {
 			var self = this;
 			var tblClz = 'table-bordered table-striped table-hover ix-data-report',
-				tblHeaders = TransResultCols;
+				tblHeaders = TransResultCols,
+				tdSum = 0;	
+			for(i=0;i<tblHeaders.length;i++){
+					tdSum = tdSum+tblHeaders[i].cols.length;
+				};
 			var rows = _.map(data, function (row) {
 				return {
 					clz : '',
@@ -759,7 +830,7 @@
 			return {
 				clz : tblClz,
 				isEmpty : data.length == 0 ? true : false,
-				colCount : tblHeaders.length,
+				colCount : tdSum,
 				thead : tblHeaders,
 				rows : rows
 			};
@@ -845,4 +916,366 @@
 		}
 	});
 	Hualala.Account.AccountQueryShopResultView = AccountQueryShopResultView;
+	//结算日报表
+	var QueryDailyReportFormElsCfg = {
+		transCreateTime : {
+			type : 'section',
+			label : '日期',
+			min : {
+				type : 'datetimepicker',
+				surfix : '<span class="glyphicon glyphicon-calendar"></span>',
+				defaultVal : '',
+				validCfg : {
+					group : '.min-input',
+					validators : {}
+				}
+			},
+			max : {
+				type : 'datetimepicker',
+				surfix : '<span class="glyphicon glyphicon-calendar"></span>',
+				defaultVal : '',
+				validCfg : {
+					group : '.max-input',
+					validators : {}
+				}
+			}
+		},
+		button : {
+			type : 'button',
+			clz : 'btn btn-block btn-warning',
+			label : '查询'
+		}
+	};
+	var QueryDailyReportFormElsHT = new IX.IListManager();
+	_.each(QueryDailyReportFormElsCfg, function (el, k) {
+		var type = $XP(el, 'type');
+		var labelClz = 'col-xs-2 col-sm-2 col-md-2 control-label';
+		if (type == 'section') {
+			var id = minID = k + '_min_' + IX.id(), maxID = k + '_max_' + IX.id(),
+				minName = k == 'transCreateTime' ? 'transCreateBeginTime' : '',
+				maxName = k == 'transCreateTime' ? 'transCreateEndTime' : '',
+				min = IX.inherit($XP(el, 'min', {}), {
+					id : minID, name : minName, clz : 'col-xs-5 col-sm-5 col-md-5',
+				}), max = IX.inherit($XP(el, 'max', {}), {
+					id : maxID, name : maxName, clz : 'col-xs-5 col-sm-5 col-md-5',
+				});
+			QueryDailyReportFormElsHT.register(k, IX.inherit(el, {
+				id : id,
+				labelClz : labelClz,
+				min : min,
+				max : max
+			}));
+		} else {
+			QueryDailyReportFormElsHT.register(k, IX.inherit(el, {
+				id : k + '_' + IX.id(),
+				name : k,
+				labelClz : labelClz,
+			}, $XP(el, 'type') !== 'button' ? {clz : 'col-xs-5 col-sm-8 col-md-5'} : null));
+		}
+	});
+	//结算日报表表头
+	var AccountDailyReportCols = [
+		{
+			clz : '',
+			cols : [
+				{clz : '', label : '日期', colspan : '', rowspan : '2'},
+				{clz : '', label : '网上自助订餐', colspan : '5', rowspan : ''},
+				{clz : '', label : '会员在线储值', colspan : '4', rowspan : ''},
+				{clz : '', label : '提现总额', colspan : '', rowspan : '2'}
+			]
+		},
+ 		{
+			clz : '',
+			cols : [
+				{clz : '', label : '笔数', colspan : '', rowspan : ''},
+				{clz : '', label : '交易金额', colspan : '', rowspan : ''},
+				{clz : '', label : '退款金额', colspan : '', rowspan : ''},
+				{clz : '', label : '应结金额', colspan : '', rowspan : ''},
+				{clz : '', label : '结算金额', colspan : '', rowspan : ''},
+				{clz : '', label : '笔数', colspan : '', rowspan : ''},
+				{clz : '', label : '交易金额', colspan : '', rowspan : ''},
+				{clz : '', label : '交易费用', colspan : '', rowspan : ''},
+				{clz : '', label : '结算金额', colspan : '', rowspan : ''},
+			]
+		}
+	];
+	var AccountDailyReportView = CardListView.subclass({
+		constructor : function () {
+			// View层容器
+			this.$container = null;
+			// 查询表单
+			this.$queryForm = null;
+			// 结果容器
+			this.$resultBox = null;
+			// 分页容器
+			this.$pager = null;
+			this.loadTemplates();
+		}
+	});
+	AccountDailyReportView.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_detail')),
+				tableTpl = Handlebars.compile(Hualala.TplLib.get('tpl_transaQuery_result'));
+			Handlebars.registerPartial("transaQueryForm", Hualala.TplLib.get('tpl_transaQuery_form'));
+			Handlebars.registerPartial("transaQueryResult", Hualala.TplLib.get('tpl_transaQuery_result'));
+			Handlebars.registerHelper('checkFormElementType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			Handlebars.registerHelper('chkColType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			this.set({
+				layoutTpl : layoutTpl,
+				tableTpl : tableTpl
+			});
+		},
+		initLayout : function () {
+			var layoutTpl = this.get('layoutTpl');
+			var result = [],
+				tblClz = 'table-bordered table-striped table-hover ix-data-report',
+				tblHeaders = AccountDailyReportCols,
+				query = {cols : [
+					{
+						colClz : 'col-sm-6',
+						items : QueryDailyReportFormElsHT.getByKeys(['transCreateTime'])
+					},
+					{
+						colClz : 'col-md-offset-1 col-sm-2',
+						items : QueryDailyReportFormElsHT.getByKeys(['button'])
+					}
+				]};
+			var htm = layoutTpl({
+				query : query,
+				result : {
+					clz : tblClz,
+					thead : tblHeaders,
+					rows : result
+				}
+			});
+			this.$container.html(htm);
+			this.$queryForm = this.$container.find('.query-form');
+			this.$queryForm.addClass("accountDailyReport");
+			this.$resultBox = this.$container.find('.query-result');
+			this.$pager = this.$container.find('.page-selection');
+			this.initQueryEls();
+			this.render();
+			this.bindEvent();
+			this.bindQueryEvent();
+		},
+		initQueryEls : function () {
+			var self = this;
+			self.$queryForm.find('[data-type=datetimepicker]').datetimepicker({
+				format : 'yyyy/mm/dd',
+				startDate : '2010/01/01',
+				autoclose : true,
+				minView : 'month',
+				todayBtn : true,
+				todayHighlight : true,
+				language : 'zh-CN'
+			});
+			self.$queryForm.on('click', '.input-group-addon', function (e) {
+				var $this = $(this),
+					$picker = $this.prev(':text[data-type=datetimepicker]');
+				if ($picker.length > 0) {
+					$picker.datetimepicker('show');
+				}
+			});
+			var els = Hualala.Common.parseForm(self.$queryForm.find('form'));
+			var now = new Date(),
+				curDateStamp = IX.Date.getDateByFormat(new Hualala.Date(now.getTime() / 1000).toText(), 'yyyy/MM/dd'),
+				lastMonth = new Date(now.getFullYear(),now.getMonth()-1,now.getDate()),
+				lastMonthDateStamp =IX.Date.getDateByFormat(new Hualala.Date(lastMonth.getTime() / 1000).toText(), 'yyyy/MM/dd');
+			_.each(els, function (v, k) {
+				if (k == 'transCreateBeginTime') {
+					v = IX.isEmpty(v) ? lastMonthDateStamp: IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd');
+				}
+				if(k=='transCreateEndTime'){
+					v = IX.isEmpty(v) ? curDateStamp : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd');
+				}
+				self.$queryForm.find('[name=' + k + ']').val(v);
+			});
+		},
+		bindEvent : function () {
+			var self = this;
+			self.$resultBox.tooltip({
+				selector : '[title]'
+			});
+			self.$resultBox.on('click', '.btn[data-href]', function (e) {
+				var $btn = $(this),
+					path = $btn.attr('data-href');
+				if (!IX.isEmpty(path)) {
+					document.location.href = path;
+				}
+			});
+			self.$pager.on('page', function (e, pageNo) {
+				var params = self.model.getPagerParams();
+				params['pageNo'] = pageNo;
+				self.model.emit('load', IX.inherit(params, {
+					pageNo : $XP(params, 'pageNo', 1),
+					pageSize : $XP(params, 'pageSize', 15)
+				}));
+			});
+		},
+		bindQueryEvent : function () {
+			var self = this;
+			self.$queryForm.on('click', '.btn', function (e) {
+				// TODO  render query result
+				var params = self.getQueryFormParams();
+				self.model.emit('load', IX.inherit(params, {
+					pageNo : $XP(params, 'pageNo', 1),
+					pageSize : $XP(params, 'pageSize', 15)
+				}));
+			});
+		},
+		getQueryFormParams : function () {
+			var self = this;
+			var params = self.$queryForm.find('>form').serializeArray();
+			var ret = {};
+			_.each(params, function (el, i) {
+				var k = $XP(el, 'name'), v = $XP(el, 'value', '');
+				switch(k) {
+					case 'transCreateBeginTime':
+					case 'transCreateEndTime':
+						if (IX.isEmpty(v)) {
+							v = '';
+						} else {
+							v = IX.Date.getDateByFormat(v, 'yyyyMMddHH');
+						}
+						break;
+					default :
+						v = IX.isEmpty(v) ? '' : v;
+						break;
+				}
+				ret[k] = v;
+			});
+			IX.Debug.info("DEBUG: Account TransList View Query Form Params : ");
+			IX.Debug.info(ret);
+			return ret;
+		},
+		mapTimeData : function (s) {
+			var r = {value : '', text : '', clz : 'date'};
+			var s1 = '';
+			if (IX.isString(s) && s.length > 0) {
+				s1 = s.replace(/([\d]{4})([\d]{2})([\d]{2})/g, '$1/$2/$3');
+				s1 = IX.Date.getDateByFormat(s1, 'yyyy/MM/dd ');
+				r = IX.inherit({value : s, text : s1});
+			}
+			return r;
+		},
+		mapCashData : function (s) {
+			return {text : CMath.prettyNumeric(CMath.standardPrice(s)), value : s, clz : 'number'};
+		},
+		mapColsRenderData : function (row) {
+			var self = this,
+				colKeys = "dt,orderCnt,orderAmt,orderCancelAmt,orderSettleAmt,orderSettleAmtFinal,saveMoneyCnt,saveMoneyAmt,saveMoneyComAmt,saveMoneySettleAmt,cashAmt",
+				col = {clz : '', type : 'text'};
+				
+			var cols = _.map(colKeys.split(','), function (k, i) {
+				var r = null;
+				switch(k) {
+					case 'dt':
+						r = self.mapTimeData($XP(row, k, ''));
+						break;
+					case 'orderCnt':
+					case 'saveMoneyCnt':
+						r = {value : $XP(row, k, ''), text : $XP(row, k, ''), clz : 'number'};
+						break;
+					case 'orderAmt':
+					case 'orderCancelAmt':
+					case 'orderSettleAmt':
+					case 'orderSettleAmtFinal':
+					case 'saveMoneyAmt':
+					case 'saveMoneyComAmt':
+					case 'saveMoneySettleAmt':
+					case 'cashAmt':
+						r = self.mapCashData($XP(row, k));
+						break;
+				}
+				return IX.inherit(col, r);
+			});
+			return cols;
+		},
+		mapColsTotalData : function (row) {
+			var self = this,
+				colKeys ="orderCntSum,orderAmtSum,orderCancelAmtSum,orderSettleAmtSum,orderSettleAmtFinalSum,saveMoneyCntSum,saveMoneyAmtSum,saveMoneyComAmtSum,saveMoneySettleAmtSum,cashAmtSum",
+				col = {clz : '', type : 'text'};				
+			var cols = _.map(colKeys.split(','), function (k, i) {
+				var r = null;
+				switch(k) {
+					case 'orderCntSum':
+					case 'saveMoneyCntSum':
+						r = {value : $XP(row, k, ''), text : $XP(row, k, ''), clz : 'number'};
+						break;
+					case 'orderAmtSum':
+					case 'orderCancelAmtSum':
+					case 'orderSettleAmtSum':
+					case 'orderSettleAmtFinalSum':
+					case 'saveMoneyAmtSum':
+					case 'saveMoneyComAmtSum':
+					case 'saveMoneySettleAmtSum':
+					case 'cashAmtSum':
+						r = self.mapCashData($XP(row, k));
+						break;
+				}
+				return IX.inherit(col, r);
+			});
+			return cols;
+		},
+		mapRenderData : function (dailyReport) {
+			var self = this,
+				summary = self.model.get('DailyReportSummarize'),
+				tblClz = 'table-bordered table-striped table-hover ix-data-report',
+				tblHeaders = AccountDailyReportCols,
+				tdSum = 0;	
+			for(i=0;i<tblHeaders.length;i++){
+					tdSum = tdSum+tblHeaders[i].cols.length;
+				};
+			var rows = _.map(dailyReport, function (row) {
+				return {
+					clz : '',
+					cols : self.mapColsRenderData(row)
+				};
+			});
+			var tfoot = _.map(summary, function (row) {
+				var cols = self.mapColsTotalData(row);
+				// cols.shift();
+				cols.unshift({
+					clz : 'title',
+					value : '',
+					text : '总计：'
+				});
+				return {
+					clz : '',
+					cols : cols
+				}
+			});
+			return {
+				clz : tblClz,
+				isEmpty : dailyReport.length == 0 ? true : false,
+				colCount : tdSum,
+				thead : tblHeaders,
+				rows : rows,
+				tfoot : tfoot
+			};
+		},
+		render : function () {
+			var self = this,
+				model = self.model,
+				pagerParams = model.getPagerParams(),
+				pageNo = $XP(pagerParams, 'pageNo');
+			var results = model.getDataByPageNo(pageNo);
+			var renderData = self.mapRenderData(results);
+			var tableTpl = self.get('tableTpl');
+			var html = tableTpl(renderData);
+			self.$resultBox.empty();
+			self.$resultBox.html(html);
+			self.initPager({
+				total : model.get('pageCount'),
+				page : model.get('pageNo'),
+				href : 'javascript:void(0);'
+			});
+		}
+	});
+	Hualala.Account.AccountDailyReportView = AccountDailyReportView;
+
 })(jQuery, window);

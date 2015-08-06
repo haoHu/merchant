@@ -105,7 +105,8 @@
 			var self = this;
 			var tblClz = 'table-striped table-hover table-condensed';
 			var records = $XP(data, 'records', []),
-				total = $XP(data, 'total', {});
+				//total = $XP(data, 'total', {});
+				total = data;
 			var getways = _.reject(Hualala.TypeDef.MCMDataSet.GiftDistributeTypes, function (el) {
 				return IX.isEmpty(el.value) || !el.include;
 			});
@@ -159,8 +160,8 @@
 					cols.push({
 						clz : '',
 						type : 'text',
-						value : $XP(row, 'totalCount', 0),
-						text : $XP(row, 'totalCount', 0)
+						value : $XP(row, 'sum', 0),
+						text : $XP(row, 'sum', 0)
 					});
 					return {
 						clz : '',
@@ -189,8 +190,8 @@
 				});
 				cols.push({
 					clz : '',
-					value : $XP(total, 'totalCount', 0),
-					text : $XP(total, 'totalCount', 0)
+					value : $XP(total, 'countTotal', 0),
+					text : $XP(total, 'countTotal', 0)
 				});
 				return {
 					tfoot : [

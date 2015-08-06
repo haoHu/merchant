@@ -27,8 +27,23 @@
 		});
 		// $body.html("<h1>结算账户管理页面</h1>");
 	};
+	var initAccountDailyPage = function () {
+		var ctx = Hualala.PageRoute.getPageContextByPath();
+		var $body = $('#ix_wrapper > .ix-body > .container');
+		var accountMgrCtrl = new Hualala.Account.AccountMgrController({
+			container : $body,
+			settleUnitID : $XP(ctx, 'params', [])[0],
+			accountModel : new Hualala.Account.BaseAccountModel(),
+			mgrView : new Hualala.Account.AccountMgrView(),
+			transaDetailCtrl : new Hualala.Account.AccountDailyReportController()
+			
+		});
+		// $body.html("<h1>结算报表页面</h1>");
+	};
 
 	Hualala.Account.AccountMgrInit = initAccountMgrPage;
+
+	Hualala.Account.AccountDailyReportInit = initAccountDailyPage;
 	
 	Hualala.Account.AccountListInit = initAccountListPage;
 })(jQuery, window);

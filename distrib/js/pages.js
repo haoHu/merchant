@@ -386,6 +386,7 @@
 					self.toggleProgress();
 					self.$subBtn.attr('disabled', false);
 				});
+				$form.find(name=[login_auth]).val("");
 			});
 			self.$formPanel.bootstrapValidator('resetForm');
 			self.$dynamicPWDBtn && self.$dynamicPWDBtn.removeClass('disabled').attr('disabled', false);
@@ -1306,7 +1307,6 @@
 })(jQuery, window);;(function ($, window) {
 	IX.ns("Hualala.Shop");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
-	var toptip = Hualala.UI.TopTip;
 	var CardListView = Stapes.subclass({
 		constructor : function () {
 			// View层容器
@@ -1547,6 +1547,41 @@
 					serviceFeatures = mShop.get('serviceFeatures');
 				self.initBusinessModal($btn, shopID, businessName, businessID, serviceFeatures);
 			});
+			self.$list.on('click','.dowloadhref',function (e){
+				var $btn = $(this),
+					shopID = $btn.attr('data-shop'),
+					mShop = self.model.getShopModelByShopID(shopID),
+					businessID = $btn.attr('data-business-id');
+					size="200";
+				var params ={shopID:shopID,size:size},
+					Address;
+				Hualala.Global.getQRcode(params, function (rsp) {
+                    if(rsp.resultcode != '000'){
+                        rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                	Address =rsp.data.zipAddr || [];
+					var dowloadhref=Address;
+					window.open(dowloadhref);
+					// document.location.href = Hualala.PageRoute.createPath('dowloadhref');
+                    
+                })
+					  // $.ajax({
+					  //    type : "POST",
+					  //    url :"/zipTblQrCode.action",
+						 // data:"shopID=shopID&size=200",
+					  //    async:false,
+					  //    cache:false,
+					  //    success : function(msg) {
+					  //     alert(msg);
+					  //    },
+					  //    error : function(e) {
+					  //     alert("error");
+					  //    }
+					  //   });
+					
+					// $Downloadhref.href="http://mu.dianpu.hualala.com/zipTblQrCode.action";
+			});
 			self.$list.on('click', '.bind-settle', function (e) {
 				var $btn = $(this),
 					settleID = $btn.attr('data-id'),
@@ -1608,7 +1643,7 @@
 			var businessStatus = self.getBusinessSwitcherStatus(shopID, businessName),
 				businessDesc = $XP(self.getBusinessSwitcherTipsByName(businessName), 'desc', '');
 			switch(businessID) {
-				// 常规预定点菜
+				// 常规预订点菜
 				case 10:
 					tpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_commonreserve_desc'));
 					renderKeys = 'advanceTime,noticeTime,minAmount,reserveTableTime,reserveTableDesc,payMethod'.split(',');
@@ -1616,7 +1651,7 @@
 						var r = $XP(businessInfo, k, '');
 						switch(k) {
 							case "advanceTime":
-								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预订时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
 								break;
 							case "noticeTime":
 								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅, ' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
@@ -1645,7 +1680,7 @@
 						var r = $XP(businessInfo, k, '');
 						switch(k) {
 							case "servicePeriods" :
-								r = '开放时间段：' + r.replace(',', '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
+								r = '开放时间段：' + r.replace(/,/g, '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
 								break;
 							case "holidayFlag" : 
 								r = (r == 0 ? '工作日及节假日均开放' : (r == 1 ? '仅节假日开放' : '仅工作日开放')) + ', ';
@@ -1654,7 +1689,7 @@
 								r = IX.isEmpty(r) || r == 0 ? '' : ('最低消费' + r + Hualala.Constants.CashUnit + ', ');
 								break;
 							case "advanceTime" : 
-								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预订时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
 								break;
 							case "noticeTime" : 
 								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅, ' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
@@ -1717,7 +1752,7 @@
 						var r = $XP(businessInfo, k, '');
 						switch(k) {
 							case "servicePeriods" :
-								r = '开放时间段：' + r.replace(',', '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
+								r = '开放时间段：' + r.replace(/,/g, '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
 								break;
 							case "holidayFlag" : 
 								r = (r == 0 ? '工作日及节假日均开放' : (r == 1 ? '仅节假日开放' : '仅工作日开放')) + ', ';
@@ -1755,13 +1790,13 @@
 						var r = $XP(businessInfo, k, '');
 						switch(k) {
 							case "servicePeriods" :
-								r = '开放时间段：' + r.replace(',', '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
+								r = '开放时间段：' + r.replace(/,/g, '-').replace(/([\d]{2})([\d]{2})/g, '$1:$2') + ', ';
 								break;
 							case "holidayFlag" : 
 								r = (r == 0 ? '工作日及节假日均开放' : (r == 1 ? '仅节假日开放' : '仅工作日开放')) + ', ';
 								break;
 							case "advanceTime":
-								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预定时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
+								r = IX.isEmpty(r) || r == 0 ? '不限制顾客提前预订时间, ' : ('顾客需提前' + getMinutIntervalLabel(r) + '预订, ');
 								break;
 							case "noticeTime" : 
 								r = IX.isEmpty(r) || r == 0 ? '订单立即通知餐厅, ' : ('订单提前' + getMinutIntervalLabel(r) + '通知餐厅, ');
@@ -1851,7 +1886,8 @@
 					open : open,
 					desc : $XP(el, 'desc', ''),
 					serviceFeatures : $XP(shop, 'serviceFeatures', ''),
-					hideBtn : (name == 'bi' || name == 'crm') ? 'disabled hidden' : ''
+					hideBtn : (name == 'bi' || name == 'crm') ? 'disabled hidden' : '',
+					hide :(name!='spot_order') ?'disabled hidden':''
 				};
 			});
 		},
@@ -2081,8 +2117,10 @@
 				successFn : function (mShop, $trigger, settleInfo) {
 					var settleUnitID = $XP(settleInfo, 'settleUnitID'),
 						settleUnitName = $XP(settleInfo, 'settleUnitName', '');
+						bindOperateName=(settleUnitID!= undefined && settleUnitID.length!=0)? '修改' : '绑定结算账户';
 					$trigger.attr('data-id', settleUnitID);
 					$trigger.parent().find('.account-name').html(settleUnitName);
+					$trigger.parent().find('.bind-settle').html(bindOperateName);
 					mShop.set({
 						settleID : settleUnitID,
 						settleName : settleUnitName
@@ -2176,6 +2214,915 @@
 		}
 	});
 	Hualala.Shop.ShopListController = ShopListController;
+})(jQuery, window);;(function ($, window) {
+    IX.ns('Hualala.Shop');
+// 初始化店铺菜品页面
+    Hualala.Shop.initCreateFood = function (params)
+    {
+        if(!params) return;
+
+        var G = Hualala.Global,
+            U = Hualala.UI,
+            C = Hualala.Common,
+            topTip = U.TopTip;
+
+        var shopID = params,
+            groupID = $XP(Hualala.getSessionSite(), 'groupID', '');
+        imgHost = G.IMAGE_RESOURCE_DOMAIN + '/',
+            imgRoot = G.IMAGE_ROOT + '/';
+
+        var categories = null, //菜品分类
+            departments = null, //部门
+            foodParams = {},//添加菜品后用于向服务器发送的数据
+            delUnitItemIDs = [],
+            searchFoods = []; //修改菜品时删除的规格的itemID
+
+        //为添加菜品的form表单做验证
+        var registerValidateFoodInfo = function (modalDialog, foodID) {
+            var $foodBasic = modalDialog._.body.find('form.form-food'),
+                $foodDetail = modalDialog._.body.find('form.form-food-detail'),
+                $foodTaste = modalDialog._.body.find('form.form-taste');
+            $foodBasic.bootstrapValidator({
+                excluded: ':disabled',
+                fields: {
+                    foodCategoryID: {
+                        validators: {
+                            notEmpty: {message: '分类不能为空'}
+                        }
+                    },
+                    foodCode: {
+                        validators: {
+                            stringLength: {
+                                message: '商品编号不能超过50个字符',
+                                min: 0,
+                                max: 50
+                            }
+                        }
+                    },
+                    foodName: {
+                        validators: {
+                            notEmpty: {message: '商品名称不能为空'},
+                            stringLength: {
+                                message: '商品名称不能超过150个字符',
+                                max: 150
+                            }
+                            //ajaxValid: {
+                            //    api: 'checkFoodNameExist',
+                            //    data: {shopID: shopID, groupID: groupID, foodID: foodID}
+                            //}
+                        }
+                    }
+                }
+            });
+            $foodDetail.bootstrapValidator({
+                excluded: ':disabled',
+                fields: {
+                    minOrderCount: {
+                        validators: {
+                            notEmpty: {message: '起售份数不能为空'},
+                            integer: {message: '起售份数必须是整数'},
+                            between: {min: 1, max: 99, message: '起售份数必须在1到99之间'}
+                        }
+                    },
+                    takeoutPackagingFee: {
+                        validators: {
+                            regexp: {
+                                regexp: /^\d*\.?\d{0,2}$/,
+                                message: '必须是最多保留两位小数的值'
+                            }
+                        }
+                    }
+                }
+            });
+            $foodTaste.bootstrapValidator({
+                excluded: ':disabled',
+                fields: {
+                    makingMethodList: {
+                        validators: {
+                            stringLength: {
+                                trim: true,
+                                max: 500,
+                                message: '作法最多500个字符'
+                            }
+                        }
+                    },
+                    tasteList: {
+                        validators: {
+                            stringLength: {
+                                trim: true,
+                                max: 300,
+                                message: '口味最多300个字符'
+                            }
+                        }
+                    }
+                }
+            });
+        };
+        Hualala.Shop.RegisterValidateFoodInfo = registerValidateFoodInfo;
+
+        //对菜品添加modal的不同操作需要渲染不同的footer
+        var compileModalFooter = function (isModalFooter) {
+            var modalFooter = Handlebars.compile(Hualala.TplLib.get('tpl_modal_footer'));
+            return modalFooter({isModalFooter: isModalFooter});
+        };
+        Hualala.Shop.CompileModalFooter = compileModalFooter;
+
+
+        var renderSelect = function (createFoodModal, food) {
+            var customSelect = Handlebars.compile(Hualala.TplLib.get('tpl_select')),
+                loadParams = {shopID: shopID};
+            C.loadData('queryCategories', loadParams, categories).done(function (records) {
+                if (!records || records.length == 0) {
+                    topTip({msg: '请先添加菜品分类！', type: 'danger'});
+                    return;
+                }
+                categories = categories || {
+                    options: _.map(IX.clone(records), function (category) {
+                        return {
+                            name: category.foodCategoryName,
+                            value: category.foodCategoryID,
+                            selected: (food && food.foodCategoryID == category.foodCategoryID) ? 'selected' : ''
+                        };
+                    }),
+                    name: 'foodCategoryID'
+                };
+                var $select = createFoodModal._.body.find('form.form-food').find('div[name="categoriesSelect"]');
+                $select.append($(customSelect(categories)));
+                if(food && food.isSetFood == 1) {
+                    //初始化套餐的搜索商品按钮
+                    var $searchBtn = createFoodModal._.body.find('#setFoodDetail').find('.search-btn'),
+                        searchBtnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_input_group'));
+                    $searchBtn.append($(searchBtnTpl(categories)));
+                }
+            });
+
+            //添加菜品暂时先不设置部门
+            //C.loadData('getSaasDepartments', IX.inherit({departmentType: '1,3'}, loadParams)).done(function (records) {
+            //    if(!records || records.length == 0) records = [];
+            //    departments = {
+            //        defaultOption: {name: '商品分类的部门', value: ''},
+            //        options: _.map(IX.clone(records), function (d) {
+            //            return {
+            //                name: d.departmentName, value: d.departmentKey,
+            //                selected: (food && food.departmentKey == d.departmentKey) ? 'selected' : ''
+            //            };
+            //        }), name: 'departmentKey'
+            //    };
+            //    var $select = createFoodModal._.body.find('form.form-food').find('div[name="departmentsSelect"]');
+            //    $select.append($(customSelect(departments)));
+            //});
+        };
+        Hualala.Shop.RenderSelect = renderSelect;
+
+        //添加菜品相关属性的开关
+        var createFoodAttrSwitch = function(modal) {
+            var $switchCheckbox = modal._.body.find('.form-food input.status');
+            _.each($switchCheckbox, function (input) {
+                $(input).bootstrapSwitch({
+                    state: !!$(input).data('status'),
+                    onColor : 'success',
+                    onText : '已启用',
+                    offText : '未启用'
+                });
+            });
+            $switchCheckbox.on('switchChange.bootstrapSwitch', function (el, state) {
+                foodParams[$(el.target).attr('name')] = state ? 1 : 0;
+            });
+        };
+        Hualala.Shop.CreateFoodAttrSwitch = createFoodAttrSwitch;
+
+        var registerEditFoodPartial = function () {
+            Handlebars.registerPartial('customSelect', Hualala.TplLib.get('tpl_select'));
+            Handlebars.registerPartial('goodUnit', Hualala.TplLib.get('tpl_good_unit'));
+            Handlebars.registerPartial('goodUnitTr', Hualala.TplLib.get('tpl_good_unit_tr'));
+            Handlebars.registerPartial('addUnitBtn', Hualala.TplLib.get('tpl_good_unit_add_btn'));
+            Handlebars.registerPartial('delUnitBtn', Hualala.TplLib.get('tpl_good_unit_del_btn'));
+        };
+
+        Hualala.Shop.RegisterEditFoodPartial = registerEditFoodPartial;
+
+        //绑定规格操作
+        function bindUnitOperate(modalDialog) {
+            modalDialog._.body.off('click', '.good-unit td a.glyphicon')
+                .on('click', '.good-unit td a.glyphicon-plus-sign', function () {
+                    addGoodUnit(modalDialog._.body.find('.good-unit'));
+                }).on('click', '.good-unit td a.glyphicon-minus-sign', function () {
+                    delGoodUnit(modalDialog._.body.find('.good-unit'));
+                });
+        }
+
+        var renderInputGroup = function (modalDialog) {
+            C.loadData('queryCategories', {shopID: shopID}, categories).done(function (records) {
+                categories = categories || {
+                    options: _.map(IX.clone(records), function (category) {
+                        return {
+                            name: category.foodCategoryName,
+                            value: category.foodCategoryID
+                        };
+                    })
+                };
+                var $searchBtn = modalDialog._.body.find('#setFoodDetail').find('.search-btn'),
+                    searchBtnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_input_group'));
+                $searchBtn.append($(searchBtnTpl(categories)));
+            });
+        };
+        Hualala.Shop.RenderInputGroup = renderInputGroup;
+
+        //编译模态框的body
+        function createModalCompile() {
+            //not3W线上需要屏蔽掉设置套餐的接口Todo
+            var createFoodData = {
+                    detailDisplay: 'hidden',
+                    setFoodDisplay: 'hidden',
+                    goodUnits: {tableHeads: ['', '规格名称*', '售价(￥)*', '会员价(￥)', '原价(￥)', ''], lessThanFourUnits: true},
+                    takeawayTypes: {options: Hualala.TypeDef.FoodAttrSelect.TakeawayType, name: 'takeawayTag'},
+                    hotTags: {options: Hualala.TypeDef.FoodAttrSelect.HotTag, name: 'hotTag'},
+                    foodSettings: Hualala.TypeDef.FoodSettings,
+                    foodAttrSNewR: Hualala.TypeDef.FoodAttrSNewR,
+                    food: {units: [{unit: '', price: '', vipPrice: '', prePrice: '', index: '1*', lessThanFourUnits: true}], isActive: '1', isOpen: '1', isDiscount: '1'},
+                    not3W: window.location.host != 'dianpu.hualala.com'
+                },
+                createFoodTpl = Handlebars.compile(Hualala.TplLib.get('tpl_edit_good'));
+            return createFoodTpl(createFoodData);
+        }
+        //创建菜品
+        var createFood = function () {
+            registerEditFoodPartial();
+            var modalBody = createModalCompile(),
+                createFoodModal = new U.ModalDialog({
+                    id: 'createFood',
+                    title: '添加菜品',
+                    hideCloseBtn: false,
+                    backdrop: 'static',
+                    html: modalBody,
+                    afterHide: function () {
+                        U.clearEditors();
+                    }
+                }).show();
+            initFoodParams();
+            renderSelect(createFoodModal);
+            displayUnits(createFoodModal._.body.find('.good-unit'));
+            createFoodAttrSwitch(createFoodModal);
+            registerValidateFoodInfo(createFoodModal);
+            var foodDescEditor = U.createEditor('goodDescEditor');
+            bindOperatorEvent(createFoodModal, {foodDescEditor: foodDescEditor});
+            createFoodModal._.footer.empty().append($(compileModalFooter(false)));
+        };
+
+        //图片上传本地预览
+        function previewImg(fileInput, $img)
+        {
+            if (fileInput.files && fileInput.files[0])
+            {
+                var reader = new FileReader();
+                reader.onload = function(e){
+                    $img.attr('src', e.target.result);
+                }
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
+
+        //上传图片绑定事件
+        function bindFileUpload($foodPic) {
+            var $img = $foodPic.find('img'),
+                imgSrc = $img.attr('src'),
+                $elem = $foodPic.find('label');
+
+            U.fileUpload($elem, function(rsp)
+                {
+                    var path = rsp.url, hwp = rsp.imgHWP || '';
+                    foodParams.imgePath = path;
+                    foodParams.imageHWP = hwp;
+                    if(!window.FileReader)
+                        $foodPic.find('img').attr('src', getFoodPicUrl(path, hwp));
+                },
+                {
+                    onBefore: function($elem, $file)
+                    {
+                        imgSrc = $img.attr('src');
+                        $foodPic.addClass('loading');
+                        if(window.FileReader) previewImg($file[0], $img);
+                    },
+                    onFail: function() { if(window.FileReader) $img.attr('src', imgSrc); },
+                    onAlways: function() { $foodPic.removeClass('loading'); },
+                    accept: 'image/png,image/jpeg,image/jpg'
+                });
+        }
+
+
+        //添加菜品规格
+        function addGoodUnit($goodUnits) {
+            var goodUnit = Handlebars.compile(Hualala.TplLib.get('tpl_good_unit_tr')),
+                $unitsBody = $goodUnits.find('table tbody');
+            $unitsBody.find('tr').last().find('td').last().empty();
+            var unitsCount = $unitsBody.find('tr').length;
+            $unitsBody.append($(goodUnit({customLast: true, index: unitsCount + 1 , lessThanFourUnits: unitsCount < 3})));
+        }
+
+        //删除菜品规格
+        function delGoodUnit($goodUnits) {
+            var addGoodBtn = Handlebars.compile(Hualala.TplLib.get('tpl_good_unit_add_btn')),
+                delGoodBtn = Handlebars.compile(Hualala.TplLib.get('tpl_good_unit_del_btn')),
+                $unitsBody = $goodUnits.find('table tbody');
+            var $delTr = $unitsBody.find('tr').last();
+            if($delTr.data('itemid')) delUnitItemIDs.push($delTr.data('itemid'));
+            $delTr.remove();
+            var unitsCount = $unitsBody.find('tr').length;
+            $unitsBody.find('tr').last().find('td').last().append(addGoodBtn({lessThanFourUnits: true}));
+            if(unitsCount > 1) $unitsBody.find('tr').last().find('td').last().append(delGoodBtn({customLast: unitsCount > 0}));
+
+        }
+
+        //初始化菜品的参数
+        function initFoodParams() {
+            foodParams = {};
+            foodParams.isActive = 1;
+            foodParams.isOpen = 1;
+            foodParams.isDiscount = 1;
+            foodParams.minOrderCount = 1;
+            foodParams.takeoutPackagingFee = 0;
+            foodParams.adsID = 0;
+            foodParams.foodID = 0;
+        }
+
+        function clearUnits() {
+            //清空所有的units
+            var unitKeys = [];
+            _.each(foodParams, function (value, key) {
+                var unitKey = /^(unit|price|prePrice|vipPrice)\d$/i.test(key);
+                if(unitKey) unitKeys.push(key);
+            });
+            foodParams = _.omit(foodParams, unitKeys);
+            return foodParams;
+        }
+
+        var parseUnit = function (modalDialog) {
+            //重新组装units
+            var units = {},
+                $unitTrs = modalDialog._.body.find('.good-unit table tbody tr');
+            _.each($unitTrs, function (tr, index) {
+                units['itemID' + (index + 1)] = $(tr).data('itemid') || '';
+                _.each($(tr).find('td input'), function (input) {
+                    units[$(input).attr('name') + (index + 1)] = $(input).val();
+                });
+            });
+            if (delUnitItemIDs.length > 0) {
+                _.each(delUnitItemIDs, function (itemID, index) {
+                    units['itemID' + (index + 1 + $unitTrs.length)] = itemID;
+                });
+            }
+            return units;
+        };
+        Hualala.Shop.ParseUnit = parseUnit;
+
+
+        function bindTabEvent(modalDialog) {
+            modalDialog._.body.find('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                if ($(e.target).attr('href')  == '#goodDesc') {
+                    modalDialog._.footer.find('.btn.btn-ok').text('保存图文详情');
+                } else if($(e.target).attr('href') == '#setFoodDetail') {
+                    modalDialog._.footer.find('.btn.btn-ok').text('保存套餐');
+                }else{
+                    modalDialog._.footer.find('.btn.btn-ok').text('保存');
+                }
+            });
+
+        }
+
+        //组装表格显示的col
+        function mapColItemRenderData(row, rowIdx, colKey) {
+            var r = {value : "", text : ""}, v = $XP(row, colKey, '');
+            switch(colKey) {
+                case "rowControl" :
+                    r = {
+                        type : 'button',
+                        btns : [
+                            {
+                                label : '添加',
+                                link : 'javascript:void(0);',
+                                key : $XP(row, 'foodID', ''),
+                                type : 'addSetFood'
+                            }
+                        ]
+                    };
+                    break;
+                case "unit":
+                    r.value = v;
+                    r.text = C.Math.prettyPrice($XP(row, 'price')) + '/' + v;
+                    break;
+                default :
+                    r.value = r.text = $XP(row, colKey, '');
+                    break;
+            }
+            return r;
+        }
+
+        //组装表格显示的rows
+        function mapRenderFoods(records, tableHeaderCfg) {
+            var self = this;
+            var tblClz = "table-bordered table-striped table-hover ix-data-report",
+                tblHeaders = IX.clone(tableHeaderCfg);
+            var mapColsRenderData = function (row, idx) {
+                var colKeys = _.map(tblHeaders, function (el) {
+                    return {key: $XP(el, 'key', ''), clz: $XP(el, 'clz', '')};
+                });
+                var col = {clz: '', type: 'text'};
+                var cols = _.map(colKeys, function (k, i) {
+                    var r = mapColItemRenderData(row, idx, $XP(k, 'key', ''));
+                    return IX.inherit(col, r, {clz: $XP(k, 'clz', '')});
+                });
+                return cols;
+            };
+            var rows = _.map(records, function (row, idx) {
+                return {
+                    clz: '',
+                    cols: mapColsRenderData(row, idx)
+                };
+            });
+            return {
+                tblClz: tblClz,
+                isEmpty: !records || records.length == 0 ? true : false,
+                colCount: tableHeaderCfg.length,
+                thead: tableHeaderCfg,
+                rows: rows
+            };
+
+        }
+
+        function bindSetFoodEvent(modalDialog) {
+            var categoryTableTpl = Handlebars.compile(Hualala.TplLib.get('tpl_category')),
+                categoryTrTpl = Handlebars.compile(Hualala.TplLib.get('tpl_set_food_category')),
+                foodTrTpl = Handlebars.compile(Hualala.TplLib.get('tpl_set_food_tr'));
+            Handlebars.registerPartial("colBtns", Hualala.TplLib.get('tpl_base_grid_colbtns'));
+            Handlebars.registerHelper('chkColType', function (conditional, options) {
+                return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+            });
+            var categoryTH = { tableHeads: ['商品名称', '售价(￥)/规格', '数量', '加价(￥)', '选择', '操作'], tableClass: 'set-food' };
+            var modalBody = modalDialog._.body,
+                $setFood = modalBody.find('#setFoodDetail'),
+                $categoryForm = $setFood.find('.set-foods'),
+                $categoryTbody = $categoryForm.find('table tbody');
+            var scrollTo = function($current) {
+                var currentTrIndex = $current.index(),
+                    setListScrollHeight = $current[0].scrollHeight * (currentTrIndex + 2),
+                    setListHeight = $categoryForm.height();
+                if(setListHeight < setListScrollHeight) {
+                    $categoryForm.scrollTop(setListScrollHeight - setListHeight);
+                }
+            };
+            modalBody.on('click', '#setFoodDetail button[name="addCategory"]', function () {
+                //在套餐中添加分类
+                if ($categoryTbody.length == 0) {
+                    var $table = $(categoryTableTpl(categoryTH));
+                    $categoryForm.append($table);
+                    $categoryTbody = $categoryForm.find('table tbody');
+                }
+                $categoryTbody.find('tr.category').removeClass('success');
+                $categoryTbody.append($(categoryTrTpl({selectedClass: 'success', foodItemsLength: 0})));
+                scrollTo($categoryTbody.find('tr:last'));
+            }).on('click', '#setFoodDetail .good-list .search-btn .input-group ul.dropdown-menu li a', function () {
+                //下拉菜单选择商品分类事件
+                var $el = $(this),
+                    categoryName = $el.text(),
+                    categoryID = $el.attr('data-id') || '',
+                    $dropDownBtn = $el.parents('ul').prev();
+                $dropDownBtn.find('span.selected').attr('data-id', categoryID).text(categoryName);
+            }).on('click', '#setFoodDetail button[name="search"]', function () {
+                //搜索商品
+                renderSearchFood(modalDialog, 1);
+            }).on('click', '#setFoodDetail .search-foods table tr td a[data-type="addSetFood"]', function () {
+                //从查询的菜品中添加菜品到套餐中
+                var selCategory = $categoryTbody.find('tr.category.success');
+                if (selCategory.length == 0) return;
+                var foodID = $(this).data('key'),
+                    food = _.findWhere(searchFoods, {foodID: foodID + ''}),
+                    tplData = IX.inherit(food, {number: 1, price: C.Math.prettyPrice(food.price)}),
+                    $nextCategory = selCategory.nextAll('.category').first(),
+                    foodTr = foodTrTpl(tplData);
+                //在套餐指定的分类里添加一条商品
+                $nextCategory.length == 0 ? $categoryTbody.append(foodTr) : $nextCategory.before(foodTr);
+                //修改分类的数量
+                var $categoryNum = selCategory.find('span.categoryNum');
+                $categoryNum.text(parseInt($categoryNum.text()) + 1);
+                scrollTo($nextCategory.length == 0 ? $categoryTbody.find('tr:last') : $nextCategory.prev());
+            }).on('click', '#setFoodDetail .set-foods table tr.category', function () {
+                var $this = $(this);
+                $this.siblings('.category').removeClass('success');
+                $this.addClass('success');
+            }).on('click', '#setFoodDetail .set-foods table tr td a', function () {
+                //删除套餐里的分类或某个菜品
+                var $this = $(this),
+                    $tr = $this.parents('tr'),
+                    isCategory = $tr.hasClass('category');
+                if (isCategory) {
+                    //删除分类
+                    $tr.nextUntil('tr.category').remove();
+                    $tr.remove();
+                } else {
+                    //修改分类的数量
+                    var selCategory = $tr.prevAll('.category').first(),
+                        $categoryNum = selCategory.find('span.categoryNum');
+                    $categoryNum.text(parseInt($categoryNum.text()) - 1);
+                    //删除菜品
+                    $tr.remove();
+                }
+            }).on('change', '#setFoodDetail .set-foods table tr td input[name="selected"]', function () {
+                var $el = $(this),
+                    $currentTr = $el.parents('tr'),
+                    $currentCategory = $currentTr.prevAll('.category').first(),
+                    $selectedNum = $currentCategory.find('td input[name="chooseCount"]'),
+                    selNum = $selectedNum.val() - 0;
+                $selectedNum.val($el.prop('checked') ? (selNum + 1) : (selNum - 1))
+            }).on('click', '#setFoodDetail .search-foods .page-selection ul li a', function () {
+                //搜索的商品翻页
+                var pageNo = $(this).parents('li').attr('data-pg');
+                renderSearchFood(modalDialog, pageNo);
+            });
+        }
+
+        //渲染搜索的商品
+        function renderSearchFood(modalDialog, pageNo) {
+            var foodsResultTpl = Handlebars.compile(Hualala.TplLib.get('tpl_base_datagrid')),
+                foodsTH = [
+                    {key: 'foodName', clz: 'col-md-5 text', label: '商品名称'},
+                    {key: 'unit', clz: 'col-md-4 text', label: '原价(￥)/规格'},
+                    {key: 'rowControl', label: '操作'}
+                ];
+            var $setFood = modalDialog._.body.find('#setFoodDetail'),
+                $searchFoods = $setFood.find('.search-foods'),
+                $foodsForm = $searchFoods.find('.foods'),
+                $foodsPager = $searchFoods.find('.page-selection'),
+                $searchBtn = $searchFoods.prev(),
+                $searchName = $searchBtn.find('.input-group input[name="foodCategoryName"]'),
+                $addArrow = $setFood.find('.glyphicon-arrow-left'),
+                searchParams = {
+                    shopID: shopID,
+                    foodCategoryID: $searchBtn.find('span.selected').attr('data-id'),
+                    keyword: $searchName.val(),
+                    pageNo: pageNo, pageSize: 15
+                };
+            Hualala.Global.searchFood(searchParams, function (rsp) {
+                if (rsp.resultcode != '000') {
+                    Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                searchFoods = rsp.data.records || [];
+                if(searchFoods.length == 0) {
+                    $addArrow.addClass('hidden');
+                } else {
+                    $addArrow.removeClass('hidden');
+                }
+                $foodsForm.empty().append(foodsResultTpl(mapRenderFoods(rsp.data.records, foodsTH)));
+                var page = rsp.data.page;
+                if(page.pageNo == 1) $foodsPager.IXPager({total: $XP(page, 'pageCount', 0), page: pageNo, maxVisible : 5, href: 'javascript:void(0)'});
+            });
+        }
+        //绑定模态框的操作
+        var bindOperatorEvent = function (modalDialog, food) {
+            var modalBody = modalDialog._.body;
+            foodParams.foodID = food.foodID;
+            foodParams.adsID = food.adsID;
+            foodParams.imgePath = food.imgePath;
+            foodParams.imageHWP = food.imageHWP;
+
+            //绑定切换标签页的操作
+            bindTabEvent(modalDialog);
+            //绑定套餐设置标签页的操作
+            if (food.isSetFood == 1) {
+                bindSetFoodEvent(modalDialog);
+            }
+
+            modalBody.on('change', '#goodBasicInfo form input[name="isSetFood"]', function () {
+                //套餐的规格限制一个并且规格名称必须是“套”不可修改
+                var $unitTable = modalBody.find('#goodBasicInfo .good-unit table'),
+                    unitTrTpl = Handlebars.compile(Hualala.TplLib.get('tpl_good_unit_tr')),
+                    unitData = $(this).prop('checked') ? {disabled: 'disabled', unit: '套'} : {index: '1*', lessThanFourUnits: true};
+                $unitTable.find('tbody').empty().append(unitTrTpl(unitData));
+            }).on('change', '#goodDetailInfo form select[name="takeawayTag"]', function () {
+                var $el = $(this),
+                    $package = $el.parents('.form-group').next('.form-group.package'),
+                    $packageVal = $package.find('input[name="takeoutPackagingFee"]');
+                if($el.val() == 0) {
+                    $packageVal.val('');
+                    $package.addClass('hidden');
+                } else {
+                    $packageVal.val('');
+                    $package.removeClass('hidden');
+                }
+            });
+            modalDialog._.footer.on('click', 'button[name="save-food"]', function () {
+                if (!isFoodBasicInfoValid(modalDialog)) return;
+                saveFood(modalDialog, function (records) {
+                    //显示其它标签页
+                    var setFood = foodParams.isSetFood ? '' : '.setFood';
+                    modalBody.find('ul.nav-tabs li:not('+setFood+')').removeClass('hidden');
+                    modalBody.find('.form-food input[name="isSetFood"]').prop('disabled', true);
+                    var $goodUnit = modalBody.find('.good-unit table tbody');
+                    if (records && records.length > 0) {
+                        modalBody.find('#goodBasicInfo form input[name="foodCode"]').val(records[0].foodCode);
+                        $goodUnit.empty().append($(Hualala.Shop.GetUnitsTpl(records[0].units)));
+                        modalBody.find('#goodDetailInfo .form-group input[name="minOrderCount"]').val(foodParams.minOrderCount);
+                        modalDialog._.footer.empty().append($(compileModalFooter(true)));
+                        //如果是套餐，需要处理规格
+                        if(records[0].isSetFood == 1 && window.location.host != 'dianpu.hualala.com') {
+                            $goodUnit.find('tr td input[name="unit"]').attr('disabled', true);
+                            $goodUnit.find('tr td span').text('规格');
+                            $goodUnit.find('tr td:last').empty();
+                            modalBody.find('#setFoodDetail .set-list span[name="foodName"]').text(foodParams.foodName);
+                            renderInputGroup(modalDialog);
+                            bindSetFoodEvent(modalDialog);
+                        }
+                    }
+                });
+            }).on('click', 'button[name="save-create-food"]', function () {
+                if (!isFoodBasicInfoValid(modalDialog)) return;
+                saveFood(modalDialog, function (records) {
+                    //清空modal的数据
+                    foodParams = {};
+                    modalBody.empty().append($(createModalCompile()));
+                    initFoodParams();
+                    renderSelect(modalDialog);
+                    displayUnits(modalDialog._.body.find('.good-unit'));
+                    createFoodAttrSwitch(modalDialog);
+                    registerValidateFoodInfo(modalDialog);
+                    bindFileUpload(modalBody.find('.food-pic'));
+                    bindTabEvent(modalDialog);
+                    U.clearEditors();
+                    food.foodDescEditor = U.createEditor('goodDescEditor');
+                });
+            }).on('click', 'button[name="save-close"]', function () {
+                if (!isFoodBasicInfoValid(modalDialog)) return;
+                saveFood(modalDialog, modalDialog.hide);
+            }).on('click', 'button.btn-ok', function () {
+                var btnText = $(this).text();
+                if (btnText == '保存') {
+                    var isAllInfoValid = isFoodBasicInfoValid(modalDialog)
+                        && isFoodDetailInfoValid(modalDialog)
+                        && isFoodTasteInfoValid(modalDialog);
+                    if (!isAllInfoValid) return;
+                    saveFood(modalDialog, function (records) {
+                        var $goodUnit = modalBody.find('.good-unit table tbody');
+                        if (records && records.length > 0) {
+                            $goodUnit.empty().append($(Hualala.Shop.GetUnitsTpl(records[0].units)));
+                            if(records[0].isSetFood == 1) {
+                                $goodUnit.find('tr td input[name="unit"]').attr('disabled', true);
+                                $goodUnit.find('tr td span').text('规格');
+                                $goodUnit.find('tr td:last').empty();
+                                modalBody.find('#setFoodDetail .set-list span[name="foodName"]').text(foodParams.foodName);
+                            }
+                        }
+                    });
+                } else if(btnText == '保存图文详情') {
+                    var params = _.pick(foodParams, 'groupID', 'foodID', 'adsID');
+                    params.body = food.foodDescEditor.getContent();
+                    params.shopID = shopID;
+                    C.loadData('setFoodDescription', params, null, 'data').done(function(data)
+                    {
+                        topTip({msg: '菜品说明信息保存成功！', type: 'success'});
+                        foodParams.adsID = data.adsID;
+                    });
+                } else if(btnText == '保存套餐') {
+                    var $setFoodTable = modalBody.find('#setFoodDetail .set-foods table.set-food');
+                    if (checkSetFoodValid($setFoodTable)) {
+                        var foodLst = parseSetFoodDetail($setFoodTable),
+                            params = IX.inherit(
+                                {shopID: shopID, foodID: foodParams.foodID},
+                                {setFoodDetailJson: JSON.stringify(foodLst || {})},
+                                {setFoodDetailLst: _.map($setFoodTable.find('tbody tr.food td.foodName'), function(td) { return $(td).text();}).join(',')}
+                            );
+                        Hualala.Global.updateSetFoodDetail(params, function (rsp) {
+                            if(rsp.resultcode != '000') {
+                                Hualala.UI.TopTip({msg: rsp.resultcode, type: 'danger'});
+                                return;
+                            }
+                            Hualala.UI.TopTip({msg: '保存成功', type: 'success'});
+                        });
+                    }
+                }
+            });
+            bindUnitOperate(modalDialog);
+            bindFileUpload(modalBody.find('.food-pic'));
+        };
+
+        Hualala.Shop.BindOperatorEvent = bindOperatorEvent;
+
+        function checkSetFoodValid($table) {
+            var categoryTrs = $table.find('tr.category'),
+                isValid = true;
+            _.each(categoryTrs, function (tr) {
+                var chooseCount = parseInt($(tr).find('td input[name="chooseCount"]').val()),
+                    allCount = parseInt($(tr).find('td span.categoryNum').text());
+                if (!$(tr).find('td input[name="categoryName"]').val()) {
+                    isValid = false;
+                    Hualala.UI.TopTip({msg: '分类名称不能为空', type: 'danger'});
+                    return;
+                }
+            });
+            return isValid;
+        }
+
+        function parseSetFoodDetail($setFoodTable) {
+            return { foodLst: _.map($setFoodTable.find('tbody tr.category'), function (tr) {
+                return {
+                    foodCategoryName: $(tr).find('td input[name="categoryName"]').val(),
+                    chooseCount: $(tr).find('td input[name="chooseCount"]').val() || '0',
+                    items: _.map($(tr).nextUntil('.category'), function(food){
+                        var priceUnit = $(food).find('td.unit').text().split('/');
+                        return {
+                            foodKey: $(food).data('foodkey'),
+                            unitKey: $(food).data('unitkey'),
+                            foodName: $(food).find('td.foodName').text(),
+                            price: priceUnit[0],
+                            unit: priceUnit[1],
+                            number: $(food).find('td input[name="number"]').val() || '0',
+                            addPrice: $(food).find('td input[name="addPrice"]').val() || '0',
+                            selected: +$(food).find('td input[name="selected"]').prop('checked')
+                        };
+                    })
+                };
+            })};
+        }
+
+        function parseSwitchStatus($form) {
+            var $setFoodCheckbox = $form.find('input[name="isSetFood"]');
+            foodParams.isSetFood = ($setFoodCheckbox.length > 0 && $setFoodCheckbox.prop('checked')) ? 1 : 0;
+            _.each($form.find('input.status'), function (input) {
+                foodParams[$(input).attr('name')] = $(input).bootstrapSwitch('state') ? 1 : 0;
+            });
+        }
+
+        //组合往后台传的参数的值
+        function parseFoodParams(modalDialog) {
+            var $formFood = modalDialog._.body.find('form.form-food'),
+                $formFoodDetail = modalDialog._.body.find('form.form-food-detail'),
+                $formTaste = modalDialog._.body.find('form.form-taste');
+            _.extend(foodParams, C.parseForm($formFood));
+            parseSwitchStatus($formFood);
+            foodParams = IX.inherit(foodParams, parseUnit(modalDialog));
+            if (foodParams.foodID) {
+                //解析详细信息的数据
+                _.extend(foodParams, C.parseForm($formFoodDetail));
+                //解析口味作法的数据
+                _.extend(foodParams, C.parseForm($formTaste));
+                //把详细信息的checkbox获取的数据转化成成字符串
+                _.each($formFoodDetail.find('.setting-label label input'), function (input) {
+                    foodParams[$(input).attr('name')] = $(input).prop('checked') ? 1 : 0;
+                });
+                _.each($formFoodDetail.find('.setting-snewr label input'), function (input) {
+                    foodParams[$(input).val()] = $(input).prop('checked') ? 1 : 0;
+                });
+                foodParams = _.omit(foodParams, 'foodIco');
+            }
+        }
+
+        function displayError($input) {
+            var $formGroup = $input.parents('.form-group'),
+                $status_i = $formGroup.find('i.form-control-feedback'),
+                $inputParent = $input.parent(),
+                $smallMessage = $inputParent.find('small[name="foodNameExist"]');
+            $formGroup.removeClass('has-success').addClass('has-error');
+            $status_i.removeClass('glyphicon-ok').addClass('glyphicon-remove');
+            if ($smallMessage.length == 0) {
+                $inputParent.append($('<small class="help-block" name="foodNameExist" style="display: block;">商品名称重复</small>'));
+            } else{
+                $smallMessage.css('display', 'block');
+            }
+
+        }
+
+        function displaySuccess($input) {
+            var $formGroup = $input.parents('.form-group'),
+                $status_i = $formGroup.find('i.form-control-feedback'),
+                $smallMessage = $formGroup.find('small[name="foodNameExist"]');
+            $formGroup.removeClass('has-error').addClass('has-success');
+            $status_i.removeClass('glyphicon-remove').addClass('glyphicon-ok');
+            if ($smallMessage) $smallMessage.css('display', 'none');
+        }
+        //保存菜品信息
+        function saveFood(modalDialog, cbFn) {
+            parseFoodParams(modalDialog);
+            var checkFoodNameParams = {shopID: shopID, groupID: groupID, foodName: foodParams.foodName},
+                $foodNameInput = $('input[name="foodName"]');
+            if(foodParams.foodID) checkFoodNameParams = IX.inherit({}, checkFoodNameParams, {foodID: foodParams.foodID});
+            G.checkFoodNameExist(checkFoodNameParams, function (rsp) {
+                if(rsp.resultcode != '000') {
+                    Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                    displayError($foodNameInput);
+                    return;
+                }
+                var $foodNameMsg = $foodNameInput.siblings('small[name="foodNameExist"]');
+                if($foodNameMsg.length != 0 && $foodNameMsg.css('display') == 'block') $foodNameMsg.css('display', 'none');
+                foodParams.shopID = shopID;
+                foodParams.groupID = groupID;
+                foodParams.takeoutPackagingFee = foodParams.takeoutPackagingFee || 0;
+                foodParams.minOrderCount = foodParams.minOrderCount || 1;
+                foodParams.description = C.encodeTextEnter(foodParams.description);
+                //屏蔽掉部门，但是保存的时候仍然要保存部门，默认给个''值
+                foodParams.departmentKey = '';
+                var api = foodParams.foodID ? 'updateFood' : 'createSaasGood';
+                G[api](foodParams, function (rsp) {
+                    if (rsp.resultcode != '000') {
+                        topTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    foodParams.foodID = foodParams.foodID || rsp.data.records[0].foodID;
+                    topTip({msg : '保存成功', type: 'success'});
+                    foodParams = clearUnits();
+                    delUnitItemIDs = [];
+                    if(IX.isFn(cbFn)) cbFn(rsp.data.records);
+                    Hualala.Shop.LoadFoods(true);
+                });
+            });
+        }
+
+
+        var checkUnitValid = function(modal) {
+            var units = modal._.body.find('.good-unit table tbody tr'),
+                isValid = true;
+            _.each(units, function (unit, index) {
+                var unitName = $.trim($(unit).find('td input[name="unit"]').val()),
+                    unitPrice = $(unit).find('td input[name="price"]').val(),
+                    unitVipPrice = $(unit).find('td input[name="vipPrice"]').val(),
+                    unitPrePrice = $(unit).find('td input[name="prePrice"]').val();
+                if (!unitName) {
+                    topTip({msg: '规格'+(index+1)+'的名称不能为空', type: 'danger'});
+                    isValid = false;
+                    return;
+                } else if(!$.isNumeric(unitPrice || 0) || !$.isNumeric(unitVipPrice || 0) || !$.isNumeric(unitPrePrice || 0)) {
+                    topTip({msg: '价格必须为不小于0的数字', type: 'danger'});
+                    isValid = false;
+                    return;
+                } else if (!unitPrice) {
+                    topTip({msg: '规格'+(index+1)+'的售价不能为空', type: 'danger'});
+                    isValid = false;
+                    return;
+                } else if (unitVipPrice && parseFloat(unitPrice) < parseFloat(unitVipPrice)) {
+                    topTip({msg: '规格'+(index+1)+'会员价不能大于售价', type: 'danger'});
+                    isValid = false;
+                    return;
+                } else if (unitPrePrice && parseFloat(unitPrice) > parseFloat(unitPrePrice)) {
+                    topTip({msg: '规格'+(index+1)+'会售价不能大于原价', type: 'danger'});
+                    isValid = false;
+                    return;
+                }
+            });
+            return isValid;
+        };
+
+        Hualala.Shop.CheckUnitValid = checkUnitValid;
+
+        //检测form validator是否符合要求
+        function isFormBootstrapValid(form) {
+            var isFormValid = form.data('bootstrapValidator').validate().isValid();
+            if(!isFormValid) {
+                topTip({msg: '请仔细检查填写的信息', type: 'danger'});
+            }
+            return isFormValid;
+        }
+
+        //检测基本信息是否符合要求
+        function isFoodBasicInfoValid(modal) {
+            var $form = modal._.body.find('form.form-food');
+            return $form.data('bootstrapValidator').validate().isValid() && checkUnitValid(modal);
+        }
+
+        //检测详细信息是否符合条件
+        function isFoodDetailInfoValid(modal) {
+            return isFormBootstrapValid(modal._.body.find('form.form-food-detail'));
+        }
+
+        //检查作法口味是否符合要求
+        function isFoodTasteInfoValid(modal){
+            return isFormBootstrapValid(modal._.body.find('form.form-taste'));
+        }
+
+
+        //添加规格的html
+        function displayUnits($goodUnits) {
+            var unitsCount = $goodUnits.find('table tbody tr').length;
+            _.each($goodUnits.find('table tbody tr'), function (tr, index) {
+                var $tds = $(tr).find('td');
+                if (index == 0) {
+                    $tds.eq(1).find('input').attr('placeholder', '例：份、锅');
+                    $tds.eq(2).find('input').attr('placeholder', '10.00');
+                }
+                if(index != unitsCount - 1) $tds.last().empty();
+            });
+        }
+
+        function getFoodPicUrl(path, hwp)
+        {
+            var h = hwp ? parseInt(200 * hwp) : '',
+                cfg = hwp ? {width: 200, height: h} : {};
+
+            return path ? C.getSourceImage(path, cfg) : imgRoot + 'food_bg.png';
+        }
+
+        Hualala.Shop.CreateFood = createFood;
+
+    };
+
 })(jQuery, window);;
 ;(function($) 
 {
@@ -2373,9 +3320,10 @@
 
 
 ;(function ($, window) {
-IX.ns('Hualala.Shop');
+    IX.ns('Hualala.Shop');
 var G = Hualala.Global,
     U = Hualala.UI,
+    C = Hualala.Common,
     topTip = U.TopTip;
 // 初始化创建店铺页面
 Hualala.Shop.initCreate = function ($wizard)
@@ -2419,79 +3367,7 @@ Hualala.Shop.initCreate = function ($wizard)
         showInputs : false
     });
     // 初始化表单验证
-    $step1.bootstrapValidator({
-        excluded: ':disabled',
-        fields: {
-            shopName: {
-                message: '店铺名无效',
-                validators: {
-                    notEmpty: {
-                        message: '店铺名不能为空'
-                    },
-                    stringLength: {
-                        min: 2,
-                        max: 100,
-                        message: '店铺名长度必须在2到100个字符之间'
-                    }
-                }
-            },
-            cityID: {
-                validators: { notEmpty: { message: '请选择店铺所在城市' } }
-            },
-            tel: {
-                validators: {
-                    notEmpty: { message: '店铺电话不能为空' },
-                    telOrMobile: { message: '' }
-                }
-            },
-            address: {
-                validators: {
-                    notEmpty: { message: '店铺地址不能为空' },
-                    stringLength: {
-                        min: 1,
-                        max: 80,
-                        message: '店铺地址不能超过80个字符'
-                    }
-                }
-            },
-            PCCL: {
-                validators: {
-                    notEmpty: { message: '人均消费不能为空' },
-                    numeric: { message: '人均消费必须是金额数字' }
-                }
-            },
-            operationMode: {
-                validators: {
-                    notEmpty: { message: '请选择店铺运营模式' }
-                }
-            },
-            openingHoursStart: {
-                validators: {
-                    notEmpty: { message: '每天营业开始时间不能空' },
-                    time: { message: '' }
-                }
-            },
-            openingHoursEnd: {
-                validators: {
-                    notEmpty: { message: '每天营业结束时间不能空' },
-                    time: {
-                        message: '',
-                        startTimeField: 'openingHoursStart'
-                    }
-                }
-            },
-            areaID: {
-                validators: {
-                    notEmpty: { message: '请选择店铺所在地标' }
-                }
-            },
-            cuisineID1: {
-                validators: {
-                    notEmpty: { message: '请选择菜系1' }
-                }
-            }
-        }
-    });
+    $step1.bootstrapValidator(Hualala.Shop.validators);
     bv = $step1.data('bootstrapValidator');
     
     var $uploadImg = $step1.find('#uploadImg'),
@@ -2503,7 +3379,7 @@ Hualala.Shop.initCreate = function ($wizard)
         U.uploadImg({
             onSuccess: function (imgPath, $dlg)
             {
-                var src = G.IMAGE_RESOURCE_DOMAIN + '/' + imgPath + '?quality=70';
+                var src = C.getSourceImage(imgPath, {width: 200, height: 200});
                 imagePath = imgPath;
                 $uploadImg.find('img').attr('src', src);
                 $dlg.modal('hide');
@@ -2526,7 +3402,7 @@ Hualala.Shop.initCreate = function ($wizard)
             //$select.blur();
             if(!bv.validate().isValid()) return;
             // 数据提交前预处理
-            dataStep1 = Hualala.Common.parseForm($step1);
+            dataStep1 = C.parseForm($step1);
             dataStep1.shopID = shopID;
             dataStep1.shopName = dataStep1.shopName.replace('（', '(').replace('）', ')');
             dataStep1.areaName = getSelectText($area);
@@ -2664,13 +3540,14 @@ var G = Hualala.Global,
     U = Hualala.UI,
     S = Hualala.Shop,
     topTip = U.TopTip,
-    parseForm = Hualala.Common.parseForm;
+    C = Hualala.Common,
+    parseForm = C.parseForm;
 // 初始化店铺店铺详情页面
-S.initInfo = function ($container, pageType, params)
+S.initInfo = function ($container, pageType, params, isSaasOpen)
 {
     if(!params) return;
     // 渲染店铺功能导航
-    var $shopFuncNav = S.createShopFuncNav(pageType, params, $container);
+    var $shopFuncNav = S.createShopFuncNav(pageType, params, $container, isSaasOpen);
     
     var shopID = params, shopInfo = null,
         operationModeType = Hualala.Shop.Typedef.operationMode,
@@ -2728,85 +3605,13 @@ S.initInfo = function ($container, pageType, params)
             showInputs : false
         });
         // 初始化表单验证
-        $form.bootstrapValidator({
-            excluded: ':disabled',
-            fields: {
-                shopName: {
-                    message: '店铺名无效',
-                    validators: {
-                        notEmpty: {
-                            message: '店铺名不能为空'
-                        },
-                        stringLength: {
-                            min: 2,
-                            max: 100,
-                            message: '店铺名长度必须在2到100个字符之间'
-                        }
-                    }
-                },
-                cityID: {
-                    validators: { notEmpty: { message: '请选择店铺所在城市' } }
-                },
-                tel: {
-                    validators: {
-                        notEmpty: { message: '店铺电话不能为空' },
-                        telOrMobile: { message: '' }
-                    }
-                },
-                address: {
-                    validators: {
-                        notEmpty: { message: '店铺地址不能为空' },
-                        stringLength: {
-                            min: 1,
-                            max: 80,
-                            message: '店铺地址不能超过80个字符'
-                        }
-                    }
-                },
-                PCCL: {
-                    validators: {
-                        notEmpty: { message: '人均消费不能为空' },
-                        numeric: { message: '人均消费必须是金额数字' }
-                    }
-                },
-                operationMode: {
-                    validators: {
-                        notEmpty: { message: '请选择店铺运营模式' }
-                    }
-                },
-                openingHoursStart: {
-                    validators: {
-                        notEmpty: { message: '每天营业开始时间不能空' },
-                        time: { message: '' }
-                    }
-                },
-                openingHoursEnd: {
-                    validators: {
-                        notEmpty: { message: '每天营业结束时间不能空' },
-                        time: {
-                            message: '',
-                            startTimeField: 'openingHoursStart'
-                        }
-                    }
-                },
-                areaID: {
-                    validators: {
-                        notEmpty: { message: '请选择店铺所在地标' }
-                    }
-                },
-                cuisineID1: {
-                    validators: {
-                        notEmpty: { message: '请选择菜系1' }
-                    }
-                }
-            }
-        }).on('submit', function(){ return false });
+        $form.bootstrapValidator(S.validators).on('submit', function(){ return false });
         bv = $form.data('bootstrapValidator');
         
         var $uploadImg = $form.find('#uploadImg');
         $img = $uploadImg.find('img').attr('src', G.IMAGE_ROOT + '/shop_head_img_default.png');
         imagePath = shopInfo.imagePath;
-        imagePath && $img.attr('src', imgHost + imagePath + '?quality=70');
+        imagePath && $img.attr('src', C.getSourceImage(imagePath, {width: 200, height: 200}));
 
         map = S.map({data: {
             isSearchMap: false,
@@ -3012,14 +3817,14 @@ function getSelectText($select)
 
 ;(function ($, window) {
 IX.ns('Hualala.Shop');
-
 // 初始化店铺菜品页面
-Hualala.Shop.initMenu = function ($container, pageType, params)
+Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
 {
     if(!params) return;
     
     var G = Hualala.Global,
         U = Hualala.UI,
+        C = Hualala.Common,
         topTip = U.TopTip;
     
     var shopID = params;
@@ -3027,20 +3832,22 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         imgRoot = G.IMAGE_ROOT + '/';
 
     var classifiedFoods = null, //已分类菜品
-        foodClass = '', //当菜菜品类别的 foodCategoryID
+        foodClass = '', //当前菜品类别的 foodCategoryID
         foods = null, //当前表格显示的菜品数组
+        allFoods = [], //所有菜品数组
         current = 0, //页面滚动时渲染foods所在的索引
         size = 10, // 首次或者滚动加载的food数量
         searchParams = null, //菜品搜索过滤参数
         //修改菜品弹出框里几个 radio 的名称
         foodParams = ['hotTag', 'takeawayTag', 'isDiscount'],
         food = null, //当前菜品
+        activeTab = 'foodBasicInfo',
         ef = null; //修改菜品后用于向服务器发送的数据
         
     //单个菜品模板（菜品表格中的一行）
     var foodTpl = Handlebars.compile(Hualala.TplLib.get('tpl_food')),
         //修改菜品弹出框模板
-        editFoodTpl = Handlebars.compile(Hualala.TplLib.get('tpl_edit_food'));
+        editFoodTpl = null;
         //页面主内容
     var $menu = $(Hualala.TplLib.get('tpl_shop_menu')),
         $foodClass = null, //菜品类别 UI 对象集合
@@ -3054,72 +3861,68 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         $editFood = null,
         modalEditFood = null, 
         bv = null; //表单验证器
-    //调用服务，根据 shopID 获取所有分类和菜品信息
-    G.getShopMenu({shopID : shopID}, function (rsp)
-    {
-        if(rsp.resultcode != '000')
-        {
-            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
-            return;
-        }
-        var records = rsp.data.records;
-        if(!records || records.length == 0)
-        {
-            var $alert = $('<div class="alert alert-warning t-c">此店铺暂无菜品，您可以通过下载<a target="_blank">PC客户端</a>上传菜品数据。</div>');
-            $alert.find('a').attr('href', Hualala.PageRoute.createPath('pcclient'));
-            $alert.appendTo($container);
-            return;
-        }
-        classifiedFoods = classifyFoods(records);
-        renderFoods(); //渲染所有菜品
-        //渲染菜品分类
-        var $foodClassBox = $menu.find('#foodClassBox').append($('<span class="current-food-class"></span>').text('全部菜品 (' + foods.length + ')'));
-        
-        for(var id in classifiedFoods)
-        {
-            var category = classifiedFoods[id]; 
-            $('<span></span>').data('id', id).text(category.foodCategoryName + ' (' + category.foods.length + ')').appendTo($foodClassBox);
-        }
-        $foodClass = $foodClassBox.find('span');
-        
-        var foodNameTpl = Handlebars.compile(Hualala.TplLib.get('tpl_food_name'));
-        $foodName.html(foodNameTpl({classifiedFoods: classifiedFoods}));
-        initFoodChosen();
-        $menu.appendTo($container);
-    });
-    
-    function initFoodChosen() 
-    {
-        var matcher = (new Pymatch([]));
-        var sections = foods;
-        var getMatchedFn = function (searchText) {
-            matcher.setNames(_.map(sections, function (el) {
-                return IX.inherit(el, {
-                    name : el.foodName
-                });
-            }));
-            var matchedSections = matcher.match(searchText);
-            var matchedOptions = {};
-            _.each(matchedSections, function (el, i) {
-                matchedOptions[el[0].foodID] = true;
-            });
-            return matchedOptions;
-        };
-        $foodName.chosen({
-            width : '200px',
-            placeholder_text : "选择或输入菜品名称",
-            // max_selected_options: 1,
-            no_results_text : "抱歉，没有相关菜品！",
-            allow_single_deselect : true,
-            getMatchedFn : getMatchedFn
-        }).change(function()
-        {
-            searchFood();
-        });
+    var foodDescEditor = null;
+
+    //渲染菜品
+    function renderFoods(start) {
+        foods = filterFoods();
+        $foodCount.text(foods.length);
+        if(current == 0 || start) $foods.empty();
+        $foods.append(foodTpl({foods: foods.slice(start ? 0 : current, current + size)}));
+        current += size;
     }
-    
+
+    //初始化“添加菜品”按钮
+    if(isSaasOpen) $('<div class="well well-sm t-r"><button class="btn btn-default" name="add-food">添加菜品</button></div>').appendTo($container);
+
+    //调用服务，根据 shopID 获取所有分类和菜品信息
+    var loadFoods = function(start) {
+        C.loadData('getShopMenu', {shopID : shopID}).done(function(records)
+        {
+            allFoods = [];
+            if(!records || records.length == 0)
+            {
+                var $alert = $('<div class="alert alert-warning t-c">此店铺暂无菜品，您可以通过下载<a target="_blank">哗啦啦代理程序</a>上传菜品数据。</div>');
+                $alert.find('a').attr('href', Hualala.PageRoute.createPath('pcclient'));
+                $alert.appendTo($container);
+                return;
+            }
+            var $alertDom = $container.find('.alert.alert-warning');
+            if($alertDom.length != 0) $alertDom.remove();
+            classifiedFoods = classifyFoods(records);
+            for(var foodCategoryID in classifiedFoods)
+                allFoods.push.apply(allFoods, classifiedFoods[foodCategoryID].foods);
+            renderFoods(start); //渲染所有菜品
+            //渲染菜品分类
+            var $allFoodsSpan = $('<span></span>');
+            if (!start) $allFoodsSpan.addClass('current-food-class');
+            var $foodClassBox = $menu.find('#foodClassBox').empty().append($allFoodsSpan.text('全部菜品 (' + allFoods.length + ')'));
+
+            for(var id in classifiedFoods)
+            {
+                var category = classifiedFoods[id],
+                    $span = $('<span></span>');
+                if (start && foodClass == id) $span.addClass('current-food-class');
+                $span.data('id', id).text(category.foodCategoryName + ' (' + category.foods.length + ')').appendTo($foodClassBox);
+            }
+            $foodClass = $foodClassBox.find('span');
+
+            var foodNameTpl = Handlebars.compile(Hualala.TplLib.get('tpl_food_name'));
+            $foodName.html(foodNameTpl({classifiedFoods: classifiedFoods}));
+            if($foodName.data('chosen')){ $foodName.chosen('destroy'); }
+            U.createChosen($foodName, allFoods, 'foodID', 'foodName', {
+                noFill: true, noCurrent: true, width : '200px',
+                placeholder_text : "选择或输入菜品名称",
+                no_results_text : "抱歉，没有相关菜品！"
+            }, false);
+
+            $menu.appendTo($container);
+        });
+    };
+
+    loadFoods();
     //页面滚动时加载更多菜品
-    $(window).on('scroll', function(e)
+    $(window).off('scroll.food').on('scroll.food', function(e)
     {
         if(foods) throttle(scrollFood);
     });
@@ -3129,63 +3932,21 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         var viewBottom = $(window).scrollTop() + $(window).height(),
             foodsBottom = $foods.offset().top + $foods.height();
         
-        if(foodsBottom < viewBottom && current < foods.length)
-        {
-            renderFoods();
-        }
+        if(foodsBottom < viewBottom && current < foods.length) renderFoods();
     }
     
-    $(document).on('change', function(e)
+    $(document).off('change.foodMenu').on('change.foodMenu', function(e)
     {
         var $target = $(e.target);
         //菜品过滤筛选
-        if($target.is('#takeawayTag , #foodSearch input[type=checkbox]'))
-        {
-            searchFood();
-        }
+        if($target.is('#foodSearch input, #foodSearch select')) searchFood();
         //自定义按钮组相关
         if($target.is('.form-food input[type=radio]'))
         {
             $target.closest('div').find('label').removeClass('active')
             .find('input:checked').parent().addClass('active');
         }
-        //修改菜品图片
-        if($target.is('.food-pic input'))
-        {
-            var $foodPic = $editFood.filter('.food-pic');
-            if($target.val())
-            {
-                $foodPic.addClass('loading');
-                previewImg($target[0], $foodPic.find('img'));
-                $foodPic.submit();
-            }
-        }
-        
     });
-    
-    top.imgCallback = function(rsp)
-    {
-        var $foodPic = $editFood.filter('.food-pic');
-        var json = $.parseJSON(rsp),
-            status = json.status;
-        if(status == 'success')
-        {
-            var url = json.url,
-                imageHWP = json.imageHWP || '';
-            ef.imagePath = url;
-            if(imageHWP) ef.imageHWP = imageHWP;
-            if(!window.FileReader)
-            {
-                $foodPic.find('img').attr('src', imgHost + url.replace(/\.\w+$/, (imageHWP ? '=200x' + Math.round(200 * imageHWP) : '') + '$&?quality=70'));
-            }
-        }
-        else
-        {
-            topTip({msg: status + '：菜品图片上传失败'});
-        }
-        $foodPic.removeClass('loading');
-        $('#imgResponse').remove();
-    }
     
     //图片上传本地预览
     function previewImg(fileInput, $img)
@@ -3199,108 +3960,344 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             reader.readAsDataURL(fileInput.files[0]);  
         }
     }
-    
+
+    var getUnitsTpl = function (units) {
+        var prettyPrice = function (price) {
+            return price ? C.Math.prettyPrice(price) : '';
+        };
+        if (units) {
+            var unitsTpl = [],
+                unitsLength = units.length ;
+            _.each(units, function (unit, index) {
+                //unit.prePrice为-1时，price是售价，unit.prePrice不为-1时prePrice是售价
+                var price = (unit.prePrice == -1 || unit.price == unit.prePrice) ? unit.price : unit.prePrice,//price是售价
+                    vipPrice = (unit.vipPrice == -1 || parseFloat(unit.vipPrice) >= parseFloat(price)) ? '' : unit.vipPrice,
+                    prePrice = (unit.prePrice == -1 || unit.price == unit.prePrice) ? '' : unit.price,//prePrice原价
+                    tr = ['<tr data-itemid="'+(unit.itemID || '')+'">',
+                        '<td><span>规格'+ (index + 1) + (index == 0 ? '*' : '') + '</span></td>',
+                        '<td><input type="text" placeholder="'+(index == 0 ? '例：份、锅' : '')+'" name="unit" value="'+unit.unit+'"/></td>',
+                        '<td><input type="text" placeholder="'+(index == 0 ? '10.00' : '')+'" name="price" value="'+prettyPrice(price)+'"/></td>',
+                        '<td><input type="text" name="vipPrice" value="'+prettyPrice(vipPrice)+'"/></td>',
+                        '<td><input type="text" name="prePrice" value="'+prettyPrice(prePrice)+'"/></td>'
+                    ].join(''),
+                    operateTd = '<td></td>';
+                if(units.length == 1) {
+                    operateTd = '<td><a class="glyphicon glyphicon-plus-sign" href="javascript:{}"></a></td>';
+                } else if(unitsLength > 1 && unitsLength < 4 && index == unitsLength - 1) {
+                    operateTd = '<td>' +
+                    '<a class="glyphicon glyphicon-plus-sign" href="javascript:{}"></a>' +
+                    '<a class="glyphicon glyphicon-minus-sign" href="javascript:{}"></a>' +
+                    '</td>';
+                } else if(unitsLength >= 4 && index == unitsLength - 1) {
+                    operateTd = '<td><a class="glyphicon glyphicon-minus-sign" href="javascript:{}"></a></td>'
+                }
+                unitsTpl.push(tr + operateTd + '</tr>');
+            });
+            return unitsTpl.join('');
+        }
+    };
+
+    Hualala.Shop.GetUnitsTpl = getUnitsTpl;
+
+    //给某个对象扩展属性
+    function extendCustomAttr(object, extendName, cbFn) {
+        if (!IX.isFn(cbFn)) return;
+        _.each(object, function (obj) {
+            if (cbFn(obj)) {
+                obj[extendName] = extendName;
+            }
+        });
+        return object;
+    }
+
     //修改菜品
-    $foods.on('click', 'tr', function()
+    $foods.on('click', 'tr td button', function()
     {
-        var $this = $(this);
-        food = findFood($this.data('cid'), $this.data('id'));
-        //菜品图标：招、荐、新
-        var foodIcos = ['isSpecialty', 'isRecommend', 'isNew'],
-            path = food.imgePath;
-        
-        food.foodPic = path ? imgHost + path + '?quality=70' : imgRoot + 'food_bg.png';
-        //辣度
-        food.hotTag1 = imgRoot + 'hottag1.png';
-        food.hotTag2 = imgRoot + 'hottag2.png';
-        food.hotTag3 = imgRoot + 'hottag3.png';
-        
-        $editFood = $(editFoodTpl(food));
-        //弹出对话框
-        modalEditFood = new U.ModalDialog({
-            id: 'editFood',
-            title: '修改菜品',
-            html: $editFood,
-            hideCloseBtn: false
-        }).show();
-        modalEditFood._.footer.find('.btn-ok').text('保存修改');
-        modalEditFood._.footer.find('.btn-close').text('返回');
-        //初始化表单验证
-        bv = $editFood.filter('.form-food').bootstrapValidator({
-            fields: {
-                minOrderCount: {
-                    validators: {
-                        notEmpty: {
-                            message: '起售份数不能为空'
+        var $tr = $(this).parents('tr'),
+            queryFoodParams = {
+                shopID: shopID,
+                foodID: $tr.data('id'),
+                foodCategoryID: $tr.data('cid')
+            };
+        C.loadData('queryGoodByID', queryFoodParams).done(function(records) {
+            if (records && records.length > 0) {
+                Hualala.Shop.RegisterEditFoodPartial();
+                food = records[0];
+                //菜品图片地址
+                var path = food.imgePath,
+                    hwp = food.imageHWP;
+                food.foodPic = getFoodPicUrl(path, hwp);
+
+                if(isSaasOpen) {
+                    editFoodTpl = Handlebars.compile(Hualala.TplLib.get('tpl_edit_good'));
+                    //给food添加字段setFoodListEmpty
+                    var setFoodDetail = JSON.parse(food.setFoodDetailJson || '{}');
+                    food.setFoodDetail = setFoodDetail;
+                    food.hasSetFoodList = food.isSetFood == 1 && setFoodDetail.foodLst && setFoodDetail.foodLst.length > 0;
+                    Handlebars.registerPartial('category', Hualala.TplLib.get('tpl_set_food_category'));
+                    Handlebars.registerPartial('food', Hualala.TplLib.get('tpl_set_food_tr'));
+                    //给setFoodDetailJson.foodLst 添加itemLenth属性 并为items添加checked属性
+                    _.each(setFoodDetail.foodLst, function (category) {
+                        category.foodItemsLength = category.items.length;
+                        _.each(category.items, function (item) {
+                            item.checked = item.selected == 1 ? 'checked' : '';
+                            item.price = C.Math.prettyPrice(item.price);
+                        });
+                    });
+
+                    //处理菜品规格显示的模板需要的数据格式
+                    var unitsLength = food.units.length,
+                        extendUnits = _.map(IX.clone(food.units), function (unit, index) {
+                            //unit.prePrice为-1时，price是售价，unit.prePrice不为-1时prePrice是售价
+                            var price = (unit.prePrice == -1 || unit.prePrice == unit.price) ? unit.price : unit.prePrice,//price是售价
+                                vipPrice = (unit.vipPrice == -1 || parseFloat(unit.vipPrice) >= parseFloat(price)) ? '' : unit.vipPrice,
+                                prePrice = (unit.prePrice == -1 || unit.prePrice == unit.price) ? '' : unit.price;//prePrice原价
+
+                            return IX.inherit(unit, {
+                                index: (index + 1) + (index == 0 ? '*' : '' ),
+                                lessThanFourUnits: unitsLength < 4 && (index == unitsLength - 1),
+                                customLast: unitsLength > 1 && index == unitsLength - 1,
+                                price: price ? C.Math.prettyPrice(price) : '',
+                                prePrice: prePrice ? C.Math.prettyPrice(prePrice) : '',
+                                vipPrice: vipPrice ? C.Math.prettyPrice(vipPrice) : ''
+                            });
+                        }),
+                        setFoodUnits = _.map(IX.clone(extendUnits), function (unit) {
+                            //unit.prePrice为-1时，price是售价，unit.prePrice不为-1时prePrice是售价
+                            return _.omit(IX.inherit(unit, {
+                                lessThanFourUnits: false,
+                                customLast: false,
+                                disabled: 'disabled'
+                            }), 'index');
+                        });
+
+                    //处理菜品详细信息显示的模板需要的数据格式
+                    var foodAttrSelect = IX.clone(Hualala.TypeDef.FoodAttrSelect),
+                        takeawayOptions = extendCustomAttr(foodAttrSelect.TakeawayType, 'selected', function(obj) {return food.takeawayTag == obj.value;}),
+
+                        hotTagOptions = extendCustomAttr(foodAttrSelect.HotTag, 'selected',  function(obj) {return food.hotTag == obj.value;}),
+                        foodSettings = extendCustomAttr(IX.clone(Hualala.TypeDef.FoodSettings), 'checked', function(obj){return food[obj.name] == 1;}),
+                        foodAttrSNewR = extendCustomAttr(IX.clone(Hualala.TypeDef.FoodAttrSNewR), 'checked', function(obj){return food[obj.name] == 1;});
+
+                    //categoryTH: 套餐的商品详情的表头
+                    var categoryTH = { tableHeads: ['商品名称', '售价(￥)/规格', '数量', '加价(￥)', '选择', '操作'], tableClass: 'set-food'},
+                        editFoodData = {
+                            detailDisplay: '',
+                            setFoodDisplay: (food.isSetFood == 1 && window.location.host != 'dianpu.hualala.com') ? '' : 'hidden',
+                            goodUnits: {tableHeads: ['', '规格名称*', '售价(￥)*', '会员价(￥)', '原价(￥)', ''], lessThanFourUnits: true},
+                            takeawayTypes: {options: takeawayOptions, name: 'takeawayTag'},
+                            packageHidden: food.takeawayTag == 0 ? 'hidden' : '',
+                            hotTags: {options: hotTagOptions, name: 'hotTag'},
+                            foodSettings: foodSettings,
+                            foodAttrSNewR: foodAttrSNewR,
+                            food: IX.inherit({}, food,
+                                {
+                                    takeoutPackagingFee: C.Math.prettyPrice(food.takeoutPackagingFee),
+                                    units: food.isSetFood == 1 ? setFoodUnits : extendUnits, description: C.decodeTextEnter(food.description)
+                                }),
+                            category: categoryTH,
+                            setFoodChecked: food.isSetFood == 1 ? 'checked' :'',
+                            not3W: window.location.host != 'dianpu.hualala.com'
                         },
-                        integer: {
-                            message: '起售份数必须是整数'
-                        },
-                        between: {
-                            min: 1,
-                            max: 99,
-                            message: '起售份数必须在1到99之间'
+                        $editFood = $(editFoodTpl(editFoodData));
+                    //弹出对话框
+                    modalEditFood = new U.ModalDialog({
+                        id: 'createFood',
+                        title: '修改菜品',
+                        backdrop: 'static',
+                        html: $editFood,
+                        hideCloseBtn: false,
+                        afterHide: function() {
+                            Hualala.UI.clearEditors();
+                        }
+                    }).show();
+                    //加载商品分类的下拉菜单
+                    Hualala.Shop.RenderSelect(modalEditFood, food);
+                    //初始化菜品属性的bootstrapSwitch
+                    Hualala.Shop.CreateFoodAttrSwitch(modalEditFood);
+                    //替换modal的footer为自定义的
+                    modalEditFood._.footer.empty().append(Hualala.Shop.CompileModalFooter(true));
+                    //初始化表单验证
+                    Hualala.Shop.RegisterValidateFoodInfo(modalEditFood, food.foodID);
+                    //初始化图文详情页
+                    foodDescEditor = U.createEditor('goodDescEditor');
+                    food.foodDescEditor = foodDescEditor;
+                    //绑定规格操作的事件
+                    Hualala.Shop.BindOperatorEvent(modalEditFood, food);
+                } else {
+                    var foodIcos = ['isSpecialty', 'isRecommend', 'isNew'],
+                        editFoodTpl = Handlebars.compile(Hualala.TplLib.get('tpl_edit_food'));
+                    //辣度
+                    food.hotTag1 = imgRoot + 'hottag1.png';
+                    food.hotTag2 = imgRoot + 'hottag2.png';
+                    food.hotTag3 = imgRoot + 'hottag3.png';
+
+                    $editFood = $(editFoodTpl(food));
+                    //弹出对话框
+                    modalEditFood = new U.ModalDialog({
+                        id: 'editFood',
+                        title: '修改菜品',
+                        html: $editFood,
+                        hideCloseBtn: false
+                    }).show();
+                    var $btnOK = modalEditFood._.footer.find('.btn-ok').text('保存基本信息');
+                    modalEditFood._.footer.find('.btn-close').text('关闭');
+                    //初始化表单验证
+                    bv = $editFood.find('.form-food').bootstrapValidator({
+                        fields: {
+                            minOrderCount: {
+                                validators: {
+                                    notEmpty: {message: '起售份数不能为空'},
+                                    integer: {message: '起售份数必须是整数'},
+                                    between: {min: 1, max: 99, message: '起售份数必须在1到99之间'}
+                                }
+                            }
+                        }
+                    }).data('bootstrapValidator');
+                    //初始化ef
+                    ef = {shopID: shopID, foodID: $tr.data('id'), adsID: food.adsID || '0'};
+                    for(var i = foodIcos.length; i--;)
+                    {
+                        var foodIco = foodIcos[i];
+                        ef[foodIco] = '0';
+                        if(food[foodIco] == 1)
+                        {
+                            $editFood.find('input[name=foodIco][value=' + foodIco +']').prop('checked', true).trigger('change');
                         }
                     }
+
+                    for(var i = foodParams.length; i--;)
+                    {
+                        var param = foodParams[i];
+                        $editFood.find('input[name=' + param + '][value=' + food[param] +']').prop('checked', true).trigger('change');
+                    }
+                    //菜品“可售/停售”
+                    $editFood.find('input[name=isActive][value=' + food.foodIsActive + ']').prop('checked', true).trigger('change');
+
+                    var $foodPic = $editFood.find('.food-pic'),
+                        $elem = $foodPic.find('label');
+
+                    U.fileUpload($elem, function(rsp)
+                        {
+                            var path = rsp.url, hwp = rsp.imgHWP || '';
+                            ef.imagePath = path;
+                            ef.imageHWP = hwp;
+                            if(!window.FileReader)
+                                $foodPic.find('img').attr('src', getFoodPicUrl(path, hwp));
+                        },
+                        {
+                            onBefore: function($elem, $file)
+                            {
+                                $foodPic.addClass('loading');
+                                previewImg($file[0], $foodPic.find('img'));
+                            },
+                            onAlways: function() { $foodPic.removeClass('loading'); }
+                        });
+
+                    foodDescEditor = U.createEditor('foodDescEditor');
+                    $editFood.find('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                        activeTab = $(e.target).attr('href').slice(1);
+                        $btnOK.text(activeTab == 'foodBasicInfo' ? '保存基本信息' : '保存图文详情');
+                    });
                 }
+                if(!food.adsID) return;
+
+                //加载图文详情信息
+                C.loadData('getFoodDescription', {shopID: shopID, adsID: food.adsID})
+                    .done(function(records)
+                    {
+                        if(!records || !records.length) return;
+                        foodDescEditor.setContent(records[0].body);
+                    });
             }
-        }).data('bootstrapValidator');
-        //初始化ef
-        ef = {shopID: shopID, foodID: $this.data('id')};
-        for(var i = foodIcos.length; i--;)
-        {
-            var foodIco = foodIcos[i];
-            ef[foodIco] = '0';
-            if(food[foodIco] == 1)
-            {
-                $editFood.find('input[name=foodIco][value=' + foodIco +']').prop('checked', true).trigger('change');
+        });
+    }).on('click', 'tr td a', function () {
+        //调用服务拍完序后重新请求数据
+        var $this = $(this);
+        if($this.hasClass('disable')) return;
+        var $tr = $this.parents('tr'),
+            foodID = $tr.data('id'),
+            foodCategoryID = $tr.data('cid'),
+            sortIndex = $tr.data('sortindex'),
+            sortParams = {shopID: shopID, foodID: foodID, sortIndex: sortIndex, foodCategoryID: foodCategoryID},
+            name = $this.hasClass('sort-top') ? 'sortTop' : $this.hasClass('sort-bottom') ? 'sortBottom' : 'sortPrevOrNext',
+            isUp = $this.hasClass('sort-up'),
+            isDown = $this.hasClass('sort-down'),
+            foodID2 = isUp ? $tr.prev().data('id') : isDown ? $tr.next().data('id') : '',
+            sortIndex2 = isUp ? $tr.prev().data('sortindex') : isDown ? $tr.next().data('sortindex') : '',
+            prevOrNextParams = name == 'sortPrevOrNext' ? {sortIndex2: sortIndex2, foodID2: foodID2} : {},
+            serverMap = {
+                sortTop: {server: 'sortFoodTop', params: sortParams},
+                sortPrevOrNext: {server: 'sortFoodPrevOrNext', params: IX.inherit(prevOrNextParams, sortParams)},
+                sortBottom: {server: 'sortFoodBottom', params: sortParams}
+            };
+        Hualala.Global[serverMap[name].server](serverMap[name].params, function (rsp) {
+            if (rsp.resultcode != '000') {
+                Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                return;
             }
-        }
+            loadFoods(true);
+        });
+    });
+
+    function submitFoodBasicInfo()
+    {
+        if(!bv.validate().isValid()) return;
+        
+        var $modalBody = modalEditFood._.body,
+            $foodIco = $modalBody.find('input[name=foodIco]:checked').not('[value=none]');
+        if($foodIco[0]) ef[$foodIco.val()] = '1';
+        
         for(var i = foodParams.length; i--;)
         {
             var param = foodParams[i];
-            $editFood.find('input[name=' + param + '][value=' + food[param] +']').prop('checked', true).trigger('change');
+            ef[param] = $modalBody.find('input[name=' + param + ']').filter(':checked').val();
         }
-        //菜品“可售/停售”
-        $editFood.find('input[name=isActive][value=' + food.foodIsActive + ']').prop('checked', true).trigger('change');
-    });
+        ef.foodName = $modalBody.find('span[name=foodName]').text();
+        ef.isActive = $modalBody.find('input[name=isActive]:checked').val();
+        ef.minOrderCount = $modalBody.find('input[name=minOrderCount]').val();
+        ef.tasteList = $.trim($modalBody.find('input[name=tasteList]').val());
+        ef.makingMethodList = $.trim($modalBody.find('input[name=makingMethodList]').val());
+        //调用修改菜品相关服务
+        C.loadData('updateFoodBasic', ef).done(function(records)
+        {
+            topTip({msg: '菜品基本信息保存成功！', type: 'success'});
+            if (records && records.length > 0) {
+                modalEditFood._.body.find('.good-unit table tbody').empty().append($(getUnitsTpl(records[0].units)));
+            }
+           $.extend(food, ef);
+            if(ef.imagePath) food.imgePath = ef.imagePath;
+            food.foodIsActive = food.isActive;
+            updateFood(food);
+            $foods.empty();
+            loadFoods(true);
+        });
+    }
     
-    $(document).on('click', function(e)
+    function submitFoodDescription()
+    {
+        var params = _.pick(food, 'shopID', 'foodID', 'adsID');
+        params.adsID = params.adsID || '0';
+        params.body = foodDescEditor.getContent();
+        params.shopID = shopID;
+        C.loadData('setFoodDescription', params, null, 'data').done(function(data)
+        {
+            topTip({msg: '菜品说明信息保存成功！', type: 'success'});
+            food.adsID = data.adsID;
+            updateFood(food);
+            $foods.empty();
+            loadFoods(true);
+        });
+    }
+    
+    $(document).off('click.foodMenu').on('click.foodMenu', function(e)
     {
         var $target = $(e.target);
         //修改菜品“保存修改”
         if($target.is('#editFood .btn-ok'))
         {
-            if(!bv.validate().isValid()) return;
-            
-            var $foodIco = $editFood.find('input[name=foodIco]:checked').not('[value=none]');
-            if($foodIco[0]) ef[$foodIco.val()] = '1';
-            
-            for(var i = foodParams.length; i--;)
-            {
-                var param = foodParams[i];
-                ef[param] = $editFood.find('input[name=' + param + ']').filter(':checked').val();
-            }
-            ef.isActive = $editFood.find('input[name=isActive]:checked').val();
-            ef.minOrderCount = $editFood.find('input[name=minOrderCount]').val();
-            ef.tasteList = $.trim($editFood.find('input[name=tasteList]').val());
-            //调用修改菜品相关服务
-            G.updateFood(ef, function (rsp)
-            {
-                if(rsp.resultcode != '000')
-                {
-                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
-                    return;
-                }
-                
-                modalEditFood.hide();
-                $.extend(food, ef);
-                if(ef.imagePath) food.imgePath = ef.imagePath;
-                food.foodIsActive = food.isActive;
-                updateFood(food);
-                $foods.empty();
-                renderFoods(true);
-            });
+            if(activeTab == 'foodBasicInfo') submitFoodBasicInfo();
+            else submitFoodDescription();
         }
         //点击某个菜品类别渲染对应菜品
         if($target.is('#foodClassBox span'))
@@ -3315,18 +4312,11 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
             current = 0;
             renderFoods();
         }
-        //搜索过滤菜品
-        /*if($target.is('#btnSearchFood'))
-        {
-            searchFood();
-        }*/
-        
+        if ($target.is('button[name="add-food"]')) {
+            e.preventDefault();
+            Hualala.Shop.CreateFood(params);
+        }
     });
-    
-    /*$foodName.on('keydown', function(e)
-    {
-        e.keyCode == 13 && searchFood();
-    });*/
     //过滤筛选菜品UI
     function searchFood()
     {
@@ -3353,17 +4343,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         current = 0;
         renderFoods();
     }
-    
-    //渲染菜品
-    function renderFoods(start)
-    {
-        foods = filterFoods();
-        $foodCount.text(foods.length);
-        if(current == 0) $foods.empty();
-        $foods.append(foodTpl({foods: foods.slice(start ? 0 : current, current + size)}));
-        current += size;
-        //$foods.find('img').lazyload();
-    }
+
     //在某个菜品分类下根据foodID查找某个菜品
     function findFood(cid, id)
     {
@@ -3378,18 +4358,22 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
     function filterFoods()
     {
         var result = [];
-        if(!foodClass)
-        {
-            for(var foodCategoryID in classifiedFoods)
-            {
+        if (!foodClass) {
+            for(var foodCategoryID in classifiedFoods) {
+                var cFoods = classifiedFoods[foodCategoryID].foods,
+                    cFoodsCount = cFoods.length;
+                cFoods[0] = IX.inherit({first: {topBorder: 'first', upDisabled: 'disable'}}, cFoods[0]);
+                cFoods[cFoodsCount - 1] = IX.inherit({last: {BottomBorder: 'last', downDisabled: 'disable'}}, cFoods[cFoodsCount - 1]);
                 result.push.apply(result, classifiedFoods[foodCategoryID].foods);
             }
+        } else{
+            var cFoods = classifiedFoods[foodClass].foods,
+                cFoodsCount = cFoods.length;
+            cFoods[0] = IX.inherit({first: {topBorder: 'first', upDisabled: 'disable'}}, cFoods[0]);
+            cFoods[cFoodsCount - 1] = IX.inherit({last: {BottomBorder: 'last', downDisabled: 'disable'}}, cFoods[cFoodsCount - 1]);
+            result = cFoods;
         }
-        else
-        {
-            result = classifiedFoods[foodClass].foods;
-        }
-        
+
         for(p in searchParams)
         {
             result = $.grep(result, function (food)
@@ -3421,22 +4405,21 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
                 food.prePrice = food.price;
                 food.price = '';
             }
-            if(food.vipPrice == -1 || food.vipPrice >= food.prePrice)
-            {
-                food.vipPrice = '';
-            }
+            
+            if(food.vipPrice == -1 || parseFloat(food.vipPrice) >= parseFloat(food.prePrice)) food.vipPrice = '';
+            
             food.price = food.price || '';
             food.prePrice = food.prePrice || '';
             food.vipPrice = food.vipPrice || '';
             
             var cfs = result[cid].foods,
+                idx = C.inArray(cfs, food, 'foodID'),
                 unit = {
                     unit: food.unit ? food.unit + ':' : '',
                     price: food.price ? '￥' + parseFloat(food.price) : '',
                     prePrice: food.prePrice ? '￥' + parseFloat(food.prePrice) : '',
                     vipPrice: food.vipPrice ? '￥' + parseFloat(food.vipPrice) : ''
-                },
-                idx = inAarry(cfs, food, 'foodID');
+                };
             //if(unit.prePrice == '￥NaN') console.log(food);
             if(idx == -1)
             {
@@ -3465,20 +4448,22 @@ Hualala.Shop.initMenu = function ($container, pageType, params)
         else
             food.imgSrc = imgRoot + 'dino80.png';
         
+        if(food.adsID > 0) food.adsIco = '<img class="f-ad-p" src="' + imgRoot + 'preview.png" />';
+        
         food.discountIco = food.isDiscount == 1 ? 'glyphicon-ok' : 'glyphicon-minus';
         food.takeawayIco = food.takeawayTag > 0 ? 'glyphicon-ok' : 'glyphicon-minus';
         food.activeIco = food.foodIsActive == 1 ? 'glyphicon-ok' : 'glyphicon-minus';
     }
-    
-    //根据对象的一个属性检查某个对象是否在一个对象数组中
-    function inAarry(arr, obj, key)
+
+    function getFoodPicUrl(path, hwp)
     {
-        for(var i = 0, l = arr.length; i < l; i++)
-        {
-            if(arr[i][key] == obj[key]) return i;
-        }
-        return -1;
+        var h = hwp ? parseInt(200 * hwp) : '',
+            cfg = hwp ? {width: 200, height: h} : {};
+        
+        return path ? C.getSourceImage(path, cfg) : imgRoot + 'food_bg.png';
     }
+
+    Hualala.Shop.LoadFoods = loadFoods;
     
 }
 //将频繁执行的代码延迟执行以提高性能
@@ -3488,7 +4473,7 @@ function throttle(method, context)
     method.tId = setTimeout(function()
     {
         method.call(context);
-    }, 100);
+    }, 200);
 }
 
 })(jQuery, window);
@@ -3504,12 +4489,2301 @@ function throttle(method, context)
 
 ;(function ($, window) {
 	
+})(jQuery, window);;(function(window, $) {
+    IX.ns('Hualala.Shop');
+    Hualala.Shop.initMember = function ($pageBody, params) {
+        var tableHeaderCfg = [
+                {key : "empCode", clz : "text", label : "员工编码"},
+                {key : "empName", clz : "text", label : "员工姓名"},
+                {key : "empMobile", clz : "text", label : "手机号码"},
+                {key : "accountStatus", clz : "text", label : "账号状态"},
+                {key : "rowControl", clz : "", label : "操作"},
+                {key : "roleSet", clz : "", label : "权限设置"},
+            ],
+            accountStatusMap = [{value: '0', name: '停用'}, {value: '1', name: '正常'}, {value: '2', name: '失效'}],
+            queryBoxTpl, resultTpl, editModalTpl, setRoleTpl;
+        var shopID = params,
+            groupID = $XP(Hualala.getSessionSite(), 'groupID', ''),
+            members = null,
+            roles = null,
+            rights = null,
+            selRoleIDs = [],
+            selRightIDs = [];
+        imgHost = Hualala.Global.IMAGE_RESOURCE_DOMAIN + '/',
+            imgRoot = Hualala.Global    .IMAGE_ROOT + '/';
+
+        //加载模板：查询表单；数据表格
+        initTemplate();
+        //请求数据并渲染表格，renderData
+        renderTable();
+        //绑定事件：修改  删除  设置
+        bindEvent();
+        function initTemplate() {
+            queryBoxTpl = Handlebars.compile(Hualala.TplLib.get('tpl_query_form'));
+            resultTpl = Handlebars.compile(Hualala.TplLib.get('tpl_base_datagrid'));
+            editModalTpl = Handlebars.compile(Hualala.TplLib.get('tpl_edit_member'));
+            setRoleTpl = Handlebars.compile(Hualala.TplLib.get('tpl_edit_role'));
+            Handlebars.registerPartial("colBtns", Hualala.TplLib.get('tpl_base_grid_colbtns'));
+            Handlebars.registerPartial("customSelect", Hualala.TplLib.get('tpl_select'));
+            Handlebars.registerHelper('chkColType', function (conditional, options) {
+                return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+            });
+            $pageBody.append($(queryBoxTpl({
+                queryName: 'keywordLst',
+                queryLabel: '手机号/姓名/员工',
+                addBtnLabel: '新增人员',
+                addBtnName: 'addMember'
+            })));
+        }
+
+        function renderTable(postParams) {
+            var queryParams = postParams || {shopID: shopID, groupID: groupID, keywordLst: ''};
+            Hualala.Global.getShopMembers(queryParams, function(rsp) {
+                if (rsp.resultcode == '000') {
+                    members = rsp.data.records;
+                    $pageBody.find('.table-responsive').remove();
+                    $pageBody.append($(resultTpl(mapRenderData(rsp.data.records))));
+                } else {
+                    Hualala.UI.TopTip({type: 'danger', msg: rsp.resultmsg})
+                }
+            });
+        }
+
+        //组装表格显示的col
+        function mapColItemRenderData(row, rowIdx, colKey) {
+            var r = {value : "", text : ""}, v = $XP(row, colKey, '');
+            switch(colKey) {
+                case "rowControl" :
+                    r = {
+                        type : 'button',
+                        btns : [
+                            {
+                                label : '修改',
+                                link : 'javascript:void(0);',
+                                key : $XP(row, 'empKey', ''),
+                                type : 'editMember'
+                            },
+                            {
+                                label : '删除',
+                                link : 'javascript:void(0);',
+                                clz : 'm-l',
+                                key : $XP(row, 'empKey', ''),
+                                type : 'delMember'
+                            }
+                        ]
+                    };
+                    break;
+                case "roleSet" :
+                    r = {
+                        type : 'button',
+                        btns : [
+                            {
+                                label : '设置',
+                                link : 'javascript:void(0);',
+                                clz : '',
+                                key : $XP(row, 'empKey', ''),
+                                type : 'setMember'
+                            }
+                        ]
+                    };
+                case "accountStatus":
+                    r.value = r.text = _.findWhere(accountStatusMap, {value: $XP(row, colKey, '0')}).name;
+                    break;
+                default :
+                    r.value = r.text = $XP(row, colKey, '');
+                    break;
+            }
+            return r;
+        }
+
+        //组装表格显示的rows
+        function mapRenderData(records) {
+            var self = this;
+            var tblClz = "table-bordered table-striped table-hover ix-data-report",
+                tblHeaders = IX.clone(tableHeaderCfg);
+            var mapColsRenderData = function (row, idx) {
+                var colKeys = _.map(tblHeaders, function (el) {
+                    return {key: $XP(el, 'key', ''), clz: $XP(el, 'clz', '')};
+                });
+                var col = {clz: '', type: 'text'};
+                var cols = _.map(colKeys, function (k, i) {
+                    var r = mapColItemRenderData(row, idx, $XP(k, 'key', ''));
+                    return IX.inherit(col, r, {clz: $XP(k, 'clz', '')});
+                });
+                return cols;
+            };
+            var rows = _.map(records, function (row, idx) {
+                return {
+                    clz: '',
+                    cols: mapColsRenderData(row, idx)
+                };
+            });
+            return {
+                tblClz: tblClz,
+                isEmpty: !records || records.length == 0 ? true : false,
+                colCount: tableHeaderCfg.length,
+                thead: tableHeaderCfg,
+                rows: rows
+            };
+
+        }
+
+        function bindEvent() {
+            var clickEventMap = {
+                search: renderTable,
+                addMember: editMember,
+                editMember: editMember,
+                delMember: delMember,
+                setMember: setMember
+            };
+            $pageBody.on('click', '.query-form .btn', function (e) {
+                e.preventDefault();
+                //查询, 新增
+                var $el = $(this),
+                    eventName = $el.attr('name'),
+                    queryParams = {
+                        keywordLst: $pageBody.find('.query-form input[name="keywordLst"]').val(),
+                        groupID: groupID, shopID: shopID
+                    };
+                eventName == 'search' ? clickEventMap[eventName](queryParams) : clickEventMap[eventName]();
+            }).on('click', 'table tr td a', function (e) {
+                e.preventDefault();
+                //修改, 删除, 设置
+                var $el = $(this),
+                    eventName = $el.data('type');
+                clickEventMap[eventName]($el.data('key'));
+            });
+        }
+
+        function editMember(empKey) {
+            //添加或修改人员信息
+            var memberInfo = {},
+                accountStatusSelect = IX.clone(accountStatusMap);
+            if (empKey) {
+                memberInfo = _.findWhere(members, {empKey: empKey});
+                memberInfo.empRemark = Hualala.Common.decodeTextEnter(memberInfo.empRemark);
+                memberInfo.photoImage = getPicUrl(memberInfo.photoImage, memberInfo.imgHWP);
+                accountStatusSelect = _.map(accountStatusSelect, function(status) {
+                    return IX.inherit(status, {selected: status.value == memberInfo.accountStatus ? 'selected' : ''});
+                });
+            }
+            var status = empKey ? '修改' : '添加',
+                modalDialog = Hualala.UI.ModalDialog({
+                    id: 'editMember',
+                    title: status + '人员',
+                    hideCloseBtn: 'false',
+                    html: editModalTpl(IX.inherit({}, memberInfo,
+                        {statusSelect: {options: accountStatusSelect, name: 'accountStatus'}}))
+            }).show();
+            modalDialog._.footer.find('.btn.btn-close').text('关闭');
+            registerFormValidate(modalDialog._.body.find('.form-member'));
+            bindUpdateMember(modalDialog, empKey);
+        }
+
+        function registerFormValidate($form) {
+            $form.bootstrapValidator({
+                fields: {
+                    empCode: {
+                        validators: {
+                            notEmpty: {message: "编码不能为空"}
+                        }
+                    },
+                    empName: {
+                        validators: {notEmpty: {message: '姓名必填'}}
+                    },
+                    empCardNo: {
+                        validators: {notEmpty: {message: '卡号必填'}}
+                    },
+                    IDCard: {
+                        validators: {
+                            notEmpty: {message: '身份证号必填'},
+                            regexp: {regexp: /(^\d{15}$)|(^\d{17}([0-9]|[xX])$)/, message: '请输入正确的身份证号'}
+                        }
+                    },
+                    positionName: {
+                        validators: {notEmpty: {message: '职位名称必填'}}
+                    },
+                    localPosLoginPWD: {
+                        validators: {
+                            notEmpty: {message: '密码不能为空'}
+                        }
+                    },
+                    accountStatus: {
+                        validators: {
+                            notEmpty: {message: '账号必选'}
+                        }
+                    },
+                    empMobile: {
+                        validators: {
+                            notEmpty: {message: '电话号码必填'},
+                            regexp: {regexp: /^1[358]\d{9}$/, message: '请输入正确的手机号'}
+                        }
+                    },
+                    maxDiscountRate: {
+                        validators: {
+                            regexp: {regexp: /(^0\.?\d{0,2}$)|(^1\.?0{0,2}$)/, message: '必须是最多保留两位小数并且介于0-1之间的数'}
+                        }
+                    },
+                    maxFreeAmount: {
+                        validators: {
+                            regexp: {regexp: /^\d+\.?\d{0,2}$/, message: '必须是最多保留两位小数且非负的值'}}
+                    }
+                }
+            });
+        }
+
+        function bindUpdateMember(modalDialog, empKey) {
+            var $foodPic = modalDialog._.body.find('.food-pic'),
+                $uploadBtn = $foodPic.find('label'),
+                $img = $foodPic.find('img'),
+                imgSrc = $img.attr('src'),
+                imgPath, imgHWP;
+            Hualala.UI.fileUpload($uploadBtn, function (rsp) {
+                var path = rsp.url, hwp = rsp.imgHWP || '';
+                imgPath = path;
+                imgHWP = hwp;
+                if (!window.FileReader) {
+                    $img.attr('src', getPicUrl(path, imgHWP))
+                }
+            }, {
+                onBefore: function ($elem, $file) {
+                    imgSrc = $img.attr('src');
+                    $foodPic.addClass('loading');
+                    if(window.FileReader) previewImg($file[0], $img);
+                },
+                onFail: function() { if(window.FileReader) $img.attr('src', imgSrc); },
+                onAlways: function() { $foodPic.removeClass('loading'); }
+            });
+            modalDialog._.footer.on('click', '.btn.btn-ok', function (e) {
+                var $form = modalDialog._.body.find('.form-member');
+                if(!$form.data('bootstrapValidator').validate().isValid()) return;
+                var data = Hualala.Common.parseForm($form),
+                    postParams = IX.inherit({shopID: shopID, groupID: groupID, empKey: empKey}, data, {photoImage: imgPath});
+                postParams.empRemark = Hualala.Common.encodeTextEnter(postParams.empRemark);
+                Hualala.Global[empKey ? 'updateShopMember' : 'addShopMember'](postParams, function (rsp) {
+                    if (rsp.resultcode != '000') {
+                        Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    Hualala.UI.TopTip({msg: '保存成功', type: 'success'});
+                    modalDialog.hide();
+                    renderTable();
+                });
+            });
+        }
+
+        function getPicUrl(path, hwp)
+        {
+            var h = hwp ? parseInt(120 * hwp) : '',
+                cfg = hwp ? {width: 120, height: h} : {};
+
+            return path ? Hualala.Common.getSourceImage(path, cfg) : imgRoot + 'food_bg.png';
+        }
+
+        function delMember(empKey) {
+            //删除人员
+            Hualala.UI.Confirm({
+                title: '删除人员',
+                msg: '你确定要删除该人员吗？',
+                okFn: function () {
+                    Hualala.Global.deleteShopMember({empKey: empKey, shopID: shopID}, function (rsp) {
+                        if (rsp.resultcode != '000') {
+                            Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                            return;
+                        }
+                        Hualala.UI.TopTip({msg: '操作成功', type: 'success'});
+                        renderTable();
+                    });
+                }
+            });
+        }
+
+        function bindRoleSetModal(modalDialog, empKey) {
+            var member = _.findWhere(members, {empKey: empKey + ''});
+            //选择角色后重新渲染权限
+            var reRenderRights = function() {
+                var modalRights = _.map(rights, function (right) {
+                        return IX.inherit({checked: _.contains(selRightIDs, right.rightID) ? 'checked' : ''}, right);
+                    }),
+                    modalData = {
+                        roles: _.map(IX.clone(roles), function (role) {
+                            return IX.inherit(role, {checked: _.contains(selRoleIDs, role.roleID) ? 'checked' : ''});
+                        }),
+                        rightGroup: _.groupBy(modalRights, 'rightGroupName')
+                    };
+                modalDialog._.body.empty().html(setRoleTpl(modalData));
+            };
+
+            //给角色和权限的选择绑定事件
+            modalDialog._.body.on('change', '.role-right input[type="checkbox"]', function () {
+                var $el = $(this),
+                    key = $el.data('key') + '',
+                    isRole = $el.parents('.form-group').hasClass('roles'),
+                    isRight = $el.parents('.form-group').hasClass('rights');
+
+                if (isRole) {
+                    //修改角色，需要重新请求权限
+                     $el.is(':checked') ? selRoleIDs.push(key) : (selRoleIDs = _.reject(selRoleIDs, function(id) {return id == key}));
+                    if (selRoleIDs.length == 0) {
+                        selRightIDs = [];
+                        rights = [];
+                        reRenderRights();
+                        return;
+                    }
+                    var loading = new Hualala.UI.LoadingModal({start: 100});
+                    loading.show();
+                    Hualala.Global.queryRights({roleID: selRoleIDs.join(',')}, function (rsp) {
+                        if (rsp.resultcode != '000') {
+                            Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                            return;
+                        }
+                        var records = rsp.data.records;
+                        var delRightIDs = records ? _.pick(_.reject(rights, function (right) {
+                            return _.contains(records, right);
+                        }), 'rightID') : selRightIDs;
+                        rights = records;
+                        selRightIDs = records ? _.uniq(_.reject(selRightIDs, function (rightID) { return _.contains(delRightIDs, rightID)})) : [];
+                        reRenderRights();
+                        loading.hide();
+                    });
+                } else if (isRight) {
+                    //修改权限只需修改选中的权限值
+                    $el.is(':checked') ? selRightIDs.push(key) : (selRightIDs = _.reject(selRightIDs, function(id) {return id == key}));
+                }
+            });
+            //给保存绑定事件
+            modalDialog._.footer.on('click', '.btn.btn-ok', function () {
+                var notRightLst = _.map(modalDialog._.body.find('form .rights input[type="checkbox"]').not(':checked'), function(input){return $(input).data('key')}),
+                    setParams = {
+                        empKey: empKey,
+                        roleIDLst: selRoleIDs.join(','),
+                        rightIDLst: selRightIDs.join(','),
+                        notRightList: notRightLst.join(','),
+                        roleNameLst: _.pluck(_.select(roles, function(role) {return _.contains(selRoleIDs, role.roleID)}), 'roleName').join(',')
+                    };
+                Hualala.Global.setRoleRight(setParams, function (rsp) {
+                    if (rsp.resultcode != '000') {
+                        Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    member.roleIDLst = setParams.roleIDLst;
+                    member.rightIDLst = setParams.rightIDLst;
+                    Hualala.UI.TopTip({msg: '设置成功', type: 'success'});
+                    modalDialog.hide();
+                });
+            });
+        }
+
+        function setMember(empKey) {
+            //设置人员角色和权限
+            rights = null;
+            var member = _.findWhere(members, {empKey: empKey});
+            selRoleIDs = _.compact(_.uniq(member.roleIDLst.split(',')));
+            selRightIDs = _.compact(_.uniq(member.rightIDLst.split(',')));
+
+            //渲染角色
+            var renderRoleSet = function() {
+                var modalRights = _.map(rights, function (right) {
+                    return IX.inherit({checked: _.contains(selRightIDs, right.rightID) ? 'checked' : ''}, right);
+                });
+                var modalData = {
+                    roles: _.map(roles, function (role) {
+                        return IX.inherit(role, {checked: _.contains(selRoleIDs, role.roleID) ? 'checked' : ''});
+                    }),
+                    rightGroup: _.groupBy(modalRights, 'rightGroupName')
+                };
+                var modalDialog = Hualala.UI.ModalDialog({
+                    id: 'setRoles',
+                    title: '权限设置',
+                    html: setRoleTpl(modalData)
+                }).show();
+                bindRoleSetModal(modalDialog, empKey);
+            };
+
+            //渲染权限
+            var renderRights = function() {
+                if (selRoleIDs.length > 0) {
+                    Hualala.Global.queryRights({roleID: selRoleIDs.join(',')}, function (rsp) {
+                        if (rsp.resultcode != '000') {
+                            Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                            return;
+                        }
+                        rights = rsp.data.records;
+                        renderRoleSet();
+                    });
+                } else {
+                    rights = [];
+                    renderRoleSet();
+                }
+            };
+            if (roles) {
+                renderRights();
+            } else {
+                Hualala.Global.queryRoles({}, function (rsp) {
+                    if (rsp.resultcode != '000') {
+                        Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    roles = rsp.data.records;
+                    renderRights();
+                });
+            }
+        }
+
+        //图片上传本地预览
+        function previewImg(fileInput, $img)
+        {
+            if (fileInput.files && fileInput.files[0])
+            {
+                var reader = new FileReader();
+                reader.onload = function(e){
+                    $img.attr('src', e.target.result);
+                }
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+    };
+
+})(window, jQuery);;(function(window, $) {
+    Hualala.Shop.initTableMgr = function ($container, shopID) {
+        var tableHeaderCfg = [
+                {key : "tableName", clz : "text", label : "桌台名称"},
+                {key : "tableCode", clz : "text", label : "桌台编号"},
+                {key : "areaName", clz : "text", label : "桌台区域"},
+                {key : "person", clz : "text", label : "席位数"},
+                {key : "tableTagStr", clz : "text", label : "标签"},
+                {key : "isTrueTable", clz : "text", label : "真实桌台"},
+                {key : "isRoom", clz : "text", label : "包间"},
+                {key : "isActive", clz : "status", label : "启用状态"},
+                {key : "rowControl", clz : "", label : "操作"},
+            ],
+            queryBoxTpl, resultTpl, editModalTpl;
+        var shopID = shopID,
+            groupID = $XP(Hualala.getSessionSite(), 'groupID', ''),
+            tables = null,
+            classifyTables = [],
+            currentAreaID = 0,
+            areas = null;
+
+        //加载模板：查询表单；数据表格
+        initTemplate();
+        //请求桌台区域，渲染区域信息
+        renderTableArea();
+        //请求数据并渲染表格，renderData
+        renderTable();
+        //绑定事件：修改  删除  设置
+        bindEvent();
+        function initTemplate() {
+            queryBoxTpl = Handlebars.compile(Hualala.TplLib.get('tpl_table_query'));
+            resultTpl = Handlebars.compile(Hualala.TplLib.get('tpl_base_datagrid'));
+            editModalTpl = Handlebars.compile(Hualala.TplLib.get('tpl_edit_table'));
+            Handlebars.registerPartial("colBtns", Hualala.TplLib.get('tpl_base_grid_colbtns'));
+            Handlebars.registerPartial("customRadio", Hualala.TplLib.get('tpl_radio'));
+            Handlebars.registerHelper('chkColType', function (conditional, options) {
+                return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+            });
+            $container.append($(queryBoxTpl({areaLink: '#shop/'+ shopID + '/table/area'})));
+        }
+
+        function renderTableArea() {
+            var renderArea = function() {
+                var $tableArea = $container.find('#tableAreaBox'),
+                    $areaSpan = $('<span>');
+                if (currentAreaID == 0) $areaSpan.addClass('current-food-class');
+                $tableArea.empty();
+                _.each(areas, function (area) {
+                    var $span = $('<span areaid="'+ (area.areaID || 0) +'">');
+                    if(currentAreaID == area.areaID) $span.addClass('current-food-class');
+                    $tableArea.append($span.text(area.areaName + '(' + area.num + ')'));
+                });
+            };
+            Hualala.Global.getTableArea({shopID: shopID}, function (rsp) {
+                if (rsp.resultcode != '000') {
+                    Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                areas = rsp.data.records;
+                renderArea();
+            });
+
+        }
+        function renderTable(extendParams) {
+            var initParams = {shopID: shopID, areaID: '', keywordLst: ''},
+                queryParams = IX.inherit(initParams, extendParams);
+            Hualala.Global.getShopTable(queryParams, function(rsp) {
+                if (rsp.resultcode == '000') {
+                    tables = rsp.data.records;
+                    classifyTables = sortTableData();
+                    renderRecords(tables);
+                    createTableNameChosen();
+                } else {
+                    Hualala.UI.TopTip({type: 'danger', msg: rsp.resultmsg})
+                }
+            });
+        }
+
+        function createTableNameChosen() {
+            var customChosen = Handlebars.compile(Hualala.TplLib.get('tpl_chosen')),
+                $tableName = $container.find('.query-form form #tableName select');
+            $tableName.html(customChosen(tableChosenData()));
+            if($tableName.data('chosen')) $tableName.chosen('destroy');
+            Hualala.UI.createChosen($tableName, tables, 'tableID', 'tableName',
+                {
+                    noFill: true, noCurrent: true, width: '200px',
+                    placeholder_text: '选择或输入桌台名称',
+                    no_result_text: '抱歉，没有相关桌台'
+                }, false);
+        }
+
+        function tableChosenData() {
+            var groupTables = IX.clone(sortTableData()),
+                groups = _.map(groupTables, function (classifyTables, areaID) {
+                var groupName = $XP(classifyTables[0], 'areaName'),
+                    options = _.map(IX.clone(classifyTables), function (table) {
+                        return {value: table.tableID, label: table.tableName}
+                    });
+                return {groupName: groupName, options: options}
+            });
+            return {groups: groups};
+        }
+
+        function sortTableData() {
+            var copyTables = IX.clone(tables);
+            return _.groupBy(copyTables, 'areaID');
+        }
+
+        function renderRecords(records) {
+            var recordsCount = records ? records.length : 0;
+            $container.find('.table-responsive').remove();
+            $container.append($(resultTpl(mapRenderData(records))));
+            $container.find('#foodSearchResult span').text(recordsCount);
+            if(recordsCount == 0) return;
+            initEventSwitcher($container.find('table tr td input[type="checkbox"]'));
+        }
+        //组装表格显示的col
+        function mapColItemRenderData(row, rowIdx, colKey) {
+            var r = {value : "", text : ""}, v = $XP(row, colKey, '');
+            switch(colKey) {
+                case "rowControl" :
+                    r = {
+                        type : 'button',
+                        btns : [
+                            {
+                                label : '查看',
+                                link : 'javascript:void(0);',
+                                id: $XP(row, 'tableID'),
+                                key : $XP(row, 'areaID'),
+                                type : 'viewTable'
+                            },
+                            {
+                                label : '修改',
+                                link : 'javascript:void(0);',
+                                clz: 'm-l',
+                                id: $XP(row, 'tableID'),
+                                key : $XP(row, 'areaID'),
+                                type : 'editTable'
+                            },
+                            {
+                                label : '删除',
+                                link : 'javascript:void(0);',
+                                clz : 'm-l',
+                                id: $XP(row, 'tableID'),
+                                key : $XP(row, 'areaID', ''),
+                                type : 'delTable'
+                            }
+                        ]
+                    };
+                    break;
+                case "isActive" :
+                    r.value = v;
+                    r.text = '<input type="checkbox" data-status="' + v + '" data-id="' + $XP(row, 'tableID') + '" data-key="' + $XP(row, 'areaID', '') + '"/>';
+                    break;
+                case 'isTrueTable': case 'isRoom' :
+                    r.value = v;
+                    var statusClass = v == 1 ? 'glyphicon-ok' : 'glyphicon-minus';
+                    r.text = '<span class="glyphicon ' + statusClass + '"></span>';
+                    break;
+                default :
+                    r.value = r.text = $XP(row, colKey, '');
+                    break;
+            }
+            return r;
+        }
+
+        //组装表格显示的rows
+        function mapRenderData(records) {
+            var self = this;
+            var tblClz = "table-bordered table-striped table-hover ix-data-report",
+                tblHeaders = IX.clone(tableHeaderCfg);
+            var mapColsRenderData = function (row, idx) {
+                var colKeys = _.map(tblHeaders, function (el) {
+                    return {key: $XP(el, 'key', ''), clz: $XP(el, 'clz', '')};
+                });
+                var col = {clz: '', type: 'text'};
+                var cols = _.map(colKeys, function (k, i) {
+                    var r = mapColItemRenderData(row, idx, $XP(k, 'key', ''));
+                    return IX.inherit(col, r, {clz: $XP(k, 'clz', '')});
+                });
+                return cols;
+            };
+            var rows = _.map(records, function (row, idx) {
+                return {
+                    clz: '',
+                    cols: mapColsRenderData(row, idx)
+                };
+            });
+            return {
+                tblClz: tblClz,
+                isEmpty: !records || records.length == 0 ? true : false,
+                colCount: tableHeaderCfg.length,
+                thead: tableHeaderCfg,
+                rows: rows
+            };
+
+        }
+
+        function bindEvent() {
+            var clickEventMap = {
+                viewTable: viewTable,
+                addTable: editTable,
+                editTable: editTable,
+                delTable: delTable
+            };
+            $container.on('click', '#tableAreaBox span', function () {
+                var $el = $(this);
+                $container.find('.query-form .row #tableName select').val('');
+                currentAreaID = $el.attr('areaID');
+                var filterTables = currentAreaID == 0 ? tables : classifyTables[currentAreaID],
+                    $isRoomCheckBox = $('.query-form form .row input[name="isRoom"]'),
+                    records = $isRoomCheckBox.prop('checked') ? _.select(filterTables, function (table) {
+                        return table.isRoom == 1;
+                    }) : filterTables;
+                $el.siblings('span').removeClass('current-food-class');
+                $el.addClass('current-food-class');
+                renderRecords(records);
+            }).on('change', '.query-form form .row #tableName select', function () {
+                var tableID = $(this).val(),
+                    currentDisplayTables = currentAreaID == 0 ? tables : classifyTables[currentAreaID],
+                    records = !tableID ? currentDisplayTables :
+                        _.findWhere(currentDisplayTables, {tableID: tableID + ''}) ?
+                            [_.findWhere(currentDisplayTables, {tableID: tableID + ''})] : [];
+                renderRecords(records);
+            }).on('change', '.query-form form .row input[name="isRoom"]', function () {
+                $container.find('.query-form .row #tableName select').val('');
+                var filterTables = currentAreaID == 0 ? tables : classifyTables[currentAreaID],
+                    records = $(this).prop('checked') ? _.select(filterTables, function (table) {
+                        return table.isRoom == 1;
+                    }) : filterTables;
+                renderRecords(records);
+            }).on('click', '.query-form .btn', function (e) {
+                e.preventDefault();
+                //新增
+                var $el = $(this),
+                    eventName = $el.attr('name');
+                clickEventMap[eventName]();
+            }).on('click', 'table tr td a', function (e) {
+                e.preventDefault();
+                //修改, 删除, 设置
+                var $el = $(this),
+                    eventName = $el.data('type');
+                clickEventMap[eventName]($el.data('id'));
+            });
+        }
+
+        function findTableBy(tableID) {
+            return _.findWhere(tables, {tableID: tableID + ''});
+        }
+
+        function viewTable(tableID) {
+            var table = findTableBy(tableID),
+                basicInfoTitle = {
+                    tableName: '桌台名称', areaName: '所属区域', tableCode: '桌台编号', person: '座位数目',
+                    isTrueTable: '真实桌台', isRoom: '是否包间', tableTagStr: '标签备注'
+                },
+                basicInfo = _.map(_.pick(IX.clone(table), 'tableName', 'areaName', 'tableCode', 'person', 'isTrueTable', 'isRoom', 'tableTagStr'), function (value, key) {
+                    return {label: basicInfoTitle[key], value: (key != 'isTrueTable' && key != 'isRoom') ? value : value == 1 ? '是' : '否'};
+                }),
+                tableInfoModal = Handlebars.compile(Hualala.TplLib.get('tpl_table_info')),
+                modalDialog = Hualala.UI.ModalDialog({
+                    id: 'viewTable',
+                    title: '查看桌台信息',
+                    html: tableInfoModal({qrImagePath: table.qrImagePath, basicInfo: basicInfo})
+            }).show();
+            modalDialog._.footer.find('button.btn.btn-close').text('关闭');
+            modalDialog._.footer.find('button.btn.btn-ok').remove();
+        }
+
+        function editTable(tableID) {
+            //添加或修改人员信息
+            var table = findTableBy(tableID);
+            var getRadiosInput = function (radioName) {
+                return [
+                    {text: '是', value: '1', checked: (!table || table[radioName] == 1) ? 'checked' : ''},
+                    {text: '否', value: '0', checked: (table && table[radioName]) == 0 ? 'checked' : ''}
+                ];
+            };
+            var status = tableID ? '修改' : '添加',
+                tableRadios = {radios: [
+                    {name: 'isTrueTable', label: '真实桌台', inputs: getRadiosInput('isTrueTable')},
+                    {name: 'isRoom', label: '是否包间', inputs: getRadiosInput('isRoom')}
+                ]},
+                modalDialog = Hualala.UI.ModalDialog({
+                    id: 'editTable',
+                    title: status + '桌台',
+                    hideCloseBtn: 'false',
+                    backdrop: 'static',
+                    html: editModalTpl(IX.inherit(table, tableRadios))
+                }).show();
+            renderAreaSelect(modalDialog, table);
+            modalDialog._.footer.find('.btn.btn-close').text('关闭');
+            registerFormValidate(modalDialog._.body.find('.form-table'), tableID);
+            bindUpdateTable(modalDialog, tableID);
+        }
+
+        function renderAreaSelect(modalDialog, table) {
+            var renderSelect = function (areas) {
+                var $select = modalDialog._.body.find('div[name="tableArea"]'),
+                    customSelect = Handlebars.compile(Hualala.TplLib.get('tpl_select')),
+                    options = _.map(IX.clone(areas), function (area) {
+                        return {value: area.areaID, name: area.areaName, selected: (table && table.areaID == area.areaID) ? 'selected' : ''};
+                    });
+                $select.append(customSelect({options: options, name: 'areaID'}));
+            };
+            if (areas) {
+                renderSelect(_.reject(areas, function(area) {return !area.areaID}));
+            } else {
+                Hualala.Global.getTableArea({shopID: shopID}, function (rsp) {
+                    if (rsp.resultcode != '000') {
+                        Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    areas = rsp.data.records;
+                    renderSelect(areas);
+                });
+            }
+
+        }
+
+        function registerFormValidate($form, tableID) {
+            $form.bootstrapValidator({
+                fields: {
+                    areaID: {
+                        validators: {
+                            notEmpty: {message: "区域不能为空"}
+                        }
+                    },
+                    tableName: {
+                        validators: {
+                            notEmpty: { message: '桌台名称不能为空' },
+                            ajaxValid: {
+                                api: 'checkTableExist',
+                                data: {shopID: shopID, tableID: tableID}
+                            }
+                        }
+                    },
+                    person: {
+                        validators: {
+                            notEmpty: {message: '席位数不能为空'},
+                            greaterThan: {value: 1, message: '必须是正整数'},
+                            integer: {message: '必须是整数'}
+                        }
+                    }
+                }
+            });
+        }
+
+        function bindUpdateTable(modalDialog, tableID) {
+            modalDialog._.footer.on('click', '.btn.btn-ok', function (e) {
+                var $form = modalDialog._.body.find('.form-table');
+                if(!$form.data('bootstrapValidator').validate().isValid()) return;
+                var data = Hualala.Common.parseForm($form),
+                    defaultParam = tableID ? {tableID: tableID} : {isActive: '1'},
+                    postParams = IX.inherit(defaultParam, {shopID: shopID}, data);
+                Hualala.Global[tableID ? 'updateShopTable' : 'addShopTable'](postParams, function (rsp) {
+                    if (rsp.resultcode != '000') {
+                        Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    Hualala.UI.TopTip({msg: '保存成功', type: 'success'});
+                    modalDialog.hide();
+                    if(!tableID) {
+                        //需要处理area区域对应的区域的卓台数
+                        currentAreaID = 0;
+                    }
+                    renderTableArea();
+                    renderTable();
+                });
+            });
+        }
+
+        function delTable(tableID) {
+            //删除桌台
+            Hualala.UI.Confirm({
+                title: '删除桌台',
+                msg: '你确定要删除该桌台吗？',
+                okFn: function () {
+                    Hualala.Global.deleteShopTable({shopID: shopID, tableID: tableID}, function (rsp) {
+                        if (rsp.resultcode != '000') {
+                            Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                            return;
+                        }
+                        Hualala.UI.TopTip({msg: '操作成功', type: 'success'});
+                        currentAreaID = 0;
+                        renderTableArea();
+                        renderTable();
+                    });
+                }
+            });
+        }
+
+        function switchTable(tableID, state, $el) {
+            //开启或关闭桌台
+            Hualala.Global.switchShopTable({shopID: shopID, tableID: tableID, isActive: state}, function (rsp) {
+                if (rsp.resultcode != '000') {
+                    Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                    $el.bootstrapSwitch('toggleState', true);
+                    return;
+                }
+                Hualala.UI.TopTip({msg: '操作成功！', type: 'success'});
+            });
+        }
+
+        function initEventSwitcher($checkbox) {
+            $checkbox.each(function () {
+                var $el = $(this),
+                    onLabel = '已启用',
+                    offLabel = '未启用';
+                $el.bootstrapSwitch({
+                    state: !!$el.data('status'),
+                    size : 'normal',
+                    onColor : 'primary',
+                    offColor : 'default',
+                    onText : onLabel,
+                    offText : offLabel
+                }).on('switchChange.bootstrapSwitch', function (e, state) {
+                    var tableID = $el.attr('data-id'),
+                        areaID = $el.attr('data-key');
+                    var actStr = (state == 1 ? "开启" : "关闭");
+                    Hualala.UI.Confirm({
+                        title : actStr + "桌台",
+                        msg : "你确定要" + actStr + "该桌台吗？",
+                        okFn : function () {
+                            switchTable(tableID, +state, $el);
+                        },
+                        cancelFn : function () {
+                            $el.bootstrapSwitch('toggleState', true);
+                        }
+                    });
+
+                });
+            });
+        }
+    };
+})(window, jQuery);;(function(window, $) {
+    Hualala.Shop.initTableAreaMgr = function ($container, shopID) {
+        var tableHeaderCfg = [
+                {key : "areaName", clz : "text", label : "名称"},
+                {key : "areaNote", clz : "text col-md-4", label : "说明"},
+                {key : "num", clz : "text", label : "桌台数"},
+                {key : "isActive", clz : "text", label : "启用状态"},
+                {key : "rowControl", clz : "", label : "操作"},
+                {key : "setCategory", clz : "", label : "可选菜品分类"}
+            ],
+            queryBoxTpl, resultTpl, editModalTpl, setCategoryTpl;
+        var shopID = shopID,
+            groupID = $XP(Hualala.getSessionSite(), 'groupID', ''),
+            categories = null,
+            areas = null;
+
+        //加载模板：查询表单；数据表格
+        initTemplate();
+        //请求数据并渲染表格，renderData
+        renderTable();
+        //绑定事件：修改  删除  设置
+        bindEvent();
+        function initTemplate() {
+            queryBoxTpl = Handlebars.compile(Hualala.TplLib.get('tpl_create_btn'));
+            resultTpl = Handlebars.compile(Hualala.TplLib.get('tpl_base_datagrid'));
+            editModalTpl = Handlebars.compile(Hualala.TplLib.get('tpl_edit_table_area'));
+            setCategoryTpl = Handlebars.compile(Hualala.TplLib.get('tpl_checkbox'));
+            Handlebars.registerPartial("colBtns", Hualala.TplLib.get('tpl_base_grid_colbtns'));
+            Handlebars.registerHelper('chkColType', function (conditional, options) {
+                return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+            });
+            $container.append($(queryBoxTpl({operatorClass: 'add-table-area', title: '新增区域'})));
+        }
+
+        function renderTable(postParams) {
+            var queryParams = postParams || {shopID: shopID};
+            Hualala.Global.getTableArea(queryParams, function(rsp) {
+                if (rsp.resultcode == '000') {
+                    areas = _.reject(rsp.data.records, function(record) { return !record.areaID;});
+                    $container.find('.table-responsive').remove();
+                    $container.append($(resultTpl(mapRenderData(areas))));
+                    initEventSwitcher($container.find('table tr td input[type="checkbox"]'));
+                } else {
+                    Hualala.UI.TopTip({type: 'danger', msg: rsp.resultmsg})
+                }
+            });
+        }
+
+        function initEventSwitcher($checkbox) {
+            $checkbox.each(function () {
+                var $el = $(this),
+                    areaID = $el.data('id'),
+                    params = {shopID: shopID, areaID: areaID};
+                $el.bootstrapSwitch({
+                    state: !!$el.data('status'),
+                    size: 'normal',
+                    onColor: 'primary',
+                    offColor: 'default',
+                    onText: '已启用',
+                    offText: '未启用'
+                }).on('switchChange.bootstrapSwitch', function (e, state) {
+                    var tip = state ? '开启' : '关闭';
+                    Hualala.UI.Confirm({
+                        title: tip + '区域',
+                        msg: '你确定要' + tip +'该区域吗？',
+                        okFn: function () {
+                            Hualala.Global.switchTableArea(IX.inherit({isActive: +state}, params), function (rsp) {
+                                if (rsp.resultcode != '000') {
+                                    Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                                    $el.bootstrapSwitch('toggleState', true);
+                                    return;
+                                }
+                                Hualala.UI.TopTip({msg: '操作成功', type: 'success'});
+                            });
+                        },
+                        failFn: function () {
+                            $el.bootstrapSwitch('toggleState', true);
+                        }
+                    });
+                });
+            });
+        }
+        //组装表格显示的col
+        function mapColItemRenderData(row, rowIdx, colKey) {
+            var r = {value : "", text : ""}, v = $XP(row, colKey, '');
+            switch(colKey) {
+                case "rowControl" :
+                    r = {
+                        type : 'button',
+                        btns : [
+                            {
+                                label : '修改',
+                                link : 'javascript:void(0);',
+                                key : $XP(row, 'areaID', ''),
+                                type : 'editTableArea'
+                            },
+                            {
+                                label : '删除',
+                                link : 'javascript:void(0);',
+                                clz : 'm-l',
+                                key : $XP(row, 'areaID', ''),
+                                type : 'delTableArea'
+                            }
+                        ]
+                    };
+                    break;
+                case "setCategory" :
+                    r = {
+                        type : 'button',
+                        btns : [
+                            {
+                                label : '选择',
+                                link : 'javascript:void(0);',
+                                key : $XP(row, 'areaID', ''),
+                                type : 'setCategory'
+                            }
+                        ]
+                    };
+                    break;
+                case "isActive":
+                    r.value = v;
+                    r.text = '<input type="checkbox" name="switch_event" data-status="'+ v + '" data-id="' + $XP(row, 'areaID', '') + '" '
+                    + (v == 1 ? 'checked ' : '') + '/>';
+                    break;
+                default :
+                    r.value = r.text = $XP(row, colKey, '');
+                    break;
+            }
+            return r;
+        }
+
+        //组装表格显示的rows
+        function mapRenderData(records) {
+            var self = this;
+            var tblClz = "table-bordered table-striped table-hover ix-data-report",
+                tblHeaders = IX.clone(tableHeaderCfg);
+            var mapColsRenderData = function (row, idx) {
+                var colKeys = _.map(tblHeaders, function (el) {
+                    return {key: $XP(el, 'key', ''), clz: $XP(el, 'clz', '')};
+                });
+                var col = {clz: '', type: 'text'};
+                var cols = _.map(colKeys, function (k, i) {
+                    var r = mapColItemRenderData(row, idx, $XP(k, 'key', ''));
+                    return IX.inherit(col, r, {clz: $XP(k, 'clz', '')});
+                });
+                return cols;
+            };
+            var rows = _.map(records, function (row, idx) {
+                return {
+                    clz: '',
+                    cols: mapColsRenderData(row, idx)
+                };
+            });
+            return {
+                tblClz: tblClz,
+                isEmpty: !records || records.length == 0 ? true : false,
+                colCount: tableHeaderCfg.length,
+                thead: tableHeaderCfg,
+                rows: rows
+            };
+
+        }
+
+        function bindEvent() {
+            var clickEventMap = {
+                addTableArea: editTableArea,
+                editTableArea: editTableArea,
+                delTableArea: delTableArea,
+                setCategory: setCategory
+            };
+            $container.on('click', '.btn.add-table-area', function (e) {
+                e.preventDefault();
+                //新增
+                editTableArea();
+            }).on('click', 'table tr td a', function (e) {
+                e.preventDefault();
+                //修改, 删除, 设置
+                var $el = $(this),
+                    eventName = $el.data('type');
+                clickEventMap[eventName]($el.data('key'));
+            });
+        }
+
+        function editTableArea(areaID) {
+            //添加或修改人员信息
+            var areaInfo = {};
+            if (areaID) {
+                areaInfo = _.findWhere(areas, {areaID: areaID + ''});
+                if(areaInfo) areaInfo.areaNote = Hualala.Common.decodeTextEnter(areaInfo.areaNote);
+            }
+            var status = areaID ? '修改' : '添加',
+                modalDialog = Hualala.UI.ModalDialog({
+                    id: 'editTableArea',
+                    title: status + '区域',
+                    hideCloseBtn: 'false',
+                    html: editModalTpl(areaInfo)
+                }).show();
+            modalDialog._.footer.find('.btn.btn-close').text('关闭');
+            registerFormValidate(modalDialog._.body.find('.form-area'), areaID);
+            bindUpdateArea(modalDialog, areaID);
+        }
+
+        function registerFormValidate($form, areaID) {
+            $form.bootstrapValidator({
+                fields: {
+                    areaName: {
+                        validators: {
+                            notEmpty: {message: '区域名称不能为空'},
+                            ajaxValid: {
+                                api: 'checkAreaNameExist',
+                                data: {shopID: shopID, areaID: areaID}
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function bindUpdateArea(modalDialog, areaID) {
+            modalDialog._.footer.on('click', '.btn.btn-ok', function (e) {
+                var $form = modalDialog._.body.find('.form-area');
+                if(!$form.data('bootstrapValidator').validate().isValid()) return;
+                var data = Hualala.Common.parseForm($form),
+                    postParams = IX.inherit({shopID: shopID, areaID: areaID}, data);
+                postParams.areaNote = Hualala.Common.encodeTextEnter(postParams.areaNote);
+                Hualala.Global[areaID ? 'updateTableArea' : 'addTableArea'](postParams, function (rsp) {
+                    if (rsp.resultcode != '000') {
+                        Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    Hualala.UI.TopTip({msg: '保存成功', type: 'success'});
+                    modalDialog.hide();
+                    renderTable();
+                });
+            });
+        }
+
+        function delTableArea(areaID) {
+            var areaTableCount = $XP(_.findWhere(areas, {areaID: areaID + ''}), 'num', 0);
+            if (areaTableCount == 0) {
+                Hualala.UI.Confirm({
+                    title: '删除区域',
+                    msg: '删除该区域,区域下的桌台都将被删除！！!\n你确定要删除该区域吗？',
+                    okFn: function () {
+                        Hualala.Global.deleteTableArea({shopID: shopID, areaID: areaID}, function (rsp) {
+                            if(rsp.resultcode != '000') {
+                                Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                                return;
+                            }
+                            Hualala.UI.TopTip({msg: '删除成功', type: 'success'});
+                            renderTable();
+                        });
+                    }
+                });
+            } else {
+                Hualala.UI.TopTip({msg: '该区域下还有桌台，不能删除', type: 'danger'});
+            }
+        }
+
+        function setCategory(areaID) {
+            var area = _.findWhere(areas, {areaID: areaID + ''}),
+                selCategoryCodes = area.foodCategoryCodeLst.split(',');
+            var renderCategory = function () {
+                var checkboxes = {
+                        allChecked: selCategoryCodes.length == categories.length ? 'checked' : '',
+                        checkboxes: _.map(IX.clone(categories), function (category) {
+                            return {
+                                categoryCode: category.foodCategoryCode,
+                                text: category.foodCategoryName,
+                                checked: _.contains(selCategoryCodes, category.foodCategoryCode) ? 'checked' : ''};
+                        })
+                    },
+                    modalDialog = Hualala.UI.ModalDialog({
+                    id: 'setCategory',
+                    title: '可选菜品分类',
+                    html: setCategoryTpl(checkboxes)
+                }).show();
+                modalDialog._.footer.find('.btn.btn-close').text('关闭');
+                bindUpdateAreaCategory(modalDialog, areaID)
+            };
+            if (categories) {
+                renderCategory();
+            } else {
+                Hualala.Global.queryCategories({shopID: shopID}, function (rsp) {
+                    if (rsp.resultcode != '000') {
+                        Hualala.UI.TopTip({msg: rsp.resultcode, type: 'danger'});
+                        return;
+                    }
+                    categories = rsp.data.records || [];
+                    renderCategory();
+                });
+            }
+        }
+
+        function bindUpdateAreaCategory(modalDialog, areaID) {
+            var modalBody = modalDialog._.body;
+            modalBody.on('change', 'input[name="all"]', function () {
+                var $el = $(this);
+                modalBody.find('input[name="category"]').prop('checked', $el.prop('checked'));
+            }).on('change', 'input[name="category"]', function () {
+                var checkedCount = modalBody.find('input[name="category"]:checked').length;
+                modalBody.find('input[name="all"]').prop('checked', checkedCount == categories.length);
+            });
+            modalDialog._.footer.on('click', '.btn.btn-ok', function () {
+                var foodCategoryCodeLst = _.map(modalBody.find('input[name="category"]:checked'), function (input) {
+                        return $(input).data('key');
+                    }).join(',');
+                Hualala.Global.setAreaCategory({areaID: areaID,shopID: shopID, foodCategoryCodeLst: foodCategoryCodeLst}, function (rsp) {
+                    if (rsp.resultcode != '000') {
+                        Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    Hualala.UI.TopTip({msg: '操作成功', type: 'success'});
+                    var area = _.findWhere(areas, {areaID: areaID + ''});
+                    area.foodCategoryCodeLst = foodCategoryCodeLst;
+                    modalDialog.hide();
+                });
+            });
+        }
+
+    };
+})(window, jQuery);;(function ($, window) {
+	IX.ns("Hualala.Shop");
+    var G = Hualala.Global,
+		U = Hualala.UI,
+		topTip = U.TopTip,
+		parseForm = Hualala.Common.parseForm,
+		PaperSizesData = Hualala.TypeDef.ShopPrinterDataSet.printerPaperSizeTypes,
+		printerPortData = Hualala.TypeDef.ShopPrinterDataSet.printerPortTypes,
+		PrinterStatusData = Hualala.TypeDef.ShopPrinterDataSet.currPrinterStatusData;
+	Hualala.Shop.initShopPrintMgr = function ($container, shopID){
+		//打印机设置表头：名称|纸张宽度|端口类型|端口|备注|状态|操作
+		var ShopPrinterHeaderCfg = [
+			{key : "printerName", clz : "printerName", label : "名称"},
+			{key : "printerPaperSize", clz : "printerPaperSize", label : "纸张宽度"},
+			{key : "printerPortType", clz : "printerPortType", label : "端口类型"},
+			{key : "printerPort", clz : "text", label : "端口"},
+			{key : "printerRemark", clz : "text", label : "备注"},
+			{key : "currPrinterStatus", clz : "status", label : "状态"},
+			{key : "rowControl", clz : "rowControl", label : "操作"}
+		],
+		printerTpl,layoutTpl,resultTpl,printerModalTpl,printers = null;
+		initTemplate();
+		renderTable();
+		bindEvent();
+		function initTemplate() {
+			printerTpl = Handlebars.compile(Hualala.TplLib.get('tpl_printer_add'));
+			printerModalTpl =Handlebars.compile(Hualala.TplLib.get('tpl_edit_printer'));
+            layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_list_layout'));
+            resultTpl = Handlebars.compile(Hualala.TplLib.get('tpl_base_datagrid'));
+           	Handlebars.registerPartial("colBtns", Hualala.TplLib.get('tpl_base_grid_colbtns'));
+            Handlebars.registerHelper('chkColType', function (conditional, options) {
+                return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+            });
+            $container.append($(layoutTpl()));
+        }
+        //获取数据
+        function renderTable() {
+            var initParams = {shopID: shopID};
+            var Refflag = false;
+            Hualala.Global.getShopPrinter(initParams, function(rsp) {
+                if (rsp.resultcode == '000') {
+                    printers = rsp.data.records;              	
+                	renderRecords(printers); 
+                }else{
+                    topTip({type: 'danger', msg: rsp.resultmsg});
+                    return;
+                }
+            });
+        }
+        //数据渲染
+        function renderRecords(records) {
+        	var $resultBox = $container.find('.shop-list');
+        	$container.find('.promotion_add').remove();
+        	$resultBox.before($(printerTpl()));
+        	var $result = $container.find('.shop-list-body');
+        	$result.removeClass("row");
+        	$result.empty();
+            $result.html($(resultTpl(mapRenderData(records))));
+		}
+		function mapColItemRenderData(row, rowIdx, colKey) {
+			var self = this,
+				r = {value : "", text : ""}, v = $XP(row, colKey, '');
+			switch(colKey) {
+				// 各列参数
+				case "printerPaperSize":
+					var printerPaperSize = PaperSizesData,
+						printerPaperSize = _.find(printerPaperSize, function (el) {return $XP(el, 'value') == v;}),
+						label = $XP(printerPaperSize, 'label', '');
+						r.value = v;
+						r.text =label;
+					break;
+				case "printerPortType":
+					var printerPortTypes = printerPortData,
+						printerPortType = _.find(printerPortTypes, function (el) {return $XP(el, 'value') == v;}),
+						label = $XP(printerPortType, 'label', '');
+						r.value = v;
+						r.text =label;
+					break;
+				case "currPrinterStatus":
+					var currPrinterStatusData = PrinterStatusData,
+						currPrinterStatus = _.find(currPrinterStatusData, function (el) {return $XP(el, 'value') == v;}),
+						label = $XP(currPrinterStatus, 'label', '');
+						r.value = v;
+						r.text =label;
+					break;
+				case "printerRemark" :
+					var label = Hualala.Common.decodeTextEnter(v)|| "";
+						r.value = label;
+						r.text = label;
+					break;
+				case "rowControl":
+					r = {
+						type : 'button',
+						btns : [
+							{
+								label : '修改',
+								link : 'javascript:void(0);',
+								clz : 'operate btn-link edit-printer',
+								id : $XP(row, 'itemID', ''),
+								key : $XP(row, '__id__', ''),
+								type : 'edit'
+							},
+							{
+								label : '删除',
+								link : 'javascript:void(0);',
+								clz : 'operate btn-link delete-printer',
+								id : $XP(row, 'itemID', ''),
+								key : $XP(row, '__id__'),
+								type : 'delete'
+							}
+						]
+					};
+					break; 
+				default :
+					r.value = r.text = $XP(row, colKey, '');
+					break;
+			}
+			return r;
+		}
+		//组装表格
+        function mapRenderData(records) {
+            var self = this;
+            var tblClz = "table table-bordered table-striped table-hover ix-data-report printer-grid",
+                tblHeaders = IX.clone(ShopPrinterHeaderCfg);
+            var mapColsRenderData = function (row, idx) {
+                var colKeys = _.map(tblHeaders, function (el) {
+                    return {key: $XP(el, 'key', ''), clz: $XP(el, 'clz', '')};
+                });
+                var col = {clz: '', type: 'text'};
+                var cols = _.map(colKeys, function (k, i) {
+                    var r = mapColItemRenderData(row, idx, $XP(k, 'key', ''));
+                    return IX.inherit(col, r, {clz: $XP(k, 'clz', '')});
+                });
+                return cols;
+            };
+            var rows = _.map(records, function (row, idx) {
+                return {
+                    clz: '',
+                    cols: mapColsRenderData(row, idx)
+                };
+            });
+            return {
+                tblClz: tblClz,
+                isEmpty: !records || records.length == 0 ? true : false,
+                colCount: tblHeaders.length,
+                thead: tblHeaders,
+                rows: rows
+            };
+        }
+        //页面绑定事件的处理
+        function bindEvent(){
+			$container.on('click', '.operate', function (e) {
+				var act = $(this).attr('data-type');
+					itemID =$(this).attr('data-id')||undefined;
+				switch(act) {
+					//添加
+					case "addPrinter":
+					case "edit" :
+						IX.Debug.info("DEBUG: 添加和修改打印机");
+						renderDailog(itemID,shopID);
+						break;
+					//删除
+					case "delete":
+						Hualala.UI.Confirm({
+			                title: '删除打印机',
+			                msg: '您确定删除此打印机么',
+			                okFn: function () {
+			                    Hualala.Global.deleteShopPrinter({shopID: shopID, itemID: itemID}, function (rsp) {
+			                        if (rsp.resultcode != '000') {
+			                            topTip({msg: rsp.resultmsg, type: 'danger'});
+			                            return;
+			                        }
+			                        topTip({msg: '操作成功', type: 'success'});
+			                        renderTable();
+			                    });
+			                }
+		            	});
+		            	break;
+				}
+			});
+
+        }
+
+        function renderDailog(itemID,shopID){
+         	var printerData = {};
+         	    printerData=_.findWhere(printers, {itemID: itemID});
+            if(printerData){
+            	printerData.printerRemark = Hualala.Common.decodeTextEnter(printerData.printerRemark);
+		        printerPortData=_.map(printerPortData,function (printerPortData){
+		            return _.extend(printerPortData,{selected:printerPortData.value==printerData.printerPortType ? 'selected' : ''});
+		        });
+		       	PrinterStatusData=_.map(PrinterStatusData,function (PrinterStatusData) {
+		            return _.extend(PrinterStatusData,{selected:PrinterStatusData.value==printerData.currPrinterStatus ? 'selected' :''});
+		        });
+		        PaperSizesData =_.map(PaperSizesData,function (PaperSizesData) {
+		            return _.extend(PaperSizesData,{selected:PaperSizesData.value==printerData.printerPaperSize ? 'selected' :''});
+		        });
+	        }
+	        else{
+	        	printerPortData=_.map(printerPortData,function (printerPortData){
+		            return _.extend(printerPortData,{selected:''});
+		        });
+		       	PrinterStatusData=_.map(PrinterStatusData,function (PrinterStatusData) {
+		            return _.extend(PrinterStatusData,{selected:''});
+		        });
+		        PaperSizesData =_.map(PaperSizesData,function (PaperSizesData) {
+		            return _.extend(PaperSizesData,{selected:''});
+		        });
+	        }
+	     	var isAdd = itemID === undefined;
+	        var dTitle = (isAdd ? '添加' : '修改') + '打印机',
+	        	// modalVals = IX.inherit({}, printerData,{printerPortData},{PrinterStatusData},{PaperSizesData}),
+	        	modalVals = {printerData:printerData,printerPortData:printerPortData,PrinterStatusData:PrinterStatusData,PaperSizesData:PaperSizesData},
+		        $editSet = $(printerModalTpl(modalVals));
+		        modalDialog = new U.ModalDialog({
+		            title: dTitle,
+		            html: $editSet
+		        }).show(); 
+		        PrinterFormValidate($editSet);
+		        bindModalPrinter(modalDialog,$editSet,itemID,shopID);
+        }
+        function PrinterFormValidate($form){
+        	$form.bootstrapValidator({
+	            fields: {
+	                printerName: {
+	                    validators: {
+	                        notEmpty: { message: '打印机名不能为空' },
+	                        stringLength : {
+	                            min : 1,
+	                            max : 50,
+	                            message : "打印机名称长度在1-50个字符之间"},
+	                        ajaxValid :{
+	                            api: "checkPrinterNameExist",
+	                            data:{
+	                                shopID: shopID,
+	                                itemID: itemID ? itemID : ''
+	                            }
+	                        }
+	                    }
+	                },
+	                /*BUG #5694 【Dohko-dianpu】添加打印机时，状态默认为未知
+	                currPrinterStatus: {
+	                    validators: {
+	                        notEmpty: { message: '打印机状态必须选择' }
+	                    }
+	                },*/
+	                printerPort: {
+	                    validators: {
+	                        notEmpty: { message: '打印机端口不能为空' }
+	                    }
+	                },
+	                printerPortType: {
+	                    validators: {
+	                        notEmpty: { message: '端口类型必须选择' }
+	                    }
+	                },
+	                printerRemark: {
+	                    validators : {
+	                        stringLength : {
+	                            max : 250,
+	                            message : '备注不能超过250个字'}
+	                    }
+	                }   
+	            }
+	        });
+        }
+        function bindModalPrinter(modalDialog,$form, itemID,shopID){
+        	modalDialog._.footer.on('click', '.btn.btn-ok', function (e) {
+                if(!$form.data('bootstrapValidator').validate().isValid()) return;
+                var data = parseForm($form),
+                    postParams = IX.inherit({shopID: shopID, itemID: itemID},data);
+                postParams.printerRemark = Hualala.Common.encodeTextEnter(postParams.printerRemark);
+                postParams.printerPaperSize = postParams.printerPaperSize==""?0:postParams.printerPaperSize;
+                Hualala.Global[itemID ? 'updateShopPrinter' : 'addShopPrinter'](postParams, function (rsp) {
+                    if (rsp.resultcode != '000') {
+                       topTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    topTip({msg: '保存成功', type: 'success'});
+                    modalDialog.hide();
+                    renderTable();
+                });
+            });
+        }
+	}
+
 })(jQuery, window);;(function ($, window) {
 	IX.ns("Hualala.Shop");
-    
+    var G = Hualala.Global,
+		U = Hualala.UI,
+		topTip = U.TopTip,
+		parseForm = Hualala.Common.parseForm,
+		//打印类型
+		PrintTypeData = Hualala.TypeDef.SaasPrintType;
+	Hualala.Shop.initPrinterAreaSetting = function ($container, shopID){
+		//打印区域设置表头：部门|制作单打印机|制作单打印份数|制作单打印方式|打印传菜单|操作
+		var ShopPrinterHeaderCfg = [
+			{key : "departmentName", clz : "departmentName", label : "部门"},
+			{key : "printerName", clz : "printerName", label : "制作单打印机"},
+			{key : "printCopies", clz : "printCopies", label : "制作单打印份数"},
+			{key : "printWay", clz : "text", label : "制作单打印方式"},
+			{key : "isPrintToDispatchBill", clz : "text", label : "打印传菜单"},
+			{key : "rowControl", clz : "rowControl", label : "操作"}
+		],
+		layoutMenuTpl,resultTpl,printerAreaTpl,printers=null,printerAreas = null,printerSingleArea =null;
+		initTemplate();
+		renderTable();
+		getPrinterTotal();
+		bindEvent();
+		function initTemplate() {
+            layoutMenuTpl = Handlebars.compile(Hualala.TplLib.get('tpl_printerArea_menu'));
+            printerAreaTpl= Handlebars.compile(Hualala.TplLib.get('tpl_edit_printerArea'));
+            MenuTpl = Handlebars.compile(Hualala.TplLib.get('tpl_printerArea_setting'));
+            resultTpl = Handlebars.compile(Hualala.TplLib.get('tpl_base_datagrid'));
+           	Handlebars.registerPartial("colBtns", Hualala.TplLib.get('tpl_base_grid_colbtns'));
+            Handlebars.registerHelper('chkColType', function (conditional, options) {
+                return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+            });
+            $container.append($(layoutMenuTpl()));
+        }
+        //获取数据
+        function renderTable() {
+            var initParams = {shopID: shopID};
+            var Refflag = false;
+            Hualala.Global.queryPrinterArea(initParams, function(rsp) {
+                if (rsp.resultcode == '000') {
+                    printerAreas = rsp.data.records;          	
+                	renderRecords(printerAreas); 
+                }else{
+                    topTip({type: 'danger', msg: rsp.resultmsg});
+                    return;
+                }
+            });
+        }
+        function getPrinterTotal() {
+        	var initParams = {shopID: shopID};
+        	Hualala.Global.getShopPrinter(initParams,function (rsp){
+	            if(rsp.resultcode != '000'){
+	                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+	                    return;
+	            }else{
+	            	 printers = rsp.data.records || [];    
+	            }        
+        	}); 
+    	}
+        //数据渲染
+        function renderRecords(records) {
+        	var $menuWrap = $container.find('#menuWrap'),
+        		$resultBox = $container.find('.shop-list'),
+        	printerSingleArea=records[0].printDepartment;
+        	$resultBox.empty();
+        	$menuWrap.empty();
+        	$menuWrap.html($(MenuTpl({records: records})));
+            $resultBox.html($(resultTpl(mapRenderData(printerSingleArea))));
+		}
+		function mapColItemRenderData(row, rowIdx, colKey) {
+			var self = this,
+				r = {value : "", text : ""}, v = $XP(row, colKey, '');
+			switch(colKey) {
+				// 各列参数
+				//打印方式
+				case "printWay":
+					var printWays = PrintTypeData,
+						printWay = _.find(printWays, function (el) {return $XP(el, 'value') == v;}),
+						label = $XP(printWay, 'title', '');
+						r.value = v;
+						r.text =label;
+					break;
+				case "isPrintToDispatchBill" :
+					var label =v=="1"?"是":"否";
+						r.value = label;
+						r.text = label;
+					break;
+				case "rowControl":
+					r = {
+						type : 'button',
+						btns : [
+							{
+								label : '修改',
+								link : 'javascript:void(0);',
+								clz : 'operate btn-link edit-printerArea',
+								id : $XP(row, 'itemID', ''),
+								key : $XP(row, '__id__', ''),
+								type : 'edit'
+							}
+						]
+					};
+					break; 
+				default :
+					r.value = r.text = $XP(row, colKey, '');
+					break;
+			}
+			return r;
+		}
+		//组装表格
+        function mapRenderData(records) {
+            var self = this;
+            var tblClz = "table table-bordered table-striped table-hover ix-data-report printer-grid",
+                tblHeaders = IX.clone(ShopPrinterHeaderCfg);
+            var mapColsRenderData = function (row, idx) {
+                var colKeys = _.map(tblHeaders, function (el) {
+                    return {key: $XP(el, 'key', ''), clz: $XP(el, 'clz', '')};
+                });
+                var col = {clz: '', type: 'text'};
+                var cols = _.map(colKeys, function (k, i) {
+                    var r = mapColItemRenderData(row, idx, $XP(k, 'key', ''));
+                    return IX.inherit(col, r, {clz: $XP(k, 'clz', '')});
+                });
+                return cols;
+            };
+            var rows = _.map(records, function (row, idx) {
+                return {
+                    clz: '',
+                    cols: mapColsRenderData(row, idx)
+                };
+            });
+            return {
+                tblClz: tblClz,
+                isEmpty: !records || records.length == 0 ? true : false,
+                colCount: tblHeaders.length,
+                thead: tblHeaders,
+                rows: rows
+            };
+        }
+        //页面绑定事件的处理
+        function bindEvent(){
+			$container.on('click', '.operate', function (e) {
+				var act = $(this).attr('data-type');
+					itemID =$(this).attr('data-id')||undefined;
+				switch(act) {
+					//修改
+					case "editMenu":
+						IX.Debug.info("DEBUG:1.修改区域打印");
+						renderMenuDailog(itemID,shopID);
+						break;
+					case "edit" :
+						IX.Debug.info("DEBUG:2. 修改打印设置");
+						renderDailog(itemID,shopID);
+						break;
+				}
+			});
+
+        }
+        function renderMenuDailog(itemID,shopID){
+        	var printerAreaData = {};
+         	    printerAreaData=_.findWhere(printerAreas, {itemID: itemID});
+            if(printerAreaData){
+		       	printers=_.map(printers,function (printers) {
+		            return _.extend(printers,{selected:printers.printerKey==printerAreaData.dispatchBillPrinterKey ? 'selected' :''});
+		        });
+	        }
+	        var dTitle ='修改打印区域',
+	        	modalVals = {printerAreaData:printerAreaData,printers:printers},
+		        $editSet = $(printerAreaTpl(modalVals));
+		        modalDialog = new U.ModalDialog({
+		            title: dTitle,
+		            html: $editSet
+		        }).show(); 
+		        PrinterAreaFormValidate($editSet);
+		        bindModalPrinter(modalDialog,$editSet,itemID,shopID);
+        }
+        function renderDailog(itemID,shopID){
+         	var printerSingleData = {};
+         	    printerSingleData=_.findWhere(printerAreas[0].printDepartment, {itemID: itemID});
+            if(printerSingleData){
+		        PrintTypeData=_.map(PrintTypeData,function (PrintTypeData){
+		            return _.extend(PrintTypeData,{selected:PrintTypeData.value==printerSingleData.printWay ? 'selected' : ''});
+		        });
+		       	printers=_.map(printers,function (printers) {
+		            return _.extend(printers,{selected:printers.printerKey==printerSingleData.printerKey ? 'selected' :''});
+		        });
+	        }
+	        var dTitle ='厨房分单区域打印设置',
+	        	modalVals = {printerSingleData:printerSingleData,PrintTypeData:PrintTypeData,printers:printers},
+		        $editSet = $(printerAreaTpl(modalVals));
+		        modalDialog = new U.ModalDialog({
+		            title: dTitle,
+		            html: $editSet
+		        }).show(); 
+		        PrinterAreaFormValidate($editSet);
+		        bindModalPrinter(modalDialog,$editSet,itemID,shopID);
+        }
+        function PrinterAreaFormValidate($form){
+        	$form.bootstrapValidator({
+	            fields: {
+	                printAreaName: {
+	                    validators: {
+	                        notEmpty: { message: '打印区域名称不能为空' },
+	                        stringLength : {
+	                            min : 1,
+	                            max : 50,
+	                            message : "打印机名称长度在1-50个字符之间"},
+	                        ajaxValid :{
+	                            api: "checkprinterAreaName",
+	                            data:{
+	                                shopID: shopID,
+	                                itemID: itemID ? itemID : ''
+	                            }
+	                        }
+	                    }
+	                },
+	                dispatchBillPrinterKey: {
+	                    validators: {
+	                        notEmpty: { message: '传菜单打印机必须选择' }
+	                    }
+	                },
+	               	dispatchBillPrintCopies: {
+	                    validators: {
+	                    	numeric : {message : "传菜单打印份数必须为数字"},
+	                        greaterThan : {
+	                            inclusive : true,
+	                            value : 0,
+	                            message : "传菜单打印份数必须大于或等于0"
+	                        }
+	                    }
+	                },
+
+	                printerKey: {
+	                    validators: {
+	                        notEmpty: { message: '制作单打印机必须选择' }
+	                    }
+	                },
+	                printWay: {
+	                    validators: {
+	                        notEmpty: { message: '制作单打印方式必须选择' }
+	                    }
+	                },
+	                printCopies: {
+	                    validators: {
+	                    	numeric : {message : "制作单打印份数必须为数字"},
+	                        greaterThan : {
+	                            inclusive : true,
+	                            value : 0,
+	                            message : "制作单打印份数必须大于或等于0"
+	                        }
+	                    }
+	                }  
+	            }
+	        });
+        }
+        function bindModalPrinter(modalDialog,$form, itemID,shopID){
+        	modalDialog._.footer.on('click', '.btn.btn-ok', function (e) {
+                if(!$form.data('bootstrapValidator').validate().isValid()) return;
+                var data = parseForm($form),
+                    postParams = IX.inherit({shopID: shopID, itemID: itemID},data),
+                    printAreaName = postParams.printAreaName;
+                    postParams.dispatchBillPrintCopies=postParams.dispatchBillPrintCopies==""?0:postParams.dispatchBillPrintCopies;
+                Hualala.Global[printAreaName ? 'updatePrinterArea' : 'updatePrinterSet'](postParams, function (rsp) {
+                    if (rsp.resultcode != '000') {
+                       topTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    topTip({msg: '保存成功', type: 'success'});
+                    modalDialog.hide();
+                    renderTable();
+                });
+            });
+        }
+	}
+
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Shop");
+	var popoverMsg = Hualala.UI.PopoverMsgTip,
+		toptip = Hualala.UI.TopTip,
+		LoadingModal = Hualala.UI.LoadingModal;
+	Hualala.Shop.initPromotionMgr = function ($container, shopID) {
+		//店铺促销表头
+		//时段|起始日期|结束日期|节假日|业务类型|方式|促销描述|操作
+		var ShopPromotionHeaderCfg = [
+			{key : "startDate", clz : "date", label : "促销日期"},
+			{key : "timeID", clz : "timeID", label : "促销时段"},
+			{key : "holidayFlag", clz : "text", label : "节假日"},
+			{key : "supportOrderType", clz : "text", label : "业务类型"},
+			{key : "tag", clz : "text", label : "促销方式"},
+			{key : "isActive", clz : "status", label : "促销开关"},
+			{key : "rulesDesc", clz : "text", label : "促销描述"},	
+			{key : "rowControl", clz : "rowControl", label : "操作"}
+		],
+		layoutTpl, resultTpl, editModalTpl,RefRulesTpl,refShop,queryTpl,filterTpl,listTpl,itemTpl;
+		initTemplate();
+		renderTable();
+		bindEvent();
+		function initTemplate() {
+			promotionTpl = Handlebars.compile(Hualala.TplLib.get('tpl_promotion_add'));
+			RefRulesTpl = Handlebars.compile(Hualala.TplLib.get('tpl_promotion_refRules'));
+            layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_list_layout'));
+            resultTpl = Handlebars.compile(Hualala.TplLib.get('tpl_base_datagrid'));
+           	Handlebars.registerPartial("colBtns", Hualala.TplLib.get('tpl_base_grid_colbtns'));
+            refShopTpl = Handlebars.compile(Hualala.TplLib.get('tpl_role_bind_shop'));
+            queryTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_query'));
+			filterTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_filter'));
+			listTpl = Handlebars.compile(Hualala.TplLib.get('tpl_settle_list'));
+			itemTpl = Handlebars.compile(Hualala.TplLib.get('tpl_settle_item'));
+			Handlebars.registerPartial("settleItem", Hualala.TplLib.get('tpl_settle_item'));
+			// 注册子模板
+			Handlebars.registerPartial("shopCity", Hualala.TplLib.get('tpl_shop_filter'));
+			Handlebars.registerPartial("toggle", Hualala.TplLib.get('tpl_site_navbarToggle'));
+            Handlebars.registerHelper('checkItemType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+            Handlebars.registerHelper('chkColType', function (conditional, options) {
+                return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+            });
+            $container.append($(layoutTpl()));
+        }
+        //获取数据
+        function renderTable() {
+            var initParams = {shopID: shopID};
+            var Refflag = false;
+            Hualala.Global.getShopPromotion(initParams, function(rsp) {
+                if (rsp.resultcode == '000') {
+                    promotions = rsp.data.records;
+                    if(promotions!=undefined){                   	
+                		renderRecords(promotions,Refflag); 
+                    }
+                    else{
+                    	existRefPromotionDec = rsp.data.refPromotionRulesDesc
+                    	if(existRefPromotionDec!=undefined){
+                    		Refflag = true;
+                			promotions = rsp.data;
+                			refShop = promotions;
+							renderRecords(promotions,Refflag); 
+                		}
+                		else{
+                    		renderRecords(promotions,Refflag); 
+                    	}
+                    }  
+                } else {
+                    Hualala.UI.TopTip({type: 'danger', msg: rsp.resultmsg})
+                }
+            });
+        }
+        //数据渲染
+        function renderRecords(records,flag) {
+        	$resultBox = $container.find('.shop-list');
+        	$container.find('.promotion_operate').remove();
+        	if(flag==false){
+	        	$resultBox.before($(promotionTpl(mapRenderData(records))));
+	        	$result = $container.find('.shop-list-body');
+	        	$result.removeClass("row");
+	        	$result.empty();
+	            $result.html($(resultTpl(mapRenderData(records))));
+	            initPromationSwitcher($result.find('table tr td input[type="checkbox"]'));
+            }
+            else{
+	           	$resultBox.before($(promotionTpl(mapRenderRefData(records))));
+	        	$result = $container.find('.shop-list-body');
+	        	$result.removeClass("row");
+	        	$result.empty();
+	            $result.html($(RefRulesTpl(mapRenderRefData(records))));
+            }
+		}
+		//开关渲染
+        function initPromationSwitcher($checkbox) {
+            $checkbox.each(function () {
+                var $el = $(this),
+                    onLabel = '已启用',
+                    offLabel = '未启用';
+                $el.bootstrapSwitch({
+                    state: !!$el.data('status'),
+                    size : 'normal',
+                    onColor : 'success',
+                    offColor : 'default',
+                    onText : onLabel,
+                    offText : offLabel
+                }).on('switchChange.bootstrapSwitch', function (e, state) {
+                    var itemID = $el.attr('data-id');
+                    var actStr = (state == 1 ? "开启" : "关闭");
+                    Hualala.UI.Confirm({
+                        title : actStr + "促销规则",
+                        msg : "你确定要" + actStr + "该促销规则吗？",
+                        okFn : function () {
+                            switchPromotion(itemID, +state)
+                        },
+                        cancelFn : function () {
+                            $el.bootstrapSwitch('toggleState', true);
+                        }
+                    });
+
+                });
+            });
+        }
+         //开启或关闭促销规则
+        function switchPromotion(itemID, state) {  
+            Hualala.Global.switchShopPromotion({shopID: shopID, itemID: itemID, isActive: state}, function (rsp) {
+                if (rsp.resultcode != '000') {
+                    Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                Hualala.UI.TopTip({msg: '操作成功！', type: 'success'});
+            });
+        }
+		function mapColItemRenderData(row, rowIdx, colKey) {
+			var self = this;
+			var ctx = Hualala.PageRoute.getPageContextByPath(), pageName = $XP(ctx, 'name'),
+				r = {value : "", text : ""}, v = $XP(row, colKey, '');
+			var formatDateTimeValue = Hualala.Common.formatDateTimeValue;
+			switch(colKey) {
+				// 各列参数
+				case "holidayFlag":
+					var holidayFlags = Hualala.TypeDef.MCMDataSet.GiftIsHolidayUsing,
+						holidayFlag = _.find(holidayFlags, function (el) {return $XP(el, 'value') == v;}),
+						label = $XP(holidayFlag, 'label', '');
+						r.value = v;
+						r.text =label;
+					break;
+				case "startDate":
+					r.value = v;
+					var start = v, end = $XP(row, 'endDate', '');
+					start = (IX.isEmpty(start) || start == 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(start), 'yyyy/MM/dd');
+					end = (IX.isEmpty(end) || end == 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(end), 'yyyy/MM/dd');
+					r.text = IX.isEmpty(start) || IX.isEmpty(end) ? '' : (start + '至' + end);
+					break;
+				case "supportOrderType":
+					var supportOrderTypes = Hualala.TypeDef.ShopPromotionDataSet.supportOrderTypes,
+						supportOrderType = _.find(supportOrderTypes, function (el) {return $XP(el, 'value') == v;}),
+						label = $XP(supportOrderType, 'label', '');
+						r.value = v;
+						r.text =label;
+					break;
+				case "tag":
+					var tagTypes = Hualala.TypeDef.ShopPromotionDataSet.tagTypes,
+						tagType = _.find(tagTypes, function (el) {return $XP(el, 'value') == v;}),
+						label = $XP(tagType, 'label', '');
+						r.value = v;
+						r.text =label;
+					break;
+				case "isActive":
+					var itemID  = $XP(row, 'itemID','');
+					r.value = v;
+					r.text = '<input type="checkbox" name="switchpromotion" data-id="' + itemID + '" ' 
+						+ (v != 0 ? 'checked ' : '') + ' data-key="' + $XP(row, '__id__', '') + '" ' + ' />';
+					break;
+				case "rowControl":
+					r = {
+						type : 'button',
+						btns : [
+							{
+								label : '修改',
+								link : 'javascript:void(0);',
+								clz : 'operate btn-link edit-promotion',
+								id : $XP(row, 'itemID', ''),
+								key : $XP(row, '__id__', ''),
+								type : 'edit'
+							},
+							{
+								label : '删除',
+								link : 'javascript:void(0);',
+								clz : 'operate btn-link delete-promotion',
+								id : $XP(row, 'itemID', ''),
+								key : $XP(row, '__id__'),
+								type : 'delete'
+							}
+						]
+					};
+
+					break; 
+				default :
+					r.value = r.text = $XP(row, colKey, '');
+					break;
+			}
+			return r;
+		}
+		//组装表格
+        function mapRenderData(records) {
+            var self = this;
+            var tblClz = "table table-hover promotion-grid",
+                tblHeaders = IX.clone(ShopPromotionHeaderCfg);
+            var mapColsRenderData = function (row, idx) {
+                var colKeys = _.map(tblHeaders, function (el) {
+                    return {key: $XP(el, 'key', ''), clz: $XP(el, 'clz', '')};
+                });
+                var col = {clz: '', type: 'text'};
+                var cols = _.map(colKeys, function (k, i) {
+                    var r = mapColItemRenderData(row, idx, $XP(k, 'key', ''));
+                    return IX.inherit(col, r, {clz: $XP(k, 'clz', '')});
+                });
+                return cols;
+            };
+            var rows = _.map(records, function (row, idx) {
+                return {
+                    clz: '',
+                    cols: mapColsRenderData(row, idx)
+                };
+            });
+            return {
+                tblClz: tblClz,
+                noRef : records && records.refPromotionRulesDesc? false :true,
+                isEmpty: !records || records.length == 0 ? true : false,
+                colCount: tblHeaders.length,
+                thead: tblHeaders,
+                rows: rows
+            };
+
+        }
+        function mapRenderRefData(records) {
+        	return {
+        		noRef : false,
+                refShopName:records.refShopName,
+                refPromotionRulesDesc :records.refPromotionRulesDesc
+        	}
+        }
+        //促销页面绑定事件的处理
+        function bindEvent(){
+			$container.on('click', '.operate', function (e) {
+				var act = $(this).attr('data-type');
+					itemID =$(this).attr('data-id')||undefined;
+				switch(act) {
+					//添加
+					case "addPromotion":
+						IX.Debug.info("DEBUG: 添加促销规则");
+						// TODO Add promotion
+						break;
+					//删除
+					case "delete":
+						Hualala.UI.Confirm({
+			                title: '删除促销规则',
+			                msg: '确定删除么？删除后该促销规则的信息将被清空，无法再进行任何操作。',
+			                okFn: function () {
+			                    Hualala.Global.deleteShopPromotion({shopID: shopID, itemID: itemID}, function (rsp) {
+			                        if (rsp.resultcode != '000') {
+			                            Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+			                            return;
+			                        }
+			                        Hualala.UI.TopTip({msg: '操作成功', type: 'success'});
+			                        renderTable();
+			                    });
+			                }
+		            	});
+		            	break;
+					//修改
+					case "edit" :
+						IX.Debug.info("DEBUG: 修改");
+						break;
+					//套用
+					case "refPromotionRules":
+						var RefPromotionModal = new Hualala.UI.ModalDialog({
+								id : "refPromotionRules_modal",
+								clz : "RefPromotion-modal",
+								title : "套用促销规则"
+							});
+							Hualala.Global.getAllowRefPromotionShop({shopID: shopID}, function (rsp) {
+		                        if (rsp.resultcode != '000') {
+		                            Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+		                            return;
+		                        }
+		                        else{
+		                        	records = rsp.data;
+		                        }
+		                        loadingModalLayout(RefPromotionModal,records);
+	                        	// renderRefModal(records);
+		           			});
+						break;
+					//取消套用
+		            case "cancelrefPromotionRules":
+		            	Hualala.Global.cancelRefPromotionRules({shopID: shopID}, function (rsp) {
+	                        if (rsp.resultcode != '000') {
+	                            Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+	                            return;
+	                        }
+	                        Hualala.UI.TopTip({msg: '操作成功', type: 'success'});
+	                        renderTable();
+		           		});
+		           		break;
+				}
+			});
+
+        }
+    	//套用店铺模态框
+        function loadingModalLayout(container,records){
+        	var $modalcontainer = container;
+				$modalbody = $modalcontainer._.body;
+				$footer = $modalcontainer._.footer;
+			var layoutTpl =refShopTpl,
+				htm = layoutTpl({
+					clz : '',
+					title : '选择套用的店铺'
+				});
+			$modalbody.html(htm);
+			$queryBox = $modalbody.find('.query-box');
+			$resultBox = $modalbody.find('.result-box');
+			var cities = records.datasets.cityCountDs.data.records,
+				areas = records.datasets.areaCountDs.data.records,
+				shops = records.records;
+			$queryBox.html($(queryTpl(mapRenderLayoutData(cities,shops))));
+			$filter = $queryBox.find('.filter');
+			renderAreaFilter(areas);
+			var renderData = mapShopsRenderData(shops);
+			var shophtm = listTpl({
+				settleList : {
+					list : renderData
+				}
+			});
+			$resultBox.html(shophtm);
+			$modalcontainer.show();
+			bindmodalEvent(container);
+
+        }
+        function mapRenderLayoutData (cities,shops) {
+			var filterCities = mapFilterData({
+					type : 'city',
+					name : '城市：',
+					focus : 0,
+					data : cities
+				})
+				queryChosenShops =mapChosenShopData(shops);
+			return {
+				clz : '',
+				shopCity : filterCities,
+				toggle : {target : '#shop_query'},
+				optGrp : queryChosenShops
+			};
+		}
+		function mapShopsRenderData (data) {
+			var itemsCache = $XP(refShop, 'refPromotShopID');
+			var ret = _.map(data, function (settle, i, l) {
+				var id = $XP(settle, 'shopID');
+					checked = !(itemsCache==id)? '' : 'checked';
+				return IX.inherit(settle, {
+					type : 'radio',
+					clz : 'bind-item',
+					settleUnitID :$XP(settle, 'shopID', ''),
+					settleUnitNameLabel : $XP(settle, 'shopName', ''),
+					checked : checked
+				});
+			});
+			return ret;
+		}
+
+		function mapChosenShopData(cities,shops) {
+			var ret = [];
+			return ret;
+		}
+		function renderAreaFilter(data) {			
+			var renderData = mapFilterData({
+				type : 'area',
+				name : '区域：',
+				focus : 0,
+				data : data
+			});
+			var html = filterTpl(renderData);
+			$filter.find('.area').remove();
+			$filter.append(html);
+		}
+       	function mapFilterData(cfg){
+       		var data = $XP(cfg, 'data', []),
+				type = $XP(cfg, 'type'),
+				name = $XP(cfg, 'name'),
+				focus = $XP(cfg, 'focus', 0),
+				ret = {
+					type : type,
+					name : name,
+					items : []
+				},
+				count = 0;
+			var btn_all = {
+				focusClz : '',
+				type : type,
+				code : -1,
+				name : '全部',
+				count : 0
+			};
+			ret.items = _.map(data, function (o, i, l) {
+				var key = type + 'Count';
+				var c = parseInt($XP(o, key, 0));
+				count += c;
+				return {
+					focusClz : '',
+					type : type,
+					code : $XP(o, (type + 'ID'), ''),
+					name : $XP(o, (type + 'Name'), ''),
+					count : c
+				}
+			});
+			btn_all = IX.inherit(btn_all, {
+				count : count,
+				focusClz : ''
+			});
+			ret.items.unshift(btn_all);
+			ret.items[focus]['focusClz'] = 'disabled';
+			return ret;
+       	}
+        function bindmodalEvent(container){
+        	container._.footer.find('.btn').on('click', function (e) {
+        		var $btn = $(this),
+					act = $btn.hasClass('btn-close') ? 'cancel' : 'ok';
+				if (act == 'cancel') {
+					container.hide();
+				} else {
+					// 套用的店铺数据
+					var items = $(':radio[name=bindSettle]:checked')||[];
+					if (items.length > 0) {
+						promotShopID=items.val();
+						Hualala.Global.updatePromotShop({shopID: shopID,promotShopID:promotShopID}, function (rsp) {
+	                       if (rsp.resultcode != '000') {
+	                            Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+	                            return;
+	                        }
+		           		});
+		           		renderTable();
+						container.hide();
+					} else {
+						toptip({
+							msg : "请选择要套用的店铺",
+							type : 'danger'
+						});
+					}
+				}
+			});
+			//城市过滤
+			container._.dialog.find('.btn-link[data-city]').on('click', function (e) {
+				IX.Debug.info("DEBUG: 城市选择");
+			});
+			//区域过滤
+			container._.dialog.find('.btn-link[data-area]').on('click', function (e) {
+				IX.Debug.info("DEBUG: 区域选择");
+			});
+        }
+	}
+
+})(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Shop");
+
     Hualala.Shop.Typedef = {
         operationMode: { '0': '正餐', '1': '快餐', '2': '美食广场' }
     };
+    
+    Hualala.Shop.resetAngentPwd = function(shopID)
+    {
+        var resetPwdTpl = Handlebars.compile(Hualala.TplLib.get('tpl_set_shop_client_pwd'));
+        var $resetPwdForm = $(resetPwdTpl({shopID: shopID}));
+        //弹出重置代理程序密码模态框
+        var modal = new Hualala.UI.ModalDialog({
+            id: 'resetCltPwdDlg',
+            title: '重置代理程序密码',
+            html: $resetPwdForm,
+            sizeCls: 'modal-sm',
+            hideCloseBtn: false
+        }).show();
+        var $feedback = $resetPwdForm.find('.has-feedback'),
+            $feedbackIcon = $feedback.find('.form-control-feedback'),
+            $errMsg = $feedback.find('small');
+        var $pwd = $resetPwdForm.find('#shopClinetPwd').data('validate', false).on('blur', function ()
+        {//验证密码输入
+            var $this = $(this),
+                l = $.trim($this.val()).length;
+            $this.data('validate', false);
+            if(!l)
+                $errMsg.text('密码不能为空');
+            else if(l < 6 || l > 16)
+                $errMsg.text('密码长度必须在6到16个字符之间');
+            else
+            {
+                $errMsg.text('');
+                $this.data('validate', true);
+            }
+                
+            var isValid = $this.data('validate');
+            $feedback.toggleClass('has-success', isValid).toggleClass('has-error', !isValid);
+            $feedbackIcon.toggleClass('glyphicon-ok', isValid).toggleClass('glyphicon-remove', !isValid);
+        });
+        //密码/明文切换
+        $resetPwdForm.find('#showPwd').change(function()
+        {
+            $pwd.attr('type', this.checked ? 'text' : 'password');
+        });
+        //提交密码重设请求
+        modal._.footer.find('.btn-ok').on('click', function ()
+        {
+            if(!$pwd.trigger('blur').data('validate')) return;
+            
+            Hualala.Global.setShopClientPwd({shopID: shopID, hLLAgentLoginPWD: $pwd.val()}, function (rsp)
+            {
+                if(rsp.resultcode != '000')
+                {
+                    rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                modal.hide();
+                Hualala.UI.TopTip({msg: '设置代理程序密码成功！', type: 'success'});
+            });
+            
+        });
+    }
     
     /**
 	  * 渲染店铺详情页头部
@@ -3559,61 +6833,7 @@ function throttle(method, context)
             //重置代理程序密码
             $shopInfoHead.find('#resetPwd').on('click', function ()
             {
-                var resetPwdTpl = Handlebars.compile(Hualala.TplLib.get('tpl_set_shop_client_pwd'));
-                var $resetPwdForm = $(resetPwdTpl(shopInfo));
-                //弹出重置代理程序密码模态框
-                var modal = new Hualala.UI.ModalDialog({
-                    id: 'resetCltPwdDlg',
-                    title: '重置代理程序密码',
-                    html: $resetPwdForm,
-                    sizeCls: 'modal-sm',
-                    hideCloseBtn: false
-                }).show();
-                var $feedback = $resetPwdForm.find('.has-feedback'),
-                    $feedbackIcon = $feedback.find('.form-control-feedback'),
-                    $errMsg = $feedback.find('small');
-                var $pwd = $resetPwdForm.find('#shopClinetPwd').data('validate', false).on('blur', function ()
-                {//验证密码输入
-                    var $this = $(this),
-                        l = $.trim($this.val()).length;
-                    $this.data('validate', false);
-                    if(!l)
-                        $errMsg.text('密码不能为空');
-                    else if(l < 6 || l > 16)
-                        $errMsg.text('密码长度必须在6到16个字符之间');
-                    else
-                    {
-                        $errMsg.text('');
-                        $this.data('validate', true);
-                    }
-                        
-                    var isValid = $this.data('validate');
-                    $feedback.toggleClass('has-success', isValid).toggleClass('has-error', !isValid);
-                    $feedbackIcon.toggleClass('glyphicon-ok', isValid).toggleClass('glyphicon-remove', !isValid);
-                });
-                //密码/明文切换
-                $resetPwdForm.find('#showPwd').change(function()
-                {
-                    $pwd.attr('type', this.checked ? 'text' : 'password');
-                });
-                //提交密码重设请求
-                modal._.footer.find('.btn-ok').on('click', function ()
-                {
-                    if(!$pwd.trigger('blur').data('validate')) return;
-                    
-                    Hualala.Global.setShopClientPwd({shopID: shopInfo.shopID, hLLAgentLoginPWD: $pwd.val()}, function (rsp)
-                    {
-                        if(rsp.resultcode != '000')
-                        {
-                            rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
-                            return;
-                        }
-                        modal.hide();
-                        Hualala.UI.TopTip({msg: '重置代理程序密码成功！', type: 'success'});
-                    });
-                    
-                });
-                
+                Hualala.Shop.resetAngentPwd(shopInfo.shopID);
             });
             //执行回调函数
             callback && callback($shopInfoHead);
@@ -3639,10 +6859,20 @@ function throttle(method, context)
     };
     
     // 店铺详情页功能导航
-    Hualala.Shop.createShopFuncNav = function (currentPageName, shopID, container)
+    Hualala.Shop.createShopFuncNav = function (currentPageName, shopID, container, isSaasOpen)
     {
-        var shopFuncs = ['shopInfo', 'shopMenu'],
-            R = Hualala.PageRoute,
+        var is3W = window.location.host == 'dianpu.hualala.com';
+        //var shopFuncs = ['shopInfo', 'shopCategory', 'shopMenu', 'shopTable', 'shopMember','shopPromotion','shopPrinterSetting','shopPrinterAreaSetting']
+        var shopFuncs = ['shopInfo', 'shopMenu'];
+        //针对店铺打通方式设置导航
+        if (isSaasOpen) {
+            var saasNavs = is3W ? ['shopCategory'] : ['shopCategory','shopRemarks','shopTable', 'shopMember', 'shopPrinterSetting', 'shopPrinterAreaSetting'];
+            shopFuncs = shopFuncs.concat(saasNavs);
+            var menu = shopFuncs[1];
+            shopFuncs[1] = shopFuncs[2];
+            shopFuncs[2] = menu;
+        }
+        var R = Hualala.PageRoute,
             $ul = $('<ul class="nav navbar-nav"></ul>'),
             $container = container || $('#ix_wrapper > .ix-body > .container');
         
@@ -3659,6 +6889,117 @@ function throttle(method, context)
         return $('<div class="navbar navbar-default shop-func-nav"></div>').append($ul).appendTo($container);
     };
     
+    Hualala.Shop.validators = {
+        excluded: ':disabled',
+        fields: {
+            shopName: {
+                message: '店铺名无效',
+                validators: {
+                    notEmpty: {
+                        message: '店铺名不能为空'
+                    },
+                    stringLength: {
+                        min: 2,
+                        max: 100,
+                        message: '店铺名长度必须在2到100个字符之间'
+                    }
+                }
+            },
+            cityID: {
+                validators: { notEmpty: { message: '请选择店铺所在城市' } }
+            },
+            tel: {
+                validators: {
+                    notEmpty: { message: '店铺电话不能为空' },
+                    regexp: {
+                        regexp: /^\d[\d\-,]+\d$/,
+                        message: '店铺电话格式不正确' 
+                    }
+                }
+            },
+            address: {
+                validators: {
+                    notEmpty: { message: '店铺地址不能为空' },
+                    stringLength: {
+                        min: 1,
+                        max: 80,
+                        message: '店铺地址不能超过80个字符'
+                    }
+                }
+            },
+            PCCL: {
+                validators: {
+                    notEmpty: { message: '人均消费不能为空' },
+                    numeric: { message: '人均消费必须是金额数字' },
+                    integer: { message:'人均消费必须是正整数' },
+                    greaterThan: { 
+                        inclusive : false,
+                        value : 0,
+                        message : "人均消费必须大于0"
+                    }
+                }
+            },
+            operationMode: {
+                validators: {
+                    notEmpty: { message: '请选择店铺运营模式' }
+                }
+            },
+            openingHoursStart: {
+                validators: {
+                    notEmpty: { message: '每天营业开始时间不能空' },
+                    time: { 
+                        message: ''
+                        // startTimeField: 'openingHoursStart'
+                    }
+                }
+            },
+            openingHoursEnd: {
+                validators: {
+                    notEmpty: { message: '每天营业结束时间不能空' },
+                    time: {
+                        message: ''
+                        //验证营业时间结束前需要验证营业开始时间
+                        //startTimeField: 'openingHoursStart'
+                    },
+                    callback : {
+                        message : '',
+                        callback : function (value, validator, $field) {
+                            var $fields = validator.$form.find(':text[name^=openingHoursStart]');
+                            var value = $fields.val();
+                            if (value === '') {
+                                return true;
+                            }
+                            //正则验证时间是否合法
+                            //\uff1a 为中文冒号的unicode码
+                            var rst = /^((0?\d)|1\d|2[0-3])\s*[\uff1a\:]\s*([0-5]\d)$/.test(value);
+                            if(!rst) return { valid: false, message: '请输入有效的开始时间' };
+                            var times = value.replace('\uff1a', ':').split(':'),
+                                h = parseInt($.trim(times[0]), 10),  // hours
+                                m = $.trim(times[1]);  // minutes
+                            h = h < 10 ? 0 + '' + h : h;
+                            $fields.val(h + ':' + m);
+                            if (!validator.isValidField($fields)) {
+                                validator.updateStatus($fields, validator.STATUS_VALID, 'openingHoursStart');
+                                return true;
+                            }
+                            return true;
+                        }
+                    }
+                }
+            },
+            areaID: {
+                validators: {
+                    notEmpty: { message: '请选择店铺所在地标' }
+                }
+            },
+            cuisineID1: {
+                validators: {
+                    notEmpty: { message: '请选择菜系1' }
+                }
+            }
+        }
+    };
+
 	var initShopList = function (pageType, params) {
         var $body = $('#ix_wrapper > .ix-body > .container');
 		var queryPanel = new Hualala.Shop.QueryController({
@@ -3681,9 +7022,29 @@ function throttle(method, context)
             hideRoot: true,
             nodes: Hualala.PageRoute.getParentNamesByPath()
         });
-		Hualala.Shop.initInfo($body, pageType, params);
+        Hualala.Global.checkSaasOpen({shopID: params}, function (rsp) {
+            if (rsp.resultcode != '000') {
+                Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                return;
+            }
+            Hualala.Shop.initInfo($body, pageType, params, rsp.data.can == 1);
+        });
 	};
 	Hualala.Shop.BaseInfoMgrInit = initShopBaseInfoMgr;
+
+    var initFoodCategory = function(pageType, params) {
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+        Hualala.Shop.createShopInfoHead(params, $body);
+        Hualala.Shop.createShopFuncNav(pageType, params, $body, true);
+        $body.append('<div class="page-body clearfix"></div>');
+        Hualala.Saas.Category.initCategory($body.find('.page-body'), params);
+    };
+    Hualala.Shop.CategoryInit = initFoodCategory;
 
 	var initFoodMenuMgr = function (pageType, params) {
 		var $body = $('#ix_wrapper > .ix-body > .container');
@@ -3693,10 +7054,33 @@ function throttle(method, context)
             nodes: Hualala.PageRoute.getParentNamesByPath()
         });
         Hualala.Shop.createShopInfoHead(params, $body);
-        Hualala.Shop.createShopFuncNav(pageType, params, $body);
-        Hualala.Shop.initMenu($body, pageType, params);
+        Hualala.Global.checkSaasOpen({shopID: params}, function(rsp) {
+            if (rsp.resultcode != '000') {
+                Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                return;
+            }
+            var isSaasOpen = rsp.data.can == 1;
+            Hualala.Shop.createShopFuncNav(pageType, params, $body, isSaasOpen);
+            Hualala.Shop.initMenu($body, pageType, params, isSaasOpen);
+            Hualala.Shop.initCreateFood(params, isSaasOpen);
+        });
 	};
 	Hualala.Shop.FoodMenuMgrInit = initFoodMenuMgr;
+
+    var initShopMemberMgr = function (pageType, params) {
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+        Hualala.Shop.createShopInfoHead(params, $body);
+        Hualala.Shop.createShopFuncNav(pageType, params, $body, true);
+        $body.append($('<div class="shop-member"></div>'));
+        Hualala.Shop.initMember($body.find('.shop-member'), params);
+    };
+
+    Hualala.Shop.MemberMgrInit = initShopMemberMgr;
 
 	var initCreateShop = function (pageType, params) {
 		var $body = $('#ix_wrapper > .ix-body > .container');
@@ -3715,11 +7099,115 @@ function throttle(method, context)
 	};
 	Hualala.Shop.CreateShopInit = initCreateShop;
 
+    function initShopTableMgr(pageType, params) {
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+
+        Hualala.Shop.createShopInfoHead(params, $body);
+        Hualala.Shop.createShopFuncNav(pageType, params, $body, true);
+        $body.append($('<div class="shop-table">'));
+        Hualala.Shop.initTableMgr($body.find('.shop-table'), params);
+    }
+
+    Hualala.Shop.TableMgrInit = initShopTableMgr;
+
+    function initTableAreaMgr(pageType, params) {
+        var $body = $('#ix_wrapper > .ix-body > .container'),
+            currentPathParents = Hualala.PageRoute.getParentNamesByPath();
+        //去掉当前桌台区域的节点
+        currentPathParents.pop();
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: currentPathParents
+        });
+        Hualala.Shop.createShopInfoHead(params, $body);
+        Hualala.Shop.createShopFuncNav('shopTable', params, $body, true);
+        $body.append($('<div class="table-bread"></div><div class="table-area"></div>'));
+        var $tableAreaBread = $body.find('.table-bread'),
+            $tableArea = $body.find('.table-area'),
+            tableAreaParentPath = Hualala.PageRoute.getParentNamesByPath().slice(1),
+            areaPath = Hualala.PageRoute.getCurrentPath();
+        //桌台管理的path
+        tableAreaParentPath[1].path = areaPath.substr(0, areaPath.indexOf('/area'));
+        //生成桌台区域的导航
+        Hualala.UI.BreadCrumb({
+            container: $tableAreaBread,
+            hideRoot: true,
+            nodes: tableAreaParentPath
+        });
+        Hualala.Shop.initTableAreaMgr($tableArea, params);
+    }
+    Hualala.Shop.TableAreaMgrInit = initTableAreaMgr;
+    //促销
+    function initShopPromotionMgr(pageType, params) {
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+        Hualala.Shop.createShopInfoHead(params, $body);
+        Hualala.Shop.createShopFuncNav(pageType, params, $body, true);
+        //屏蔽促销入口函数
+        // Hualala.Shop.initPromotionMgr($body, params);
+    }
+    Hualala.Shop.PromotionInit = initShopPromotionMgr;
+    //打印机设置
+    function initShopPrinterMgr(pageType,params){
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+        Hualala.Shop.createShopInfoHead(params, $body);
+        Hualala.Shop.createShopFuncNav(pageType, params, $body, true);
+        Hualala.Shop.initShopPrintMgr($body, params); 
+    }
+    Hualala.Shop.PrinterInit = initShopPrinterMgr;
+
+
+    function initPrinterAreaMgr(pageType,params){
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+        Hualala.Shop.createShopInfoHead(params, $body);
+        Hualala.Shop.createShopFuncNav(pageType, params, $body, true);
+        $body.append('<div class="page-body printerArea-menu clearfix"></div>');
+        Hualala.Shop.initPrinterAreaSetting($body.find('.page-body'), params);
+    }
+    Hualala.Shop.PrinterAreaInit =initPrinterAreaMgr;
+
+    function remarksInitMgr(pageType,params){
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.UI.BreadCrumb({
+            container: $body,
+            hideRoot: true,
+            nodes: Hualala.PageRoute.getParentNamesByPath()
+        });
+        Hualala.Shop.createShopInfoHead(params, $body);
+        Hualala.Shop.createShopFuncNav(pageType, params, $body,true);
+        $body.append('<div class="page-body"></div>');
+        Hualala.Saas.remarks.initRemark($body.find('.page-body'), params);
+    }
+    Hualala.Shop.remarksInit =remarksInitMgr;
+
+
+
 	
 })(jQuery, window);;(function ($, window) {
 	IX.ns("Hualala.Setting");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
+
 	var ServiceFormElsCfg = {
 		advanceTime : {
 			type : 'combo',
@@ -3851,6 +7339,52 @@ function throttle(method, context)
 			min : {
 				type : 'timepicker',
 				surfix : '<span class="glyphicon glyphicon-time"></span>',
+				defaultVal : '10:30',
+				validCfg : {
+					group : '.min-input',
+					validators : {
+						notEmpty : {
+							message : "请输入起始时间"
+						}
+					}
+				}
+			},
+			max : {
+				type : 'timepicker',
+				surfix : '<span class="glyphicon glyphicon-time"></span>',
+				defaultVal : '21:30',
+				validCfg : {
+					group : '.max-input',
+					validators : {
+						notEmpty : {
+							message : "请输入结束时间"
+						},
+						callback:{
+						    message : '',
+	                        callback : function (value, validator, $field) {
+	                        	var	$startTimeField = validator.$form.find(':text[name^=servicePeriods_min]'),
+	                        		startTime = $startTimeField.val().split(':'),
+	                        		endTime = $field.val().split(':'),
+				                	startVal = parseInt(startTime[0], 10) * 60 + parseInt(startTime[1], 10),
+				               		endVal = parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10);
+				            	if(endVal == startVal)
+				               		 return { valid: false, message: '结束时间不能等于开始时间' }
+				               	if(Math.abs(endVal - startVal)<30)
+				               		return { valid: false, message: '结束时间和开始时间间隔要大于30分钟' }
+	                            return true;
+	                        }
+						}
+					}
+				}
+			}
+		},
+		servicePeriods2 : {
+			type : 'section',
+			label : '开放时段2',
+			choice : '<input type="checkbox" class="servicePeriodsChoice" value="1" data name="servicePeriodsChoice">',
+			min : {
+				type : 'timepicker',
+				surfix : '<span class="glyphicon glyphicon-time"></span>',
 				defaultVal : '',
 				validCfg : {
 					group : '.min-input',
@@ -3870,6 +7404,64 @@ function throttle(method, context)
 					validators : {
 						notEmpty : {
 							message : "请输入结束时间"
+						},
+						callback:{
+						    message : '',
+	                        callback : function (value, validator, $field) {
+	                        	var	$startTimeField2 = validator.$form.find(':text[name^=servicePeriods2_min]'),
+	                        		$startTimeField = validator.$form.find(':text[name^=servicePeriods_min]'),
+	                        		$endTimeField = validator.$form.find(':text[name^=servicePeriods_max]'),
+	                        		startTime = $startTimeField.val().split(':'),
+	                        		startTime2 = $startTimeField2.val().split(':'),
+	                        		endTime2 = $field.val().split(':'),
+	                        		endTime = $endTimeField.val().split(':'),
+	                        		startVal = parseInt(startTime[0], 10) * 60 + parseInt(startTime[1], 10),
+	                        		endVal = parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10),
+				                	startVal2 = parseInt(startTime2[0], 10) * 60 + parseInt(startTime2[1], 10),
+				               		endVal2 = parseInt(endTime2[0], 10) * 60 + parseInt(endTime2[1], 10);
+				            	if(endVal2 == startVal2)
+				               		 return { valid: false, message: '结束时间不能等于开始时间' }
+				               	if(Math.abs(endVal2 - startVal2)<30)
+				               		return { valid: false, message: '结束时间和开始时间间隔要大于30分钟' }
+	              				//结束时间大于开始时间,正序从大到小
+				               	if(endVal>startVal){
+			               			//第二时段也是开始时间小于结束时间
+			               			if(endVal2>=startVal2){
+			               				if(startVal2>=endVal||endVal2<=startVal){
+			               					return true;
+			               				}
+			               				else{
+			               					return { valid: false, message: '开放时段和开放时段2有重叠，请重新选择时段' }
+			               				}
+			               			}
+			               			//第二时段开始时间大于结束时间(即第二时段结束时间是跨天的)
+			               			else{
+			               				if(endVal<=startVal2&&endVal2<=startVal){
+			               					return true;
+			               				}
+			               				else{
+			               					return { valid: false, message: '开放时段和开放时段2有重叠，请重新选择时段' }
+			               				}
+
+			               			}
+			               		}
+			               		//结束时间小于开始时间，(开始时段1是跨天的)倒序从小到大
+			               		else{
+			               			//第二时间段，开始时间小于结束时间
+			               			if(endVal2>=startVal2){
+			               				if(endVal2>=startVal||startVal2>=endVal){
+			               					return true;
+			               				}
+			               				else{
+			               					return { valid: false, message: '开放时段和开放时段2有重叠，请重新选择时段' }
+			               				}
+			               			}
+			               			else{
+			               				return { valid: false, message: '开放时段和开放时段2有重叠，请重新选择时段' }
+			               			}
+			               		}               						            
+                            	return true;
+	                        }
 						}
 					}
 				}
@@ -4076,12 +7668,47 @@ function throttle(method, context)
 			defaultVal : 0,
 			options : Hualala.TypeDef.FetchFoodModeOptions,
 			validCfg : {
+				validators : {}
+			}
+		},
+		foodUITemplate : {
+			type : 'combo',
+			label : '菜品展示模式',
+			defaultVal : 1,
+			options : Hualala.TypeDef.foodUITemplateOptions,
+			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "下单后出餐模式不能为空"
+						message : "菜品展示模式不能为空"
 					}
 				}
 				
+			}
+		},
+		commitSafeLevel : {
+			type :'combo',
+			label :'下单验证',
+			defaultVal : 1,
+			options :  Hualala.TypeDef.CommitSafeLevelOptions,
+			validCfg : {
+				validators : {
+					notEmpty :{
+						message : "下单验证不能为空"
+					}
+				}
+			}
+		},
+		adsID :{
+			type : 'combo',
+			label : '软文介绍',
+			defaultVal : 0,
+			options :"",
+			validCfg : {
+				validators : {
+					notEmpty :{
+						message : "软文介绍不能为空"
+					}
+				}
 			}
 		}
 	};
@@ -4090,7 +7717,8 @@ function throttle(method, context)
 		var type = $XP(el, 'type');
 		var labelClz = 'col-sm-offset-1 col-sm-3 control-label';
 		if (type == 'section') {
-			var id = minID = k + '_min_' + IX.id(), maxID = k + '_max_' + IX.id(),
+			var id = k + '_' + IX.id(),
+				minID = k + '_min_' + IX.id(), maxID = k + '_max_' + IX.id(),
 				minName = k + '_min', maxName = k + '_max',
 				min = IX.inherit($XP(el, 'min', {}), {
 					id : minID, name : minName, clz : 'col-sm-3',
@@ -4186,6 +7814,7 @@ function throttle(method, context)
 				afterRemove : function () {
 
 				}
+				
 			});
 		},
 		initSwitcher : function (selector) {
@@ -4213,6 +7842,78 @@ function throttle(method, context)
 				showInputs : false
 			});
 		},
+		initAdsID : function (){
+			var self=this;
+		    var ads = [],ad,current_group;
+		    Hualala.Global.getAdvertorials({},function (rsp){
+	   	    	if(rsp.resultcode != '000'){
+	                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+	                return;
+	            }
+            	ads = rsp.data.records || [];
+            	_.each(ads, function(record){ record.time = Hualala.Common.formatDateStr(record.actionTime, 8); });
+ 				groupID = $XP(Hualala.getSessionSite(), 'groupID', '');
+ 				//获取当前集团的软文id
+             	current_group= _.where(ads,{groupID:groupID});
+             	self.serviceInfo = self.getServiceInfo('id', self.serviceID);
+             	var revParamJson = self.model.get('revParamJson') || null,
+					takeawayParamJson = self.model.get('takeawayParamJson') || null,
+			        revParamJson = !revParamJson ? {} : JSON.parse(revParamJson);
+			        takeawayParamJson = !takeawayParamJson ? {} : JSON.parse(takeawayParamJson);
+             	var adsID='0';
+             	if(self.serviceID=='20'||self.serviceID=='21'){
+             		if(takeawayParamJson[self.serviceID]!=null&&takeawayParamJson[self.serviceID].adsID!=null){
+             				adsID = takeawayParamJson[self.serviceID].adsID
+             			}
+             			else{
+             				adsID ='0';          				
+             			}
+             	}else{
+             		if(revParamJson[self.serviceID]!=null&&revParamJson[self.serviceID].adsID!=null){
+             			adsID = revParamJson[self.serviceID].adsID            			
+             		}else{
+             			adsID ='0';             			
+             		}
+             	}
+             	$adsID=$('select[name=adsID]'),
+             	//select填充
+				// Hualala.UI.fillSelect($adsID,current_group,'itemID','title', false).prepend('<option value="0">未设置</option>').val('0');
+                //拼音匹配的chosen以及选中状态
+
+                Hualala.UI.createChosen($adsID,current_group,'itemID','title',{width : '100%'}, { itemID: '0', title: '未设置' },adsID);
+		        // //selected选中的状态
+		        // current_group=_.map(current_group,function (current_group){
+		        //     return _.extend(current_group,{selected:current_group.value==adsID ? 'selected' : ''});
+		        // })
+              /*为Select插入一个Option(第一个位置)
+              	$adsID.prepend("<option value='0'>未设置</option>");
+				$.each(current_group, function(i, value) {
+				$adsID.append($("<option/>", {
+					value:value.itemID,
+					text:value.title
+					}));
+				})*/
+       		});
+		},
+		initUIComponents : function(){
+			var self = this;
+			//暂时处理当前model拿到后台数据为店内自助的服务
+			self.serviceInfo = self.getServiceInfo('id', self.serviceID);
+             	var revParamJson = self.model.get('revParamJson') || null,
+					takeawayParamJson = self.model.get('takeawayParamJson') || null,
+			        revParamJson = !revParamJson ? {} : JSON.parse(revParamJson);
+			        takeawayParamJson = !takeawayParamJson ? {} : JSON.parse(takeawayParamJson);
+				$commitSafeLevel = $('select[name=commitSafeLevel]'),
+				$inputGrp = $commitSafeLevel.parents('.form-group');
+			if(revParamJson[self.serviceID]!=null&&revParamJson[self.serviceID].payBeforeCommit!=null){
+				payBeforeCommit = revParamJson[self.serviceID].payBeforeCommit;
+				$inputGrp[payBeforeCommit == 1 ? 'addClass' : 'removeClass']('hidden');
+			}
+			else{
+				payBeforeCommit= 1;
+				$inputGrp[payBeforeCommit == 1 ? 'addClass' : 'removeClass']('hidden');
+			}  
+		},
 		getServiceInfo : function (key, val) {
 			var self = this;
 			var operationMode = self.model.get('operationMode');
@@ -4238,6 +7939,37 @@ function throttle(method, context)
 					this.modal.hide();
 				}
 			});
+			//判断餐后结账显示下单验证
+			self.modal._.dialog.find('form').on('change', 'select[name=payBeforeCommit]', function (e) {
+				var $select = $(this),
+					val = $select.val(),
+					$commitSafeLevel =$('select[name=commitSafeLevel]'),	
+					$inputGrp = $commitSafeLevel.parents('.form-group');
+				$inputGrp[val == 1 ? 'addClass' : 'removeClass']('hidden');
+
+			});
+			self.modal._.dialog.find('form').on('change', ':text[name=servicePeriods_max]',function (e) {
+				self.modal._.dialog.find('form').bootstrapValidator('revalidateField', 'servicePeriods_max');
+			});
+			self.modal._.dialog.find('form').on('change',':text[name=servicePeriods2_max]',function (e) {
+				self.modal._.dialog.find('form').bootstrapValidator('revalidateField', 'servicePeriods2_max');
+			});
+			//判断勾选第二时段
+			self.modal._.dialog.find('form').on('change', ':checkbox[name=servicePeriodsChoice]', function (e) {
+				var $input = $(this),
+					$servicePeriods2_min = $(':text[name=servicePeriods2_min]'),
+					$servicePeriods2_max = $(':text[name=servicePeriods2_max]'),
+					val = $('.servicePeriodsChoice:checked').length? 1 : 0;
+					if(val==1){
+						$servicePeriods2_min.prop("disabled",false);
+						$servicePeriods2_max.prop("disabled",false);
+					}
+					else{
+						$servicePeriods2_min.prop("disabled",true);
+						$servicePeriods2_max.prop("disabled",true);
+					}
+			});
+
 			self.modal._.dialog.find('.btn').on('click', function (e) {
 				var $btn = $(this),
 					act = $btn.attr('name');
@@ -4292,7 +8024,8 @@ function throttle(method, context)
 					var elCfg = ServiceFormElsHT.get(key),
 						type = $XP(elCfg, 'type');
 					if (type == 'section' && key == 'servicePeriods') {
-						var v = $XP(self.formParams, key, '').split(',');
+						var v0 = $XP(self.formParams, key, '').split(';');
+						var v = (v0[0]!=undefined && v0[0].length!=0) ? v0[0].split(','):[];
 						v = _.map(v, function (t) {
 							return self.decodeTimeStr(t);
 						});
@@ -4304,6 +8037,60 @@ function throttle(method, context)
 								value : v[1] || $XP(elCfg, 'max.defaultVal')
 							})
 						});
+					} else if (type == 'section' && key == 'servicePeriods2') {
+						var v0 = $XP(self.formParams, 'servicePeriods', '').split(';');
+						var v;
+							if(v0[1]!=undefined && v0[1].length!=0){
+								v= v0[1].split(',');
+								elCfg.choice=elCfg.choice.replace('data', 'checked')
+							}
+							else{
+								v =[];
+								elCfg.choice=elCfg.choice.replace('checked', 'data')	
+							}
+							v = _.map(v, function (t) {
+							return self.decodeTimeStr(t);
+						});
+						//获取时段1的数据，时段1存在
+						var defaultVal,startVal2,endVal2;
+							if(v0[0]!=undefined && v0[0].length!=0){
+								defaultVal= v0[0].split(',');
+								defaultVal = _.map(defaultVal, function (t) {
+								return self.decodeTimeStr(t);
+							});
+								endTime = defaultVal[1].split(':');
+								endVal = parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10)+120;
+								endValb = parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10)+180;
+								if(endVal>=1440&&endValb>=1440){
+									endVal = endVal-1440;
+									startVal2 = (parseInt(endVal/60))+":"+(endVal%60);
+									endValb=endValb-1440;
+									endVal2 = (parseInt(endValb/60))+":"+(endValb%60);
+								}
+								else if(endVal<1440&&endValb>=1440){
+									startVal2 = (parseInt(endVal/60))+":"+(endVal%60);
+									endValb=endValb-1440;
+									endVal2 = (parseInt(endValb/60))+":"+(endValb%60);
+								}
+								else if(endVal<1440&&endValb<1440){
+									startVal2 = (parseInt(endVal/60))+":"+(endVal%60);
+									endVal2 = (parseInt(endValb/60))+":"+(endValb%60);
+								}
+							}
+							//时段1不存在,在默认时间上加两个小时
+							else{
+								startVal2 = "23:30";
+								endVal2 = "0:30";
+							}
+						return IX.inherit(elCfg, {
+							min : IX.inherit($XP(elCfg, 'min'), {
+								value : v[0] || startVal2
+							}),
+							max : IX.inherit($XP(elCfg, 'max'), {
+								value : v[1] || endVal2
+							})
+						});
+
 					} else if (type == 'combo') {
 						var v = $XP(self.formParams, key, $XP(elCfg, 'defaultVal')),
 							options = _.map($XP(elCfg, 'options'), function (op) {
@@ -4371,10 +8158,21 @@ function throttle(method, context)
 					{clz : 'btn-warning', name : 'submit', label : '保存'}
 				]
 			}));
+			//通过是否勾选第二时段来决定是否显示
+			if($(':checkbox[name=servicePeriodsChoice]').prop("checked")){
+				$(':text[name=servicePeriods2_min]').prop("disabled",false);
+				$(':text[name=servicePeriods2_max]').prop("disabled",false);
+			}
+			else{
+				$(':text[name=servicePeriods2_min]').prop("disabled",true);
+				$(':text[name=servicePeriods2_max]').prop("disabled",true);
+			}
+			
 
 			self.initSwitcher(':checkbox[data-type=switcher]');
 			self.initTimePicker('[data-type=timepicker]');
-
+			self.initUIComponents();
+			self.initAdsID();
 		},
 		// 获取表单数据
 		serializeForm : function () {
@@ -4384,7 +8182,7 @@ function throttle(method, context)
 				formEls = _.map(formKeys, function (key) {
 					var elCfg = ServiceFormElsHT.get(key),
 						type = $XP(elCfg, 'type');
-					if (type == 'section' && key == 'servicePeriods') {
+					if (type == 'section' && (key == 'servicePeriods' || key == 'servicePeriods2')) {
 						var min = $('[name=' + key + '_min]').val(),
 							max = $('[name=' + key + '_max]').val();
 						ret[key] = self.encodeTimeStr(min, max);
@@ -4395,6 +8193,19 @@ function throttle(method, context)
 						ret[key] = $('[name=' + key + ']').val();
 					}
 				});
+				//根据是否勾选第二时段，来保存是否有第二时段
+				servicePeriodsChoice = $('.servicePeriodsChoice:checked').length? 1 : 0;
+				ret.servicePeriods2= servicePeriodsChoice?ret.servicePeriods2: [];
+				if(ret.servicePeriods2.length!=0){
+					ret.servicePeriods=[ret.servicePeriods,ret.servicePeriods2].join(";");	
+					delete ret.servicePeriods2;
+				}
+				//BUG #5443 业务设置，如果为餐前结账，需要把验证设置为不验证
+				if(ret.payBeforeCommit!=undefined){
+					if(ret.payBeforeCommit.length!=0&&ret.payBeforeCommit=="1"){
+						ret.commitSafeLevel="1";
+					}
+				}
 			return ret;
 		},
 		// 获取表单验证配置
@@ -4477,6 +8288,7 @@ function throttle(method, context)
 			this.on({
 				"show" : function () {
 					self.modal.show();
+					
 				},
 				"hide" : function () {
 					self.modal.hide();
@@ -5019,6 +8831,100 @@ function throttle(method, context)
 	});
 
 	Hualala.Account.AccountQueryShopResultModel = AccountQueryShopResultModel;
+	//结算日报表
+	var AccountDailyReportModel = AccountListModel.subclass({
+		constructor : function () {
+			//报表调用服务
+			this.callServer = Hualala.Global.queryAccountDailyReport;
+		}
+	});
+	AccountDailyReportModel.proto({
+		init : function (params) {
+			this.set({
+				pageCount : 0,
+				totalSize : 0,
+				pageNo : $XP(params, 'pageNo', 1),
+				pageSize : $XP(params, 'pageSize', 15),
+				transCreateBeginTime : $XP(params, 'transCreateBeginTime', ''),
+				transCreateEndTime : $XP(params, 'transCreateEndTime', ''),
+				settleUnitID : $XP(params, 'settleUnitID', ''),
+				ds_dates : new IX.IListManager(),
+				ds_page : new IX.IListManager(),
+				DailyReportSummarize : null
+			});
+		},
+		updatePagerParams : function (params) {
+			var self = this;
+			var pagerParamkeys = 'pageCount,totalSize,pageNo,pageSize,transCreateBeginTime,transCreateEndTime,settleUnitID';
+			_.each(params, function (v, k, l) {
+				if (pagerParamkeys.indexOf(k) > -1) {
+					self.set(k, v);
+				}
+			});
+		},
+		getPagerParams : function () {
+			return {
+				pageNo : this.get('pageNo'),
+				pageSize : this.get('pageSize'),
+				settleUnitID : this.get('settleUnitID'),
+				transCreateBeginTime : this.get('transCreateBeginTime'),
+				transCreateEndTime : this.get('transCreateEndTime')
+				
+			};
+		},
+		updateDataStore : function (data, pageNo) {
+			var self = this,
+				datesHT = self.get('ds_dates'),
+				pageHT = self.get('ds_page');
+			var datesIDs = _.map(data.records, function (dates, i, l) {
+				var datesID = $XP(dates, 'dt'),
+					mTrans = new BaseTransactionModel(dates);
+				datesHT.register(datesID, mTrans);
+				return datesID;
+			});
+			pageHT.register(pageNo, datesIDs);
+			//获取总计内容
+			var	summarize = $XP(data, 'datasets.sumData.data.records', []),
+				dailyReport = $XP(data, 'records', []);
+			self.set('DailyReportSummarize', summarize);
+		},
+		resetDataStore : function () {
+			var self = this,
+				datesHT = self.get('ds_trans'),
+				pageHT = self.get('ds_page');
+			datesHT.clear();
+			pageHT.clear();
+		},
+		load : function (params, cbFn) {
+			var self = this;
+			self.updatePagerParams(params);
+			self.callServer(self.getPagerParams(), function (res) {
+				if (res.resultcode == '000') {
+					self.updateDataStore($XP(res, 'data', []), $XP(res, 'data.page.pageNo'));
+					self.updatePagerParams(IX.inherit($XP(res, 'data', {}), $XP(res, 'data.page', {})));
+				} else {
+					toptip({
+						msg : $XP(res, 'resultmsg', ''),
+						type : 'danger'
+					});
+				}
+				cbFn(self);
+			});
+		},
+		getDataByPageNo : function (pageNo) {
+			var self = this,
+				datesHT = self.get('ds_dates'),
+				pageHT = self.get('ds_page');
+			var ret = _.map(datesHT.getByKeys(pageHT.get(pageNo)), function (mTrans) {
+				return mTrans.getAll();
+			});
+			IX.Debug.info("DEBUG: Account DailyReport  Model PageData :");
+			IX.Debug.info(ret);
+			return ret;
+		},
+	});
+
+	Hualala.Account.AccountDailyReportModel = AccountDailyReportModel;
 
 
 
@@ -5035,6 +8941,7 @@ function throttle(method, context)
 	IX.ns("Hualala.Account");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
+	var CMath = Hualala.Common.Math;
 	var CardListView = Hualala.Shop.CardListView;
 	var AccountListView = CardListView.subclass({
 		constructor : CardListView.prototype.constructor
@@ -5098,8 +9005,9 @@ function throttle(method, context)
 			self.on({
 				'updateSettleBalance' : function (mAccount) {
 					var settleUnitID = mAccount.get('settleUnitID'),
-						settleBalance = mAccount.get('settleBalance');
-					self.$container.find('[data-id=' + settleUnitID + '] .cash > strong').html(settleBalance);
+						settleBalance = mAccount.get('settleBalance'),
+						settleBalanceStr = CMath.prettyNumeric(CMath.standardPrice(settleBalance));
+					self.$container.find('[data-id=' + settleUnitID + '] .cash > strong').html(settleBalanceStr);
 				}
 			});
 		},
@@ -5123,19 +9031,20 @@ function throttle(method, context)
 					hasDefault = $XP(account, 'defaultAccount', 0) == 0 ? false : true,
 					bankInfo = Hualala.Common.mapBankInfo($XP(account, 'bankCode')),
 					bankAccountStr = Hualala.Common.codeMask($XP(account, 'bankAccount', ''), 0, -4),
-					settleBalance = parseFloat($XP(account, 'settleBalance', 0));
+					settleBalance = parseFloat($XP(account, 'settleBalance', 0)),
+					settleBalanceStr = CMath.prettyNumeric(CMath.standardPrice(settleBalance));
 
 				return {
 					settleUnitID : settleUnitID,
 					hasDefault : hasDefault,
 					settleUnitName : $XP(account, 'settleUnitName', ''),
 					disableWithdraw : settleBalance <= 0 ? 'disabled' : '',
-					settleBalance : settleBalance,
+					settleBalance : settleBalanceStr,
 					bankIcon : $XP(bankInfo, 'icon_16', ''),
 					bankComName : $XP(bankInfo, 'name', ''),
 					bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
 					shopCount : parseInt($XP(account, 'shopCount', 0)),
-					path : Hualala.PageRoute.createPath('accountDetail', [settleUnitID])
+					path : Hualala.PageRoute.createPath('accountDailyReport', [settleUnitID])
 				};
 			});
 			return {
@@ -5512,17 +9421,22 @@ function throttle(method, context)
 		}
 	});
 	var TransResultCols = [
-		{clz : '', label : '时间'},
-		{clz : '', label : '流水号'},
-		{clz : '', label : '交易状态'},
-		{clz : '', label : '交易类型'},
-		{clz : '', label : '交易金额'},
-		// {clz : '', label : '佣金'},
-		// {clz : '', label : '手续费'},
-		{clz : '', label : '交易费用'},
-		{clz : '', label : '余额变动'},
-		{clz : '', label : '交易后余额'},
-		{clz : '', label : '操作'}
+		{
+			clz : '',
+			cols : [
+				{clz : '', label : '时间',colspan : '', rowspan : ''},
+				{clz : '', label : '流水号',colspan : '', rowspan : ''},
+				{clz : '', label : '交易状态',colspan : '', rowspan : ''},
+				{clz : '', label : '交易类型',colspan : '', rowspan : ''},
+				{clz : '', label : '交易金额',colspan : '', rowspan : ''},
+				// {clz : '', label : '佣金'},
+				// {clz : '', label : '手续费'},
+				{clz : '', label : '交易费用',colspan : '', rowspan : ''},
+				{clz : '', label : '余额变动',colspan : '', rowspan : ''},
+				{clz : '', label : '交易后余额',colspan : '', rowspan : ''},
+				{clz : '', label : '操作',colspan : '', rowspan : ''}
+			]
+		}
 	];
 
 	var AccountTransListView = CardListView.subclass({
@@ -5704,6 +9618,9 @@ function throttle(method, context)
 		},
 		mapTransType : function (s) {
 			s = s || '';
+			if(s=="101"||s=="410"){
+				s="511";
+			}
 			var types = Hualala.TypeDef.FSMTransType;
 			var m = _.filter(types, function (el) {
 				return $XP(el, 'value', '') == s;
@@ -5714,14 +9631,14 @@ function throttle(method, context)
 			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', ''), clz : 'text'};
 		},
 		mapCashData : function (s) {
-			return {text : Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(s)), value : s, clz : 'number'};
+			return {text : CMath.prettyNumeric(CMath.standardPrice(s)), value : s, clz : 'number'};
 		},
 		mapTransChanged : function (r) {
 			var transAmount = $XP(r, 'transAmount', 0),
 				transSalesCommission = $XP(r, 'transSalesCommission', 0),
 				transPoundage = $XP(r, 'transPoundage', 0),
-				transChanged = Hualala.Common.Math.sub(transAmount, transSalesCommission, transPoundage);
-			return {value : transChanged, text : Hualala.Common.Math.prettyNumeric(transChanged), clz : 'number'};
+				transChanged = CMath.sub(transAmount, transSalesCommission, transPoundage);
+			return {value : transChanged, text : CMath.prettyNumeric(transChanged), clz : 'number'};
 		},
 		mapColsRenderData : function (row) {
 			var self = this;
@@ -5743,27 +9660,31 @@ function throttle(method, context)
 					case 'transType':
 						r = self.mapTransType($XP(row, k, ''));
 						break;
+					//交易金额
 					case 'transAmount':
 					// case 'transSalesCommission':
 					// case 'transPoundage':
+					//交易后余额
 					case 'transAfterBalance':
-						r = self.mapCashData($XP(row, k, ''));
+						r = self.mapCashData($XP(row, k));
 						break;
+					//交易费用
 					case 'transactionCost':
 						var transSalesCommission = $XP(row, 'transSalesCommission', 0), transPoundage = $XP(row, 'transPoundage', 0);
-						var transactionCost = Hualala.Common.Math.add(transSalesCommission, transPoundage);
+						var transactionCost = CMath.add(transSalesCommission, transPoundage);
 						r = self.mapCashData(transactionCost);
 						break;
+					//余额变动
 					case 'transChanged':
 						r = self.mapTransChanged(row);
 						break;
 					case 'rowControl':
 						var transType = $XP(row, 'transType', ''),
 							transStatus = $XP(row, 'transStatus', '');
-						var hideBtnTransType = "104,199,202,203,204,205,206,299";
+						var hideBtnTransType = "104,105,199,202,203,204,205,206,299";
 						r = {
 							type : 'button',
-							btnClz : (hideBtnTransType.indexOf(transType) >= 0 || (transType == "203" && transStatus < 1)) ? 'hidden' : '',
+							btnClz : (hideBtnTransType.indexOf(transType) >= 0 || ((transType == "203" && transStatus < 1)||(transType == "105" && transStatus < 1)))? 'hidden' : '',
 							label : '查看',
 							SUATransItemID : $XP(row, 'SUATransItemID', ''),
 							transType : transType,
@@ -5779,7 +9700,11 @@ function throttle(method, context)
 		mapRenderData : function (data) {
 			var self = this;
 			var tblClz = 'table-bordered table-striped table-hover ix-data-report',
-				tblHeaders = TransResultCols;
+				tblHeaders = TransResultCols,
+				tdSum = 0;	
+			for(i=0;i<tblHeaders.length;i++){
+					tdSum = tdSum+tblHeaders[i].cols.length;
+				};
 			var rows = _.map(data, function (row) {
 				return {
 					clz : '',
@@ -5789,7 +9714,7 @@ function throttle(method, context)
 			return {
 				clz : tblClz,
 				isEmpty : data.length == 0 ? true : false,
-				colCount : tblHeaders.length,
+				colCount : tdSum,
 				thead : tblHeaders,
 				rows : rows
 			};
@@ -5875,6 +9800,351 @@ function throttle(method, context)
 		}
 	});
 	Hualala.Account.AccountQueryShopResultView = AccountQueryShopResultView;
+	//结算日报表
+	var QueryDailyReportFormElsCfg = {
+		transCreateTime : {
+			type : 'section',
+			label : '日期',
+			min : {
+				type : 'datetimepicker',
+				surfix : '<span class="glyphicon glyphicon-calendar"></span>',
+				defaultVal : '',
+				validCfg : {
+					group : '.min-input',
+					validators : {}
+				}
+			},
+			max : {
+				type : 'datetimepicker',
+				surfix : '<span class="glyphicon glyphicon-calendar"></span>',
+				defaultVal : '',
+				validCfg : {
+					group : '.max-input',
+					validators : {}
+				}
+			}
+		},
+		button : {
+			type : 'button',
+			clz : 'btn btn-block btn-warning',
+			label : '查询'
+		}
+	};
+	var QueryDailyReportFormElsHT = new IX.IListManager();
+	_.each(QueryDailyReportFormElsCfg, function (el, k) {
+		var type = $XP(el, 'type');
+		var labelClz = 'col-xs-2 col-sm-2 col-md-2 control-label';
+		if (type == 'section') {
+			var id = minID = k + '_min_' + IX.id(), maxID = k + '_max_' + IX.id(),
+				minName = k == 'transCreateTime' ? 'transCreateBeginTime' : '',
+				maxName = k == 'transCreateTime' ? 'transCreateEndTime' : '',
+				min = IX.inherit($XP(el, 'min', {}), {
+					id : minID, name : minName, clz : 'col-xs-5 col-sm-5 col-md-5',
+				}), max = IX.inherit($XP(el, 'max', {}), {
+					id : maxID, name : maxName, clz : 'col-xs-5 col-sm-5 col-md-5',
+				});
+			QueryDailyReportFormElsHT.register(k, IX.inherit(el, {
+				id : id,
+				labelClz : labelClz,
+				min : min,
+				max : max
+			}));
+		} else {
+			QueryDailyReportFormElsHT.register(k, IX.inherit(el, {
+				id : k + '_' + IX.id(),
+				name : k,
+				labelClz : labelClz,
+			}, $XP(el, 'type') !== 'button' ? {clz : 'col-xs-5 col-sm-8 col-md-5'} : null));
+		}
+	});
+	//结算日报表表头
+	var AccountDailyReportCols = [
+		{
+			clz : '',
+			cols : [
+				{clz : '', label : '日期', colspan : '', rowspan : '2'},
+				{clz : '', label : '网上自助订餐', colspan : '5', rowspan : ''},
+				{clz : '', label : '会员在线储值', colspan : '4', rowspan : ''},
+				{clz : '', label : '提现总额', colspan : '', rowspan : '2'}
+			]
+		},
+ 		{
+			clz : '',
+			cols : [
+				{clz : '', label : '笔数', colspan : '', rowspan : ''},
+				{clz : '', label : '交易金额', colspan : '', rowspan : ''},
+				{clz : '', label : '退款金额', colspan : '', rowspan : ''},
+				{clz : '', label : '应结金额', colspan : '', rowspan : ''},
+				{clz : '', label : '结算金额', colspan : '', rowspan : ''},
+				{clz : '', label : '笔数', colspan : '', rowspan : ''},
+				{clz : '', label : '交易金额', colspan : '', rowspan : ''},
+				{clz : '', label : '交易费用', colspan : '', rowspan : ''},
+				{clz : '', label : '结算金额', colspan : '', rowspan : ''},
+			]
+		}
+	];
+	var AccountDailyReportView = CardListView.subclass({
+		constructor : function () {
+			// View层容器
+			this.$container = null;
+			// 查询表单
+			this.$queryForm = null;
+			// 结果容器
+			this.$resultBox = null;
+			// 分页容器
+			this.$pager = null;
+			this.loadTemplates();
+		}
+	});
+	AccountDailyReportView.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_detail')),
+				tableTpl = Handlebars.compile(Hualala.TplLib.get('tpl_transaQuery_result'));
+			Handlebars.registerPartial("transaQueryForm", Hualala.TplLib.get('tpl_transaQuery_form'));
+			Handlebars.registerPartial("transaQueryResult", Hualala.TplLib.get('tpl_transaQuery_result'));
+			Handlebars.registerHelper('checkFormElementType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			Handlebars.registerHelper('chkColType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			this.set({
+				layoutTpl : layoutTpl,
+				tableTpl : tableTpl
+			});
+		},
+		initLayout : function () {
+			var layoutTpl = this.get('layoutTpl');
+			var result = [],
+				tblClz = 'table-bordered table-striped table-hover ix-data-report',
+				tblHeaders = AccountDailyReportCols,
+				query = {cols : [
+					{
+						colClz : 'col-sm-6',
+						items : QueryDailyReportFormElsHT.getByKeys(['transCreateTime'])
+					},
+					{
+						colClz : 'col-md-offset-1 col-sm-2',
+						items : QueryDailyReportFormElsHT.getByKeys(['button'])
+					}
+				]};
+			var htm = layoutTpl({
+				query : query,
+				result : {
+					clz : tblClz,
+					thead : tblHeaders,
+					rows : result
+				}
+			});
+			this.$container.html(htm);
+			this.$queryForm = this.$container.find('.query-form');
+			this.$queryForm.addClass("accountDailyReport");
+			this.$resultBox = this.$container.find('.query-result');
+			this.$pager = this.$container.find('.page-selection');
+			this.render();
+			this.initQueryEls();
+			this.bindEvent();
+			this.bindQueryEvent();
+		},
+		initQueryEls : function () {
+			var self = this;
+			self.$queryForm.find('[data-type=datetimepicker]').datetimepicker({
+				format : 'yyyy/mm/dd',
+				startDate : '2010/01/01',
+				autoclose : true,
+				minView : 'month',
+				todayBtn : true,
+				todayHighlight : true,
+				language : 'zh-CN'
+			});
+			self.$queryForm.on('click', '.input-group-addon', function (e) {
+				var $this = $(this),
+					$picker = $this.prev(':text[data-type=datetimepicker]');
+				if ($picker.length > 0) {
+					$picker.datetimepicker('show');
+				}
+			});
+		},
+		bindEvent : function () {
+			var self = this;
+			self.$resultBox.tooltip({
+				selector : '[title]'
+			});
+			self.$resultBox.on('click', '.btn[data-href]', function (e) {
+				var $btn = $(this),
+					path = $btn.attr('data-href');
+				if (!IX.isEmpty(path)) {
+					document.location.href = path;
+				}
+			});
+			self.$pager.on('page', function (e, pageNo) {
+				var params = self.model.getPagerParams();
+				params['pageNo'] = pageNo;
+				self.model.emit('load', IX.inherit(params, {
+					pageNo : $XP(params, 'pageNo', 1),
+					pageSize : $XP(params, 'pageSize', 15)
+				}));
+			});
+		},
+		bindQueryEvent : function () {
+			var self = this;
+			self.$queryForm.on('click', '.btn', function (e) {
+				// TODO  render query result
+				var params = self.getQueryFormParams();
+				self.model.emit('load', params);
+			});
+		},
+		getQueryFormParams : function () {
+			var self = this;
+			var params = self.$queryForm.find('>form').serializeArray();
+			var ret = {};
+			_.each(params, function (el, i) {
+				var k = $XP(el, 'name'), v = $XP(el, 'value', '');
+				switch(k) {
+					case 'transCreateBeginTime':
+					case 'transCreateEndTime':
+						if (IX.isEmpty(v)) {
+							v = '';
+						} else {
+							v = IX.Date.getDateByFormat(v, 'yyyyMMddHH');
+						}
+						break;
+					default :
+						v = IX.isEmpty(v) ? '' : v;
+						break;
+				}
+				ret[k] = v;
+			});
+			IX.Debug.info("DEBUG: Account TransList View Query Form Params : ");
+			IX.Debug.info(ret);
+			return ret;
+		},
+		mapTimeData : function (s) {
+			var r = {value : '', text : '', clz : 'date'};
+			var s1 = '';
+			if (IX.isString(s) && s.length > 0) {
+				s1 = s.replace(/([\d]{4})([\d]{2})([\d]{2})/g, '$1/$2/$3');
+				s1 = IX.Date.getDateByFormat(s1, 'yyyy/MM/dd ');
+				r = IX.inherit({value : s, text : s1});
+			}
+			return r;
+		},
+		mapCashData : function (s) {
+			return {text : CMath.prettyNumeric(CMath.standardPrice(s)), value : s, clz : 'number'};
+		},
+		mapColsRenderData : function (row) {
+			var self = this,
+				colKeys = "dt,orderCnt,orderAmt,orderCancelAmt,orderSettleAmt,orderSettleAmtFinal,saveMoneyCnt,saveMoneyAmt,saveMoneyComAmt,saveMoneySettleAmt,cashAmt",
+				col = {clz : '', type : 'text'};
+				
+			var cols = _.map(colKeys.split(','), function (k, i) {
+				var r = null;
+				switch(k) {
+					case 'dt':
+						r = self.mapTimeData($XP(row, k, ''));
+						break;
+					case 'orderCnt':
+					case 'saveMoneyCnt':
+						r = {value : $XP(row, k, ''), text : $XP(row, k, ''), clz : 'number'};
+						break;
+					case 'orderAmt':
+					case 'orderCancelAmt':
+					case 'orderSettleAmt':
+					case 'orderSettleAmtFinal':
+					case 'saveMoneyAmt':
+					case 'saveMoneyComAmt':
+					case 'saveMoneySettleAmt':
+					case 'cashAmt':
+						r = self.mapCashData($XP(row, k));
+						break;
+				}
+				return IX.inherit(col, r);
+			});
+			return cols;
+		},
+		mapColsTotalData : function (row) {
+			var self = this,
+				colKeys ="orderCntSum,orderAmtSum,orderCancelAmtSum,orderSettleAmtSum,orderSettleAmtFinalSum,saveMoneyCntSum,saveMoneyAmtSum,saveMoneyComAmtSum,saveMoneySettleAmtSum,cashAmtSum",
+				col = {clz : '', type : 'text'};				
+			var cols = _.map(colKeys.split(','), function (k, i) {
+				var r = null;
+				switch(k) {
+					case 'orderCntSum':
+					case 'saveMoneyCntSum':
+						r = {value : $XP(row, k, ''), text : $XP(row, k, ''), clz : 'number'};
+						break;
+					case 'orderAmtSum':
+					case 'orderCancelAmtSum':
+					case 'orderSettleAmtSum':
+					case 'orderSettleAmtFinalSum':
+					case 'saveMoneyAmtSum':
+					case 'saveMoneyComAmtSum':
+					case 'saveMoneySettleAmtSum':
+					case 'cashAmtSum':
+						r = self.mapCashData($XP(row, k));
+						break;
+				}
+				return IX.inherit(col, r);
+			});
+			return cols;
+		},
+		mapRenderData : function (dailyReport) {
+			var self = this,
+				summary = self.model.get('DailyReportSummarize'),
+				tblClz = 'table-bordered table-striped table-hover ix-data-report',
+				tblHeaders = AccountDailyReportCols,
+				tdSum = 0;	
+			for(i=0;i<tblHeaders.length;i++){
+					tdSum = tdSum+tblHeaders[i].cols.length;
+				};
+			var rows = _.map(dailyReport, function (row) {
+				return {
+					clz : '',
+					cols : self.mapColsRenderData(row)
+				};
+			});
+			var tfoot = _.map(summary, function (row) {
+				var cols = self.mapColsTotalData(row);
+				// cols.shift();
+				cols.unshift({
+					clz : 'title',
+					value : '',
+					text : '总计：'
+				});
+				return {
+					clz : '',
+					cols : cols
+				}
+			});
+			return {
+				clz : tblClz,
+				isEmpty : dailyReport.length == 0 ? true : false,
+				colCount : tdSum,
+				thead : tblHeaders,
+				rows : rows,
+				tfoot : tfoot
+			};
+		},
+		render : function () {
+			var self = this,
+				model = self.model,
+				pagerParams = model.getPagerParams(),
+				pageNo = $XP(pagerParams, 'pageNo');
+			var results = model.getDataByPageNo(pageNo);
+			var renderData = self.mapRenderData(results);
+			var tableTpl = self.get('tableTpl');
+			var html = tableTpl(renderData);
+			self.$resultBox.empty();
+			self.$resultBox.html(html);
+			self.initPager({
+				total : model.get('pageCount'),
+				page : model.get('pageNo'),
+				href : 'javascript:void(0);'
+			});
+		}
+	});
+	Hualala.Account.AccountDailyReportView = AccountDailyReportView;
+
 })(jQuery, window);;(function ($, window) {
 	IX.ns("Hualala.Account");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
@@ -6174,11 +10444,78 @@ function throttle(method, context)
 		}
 	});
 	Hualala.Account.TransactionDetailController = TransactionDetailController;
+
+	/*结算日报表控制器*/
+	var AccountDailyReportController = Stapes.subclass({
+		constructor: function () {
+			this.set({
+				sessionData : Hualala.getSessionData()
+			});
+			this.container = null;
+			this.settleUnitID = null;
+			this.model = new Hualala.Account.AccountDailyReportModel();
+			this.view = new Hualala.Account.AccountDailyReportView();
+			
+		}
+	});
+	AccountDailyReportController.proto({
+		init : function (cfg) {
+			var self = this;
+			self.container = $XP(cfg, 'container', null);
+			self.settleUnitID = $XP(cfg, 'settleUnitID', '');
+			self.loadingModal = new LoadingModal({
+				start : 100
+			});
+			if (!this.container || !this.model || !this.view) {
+				throw("Account AccountDailyReport Init Failed!!");
+				return ;
+			}
+			self.bindEvent();
+			self.model.init({
+				
+				groupID : $XP(self.get('sessionData'), 'site.groupID'),
+				settleUnitID : self.settleUnitID
+			});
+			self.model.emit('load', {
+				pageNo : 1, pageSize : 15,
+				cbFn : function (model) {
+					self.view.emit('init', {
+						container : self.container,
+						model : model
+					});
+					self.loadingModal.hide();
+				}
+			});
+		},
+		bindEvent : function () {
+			this.model.on({
+				load : function (params) {
+					var self = this;
+					var cbFn = $XP(params, 'cbFn', function () {
+						self.view.emit('render');
+						self.loadingModal.hide();
+					});
+					self.loadingModal.show();
+					this.model.load(params, cbFn);
+				}
+			}, this);
+			this.view.on({
+				init : function (cfg) {
+					this.view.init(cfg);
+				},
+				render : function () {
+					this.view.render();
+				}
+			}, this);
+		}
+	});
+	Hualala.Account.AccountDailyReportController = AccountDailyReportController;
 })(jQuery, window);
 ;(function ($, window) {
 	IX.ns("Hualala.Account");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
+	var CMath = Hualala.Common.Math;
 
 	var AccountActs = [
 		{clz : 'btn-success withdraw', act : 'withdraw', label : '提现'},
@@ -6198,6 +10535,7 @@ function throttle(method, context)
 			this.$schema = null;
 			// 交易详情
 			this.$detail = null;
+			this.$tab =null;
 
 			this.model = null;
 
@@ -6228,6 +10566,7 @@ function throttle(method, context)
 			this.$nav = this.$container.find('.account-nav');
 			this.$schema = this.$container.find('.account-schema-box');
 			this.$detail = this.$container.find('.account-detail-box');
+			this.$tab = this.$container.find('.account-tab');
 			this.bindEvent();
 		},
 		initBreadCrumbs : function () {
@@ -6264,6 +10603,26 @@ function throttle(method, context)
 				}
 
 			});
+
+		},
+		initTab :function(){
+			var self = this,
+				$tab =self.$tab,
+			settleUnitID = self.model.get('settleUnitID'),
+			currentPageName = Hualala.PageRoute.getPageContextByPath().name;
+			var tabFuncs = ['accountDailyReport', 'accountDetail'],
+		        R = Hualala.PageRoute,
+		        $ul = $('<ul class="nav navbar-nav"></ul>');
+		    
+		    for(i = 0, l = tabFuncs.length; i < l; i++)
+		    {
+		        var tabFunc = tabFuncs[i],
+		            isActive = tabFunc==currentPageName ,
+		            path = isActive ? 'javascript:;' : R.createPath(tabFunc, [settleUnitID]),
+		            label = R.getPageLabelByName(tabFunc);
+		        $('<li></li>').toggleClass('active', isActive).append($('<a></a>').attr('href', path).text(label)).appendTo($ul);
+		    }
+		return $tab.append($ul);
 
 		},
 		loadTemplates : function () {
@@ -6304,7 +10663,7 @@ function throttle(method, context)
 			self.on({
 				'updateSettleBalance' : function (mAccount) {
 					var settleUnitID = mAccount.get('settleUnitID'),
-						settleBalance = Hualala.Common.Math.prettyNumeric(mAccount.get('settleBalance'));
+						settleBalance = CMath.prettyNumeric(CMath.standardPrice(mAccount.get('settleBalance')));
 					self.$container.find('[data-id=' + settleUnitID + '] .cash > strong').html(settleBalance);
 				}
 			});
@@ -6366,6 +10725,7 @@ function throttle(method, context)
 				bankInfo = Hualala.Common.mapBankInfo(model.get('bankCode')),
 				bankAccountStr = Hualala.Common.codeMask((model.get('bankAccount') || ''), 0, -4),
 				settleBalance = parseFloat(model.get('settleBalance') || 0),
+				settleBalanceStr =  CMath.prettyNumeric(CMath.standardPrice(settleBalance)),
 				shopCount = parseInt(model.get('shopCount') || 0),
 				disableWithdraw = settleBalance <= 0 ? 'disabled' : '';
 
@@ -6375,7 +10735,7 @@ function throttle(method, context)
 				hasDefault : hasDefault,
 				settleUnitName : model.get('settleUnitName') || '',
 				disableWithdraw : disableWithdraw,
-				settleBalance : settleBalance,
+				settleBalance : settleBalanceStr,
 				bankIcon : $XP(bankInfo, 'icon_16', ''),
 				bankComName : $XP(bankInfo, 'name', ''),
 				bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
@@ -6418,7 +10778,9 @@ function throttle(method, context)
 				tpl = self.get('schemaTpl');
 			var htm = tpl(renderData);
 			self.initBreadCrumbs();
+			
 			self.$schema.html(htm);
+			self.initTab();
 		},
 		refresh : function () {
 			this.render();
@@ -7114,7 +11476,7 @@ function throttle(method, context)
 						unit = !IX.isEmpty(OrderPayFieldLabelLib[k]) && !IX.isEmpty(OrderPayFieldLabelLib[k]['unit']) && k != "foodAmount" ?
 							OrderPayFieldLabelLib[k]['unit'] : '';
 					if (k == "foodAmount") {
-						v = Hualala.Common.Math.prettyPrice(v);
+						v = CMath.prettyPrice(v);
 					}
 					if (k == 'foodCategoryName') {
 						foodCategoryName = v;
@@ -7219,6 +11581,9 @@ function throttle(method, context)
 			this.transTypeHT = new IX.IListManager();
 			this.initTransTypeLib();
 			this.modal = null;
+			if(this.transType=='101'||this.transType=='410'){
+				this.transType='511';
+			}
 			this.tplName = $XP(this.transTypeHT.get(this.transType), 'tpl', null);
 			this.callServerName = $XP(this.transTypeHT.get(this.transType), 'queryCall', null);
 			this.callServer = null;
@@ -7337,7 +11702,7 @@ function throttle(method, context)
 			settleUnitDetail = IX.each(settleUnitDetail, {}, function (acc, el, k) {
 				var cashKeys = 'transAfterBalance,transAmount,transSalesCommission';
 				if (cashKeys.indexOf(k) >= 0) {
-					acc[k] = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.prettyPrice(el));
+					acc[k] = CMath.prettyNumeric(CMath.prettyPrice(el));
 				} else if (k == 'transType') {
 					acc = IX.inherit(acc, {
 						transType : el,
@@ -7351,7 +11716,7 @@ function throttle(method, context)
 			customerCard = IX.each(customerCard, {}, function (acc, el, k) {
 				var cashKeys = 'saveCashTotal,saveMoneyTotal,moneyBalance';
 				if (cashKeys.indexOf(k) >= 0) {
-					acc[k] = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.prettyPrice(el));
+					acc[k] = CMath.prettyNumeric(CMath.prettyPrice(el));
 				} else {
 					acc[k] = el;
 				}
@@ -7438,8 +11803,23 @@ function throttle(method, context)
 		});
 		// $body.html("<h1>结算账户管理页面</h1>");
 	};
+	var initAccountDailyPage = function () {
+		var ctx = Hualala.PageRoute.getPageContextByPath();
+		var $body = $('#ix_wrapper > .ix-body > .container');
+		var accountMgrCtrl = new Hualala.Account.AccountMgrController({
+			container : $body,
+			settleUnitID : $XP(ctx, 'params', [])[0],
+			accountModel : new Hualala.Account.BaseAccountModel(),
+			mgrView : new Hualala.Account.AccountMgrView(),
+			transaDetailCtrl : new Hualala.Account.AccountDailyReportController()
+			
+		});
+		// $body.html("<h1>结算报表页面</h1>");
+	};
 
 	Hualala.Account.AccountMgrInit = initAccountMgrPage;
+
+	Hualala.Account.AccountDailyReportInit = initAccountDailyPage;
 	
 	Hualala.Account.AccountListInit = initAccountListPage;
 })(jQuery, window);;(function ($, window) {
@@ -7465,7 +11845,7 @@ function throttle(method, context)
 				return ;
 			}
 			this.cities = $XP(cfg, 'cities', []);
-			this.statisticKeys = 'count,foodAmount,giftAmountTotal,orderRefundAmount,orderRegAmount,orderTotal,orderAmount,shouldSettlementTotal,total';
+			this.statisticKeys = $XP(cfg, 'statisticKeys', null) || 'count,foodAmount,giftAmountTotal,orderRefundAmount,needPayAmount,shopRefundAmount,orderRegAmount,orderTotal,orderAmount,shouldSettlementTotal,total';
 			this.queryKeys = $XP(cfg, 'queryKeys', []);
 			this.pagerKeys = 'pageCount,totalSize,pageNo,pageSize'.split(',');
 			this.queryParamsKeys = null;
@@ -7613,10 +11993,10 @@ function throttle(method, context)
 		{key : "userName", clz : "text", label : "客户姓名"},
 		{key : "orderTime", clz : "date", label : "就餐时间"},
 		{key : "orderStatus", clz : "status", label : "订单状态"},
-		{key : "orderTotal", clz : "number", label : "应付金额"},
+		{key : "needPayAmount", clz : "number", label : "应付金额"},
 		{key : "moneyBalance", clz : "number", label : "会员卡支付"},
 		{key : "pointBalance", clz : "number", label : "会员卡积分支付"},
-		{key : "orderRefundAmount", clz : "number", label : "退订/退款"},
+		{key : "shopRefundAmount", clz : "number", label : "退订/退款"},
 		{key : "total", clz : "number", label : "应结金额"},
 		{key : "shouldSettlementTotal", clz : "number", label : "结算金额"},
 		{key : "rowControl", clz : "", label : "操作"}
@@ -7631,7 +12011,7 @@ function throttle(method, context)
 		{key : "orderRegAmount", clz : "number", label : "退款金额"},
 		{key : "orderRefundAmount", clz : "number", label : "退订金额"},
 		{key : "total", clz : "number", label : "成交金额"},
-		{key : "orderTotal", clz : "number", label : "线下金额"},
+		{key : "orderAmount", clz : "number", label : "线下金额"},
 		{key : "rowControl", clz : "", label : "操作"}
 	];
 
@@ -7652,6 +12032,8 @@ function throttle(method, context)
 		{key : "minOrderTime", clz : "date", label : "首次订餐时间"},
 		{key : "maxOrderTime", clz : "date", label : "最近订餐时间"}
 	];
+
+	var QueryOrderDuringStatisticKeys = 'count,giftAmountTotal,orderTotal,orderWaitTotal,orderRegAmount,orderRefundAmount,total,orderAmount';
 
 	var mapColItemRenderData = function (row, rowIdx, colKey) {
 		var self = this;
@@ -7747,7 +12129,7 @@ function throttle(method, context)
 						}),
 						link = '';
 						if (n == 'orderQuery') {
-							params = params.concat(['','','','']);
+							params = params.concat(['','','','','']);
 						}
 						link = Hualala.PageRoute.createPath(n, params);
 					r = {
@@ -7801,10 +12183,10 @@ function throttle(method, context)
 				cols : mapColsRenderData(row, idx)
 			};
 		});
-		var statisticKeys = 'orderTotal,orderRefundAmount,total,shouldSettlementTotal';
+		var statisticKeys = 'needPayAmount,shopRefundAmount,total,shouldSettlementTotal';
 		var ftCols = _.map(statisticKeys.split(','), function (k) {
 			var v = $XP(statisticData, k, 0), rowspan = 1, clz = '', 
-				colspan = k == "orderTotal" ? 3 : 1;
+				colspan = k == "needPayAmount" ? 3 : 1;
 
 			return {
 				clz : clz,
@@ -7877,7 +12259,7 @@ function throttle(method, context)
 				cols : mapColsRenderData(row, idx)
 			};
 		});
-		var statisticKeys = 'count,giftAmountTotal,orderTotal,orderWaitTotal,orderRegAmount,orderRefundAmount,total,orderAmount';
+		var statisticKeys = QueryOrderDuringStatisticKeys;
 		var ftCols = _.map(statisticKeys.split(','), function (k) {
 			var v = $XP(statisticData, k, 0), rowspan = 1, clz = '', 
 				colspan = 1;
@@ -8118,6 +12500,7 @@ function throttle(method, context)
 	});
 
 	Hualala.Order.OrderQueryResultView = OrderQueryResultView;
+	Hualala.Order.QueryOrderDuringStatisticKeys = QueryOrderDuringStatisticKeys;
 })(jQuery, window);
 
 
@@ -8324,11 +12707,11 @@ function throttle(method, context)
 				validators : {}
 			}
 		},
-		orderStatus : {
+		queryStatus : {
 			type : 'combo',
 			label : '状态',
 			defaultVal : '',
-			options : Hualala.TypeDef.OrderStatus,
+			options : Hualala.TypeDef.queryStatus,
 			validCfg : {
 				validators : {}
 			}
@@ -8397,6 +12780,15 @@ function throttle(method, context)
 				}
 			}
 		},
+		vipOrder : {
+			type : 'checkboxgrp',
+			label : '仅会员支付',
+			value : '1',
+			defaultVal : '1',
+			validCfg : {
+				validators : {}
+			}
+		},
 		userLoginMobile : {
 			type : 'text',
 			label : '手机号',
@@ -8427,8 +12819,13 @@ function throttle(method, context)
 		},
 		button : {
 			type : 'button',
-			clz : 'btn btn-block btn-warning',
+			clz : 'btn  btn-warning ordersearch',
 			label : '查询'
+		},
+		excelbutton : {
+			type : 'button',
+			clz : 'btn  btn-warning orderexport',
+			label : '导出'
 		}
 	};
 	var QueryFormElsHT = new IX.IListManager();
@@ -8495,7 +12892,7 @@ function throttle(method, context)
 			},
 			{
 				colClz : 'col-md-2',
-				items : QueryFormElsHT.getByKeys(['cityID', 'orderStatus'])
+				items : QueryFormElsHT.getByKeys(['cityID', 'queryStatus'])
 			},
 			{
 				colClz : 'col-md-3',
@@ -8503,11 +12900,11 @@ function throttle(method, context)
 			},
 			{
 				colClz : 'col-md-3',
-				items : QueryFormElsHT.getByKeys(['userMobile'])
+				items : QueryFormElsHT.getByKeys(['userMobile','vipOrder'])
 			},
 			{
-				colClz : 'col-md-offset-1 col-md-2',
-				items : QueryFormElsHT.getByKeys(['button'])
+				colClz : 'col-md-offset-1 col-md-5 pull-right',
+				items : QueryFormElsHT.getByKeys(['excelbutton','button'])
 			}
 		]};
 		return {
@@ -8528,20 +12925,20 @@ function throttle(method, context)
 				items : QueryFormElsHT.getByKeys(['orderTime'])
 			},
 			{
-				colClz : 'col-md-2',
+				colClz : 'col-md-3',
 				items : QueryFormElsHT.getByKeys(['cityID'])
 			},
 			{
-				colClz : 'col-md-2',
+				colClz : 'col-md-3',
 				items : QueryFormElsHT.getByKeys(['shopID'])
 			},
 			{
 				colClz : 'col-md-2',
-				items : QueryFormElsHT.getByKeys(['orderStatus'])
+				items : QueryFormElsHT.getByKeys(['queryStatus'])
 			},
 			{
-				colClz : 'col-md-2',
-				items : QueryFormElsHT.getByKeys(['button'])
+				colClz : 'col-md-offset-1 col-md-5 pull-right',
+				items : QueryFormElsHT.getByKeys(['excelbutton','button'])
 			}
 		]};
 		return {
@@ -8679,6 +13076,9 @@ function throttle(method, context)
 			_.each(els, function (v, k) {
 				if (k == 'startDate' || k == 'endDate') {
 					v = IX.isEmpty(v) ? '' : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd');
+				}
+				if(k=='queryStatus'){
+					v = '2';
 				}
 				self.$queryBox.find('[name=' + k + ']').val(v);
 			});
@@ -8837,15 +13237,61 @@ function throttle(method, context)
 				self.initShopComboOpts(v, '');
 			});
 			self.$queryBox.on('click', '.btn.btn-warning', function (e) {
-				var $this = $(this);
-				self.emit('query', self.getQueryParams());
+				if(this.name=="button"){
+					var $this = $(this);
+					self.emit('query', self.getQueryParams());
+				}
+				else{
+					var pagename=Hualala.PageRoute.getPageContextByPath().name;
+					var serviceName,templateName;
+					if(pagename=="orderQuery"){
+						serviceName = "order_report_orderDetail";
+						templateName = "orderDetailReport.xml";
+					}
+					else if(pagename=="orderQueryDay"){
+						serviceName = "order_report_dayofReconciliation";
+						templateName ="dayofReconciliationReport.xml";
+					}
+					else if(pagename=="orderQueryDuring"){
+						serviceName = "order_report_DuringTheBill";
+						templateName ="duringTheBillReport.xml";
+					}
+					var	group = $XP(Hualala.getSessionData(),'site',''),
+						groupName = $XP(group,'groupName','');
+						currentNav = Hualala.PageRoute.getPageContextByPath(),
+						currentLabel = $XP(currentNav,'label',''),
+						fileName =groupName+currentLabel+".xls";
+						shopName = $('[name=shopID]').next().find('span').text()=="全部" ? "": $('[name=shopID]').next().find('span').text();
+					var params ={serviceName:serviceName,templateName:templateName,fileName:fileName,shopName:shopName},
+						ExcelfilePath;
+					var globalparams=_.extend(self.getQueryParams(),params);
+					Hualala.Global.OrderExport(globalparams, function (rsp) {
+	                    if(rsp.resultcode != '000'){
+	                        rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+	                        return;
+	                    }
+	                	ExcelfilePath =rsp.data.filePath || [];
+						var dowloadhref=ExcelfilePath;
+						window.open(dowloadhref); 
+	                })
+				}
 			});
 		},
 		getQueryParams : function () {
 			var self = this,
 				keys = self.model.queryKeys,
 				$form = self.$queryBox.find('form'),
-				els = $form.serializeArray();
+				val = $('[name=vipOrder]:checked').length? '1': '';
+				$('[name=vipOrder]').val(val);
+			var els = $form.serializeArray();
+			//serializeArray方法对于checkbox只有勾选才有效，没有勾选的情况下无效。
+			if(els.length!=9){
+				els=els;
+			}
+			else{
+				vipOrder=[{name:"vipOrder",value:""}];
+				els = els.concat(vipOrder);
+			}
 			els = _.map(els, function (el) {
 				var n = $XP(el, 'name'), v = $XP(el, 'value', '');
 				if (n == 'startDate' || n == 'endDate') {
@@ -9082,7 +13528,8 @@ function throttle(method, context)
 				model : new Hualala.Order.OrderQueryResultModel({
 					callServer : Hualala.Global.queryOrderDuringDetail,
 					queryKeys : queryKeys,
-					initQueryParams : Hualala.Order.initQueryParams
+					initQueryParams : Hualala.Order.initQueryParams,
+					statisticKeys : Hualala.Order.QueryOrderDuringStatisticKeys
 				}),
 				view : new Hualala.Order.OrderQueryResultView({
 					mapResultRenderData : Hualala.Order.mapQueryOrderDuringRenderData,
@@ -10343,9 +14790,14 @@ function throttle(method, context)
 		},
 		mapLayoutRenderData : function () {
 			var self = this;
+			var loginName = $XP(Hualala.getSessionUser(), 'loginName', '');
 			var data = _.map(PanelGroupCfg, function (el) {
-				var id = $XP(el, 'id');
+				var id = $XP(el, 'id'), c = '';
+				if (id == 'bind_mobile' && loginName == 'admin') {
+					c = 'hidden';
+				}
 				return IX.inherit(el, {
+					hidden : c,
 					panelClz : id == self.curPanelName ? 'in' : '',
 					expanded : id == self.curPanelName ? 'true' : ''
 				});
@@ -12482,7 +16934,7 @@ function throttle(method, context)
 
 	var MemberSchemaChartConfigs = [
 		{id : "member_level_chart", clz : "col-xs-12 col-sm-6 ", chartClz : "ix-chart-canvas", label : "会员等级占比图"},
-		{id : "member_gender_chart", clz : "col-xs-12 col-sm-6 ", chartClz : "ix-chart-canvas", label : "会员性别占比"},
+		{id : "member_gender_chart", clz : "col-xs-12 col-sm-6 ", chartClz : "ix-chart-canvas", label : "会员性别占比图"},
 		{id : "member_source_chart", clz : "col-xs-12 col-sm-12 ", chartClz : "ix-chart-canvas", label : "会员来源占比图"}
 	];
 	Hualala.CRM.BaseChartTitle = BaseChartTitle;
@@ -12500,7 +16952,8 @@ function throttle(method, context)
 				{clz : '', label : '所占比率', colspan : '', rowspan : '2'},
 				{clz : '', label : '性别比率', colspan : '3', rowspan : ''},
 				{clz : '', label : '来源比率', colspan : '2', rowspan : ''},
-				{clz : '', label : '储值余额', colspan : '', rowspan : '2'},
+				{clz : '', label : '现金卡值', colspan : '', rowspan : '2'},
+				{clz : '', label : '赠送卡值', colspan : '', rowspan : '2'},
 				{clz : '', label : '积分余额', colspan : '', rowspan : '2'},
 				{clz : '', label : '客单价<br/>(平均每单消费金额)', colspan : '', rowspan : '2'}
 			]
@@ -12671,7 +17124,8 @@ function throttle(method, context)
 			var self = this, memberData = self.model.getMemberByLevelNames(),
 				summary = self.model.get('memberSummarize'),
 				tableHeader = Hualala.CRM.MemberSchemaTableHeaderConfigs,
-				colNames = "cardLevelName,cardCount,levelCardCountRate,sexMaleRate,sexFemaleRate,sexUnknownRate,onLineRate,inShopRate,moneyBalanceSum,pointBalanceSum,consumptionPerOrder";
+				colNames = "cardLevelName,cardCount,levelCardCountRate,sexMaleRate,sexFemaleRate,sexUnknownRate,onLineRate,inShopRate," +
+                    "moneyBalanceSum,giveBalanceSum,pointBalanceSum,consumptionPerOrder";
 			var math = Hualala.Common.Math;
 			var mapColData = function (member) {
 				var cols = _.map(colNames.split(','), function (k) {
@@ -12828,7 +17282,7 @@ function throttle(method, context)
 						name : tipTitle,
 						type : 'pie',
 						radius : '55%',
-						center : ['50%', '40%'],
+						center : ['50%', '52%'],
 						data : series
 					}]
 				});
@@ -12930,33 +17384,86 @@ function throttle(method, context)
 })(jQuery, window);;(function ($, window) {
 	IX.ns("Hualala.CRM");
     var G = Hualala.Global,
-        topTip = Hualala.UI.TopTip;
+        C = Hualala.Common,
+        U = Hualala.UI,
+        topTip = U.TopTip;
 	Hualala.CRM.initParams = function($crm)
     {
-        var $form = null, bv = null, itemID = null,
-            $vipServiceTel = null, $vipServiceRemark = null,
-            $p1 = null, $p2 = null;
-        
-        G.getCrmParams({groupID: Hualala.getSessionData().site.groupID}, function(rsp)
+        var $form = null, bv = null, itemID = '',
+            $card = null, $cardCont = null, 
+            $logo, $cardLogo,
+            $labelBtn = null, $noBg = null,
+            $crmAccount = null, $crmAccountName = null,
+            logo = '', bgImg = '', settleID = '', accounts = [];
+            
+        $crm.removeClass('table-responsive');
+        var dfCrmParams = C.loadData('getCrmParams', {groupID: Hualala.getSessionData().site.groupID}, null, 'data')
+        .done(function(data)
         {
-            if(rsp.resultcode != '000')
-            {
-                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
-                return;
-            }
-            var crmParams = rsp.data;
+            var crmParams = data;
+            
             itemID = crmParams.itemID;
+            settleID = crmParams.onlineSaveMoneySettleUnitID;
+            logo = crmParams.logoImage;
+            //crmParams.cardBackgroundImage = 'group1/M00/00/B9/wKgCIVL684HYKSoEAAEaVR07W8Q443.png';
+            bgImg = crmParams.cardBackgroundImage;
+            crmParams.logoImage = crmParams.logoImage ? 
+                C.getSourceImage(crmParams.logoImage, {width: 300, height: 188})
+                : G.IMAGE_ROOT + '/vip_card.png';
+            crmParams.cardForegroundColor = crmParams.cardForegroundColor || '#ffcc00';
+            crmParams.cardBackgroundColor = crmParams.cardBackgroundColor || '#990000';
             crmParams.serviceStartTime = formatDate(crmParams.serviceStartTime);
             crmParams.serviceEndTime = formatDate(crmParams.serviceEndTime);
             crmParams.pointClearDate = +crmParams.pointClearDate == 0 ? '不清零' : formatDate(crmParams.pointClearDate);
+            crmParams.onlineSaveMoneyRate = +crmParams.onlineSaveMoneyRate * 100 + '%';
             crmParams.isPointCanPay = crmParams.isPointCanPay == 0 ? 'minus' : 'ok';
+            crmParams.vipServiceRemark = C.decodeTextEnter(crmParams.vipServiceRemark);
             
             $form = $(Handlebars.compile(Hualala.TplLib.get('tpl_crm_params'))(crmParams)).appendTo($crm);
+            //bgImg = 'group1/M00/05/26/wKgCIVUrlhDEfwtbAAF3gPwkcMQ451.jpg';
+            $card = $form.find('.vip-card');
+            $cardCont = $form.find('.vip-card, .vip-card-wrap div');
+            $logo = $cardCont.find('img');
+            $cardLogo = $card.find('img').toggleClass('dn', !!bgImg);
+            $labelBtn = $form.find('label.btn');
+            $noBg = $labelBtn.filter('.btn-bg-no');
+            $crmAccount = $form.find('[name=onlineSaveMoneySettleUnitID]');
+            $crmAccountName = $crmAccount.siblings('p');
             
-            $vipServiceTel = $form.find('input[name=vipServiceTel]');
-            $vipServiceRemark = $form.find('textarea[name=vipServiceRemark]');
-            $p1 = $vipServiceTel.siblings('p');
-            $p2 = $vipServiceRemark.siblings('p');
+            if(bgImg) setCardBgImg();
+            
+            U.fileUpload($labelBtn.filter('.btn-logo'), function(rsp)
+            {
+                logo = rsp.url;
+                $logo.attr('src', C.getSourceImage(logo, {width: 300, height: 188}));
+                $cardLogo.toggleClass('dn', !!bgImg)
+            }, {
+                accept: 'image/png'
+            });
+            
+            U.fileUpload($labelBtn.filter('.btn-bg'), function(rsp)
+            {
+                bgImg = rsp.url;
+                setCardBgImg();
+                $cardLogo.addClass('dn');
+                $noBg.removeAttr('disabled');
+            },{
+                accept: 'image/jpg,image/jpeg,image/png'
+            });
+            
+            $form.find('.card-color').colorpicker()
+            .on('changeColor.colorpicker', function(event)
+            {
+                $(this).find('input').value = event.color.toHex();
+                $cardCont.css('color', event.color.toHex());
+            });
+            
+            $form.find('.card-bg').colorpicker()
+            .on('changeColor.colorpicker', function(event)
+            {
+                $(this).find('input').value = event.color.toHex();
+                $cardCont.css('background-color', event.color.toHex());
+            });
             
             $form.bootstrapValidator({
                 fields: {
@@ -12971,29 +17478,48 @@ function throttle(method, context)
             bv = $form.data('bootstrapValidator');
         });
         
+        C.loadData('queryAccount').done(function(records)
+        {
+            accounts = _.map(records, function(record){ return {settleUnitID: record.settleUnitID, settleUnitName: record.settleUnitName, py: record.py }; });
+            
+            dfCrmParams.done(function()
+            {
+                var currentAccount = _.findWhere(accounts, {settleUnitID: settleID}) || {};
+                $crmAccountName.text(currentAccount.settleUnitName);
+                U.createChosen($crmAccount, accounts, 'settleUnitID', 'settleUnitName', {width: '100%'}, false, settleID);
+            });
+        });
         
         $crm.on('click', function(e)
         {
             var $target = $(e.target);
             
-            if($target.is('.btn-edit, .btn-save')) e.preventDefault();
+            if($target.is('button')) e.preventDefault();
             
             if($target.is('.btn-edit'))
             {
                 $form.removeClass('read-mode').addClass('edit-mode');
+                $labelBtn.removeAttr('disabled');
+                if(!bgImg) $noBg.attr('disabled', 'disabled');
+            }
+            
+            if($target.is('.btn-bg-no'))
+            {
+                bgImg = '';
+                setCardBgImg('');
+                $cardLogo.removeClass('dn');
+                $noBg.attr('disabled', 'disabled');
             }
             
             if($target.is('.btn-save'))
             {
                 if(!bv.validate().isValid()) return;
                 
-                var vipServiceTel = $vipServiceTel.val(),
-                    vipServiceRemark = $vipServiceRemark.val(),
-                    data = {
-                        itemID: itemID,
-                        vipServiceTel: vipServiceTel,
-                        vipServiceRemark: vipServiceRemark
-                    };
+                var data = C.parseForm($form);
+                data.itemID = itemID;
+                data.logoImage = logo;
+                data.cardBackgroundImage = bgImg;
+                data.vipServiceRemark = Hualala.Common.encodeTextEnter(data.vipServiceRemark);
                 
                 G.setCrmParams(data, function(rsp)
                 {
@@ -13003,19 +17529,35 @@ function throttle(method, context)
                         return;
                     }
                     
-                    $p1.text(vipServiceTel);
-                    $p2.text(vipServiceRemark);
+                    $form.find('.form-control').each(function()
+                    {
+                        var $this = $(this),
+                            text = !$this.is('select') ? this.value :
+                                $this.find('option:checked').text();
+                        
+                        $(this).closest('.form-group').find('p').text(text);
+                    });
+                    
                     $form.removeClass('edit-mode').addClass('read-mode');
+                    $labelBtn.attr('disabled', 'disabled');
                     topTip({msg: '保存成功！', type: 'success'});
                 });
             }
         });
+        
+        function setCardBgImg(imgPath)
+        {
+            var imgUrl = imgPath === '' ? 'about:blank' : C.getSourceImage((imgPath || bgImg), {width: 300, height: 188});
+            $card.css('background-image', 'url(' + imgUrl + ')');
+        }
+        
+        function formatDate(dateStr)
+        {
+            return dateStr.length == 8 ? dateStr.substr(0, 4) + '年' + parseInt(dateStr.substr(4, 2)) + '月' + parseInt(dateStr.substr(6)) + '日' : parseInt(dateStr.substr(0, 2)) + '月' + parseInt(dateStr.substr(2)) + '日';
+        }
     };
     
-    function formatDate(dateStr)
-    {
-        return dateStr.length == 8 ? dateStr.substr(0, 4) + '年' + parseInt(dateStr.substr(4, 2)) + '月' + parseInt(dateStr.substr(6)) + '日' : parseInt(dateStr.substr(0, 2)) + '月' + parseInt(dateStr.substr(2)) + '日';
-    }
+    
 })(jQuery, window);
 
 
@@ -13194,17 +17736,32 @@ function throttle(method, context)
                     setSaveMoney: {
                         validators: {
                             notEmpty: { message: '充值金额不能为空' },
-                            numeric: { message: '充值金额必须是金额数字' }
+                            numeric: { message: '充值金额必须是金额数字' },
+                            greaterThan : {
+                                inclusive : false,
+                                value : 0,
+                                message : "请输入大于0的数"
+                            }
                         }
                     },
                     returnMoney: {
                         validators: {
-                            numeric: { message: '返金额数必须是金额数字' }
+                            numeric: { message: '返金额数必须是金额数字' },
+                            greaterThan : {
+                                inclusive : true,
+                                value : 0,
+                                message : "请输入大于或等于0的数"
+                            }
                         }
                     },
                     returnPoint: {
                         validators: {
-                            numeric: { message: '返积分数必须是数字' }
+                            numeric: { message: '返积分数必须是数字' },
+                            greaterThan : {
+                                inclusive : true,
+                                value : 0,
+                                message : "请输入大于或等于0的数"
+                            }
                         }
                     }
                 }
@@ -13217,6 +17774,8 @@ function throttle(method, context)
         {
             if(!bv.validate().isValid()) return;
             var data = parseForm($editSet);
+            data.returnMoney = data.returnMoney || 0;
+            data.returnPoint = data.returnPoint || 0;
             if(!isAdd) data.saveMoneySetID = setId;
             G[isAdd ? 'addCrmRechargeSet' : 'updateCrmRechargeSet'](data, function(rsp)
             {
@@ -13311,8 +17870,8 @@ function throttle(method, context)
         customerSex: CrmTypeDef.customerSex,
         sourceWay: CrmTypeDef.sourceWay,
         
-        crmQueryTableHeads: ['姓名', '性别', '手机号(卡号)', '生日', '等级', '入会日期', '储值余额', '积分余额', '累计储值总额', '累计消费总额', '状态', '查看'],
-        crmQueryTableKeys: ['customerName', 'customerSex', 'customerMobile', 'customerBirthday', 'cardLevelName', 'createTime', 'moneyBalance', 'pointBalance', 'saveMoneyTotal', 'consumptionTotal', 'cardStatus', 'cardID']
+        crmQueryTableHeads: ['姓名', '性别', '手机号(卡号)', '生日', '等级', '入会日期', '现金卡值', '赠送卡值', '积分余额', '累计储值总额', '累计消费总额', '状态', '查看'],
+        crmQueryTableKeys: ['customerName', 'customerSex', 'customerMobile', 'customerBirthday', 'cardLevelName', 'createTime', 'moneyBalance', 'giveBalance', 'pointBalance', 'saveMoneyTotal', 'consumptionTotal', 'cardStatus', 'cardID']
     };
     
     var levels = null, pageSize = 15,
@@ -13403,7 +17962,7 @@ function throttle(method, context)
                 
                 if(/customerSex|cardStatus/.test(key))
                     val = staticData[key][val];
-                else if(/saveMoneyTotal|moneyBalance|giveBalance|consumptionTotal|pointBalance/.test(key))
+                else if(/saveMoneyTotal|moneyBalance|saveMoneyAmountSum|giveBalancePaySum|returnPointAmount|deductionPointAmount|giveBalance|consumptionTotal|pointBalance/.test(key))
                     val = M.prettyNumeric(val);
                 else if(/createTime|customerBirthday/.test(key))
                     val = C.formatDateStr(val.replace(/-/g, ''));
@@ -13468,12 +18027,14 @@ function throttle(method, context)
         var Meta = {
             basicInfo: [
                 {customerName: '姓名', customerSex: '性别', customerBirthday: '生日', createTime: '入会时间', createShopName: '入会店铺'},
-                {customerMobile: '手机号', cardNO: '卡号', cardLevelName: '等级' , moneyBalance: '现金储值余额', giveBalance: '赠送储值余额', pointBalance: '积分余额'},
+                {customerMobile: '手机号', cardNO: '卡号', cardLevelName: '等级' , moneyBalance: '现金卡值', giveBalance: '赠送卡值', pointBalance: '积分余额'},
                 {saveMoneyTotal: '储值累计', pointGetTotal: '积分累计', consumptionTotal: '消费累计', consumptionCount: '消费次数', lastConsumptionTime: '最后消费时间'}
             ],
             customerSex: CrmTypeDef.customerSex,
             transDetail: {
-                transTime: '交易时间', transShopName: '交易店铺', transType: '交易类型', consumptionAmount: '消费金额', moneyChange: '储值余额变动', pointChange:'积分余额变动', transAfterMoneyBalanceSum: '交易后储值余额', transAfterPointBalance: '交易后积分余额', transRemark: '交易备注'
+                transTime: '交易时间', transShopName: '交易店铺', transType: '交易类型', consumptionAmount: '消费金额',
+                saveMoneyAmountSum: '现金卡值', giveBalancePaySum:'赠送卡值', deductionPointAmount:'扣积分', returnPointAmount: '赠积分',
+                transAfterMoneyBalance: '交易后现金卡值', transAfterGiveBalance: '交易后赠送卡值', transAfterPointBalance: '交易后积分余额', transRemark: '交易备注'
             },
             transType: CrmTypeDef.transType,
             event: {
@@ -13551,23 +18112,29 @@ function throttle(method, context)
             for(var key in transDetail)
                 ths.push($('<th>').text(transDetail[key]));
             $theadTR.append(ths);
-            
-            for(var i = 0, item; item = records[i++];)
-            {
-                var $tr = $('<tr>');
-                for(var key in transDetail)
-                {
-                    var val = item[key] || '';
-                    if(key == 'transTime') 
-                        val = formatDateStr(val, 12);
-                    else if(/consumptionAmount|moneyChange|transAfterMoneyBalanceSum/.test(key))
-                        val = prettyNumeric(val);
-                    else if(key == 'transType')
-                        val = transType[val];
-                    
-                    $('<td>').text(val).appendTo($tr);
-                }
+
+            if (records.length == 0) {
+                var $tr = $('<tr>'),
+                    $td = $('<td colspan="'+ Object.keys(transDetail).length +'"><p class="text-center">无结果</p></td>');
+                $tr.append($td);
                 trs.push($tr);
+            } else {
+                for(var i = 0, item; item = records[i++];) {
+                    var $tr = $('<tr>');
+                    for(var key in transDetail)
+                    {
+                        var val = item[key] || '';
+                        if(key == 'transTime')
+                            val = formatDateStr(val, 12);
+                        else if(/consumptionAmount|moneyChange|transAfterMoneyBalanceSum/.test(key))
+                            val = prettyNumeric(val);
+                        else if(key == 'transType')
+                            val = transType[val];
+
+                        $('<td>').text(val).appendTo($tr);
+                    }
+                    trs.push($tr);
+                }
             }
             $tbody.append(trs);
         }
@@ -13606,7 +18173,6 @@ function throttle(method, context)
             if(way == 20) ret = flag == 1 ? '一等奖' : flag == 2 ? '二等奖' : '三等奖';
             else if(way == 21) ret = '已领取';
             else if(ret == 22) ret = flag == 1 ? '已入围' : '未入围';
-            
             return ret;
         }
         
@@ -13762,6 +18328,12 @@ function throttle(method, context)
             });
             modal = new U.ModalDialog({title: '会员促销参数设置', html: $form}).show();
             
+            $form.find('[type=radio]').on('change', function(e)
+            {
+                if(this.checked)
+                    $(this).parent().parent().find('div').text($(this).data('tip'));
+            }).change();
+            
             $form.bootstrapValidator({
                 fields: {
                     startDate: {
@@ -13911,7 +18483,9 @@ function throttle(method, context)
             TransSum: 'summerizingGroupByTransWayDs',
             TransDetail: 'detailGroupByTransWayDs',
             CardSum: 'cardCreateSumarizeGroupByTransWayDs',
-            RechargeSum: 'summerizingGroupByTransWayDs'
+            RechargeSum: 'summerizingGroupByTransWayDs',
+            //会员日报表
+            MemberDailyreport: 'sumData'
         };
     var Funcs = {
         date: function(v){ return formatDateStr(v.replace(/-/g, ''), 12); },
@@ -13932,10 +18506,25 @@ function throttle(method, context)
         sum: function(v, item, keyInfo) { return sumWay[item[keyInfo['sumWay']]] + (keyInfo.count ? ('(共' + v + '笔)') : '') },
         shopName: function(v, item, keyInfo ,c, i) { return (keyInfo.count ? i + '. ' : '') + (+item[keyInfo['shopID']] ? v : '网上储值') }
     };
-    
+    var d = new Date(),year = d.getFullYear(),mon=d.getMonth()+1,day=d.getDate();
+        if(day <= 3){
+            if(mon>1) {
+               mon=mon-1;
+            }
+           else {
+             year = year-1;
+             mon = 12;
+            }
+        }
+        d.setDate(d.getDate()-3);
+        year = d.getFullYear();
+        mon=d.getMonth()+1;
+        day=d.getDate();
+        Beforeyesterday = year+"/"+(mon<10?('0'+mon):mon)+"/"+(day<10?('0'+day):day);
+
     var keys, fkeys, module, params, transRecords,
         today = IX.Date.getDateByFormat(IX.Date.formatDate(new Date), 'yyyy/MM/dd'),
-        tplWell = Handlebars.compile(tplLib.get('tpl_crm_query_panel'))({today: today}),
+        tplWell = Handlebars.compile(tplLib.get('tpl_crm_query_panel'))({Beforeyesterday:Beforeyesterday,today: today}),
         tplTable = tplLib.get('tpl_report_table'),
         $mbody, $well, $form, $thead, $tbody, $pager;
     
@@ -13963,22 +18552,30 @@ function throttle(method, context)
         $thead.append($tr);
     }
     
-    function renderData($container, items, keys)
+    function renderData($container, items, keys, module)
     {
         var trs = [];
-        for(var i = 0, item; item = items[i++];)
-        {
-            var $tr = $('<tr>');
-            for(var key in keys)
-            {
-                var val = item[key] || '', keyInfo = keys[key], 
-                    type = keyInfo.type, $cell = $(type == 'sum' ? '<th>' : '<td>');
-                if(keyInfo.ignore) continue;
-                if(type) val = Funcs[type](val, item, keyInfo, $cell, i);
-                if(keyInfo.colspan) $cell.attr('colspan', keyInfo.colspan);
-                $cell.html(val).appendTo($tr);
-            }
+        if (module == 'TransDetail' && items.length == 0) {
+            var $tr = $('<tr>'),
+                $td = $('<td colspan="'+ Object.keys(keys).length +'"><p class="text-center">无结果</p></td>');
+            $tr.append($td);
             trs.push($tr);
+        } else {
+            if (module == 'TransSum' || module == 'RechargeSum') items = _.reject(items, function (item) { return item.transShopID == 0;});
+            for(var i = 0, item; item = items[i++];) {
+                var $tr = $('<tr>');
+                for(var key in keys)
+                {
+                    var val = item[key] || '', keyInfo = keys[key],
+                        type = keyInfo.type, $cell = $(type == 'sum' ? '<th>' : '<td>');
+                    if(keyInfo.ignore) continue;
+                    if(type) val = Funcs[type](val, item, keyInfo, $cell, i);
+                    if(keyInfo.colspan) $cell.attr('colspan', keyInfo.colspan);
+                    if(key == 'customerMobile') val = '<a href=/#crm/member/' + item.cardID + '/detail target=_blank>'+ val + '</a>';
+                    $cell.html(val).appendTo($tr);
+                }
+                trs.push($tr);
+            }
         }
         $container.html(trs);
     }
@@ -13989,6 +18586,7 @@ function throttle(method, context)
         {
             params.queryStartTime = params.queryStartTime.replace(/\//g, '');
             params.queryEndTime = params.queryEndTime.replace(/\//g, '');
+            
         }
         G['getCrm' + module](params, function(rsp)
         {
@@ -14000,8 +18598,14 @@ function throttle(method, context)
             var records = rsp.data.records || [],
                 sumRecords = rsp.data.datasets[sumSets[module]].data.records || [],
                 page = rsp.data.page;
-            renderData($tbody, records, keys);
-            renderData($tfoot, sumRecords, fkeys);
+            renderData($tbody, records, keys, module);
+            if(!_.contains(['TransDetail', 'TransSum', 'RechargeSum'], module)) renderData($tfoot, sumRecords, fkeys);
+            if(_.contains(['TransSum', 'RechargeSum'], module)) {
+                var $statistics = $('<tbody>');
+                renderData($statistics, sumRecords.slice(0, sumRecords.length - 1), fkeys);
+                $tbody.prepend($statistics.children());
+                renderData($tfoot, sumRecords.slice(sumRecords.length - 1), fkeys);
+            }
             if(module == 'TransDetail') transRecords = records;
             $pager.IXPager({total : page.pageCount, page: page.pageNo, maxVisible: 10, href : 'javascript:;'});
         });
@@ -14026,10 +18630,17 @@ function throttle(method, context)
         
         if(module != 'CardSum')
         {
-            params = {pageNo: 1, pageSize: 15, queryStartTime: today, queryEndTime: today};
+            params = {pageNo: 1, pageSize: 15, queryStartTime: Beforeyesterday, queryEndTime: today};
             $well = $(tplWell).appendTo($mbody);
             $form = $well.find('form');
-            U.createSchemaChosen($('[name=transShopID]'), $('[name=cityID]'));
+            if(module=="MemberDailyreport"){
+                params = {pageNo: 1, pageSize: 15, queryStartTime: Beforeyesterday, queryEndTime: today};
+                $('.shop').addClass("hidden");
+                $('.city').addClass("hidden")
+            }
+            else{
+                U.createSchemaChosen($('[name=transShopID]'), $('[name=cityID]'));
+            }
             $form.find('[name=queryStartTime], [name=queryEndTime]').datetimepicker({
                 format : 'yyyy/mm/dd',
                 startDate : '2010/10/10',
@@ -14053,7 +18664,10 @@ function throttle(method, context)
         $tbody = $table.find('tbody');
         $tfoot = $table.find('tfoot');
         $pager = $('<div>').addClass('pull-right').appendTo($mbody);
-        
+        if(module=="MemberDailyreport"){
+            var tips = '<p>实收指线下储值时收款方式为现金、银行卡、支票的总计金额</p>';
+            $pager.before($(tips));
+        }
         renderThead($thead, keys);
         var $sort = $thead.find('.sort');
         $thead.on('click', '.sort', function()
@@ -14085,16 +18699,17 @@ function throttle(method, context)
             transShopName: { title: '店铺', type: 'shopName', shopID: 'transShopID', count: 1, rowspan: 2 },
             
             shopCharge: { title: '储值业务', ignore: 1, colspan: 4 },
-            shopConsumption: { title: '消费业务', ignore: 1, colspan: 5 },
+            shopConsumption: { title: '消费业务', ignore: 1, colspan: 6 },
             //储值业务
             shopChargeCount: { title: '笔数', type: 'number', sort: 1, newRow: 1 },
-            shopChargeSum: { title: '现金金额', type: 'number', sort: 1 },
-            shopChargeGiftSum: { title: '赠送金额', type: 'number', sort: 1 },
+            shopChargeSum: { title: '现金卡值', type: 'number', sort: 1 },
+            shopChargeGiftSum: { title: '赠送卡值', type: 'number', sort: 1 },
             shopChargeReturnPointSum: { title: '返积分数', type: 'number', sort: 1 },
             //消费业务
             shopConsumptionCount: { title: '笔数', type: 'number', sort: 1 },
-            shopconsumptionAmountSum: { title: '消费金额', type: 'number', sort: 1 },
-            shopMinusMoneySum: { title: '余额支付', type: 'number', sort: 1 },
+            //shopconsumptionAmountSum: { title: '消费金额', type: 'number', sort: 1 },
+            deductionMoneyAmountSum : { title: '现金卡值', type: 'number', sort: 1 },
+            giveBalancePaySum  : { title: '赠送卡值', type: 'number', sort: 1 },
             shopConsumeDeductPointSum: { title: '积分抵扣', type: 'number', sort: 1 },
             shopConsumptionReturnPointSum: { title: '返积分', type: 'number', sort: 1 }
         };
@@ -14110,8 +18725,10 @@ function throttle(method, context)
             customerMobile: { title: '手机号(卡号)', type: 'mobile' },
             transType: { title: '交易类型', type: 'transType' },
             consumptionAmount: { title: '消费金额', type: 'number', sort: 1 },
-            moneyChange: { title: '储值余额变动', type: 'number', sort: 1 },
-            pointChange: { title: '积分余额变动', type: 'number', sort: 1 },
+            saveMoneyAmountSum: { title: '现金卡值', type: 'number', sort: 1 },
+            giveBalancePaySum: { title: '赠送卡值', type: 'number', sort: 1 },
+            deductionPointAmount: { title: '扣积分', type: 'number', sort: 1 },
+            returnPointAmount: { title: '赠积分', type: 'number', sort: 1 },
             transRemark: { title: '交易备注' },
             action: { title: '操作', type: 'viewDetail' }
         };
@@ -14162,16 +18779,88 @@ function throttle(method, context)
         keys = {
             transShopName: { title: '店铺', type: 'shopName', shopID: 'transShopID', rowspan: '2' },
             saveMoneyCount: { title: '笔数', type: 'number', rowspan: '2'  },
-            saveMoneyAmountSum: { title: '现金储值金额', type: 'number', rowspan: '2' },
-            saveReturnMoneyAmountSum: { title: '赠送储值金额', type: 'number', rowspan: '2' },
+            saveMoneyAmountSum: { title: '现金卡值', type: 'number', rowspan: '2' },
+            saveReturnMoneyAmountSum: { title: '赠送卡值', type: 'number', rowspan: '2' },
             rechargeWay: { title: '收款方式', ignore: 1, colspan: 5 },
             saveMoneyCashSum: { title: '现金', type: 'number', newRow: 1 },
             saveMoneyCardSum: { title: '银行卡', type: 'number' },
             saveMoneyCheckSum: { title: '支票', type: 'number' },
-            saveMoneyOtherSum: { title: '其他', type: 'number' },
+            saveMoneyOtherSum: { title: '其它', type: 'number' },
             saveMoneyOnlineChargeSum: { title: '哗啦啦付款', type: 'number' }
         };
         initModule('RechargeSum', $mbody);
+    }
+    //会员日报表
+    Hualala.CRM.initMemberDailyreport = function($mbody)
+    {
+        keys = {
+            dt: { title: '日期', type: 'date', rowspan: '2' },
+            newCardCnt: { title: '新增会员数', type: 'number', rowspan: '2'  },
+            withdrawCardCnt: {title: '注销会员数',type:'number',rowspan: '2'},
+            saveMoneyOffline: { title: '线下储值', ignore: 1, colspan: 5 },
+            saveMoneyOnline: { title: '线上储值', ignore: 1, colspan: 4 },
+            activeRows:{title: '活动', ignore: 1, colspan: 4},
+            cardPayCount: { title: '消费', ignore: 1, colspan: 5 },
+            cardCount: { title: '当前会员卡', ignore: 1, colspan: 4 },
+            //线下储值
+            saveMoneyOfflineCnt: { title: '笔数', type: 'number', newRow: 1 },
+            saveMoneyOfflineCashAmt:{title:'实收',type: 'number'},
+            saveMoneyOfflineAmt: { title: '现金卡值', type: 'number' },
+            saveMoneyOfflineGiveAmt: { title: '赠送卡值', type: 'number' },
+            saveMoneyOfflineRtnPoint: { title: '积分赠送', type: 'number' },
+            //线上储值
+            saveMoneyOnlineCnt: { title: '笔数', type: 'number' },
+            saveMoneyOnlineAmt: { title: '现金卡值', type: 'number' },
+            saveMoneyOnlineGiveAmt: { title: '赠送卡值', type: 'number' },
+            saveMoneyOnlineRtnPoint: { title: '积分赠送', type: 'number' },
+            //活动
+            activeCnt: { title: '参与次数', type: 'number' },
+            activePointPayAmt: { title: '积分减少', type: 'number' },
+            activeGiveAmt: { title: '赠送卡值增加', type: 'number' },
+            activePointAmt: { title: '积分增加', type: 'number' },
+            
+            //消费
+            cardPayCnt: { title: '笔数', type: 'number' },
+            cardPayAmt: { title: '现金卡值', type: 'number' },
+            cardPayGiveAmt: { title: '赠送卡值', type: 'number' },
+            cardPayPointAmt: { title: '积分抵扣', type: 'number' },
+            cardPayRtnPoint: { title: '返积分', type: 'number' },
+            //会员卡
+            cardCnt: { title: '卡数', type: 'number'},
+            cardMoneyBal: { title: '现金卡值', type: 'number' },
+            cardGiveBal: { title: '赠送卡值', type: 'number' },
+            cardPointBal: { title: '积分总数', type: 'number' }
+        };
+        initModule('MemberDailyreport', $mbody);
+        fkeys = {
+            transCount: { sumWay: 'transWay', type: 'sum'},
+            newCardCntSum : {type: 'number'},
+            withdrawCardCntSum :{type: 'number'},
+            //线下            
+            saveMoneyOfflineCntSum : { type: 'number'},
+            saveMoneyOfflineCashAmtSum : { type: 'number'},
+            saveMoneyOfflineAmtSum : { type: 'number'},
+            saveMoneyOfflineGiveAmtSum : { type: 'number'},
+            saveMoneyOfflineRtnPointSum : { type:'number'},
+            //线上
+            saveMoneyOnlineCntSum :{ type: 'number'},
+            saveMoneyOnlineAmtSum :{ type: 'number'},
+            saveMoneyOnlineGiveAmtSum : { type: 'number'},
+            saveMoneyOnlineRtnPointSum : { type: 'number'},
+            //活动
+            activeCntSum: { type: 'number' }, 
+            activePointPayAmtSum: { type: 'number' },  
+            activeGiveAmtSum: {  type: 'number' },
+            activePointAmtSum: {  type: 'number' },
+            //消费
+            cardPayCntSum :{ type: 'number'},
+            cardPayAmtSum :{ type: 'number'},
+            cardPayGiveAmtSum :{ type: 'number'},
+            cardPayPointAmtSum :{ type: 'number'},
+            cardPayRtnPointSum :{ type: 'number'},
+            empty: { colspan: 4 }
+        };
+ 
     }
     
 })(jQuery, window);;(function ($, window) {
@@ -14183,7 +18872,7 @@ function throttle(method, context)
 		var navTpl = Handlebars.compile(Hualala.TplLib.get('tpl_order_subnav'));
 		Handlebars.registerPartial("toggle", Hualala.TplLib.get('tpl_site_navbarToggle'));
 		$body.empty();
-		$body.html('<div class="crm-subnav clearfix" /><div class="crm-body" ><div class="crm-query-box"></div><div class="crm-result-box"></div></div>');
+		$body.html('<div class="crm-subnav clearfix" /><div class="crm-body table-responsive" ><div class="crm-query-box"></div><div class="crm-result-box"></div></div>');
 		var mapNavRenderData = function () {
 			var navs = _.map(subNavCfg, function (v) {
 				var params = _.map($XP(v, 'pkeys', []), function (v) {
@@ -14205,7 +18894,7 @@ function throttle(method, context)
 			};
 		};
 		var $navbar = $body.find('.crm-subnav'),
-			$pageBody = $body.find('.crm-body').addClass('table-responsive');
+			$pageBody = $body.find('.crm-body');
 		$navbar.html(navTpl(mapNavRenderData()));
 	};
 
@@ -14264,6 +18953,15 @@ function throttle(method, context)
         });
         Hualala.CRM.initDetail($body, ctx.params[0]);
 	};
+	/*会员日报表*/
+	function initMemberQueryDay () {
+		var ctx = Hualala.PageRoute.getPageContextByPath(),
+			$body = $('#ix_wrapper > .ix-body > .container');
+		initCRMPageLayout(Hualala.TypeDef.CRMDealSubNavType);
+		var $pageBody = $body.find('.crm-body'),
+			queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMDealSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
+        Hualala.CRM.initMemberDailyreport($pageBody);
+	}
 
 
 
@@ -14354,12 +19052,14 @@ function throttle(method, context)
         Hualala.CRM.initPreferential($pageBody);
 	};
 
+
 	Hualala.CRM.CRMPageLayoutInit = initCRMPageLayout;
 	Hualala.CRM.CRMHomePageInit = initCRMHomePage;
 	Hualala.CRM.MemberSchemaInit = initMemberSchema;
 	Hualala.CRM.QueryMemberInit = initQueryMember;
 	Hualala.CRM.MemberDetailInit = initMemberDetail;
 	Hualala.CRM.CardStatisticInit = initCardStatistic;
+	Hualala.CRM.memberQueryDayInit =initMemberQueryDay;
 	Hualala.CRM.DealSummaryInit = initDealSummary;
 	Hualala.CRM.DealDetailInit = initDealDetail;
 	Hualala.CRM.RechargeReconciliationInit = initRechargeReconciliation;
@@ -14369,6 +19069,169 @@ function throttle(method, context)
 	Hualala.CRM.ShopSpecialPriceInit = initShopSpecialPrice;
 
 })(jQuery, window);
+;(function ($, window) {
+	IX.ns("Hualala.Weixin");
+    
+    Hualala.Weixin.initAccounts = function($pageBody, accounts)
+    {
+        var G = Hualala.Global,
+            C = Hualala.Common,
+            tplLib = Hualala.TplLib,
+            U = Hualala.UI,
+            topTip = Hualala.UI.TopTip;
+        
+        var keys = {
+            mpID: {title: '公众号ID', required: true},
+            mpName: {title: '公众号名称', required: true},
+            token: {title: '接口token', required: true},
+            ghID: {title: '原始ID'},
+            appID: {title: 'AppID'},
+            appSecret: {title: 'AppSecret'},
+            weixinURL: {title: '关注链接'},
+            //menuJson: '菜单JSON',
+            //groupID: '集团ID',
+            //shopID: '店铺ID',
+            oauth: {title: '认证状态', ignore: true},
+            action: {title: '操作', ignore: true}
+        };
+        
+        var vFields = {
+                mpID: { validators: { notEmpty: {message: '公众号ID不能为空'} } },
+                mpName: { validators: { notEmpty: {message: '公众号名称不能为空'} } },
+                token: { validators: { notEmpty: {message: '接口token不能为空'} } }
+            };
+        
+        var params = { pageNo: 1, pageSize: 15 }, 
+            items = [], page = null;
+        
+        $pageBody.html(tplLib.get('tpl_wx_accounts'));
+        var $table = $pageBody.find('table'),
+            $thead = $table.find('thead'),
+            $tbody = $table.find('tbody'),
+            $loading = $pageBody.find('#loading'),
+            $pager = $pageBody.find('#pager'),
+            $noTip = $pageBody.find('#noTip');
+        
+        var editTpl = Handlebars.compile(tplLib.get('tpl_wx_accounts_edit'));
+        var modal = null, bv = null;
+        
+        var $theadTr = $('<tr>');
+        for(var key in keys)
+        {
+            $theadTr.append($('<th>').text(keys[key].title));
+        }
+        $thead.append($theadTr);
+        
+        $pager.on('page', function(e, pageNo)
+        {
+            params.pageNo = pageNo;
+            getWeixinAccounts();
+        });
+        
+        $pageBody.on('click', '.well .btn, .btn-link', function()
+        {
+            var $me = $(this), itemID = $me.data('itemID');
+            var title = (itemID ? '修改' : '添加') + '微信公众账号';
+            var fields = [];
+            var item = itemID ? _.findWhere(items, {itemID: itemID}) : null;
+            
+            for(var key in keys)
+            {
+                var keyInfo = keys[key];
+                if(keyInfo.ignore) continue;
+                var field = {name: key, value: item ? item[key] : key == 'token' ? Math.uuid(24) : ''};
+                field.title = keyInfo.required ? '* ' + keyInfo.title : keyInfo.title;
+                field.disabled = key == 'token' ? 'disabled' : '';
+                fields.push(field);
+            }
+            
+            var $editTpl = $(editTpl({fields: fields}));
+            $editTpl.bootstrapValidator({fields: vFields});
+            item && $editTpl.find('[name=oauth]').eq(+item.oauth).prop('checked', true);
+            bv = $editTpl.data('bootstrapValidator');
+            modal = new U.ModalDialog({title: title, html: $editTpl}).show();
+            
+            modal._.footer.find('.btn-ok').on('click', function()
+            {
+                submitEdit($editTpl, itemID, item);
+            });
+            
+        });
+        
+        function submitEdit($form, itemID, item)
+        {
+            if(!bv.validate().isValid()) return;
+            var pdata = C.parseForm($form);
+        }
+        
+        getWeixinAccounts();
+        
+        function getWeixinAccounts()
+        {
+            $table.hide();
+            $pager.hide();
+            $noTip.hide();
+            $loading.show();
+            C.loadData('getWeixinAccounts', params, null, 'data')
+            .done(function(data)
+            {
+                page = data.page;
+                items = data.records || [];
+                renderData();
+            })
+            .always(function(){ $loading.hide(); });
+        }
+        
+        function renderData()
+        {
+            if(!items.length)
+            {
+                $noTip.show();
+                return;
+            }
+            
+            $table.show();
+            var trs = [];
+            for(var i = 0, item; item = items[i++];)
+            {
+                var $tr = $('<tr>');
+                for(var key in keys)
+                {
+                    var val = item[key] || '', cellCont = val, $cell = $('<td>');
+                    if(key == 'oauth')
+                    {
+                        cellCont = val == 1 ? '已认证' : '未认证';
+                    } 
+                    else if(key == 'action')
+                    {
+                        cellCont = $('<span class="btn-link">修改</span>')
+                        .data('itemID', item.itemID);
+                    }
+                    
+                    $cell.html(cellCont).appendTo($tr);
+                }
+                trs.push($tr);
+            }
+            $tbody.html(trs);
+            
+            $pager.IXPager({total : page.pageCount, page: page.pageNo, maxVisible: 10, href : 'javascript:;'});
+        }
+        
+    }
+    
+    
+})(jQuery, window);
+
+
+
+
+
+
+
+
+
+
+
 ;(function ($, window) {
 	IX.ns("Hualala.Weixin");
     
@@ -14827,6 +19690,11 @@ function throttle(method, context)
         
         function procPostMenuData()
         {
+            if(!menus.length)
+            {
+                topTip({msg: '还没有添加菜单！'});
+                return false;
+            }
             var _menus = JSON.parse(JSON.stringify(menus));
             for(var i = 0, menu; menu = _menus[i]; i++)
             {
@@ -14834,7 +19702,7 @@ function throttle(method, context)
                 var subMenus = menu.sub_button;
                 if(!menu.type && !subMenus.length)
                 {
-                    topTip({msg: '一级菜单“' + menu.name + '”没有设置动作，也没有添加二级菜单！', type: 'warning'});
+                    topTip({msg: '一级菜单“' + menu.name + '”没有设置动作，也没有添加二级菜单！'});
                     return false;
                 }
                 delete menu.id;
@@ -14842,7 +19710,7 @@ function throttle(method, context)
                 {
                     if(!sm.type)
                     {
-                        topTip({msg: '二级菜单“' + sm.name + '”没有设置动作！', type: 'warning'});
+                        topTip({msg: '二级菜单“' + sm.name + '”没有设置动作！'});
                         return false;
                     }
                     sm.sub_button = [];
@@ -14937,11 +19805,12 @@ function throttle(method, context)
                 return;
             }
             
-            var res = _.find(resources, {itemID: val}),
-                pres = _.pick(res, 'mpID', 'resTitle');
+            var res = _.findWhere(resources, {itemID: val}),
+                pres = _.pick(res, 'resTitle');
+            pres.mpID = mpID;
             pres.resourceID = val;
             pres.resType = res.resType == 2 ? 'text' : 'news';
-            pres.pushEvent = "('CLICK')";
+            pres.pushEvent = '("CLICK")';
             loadData('WeixinMenuClick', pres, null, false)
             .done(function()
             {
@@ -14966,6 +19835,10 @@ function throttle(method, context)
             }
             var $cont = $contentWrap.find('select, input'),
                 cont = $cont.val();
+            if (val == 2 && !$cont[0]) {
+                topTip({msg: '集团信息为空！', type: 'warning'});
+                return;
+            }
             if($cont[0] && !cont)
             {
                 topTip({msg: '未选择或填写任何链接内容！', type: 'warning'});
@@ -15088,7 +19961,7 @@ function throttle(method, context)
 
 ;;(function ($, window) {
 	IX.ns("Hualala.Weixin");
-    
+
     Hualala.Weixin.initAdvertorial = function($pageBody, mpID)
     {
         var W = Hualala.Weixin,
@@ -15096,7 +19969,7 @@ function throttle(method, context)
             tplLib = Hualala.TplLib,
             U = Hualala.UI,
             topTip = Hualala.UI.TopTip;
-        
+
         var $pageCont = $(tplLib.get('tpl_wx_advertorial')).appendTo($pageBody),
             $ul = $pageBody.find('#adList ul'),
             $loading = $pageBody.find('.ad-loading'),
@@ -15109,16 +19982,10 @@ function throttle(method, context)
             $input = $adCont.find('.ad-title-input'),
             $adSubTitle = $adCont.find('.ad-sub-title'),
             $adPreview = $adCont.find('.ad-preview');
-        
-        UM.delEditor('adEditor');
-        var emotions = W.getEmotions(); dataHolder = {},
-            toolbar = W.extendUM(emotions, dataHolder),
-            adEditor = UM.getEditor('adEditor', { toolbar: ['source | undo redo | bold italic underline strikethrough | superscript subscript | forecolor backcolor | removeformat |',
-            'insertorderedlist insertunorderedlist | selectall cleardoc paragraph | fontfamily fontsize' ,
-            '| justifyleft justifycenter justifyright justifyjustify |',
-            'wxlink unlink | image video | map',
-            '| horizontal print preview', 'drafts'] });
-        
+
+        var adEditor = U.createEditor('adEditor');
+        Hualala.UI.EditorList.push(adEditor);
+
         var adTpl = Handlebars.compile([
         '{{#each records}}',
         '<li data-id="{{itemID}}">',
@@ -15266,7 +20133,7 @@ function throttle(method, context)
                 saveAction = ad ? updateAd : createAd;
             saveAction($btn, {title: title, body: body, groupName: sGroupName});
         }
-        
+
         function updateAd($btn, _ad)
         {
             _ad.itemID = ad.itemID;
@@ -15440,6 +20307,7 @@ function throttle(method, context)
                 : !resItem.imgPath ? '请上传当前图文的图片！' 
                 : type == 0 && !resItem.digest ? '请输入图文摘要！'
                 : !resItem.resType ? '请选择当前图文的链接类型！'
+                : resItem.resType == 2 && !W.createLinkSelector.groupDomainNameYN ? '集团信息为空'
                 : noLinkCont ? '请选择或输入当前图文的链接内容！' : '';
             
             if(!ret) topTip({msg: msg});
@@ -15452,7 +20320,7 @@ function throttle(method, context)
                 resType = cont.resType,
                 resArr = $.parseJSON(cont.resContent).resources,
                 activeRes = resArr[0],
-                $resEdit = $(resEditTpl(activeRes)),
+                $resEdit = $(resEditTpl(IX.inherit({}, activeRes, {isSingle: resType == 0}))),
                 $resWrap = $resEdit.filter('.res-wrap'),
                 $resForm = $resEdit.filter('.res-form'),
                 $resTitle = $resForm.find('.res-title'),
@@ -15492,7 +20360,7 @@ function throttle(method, context)
             W.createLinkSelector($selectWrap, $contentWrap, dataHolder, 
                 activeRes.resType, activeRes.resTypeContent.urlOrCity);
             
-            U.imgUpload($resForm.find('.btn'), function(rsp)
+            U.fileUpload($resForm.find('.btn'), function(rsp)
             {
                 activeRes.imgPath = rsp.url;
                 var i = $activeRes.index(),
@@ -15500,7 +20368,7 @@ function throttle(method, context)
                     replaceStr = (hwp ? '=' + (i == 0 ? Math.round(160 / hwp) + 'x' + 160 : '75x75' ) : '') + '$&',
                     imgUrl = imgHost + rsp.url.replace(/\.\w+$/, replaceStr) + '?quality=70';
                 $activeRes.find('img, .img').replaceWith($('<img>').attr('src', imgUrl));
-            });
+            }, {container: modal._.body});
             
             modal._.footer.find('.btn-ok').on('click', function()
             {
@@ -15510,11 +20378,23 @@ function throttle(method, context)
                     $resWrap.find('.res-mask').eq(1).click();
                     if(!checkResItem(activeRes, resType, $contentWrap)) return;
                 }
+                if (activeRes.resTypeContent.resType == 2) {
+                    activeRes.resTypeContent.urlOrCity = W.createLinkSelector.groupDomainNameYN + '-' + activeRes.resTypeContent.urlOrCity;
+                }
                 var submitFunc = itemID ? updateCont : createCont,
                     _cont = $.extend({}, cont),
-                    resContent = { isMul: cont.resType, resources: resArr };
+                    _resArr = JSON.parse(JSON.stringify(resArr)),
+                    resContent = { isMul: cont.resType, resources: _resArr };
                 
-                _cont.resTitle = resArr[0].resTitle;
+                _.each(_resArr, function(res)
+                {
+                    res.resTitle = res.resTitle.replace(/[\\]/g, '\\\\').replace(/["']/g, '\\$&');
+                    
+                    if(resType == 0)
+                        res.digest = res.digest.replace(/[\\]/g, '\\\\').replace(/"/g, '\\$&');
+                });
+                
+                _cont.resTitle = _resArr[0].resTitle;
                 _cont.resContent = JSON.stringify(resContent);
                 _cont = _.pick(_cont, 'itemID', 'resTitle', 'resType', 'resContent');
                 submitFunc(_cont, cont, modal);
@@ -15563,7 +20443,7 @@ function throttle(method, context)
                 if(!checkResItem(activeRes, resType, $contentWrap)) return;
                 if($addSubRes.is('.disabled'))
                 {
-                    topTip({msg: '多图文最多只能添加8项！'});
+                    topTip({msg: '多图文最多只能添加' + maxMutilContSize + '项！'});
                     return;
                 }
                 var res = { resType: 1, resTypeContent: {} };
@@ -15597,14 +20477,9 @@ function throttle(method, context)
             C.loadData('createWeixinContent', _cont)
             .done(function(records)
             {
+                resetConts();
                 topTip({msg: '添加成功!', type: 'success'});
                 modal.hide();
-                if(!isLoaded) return resetConts();
-                
-                allConts.unshift(records[0]);
-                $cols.empty();
-                renderConts();
-                $noCont.hide();
             });
         }
         
@@ -15701,11 +20576,12 @@ function throttle(method, context)
                     page = data.page || {};
                 allConts.push.apply(allConts, records);
                 if(page.pageNo >= page.pageCount) isLoaded = true;
-                if(!records.length)
+                if(!page.totalSize)
                 {
                     $noCont.show();
                     return;
                 }
+                $noCont.hide();
                 callback && callback(allConts.slice(index, index + size));
             })
             .always(function()
@@ -15769,9 +20645,9 @@ function throttle(method, context)
             tplLib = Hualala.TplLib,
             U = Hualala.UI,
             topTip = Hualala.UI.TopTip;
-        
+
         $pageBody.html(tplLib.get('tpl_wx_text'));
-        
+
         var $viewing = $pageBody.find('#viewing'),
             $txts = $viewing.find('#txts'),
             $loading = $viewing.find('#loading'),
@@ -15780,15 +20656,14 @@ function throttle(method, context)
             $editing = $pageBody.find('#editing'),
             $editNavTitle = $editing.find('.pt'),
             $txtTitle = $editing.find('#txtTitle');
-        
+
         var txtsTpl = Handlebars.compile(tplLib.get('tpl_wx_txts'));
         var txts = [], params = { pageNo: 1, pageSize: 10 }, current,
-            emotions = W.getEmotions(), isAllLoaded, dataHolder = {};
-        
-        UM.delEditor('txtEditor');
-        W.extendUM(emotions, dataHolder);
-        var txtEditor = UM.getEditor('txtEditor', {toolbar: ['qqemotion wxlink unlink | undo redo | selectall cleardoc'] });
+            emotions = W.getEmotions(), isAllLoaded;
+
+        var txtEditor = U.createEditor('txtEditor', ['qqemotion wxlink unlink | undo redo | selectall cleardoc']);
         txtEditor.execCommand('cleardoc');
+        Hualala.UI.EditorList.push(txtEditor);
         var actions = {
                 editTxt: editTxt,
                 delTxt: delTxt,
@@ -15881,6 +20756,7 @@ function throttle(method, context)
                 resContent = $.trim(filterTxt(txtEditor.getContent())),
                 msg = !resTitle ? '请输入标题' :
                       !resContent ? '请输入内容！' : '';
+            if(/<br\/>$/.test(resContent)) resContent = resContent.substr(0, resContent.lastIndexOf('<br/>'));
             if(msg)
             {
                 topTip({msg: msg, type: 'warning'});
@@ -15952,6 +20828,10 @@ function throttle(method, context)
                     ret += '/' + cont.alt;
                 else if(cont.nodeName.toLowerCase() == 'a')
                     ret += '<a href="' + cont.href + '">' + filterTxt(cont.innerHTML) + '</a>';
+                else if(cont.nodeName.toLowerCase() == 'p')
+                    ret += filterTxt(cont.innerHTML) + '<br/>';
+                else if(cont.nodeName.toLowerCase() == 'br')
+                    ret += '<br/>';
                 else
                     ret += filterTxt(cont.innerHTML);
             }
@@ -15982,10 +20862,10 @@ function throttle(method, context)
 
 ;(function ($, window) {
 	IX.ns('Hualala.Weixin');
-    
+
     Hualala.Weixin.getEmotions = getEmotions;
     Hualala.Weixin.getLinkTypes = getLinkTypes;
-    
+
     function getEmotions()
     {
         return [
@@ -16096,57 +20976,72 @@ function throttle(method, context)
             { url : 'CE/wKgCIVNWKIjSNEstAAAIeX2ucII889.gif', title : '右太极'}
         ];
     }
-    
+
     function getLinkTypes()
     {
         return [
-            { value: '1', title: '软文', type: 'select', subTitle: '软文', api: 'getAdvertorials', params: {}, keys: ['itemID', 'title'],
-            urlTpl: 'share/{{arg1}}' },
-            { value: '2', title: '集团首页',
-            urlTpl: 'index.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '3', title: '店铺预定搜索网页', type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: '0', cityName: '附近' },
+            { value: '2', title: '集团首页', type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'],
+            urlTpl: 'shop/group.htm?{{arg2}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '3', title: '预订店铺', type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: '0', cityName: '附近' },
             urlTpl: 'shop/common.htm?{{arg2}}&sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '4', title: '订座点菜具体店铺', type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'],
-            urlTpl: 'shop/shop.htm?t=0&i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '5', title: '店铺外卖搜索网页' , type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: '0', cityName: '附近' },
+            { value: '5', title: '外卖自提' , type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: '0', cityName: '附近' },
             urlTpl: 'shop/takeaway.htm?{{arg2}}&sc=wechat&mpid=${mpID}&g={{g}}&' },
-            { value: '6', title: '外卖自提具体店铺', type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'],
-            urlTpl: 'shop/shop.htm?t=1&i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
             { value: '7', title: '附近店铺',
-            urlTpl: 'shop/near.htm' },
-            { value: '8', title: '(新)成为会员',
+                urlTpl: 'shop/near.htm?g={{g}}' },
+            {value: '0', title: '集团'},
+            { value: '26', title: '订座介绍', type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'],
+                urlTpl: 'shop/home.htm?t=0&i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '4', title: '订座点菜', type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'],
+                urlTpl: 'shop/shop.htm?t=0&i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '27', title: '外卖自提介绍', type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'],
+                urlTpl: 'shop/home.htm?t=1&i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '6', title: '外卖自提', type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'],
+            urlTpl: 'shop/shop.htm?t=1&i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            {value: '0', title: '单店功能'},
+            { value: '8', title: '成为会员',
             urlTpl: 'crm/vip_details.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '9', title: '(新)我的会员卡',
+            { value: '9', title: '我的会员卡',
             urlTpl: 'crm/vip_details.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '10', title: '成为会员',
-            urlTpl: 'vip/register.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '11', title: '我的会员卡',
-            urlTpl: 'vip/main.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '12', title: '我的代金券',
-            urlTpl: 'user/event.htm?sc=wechat&mpid=${mpID}' },
-            { value: '13', title: '我的订单页',
-            urlTpl: 'user/order.htm?sc=wechat&mpid=${mpID}' },
+            { value: '23', title: '会员活动列表',
+                urlTpl: 'crm/events/htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '24', title: '会员具体活动', type: 'select', subTitle: '会员活动', api: 'getMCMEvents', params: { isActive: 1, eventWays: '40,41' }, keys: ['eventID', 'eventName'],
+                urlTpl: 'crm/event.htm?e={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}'},
+            { value: '25', title: '会员充值',
+                urlTpl: 'crm/vip_recharge.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            //{ value: '10', title: '成为会员',
+            //urlTpl: 'vip/register.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            //{ value: '11', title: '我的会员卡',
+            //urlTpl: 'vip/main.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            {value: '0', title: '会员'},
             { value: '14', title: '我的账户',
             urlTpl: 'user/user.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '15', title: '会员活动列表',
-            urlTpl: 'vip/intro.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '16', title: '会员具体活动', type: 'select', subTitle: '会员活动', api: 'getCrmEvents', params: {}, keys: ['eventIdWay', 'eventName'],
-            urlTpl: 'vip/event{{arg3}}.htm?e={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '17', title: '用户活动', type: 'select', subTitle: '用户活动', api: 'getUserEvents', params: { eventStatus: 1 }, keys: ['eventItemID', 'eventSubjects'],
-            urlTpl: 'events/event.htm?i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '13', title: '我的订单',
+                urlTpl: 'user/order.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '12', title: '我的代金券',
+                urlTpl: 'user/event.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            //{ value: '15', title: '会员活动列表',
+            //urlTpl: 'vip/intro.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            //{ value: '16', title: '会员具体活动1', type: 'select', subTitle: '会员活动', api: 'getCrmEvents', params: {}, keys: ['eventIdWay', 'eventName'],
+            //urlTpl: 'vip/event{{arg3}}.htm?e={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            {value: '0', title: '账户'},
+            { value: '1', title: '软文', type: 'select', subTitle: '软文', api: 'getAdvertorials', params: {}, keys: ['itemID', 'title'],
+                urlTpl: 'share/{{arg1}}?mpid=${mpID}' },
             { value: '18', title: '用户反馈',
             urlTpl: 'user/feedback.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
             { value: '19', title: '代金券交易', type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: '0', cityName: '附近' },
             urlTpl: 'voucher/list.htm?sc=wechat&mpid=${mpID}&g={{g}}&c={{arg1}}' },
-            { value: '20', title: '排队取号搜索',
-            urlTpl: 'table/near.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '21', title: '报名活动', type: 'select', subTitle: '用户活动', api: 'getUserEvents', params: { eventStatus: 1, gameWay: 20 }, keys: ['eventItemID', 'eventSubjects'],
-            urlTpl: 'events/apply.htm?i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
             { value: '22', title: '自定义链接', type: 'input', subTitle: '内容',
-            urlTpl: '{{arg1}}' }
+                urlTpl: '{{arg1}}' },
+            //{ value: '17', title: '用户活动', type: 'select', subTitle: '用户活动', api: 'getUserEvents', params: { eventStatus: 1 }, keys: ['eventItemID', 'eventSubjects'],
+            //    urlTpl: 'events/event.htm?i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            //{ value: '20', title: '排队取号搜索',
+            //urlTpl: 'table/near.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            //{ value: '21', title: '报名活动', type: 'select', subTitle: '用户活动', api: 'getUserEvents', params: { eventStatus: 1, gameWay: 20 }, keys: ['eventItemID', 'eventSubjects'],
+            //urlTpl: 'events/apply.htm?i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            {value: '0', title: '其它'}
         ];
     }
-    
+
 })(jQuery, window);
 
 
@@ -16198,20 +21093,15 @@ function throttle(method, context)
         var sessionGroupID = Hualala.getSessionSite().groupID,
             U = Hualala.UI,
             $pageBody = $container.find('.page-body');
+            
         if(groupID == sessionGroupID)
         {
             renderData(); return;
         }
 
-        Hualala.Global.getWeixinAccounts({}, function(rsp)
+        Hualala.Common.loadData('getWeixinAccounts', {}).done(function(records)
         {
-            if(rsp.resultcode != '000')
-            {
-                rsp.resultmsg && U.TopTip({msg: rsp.resultmsg, type: 'danger'});
-                return;
-            }
-            
-            accounts = _.map(rsp.data.records || [], function(record) {
+            accounts = _.map(records || [], function(record) {
                 return { mpID: record.mpID, mpName: record.mpName };
             });
             groupID = sessionGroupID;
@@ -16222,7 +21112,7 @@ function throttle(method, context)
         
         function renderData()
         {
-            var $select = $('<div class="bs-callout weixin-brand"><select class="form-control" />微信公共账号</div>').insertAfter('.page-subnav').find('select');
+            var $select = $('<div class="bs-callout weixin-brand"><select class="form-control" />微信公众号</div>').insertAfter('.page-subnav').find('select');
             U.fillSelect($select, accounts, 'mpID', 'mpName', false).val(mpID).on('change', function()
             { 
                 mpID = $(this).val();
@@ -16355,6 +21245,7 @@ function throttle(method, context)
             
         dataHolder = dataHolder || {};
         that.linkTypes = linkTypes;
+        that.groupDomainNameYN = '';
         linkID = linkID || 1;
         linkCont = linkCont || '';
         
@@ -16382,6 +21273,7 @@ function throttle(method, context)
             Hualala.Common.loadData(api, linkInfo.params, data)
             .done(function(records)
             {
+                var copyDataHolder = $.extend(true, {data: {}}, {data: dataHolder[api]}).data || {};
                 records = records || [];
                 if(!records.length)
                 {
@@ -16390,20 +21282,31 @@ function throttle(method, context)
                 }
                 if(!dataHolder[api])
                 {
-                    dataHolder[api] = _.map(records, function(record)
-                    {
-                        return api == 'getCrmEvents' ? {
-                            eventIdWay: record.eventID + '-' + record.eventWay,
-                            eventName: record.eventName,
-                            py: record.py
-                        } : _.pick(record, keys.concat(['py']));
+                    dataHolder[api] = _.map(records, function (record) {
+                        return _.pick(record, keys.concat(['py']));
                     });
+                    copyDataHolder = $.extend(true, {data: {}}, {data: dataHolder[api]}).data;
                 }
-                
-                var firstItem = linkInfo.firstItem || false;
-                U.createChosen($linkContent.find('select'), 
-                dataHolder[api], keys[0], keys[1], { width: '100%' }, firstItem, linkCont)
-                .change();
+
+                copyDataHolder = _.map(copyDataHolder, function(record)
+                {
+                    return (api == 'getCrmEvents' && linkInfo.value == 16) ? {
+                        eventIdWay: record.eventID + '-' + record.eventWay,
+                        eventName: record.eventName,
+                        py: record.py
+                    } : linkInfo.value == 2 ? {
+                        cityID: createLinkSelector.groupDomainNameYN + '-' + record.cityID,
+                        cityName: record.cityName,
+                        py: record.py
+                    } : _.pick(record, keys.concat(['py']));
+                });
+
+                var firstItem = linkInfo.value == 2 ? {
+                    cityID: createLinkSelector.groupDomainNameYN + '-0', cityName: '附近'
+                }: (linkInfo.firstItem || false);
+                U.createChosen($linkContent.find('select'),
+                    copyDataHolder, keys[0], keys[1], { width: '100%' }, firstItem, linkCont)
+                    .change();
                 
             });
         }
@@ -16412,8 +21315,22 @@ function throttle(method, context)
         linkTypes, 'value', 'title', false).val(linkID)
         .on('change', function()
         {
-            that.renderLinkContent(linkTypes[this.value - 1], $contentWrap, dataHolder, linkCont);
-            linkCont = '';
+            var selectedVal = this.value;
+            if (selectedVal == 2) {
+                Hualala.Global.queryGroupStyle({groupID: $XP(Hualala.getSessionSite(), 'groupID', '')}, function (rsp) {
+                    if (rsp.data.records[0].domainNamePY) {
+                        that.groupDomainNameYN = rsp.data.records[0].domainNamePY;
+                        that.renderLinkContent(_.findWhere(linkTypes, {value: selectedVal}), $contentWrap, dataHolder, linkCont);
+                        linkCont = '';
+                    } else{
+                        Hualala.UI.TopTip({msg: '获取集团首页的信息为空！', type: 'warning'});
+                        $contentWrap.html('');
+                    }
+                });
+            } else {
+                that.renderLinkContent(_.findWhere(linkTypes, {value: this.value}), $contentWrap, dataHolder, linkCont);
+                linkCont = '';
+            }
         }).change();
     }
     
@@ -16440,13 +21357,16 @@ function throttle(method, context)
                   chref.indexOf('dohko.dianpu') > -1 ? 'dohko.' : '',
             urlHost = 'http://' + env + 'm.hualala.com/',
             linkTypes = createLinkSelector.linkTypes || WX.getLinkTypes(),
-            urlTpl = Handlebars.compile(linkTypes[linkType - 1].urlTpl),
+            urlTpl = Handlebars.compile(_.findWhere(linkTypes, {value: linkType}).urlTpl),
             args = { arg1: param, g: groupID };
-            
-        if(linkType == 3 || linkType == 5) 
+
+        if(_.contains(['2', '3', '5'], linkType)) {
             args.arg2 = param == 0 ? 't=near' : 'c=' + param;
-        else if(linkType == 16) 
-        {
+            if (linkType == 2) {
+                var _args = param.split('-');
+                args.arg2 = (_args[1] == 0 ? 't=near' : ('c=' + _args[1])) + '&n=' + _args[0];
+            }
+        } else if (_.contains(['16', '24'], linkType)) {
             var _args = param.split('-'),
                 eventID = _args[0],
                 eventWay = _args[1];
@@ -16461,7 +21381,7 @@ function throttle(method, context)
     
     function extendUM(emotions, dataHolder)
     {
-        emotions && UM.registerUI( 'qqemotion', function(name)
+        UM.registerUI( 'qqemotion', function(name)
         {
             var me = this;
             var $btn = $.eduibutton({ icon: 'emotion', title: '表情' });
@@ -16509,7 +21429,7 @@ function throttle(method, context)
             return $btn;
         });
         
-        dataHolder && UM.registerUI( 'wxlink', function(name)
+        UM.registerUI( 'wxlink', function(name)
         {
             var me = this;
                 $btn = $.eduibutton({ icon: 'link', title: '链接' });
@@ -16534,7 +21454,8 @@ function throttle(method, context)
                     }
                     if(linkCont !== undefined && !linkCont)
                     {
-                        U.TopTip({msg: '请选择或输入链接！', type: 'warning'});
+                        var msg = linkType == 2 && !createLinkSelector.groupDomainNameYN ? '集团信息为空' : '请选择或输入链接！';
+                        U.TopTip({msg: msg, type: 'warning'});
                         return;
                     }
                     var url = createWeixinUrl(linkType, linkCont).replace(/^\s+|\s+$/g, '');
@@ -16559,6 +21480,8 @@ function throttle(method, context)
             '| horizontal print preview', 'drafts']; 
     }
     
+    extendUM();
+    
     $.extend(WX, {
         createResourceChosen: createResourceChosen,
         parseEmotions: parseEmotions,
@@ -16566,7 +21489,15 @@ function throttle(method, context)
         createLinkSelector: createLinkSelector,
         extendUM: extendUM,
         //微信首页
-        homeInit: function() { location.href = Hualala.PageRoute.createPath('wxReply')},
+        homeInit: function() { location.href = Hualala.PageRoute.createPath('wxAccounts')},
+        //公众账号页面
+        accountsInit: function()
+        {
+            var pageName = Hualala.PageRoute.getPageContextByPath().name;
+            var $container = $('#ix_wrapper > .ix-body > .container');
+            initWeixinPageLayout(pageName, $container, Hualala.TypeDef.WeixinAdminSubNavType);
+            WX.initAccounts($container.find('.page-body'), accounts);
+        },
         //自动回复页面
         replyInit: function()
         {
@@ -16631,6 +21562,12 @@ function throttle(method, context)
 	IX.ns("Hualala.MCM");
 	var HMCM = Hualala.MCM;
 
+    function encodeTextareaItem(data, textareaName) {
+        if (data[textareaName]) {
+            data[textareaName] = Hualala.Common.encodeTextEnter(data[textareaName]);
+        }
+        return data;
+    }
 	var GiftMgrResultModel = Stapes.subclass({
 		/**
 		 * 构造礼品查询结果的数据模型
@@ -16709,8 +21646,8 @@ function throttle(method, context)
 			self.updatePagerParams(params);
 			self.callServer(self.getPagerParams(), function (res) {
 				if (res.resultcode == '000') {
-					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.pageNo'));
-					self.updatePagerParams($XP(res, 'data', {}));
+					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.page.pageNo'));
+					self.updatePagerParams($XP(res, 'data.page', {}));
 					// self.updateItemDataStore($XP(res, 'data', {}));
 				} else {
 					toptip({
@@ -16758,7 +21695,7 @@ function throttle(method, context)
 		bindEvent : function () {
 			var self = this;
 			self.on({
-				delete : function (params) {
+				deleteItem : function (params) {
 					var giftItemID = $XP(params, 'itemID');
 					var successFn = $XF(params, 'successFn'),
 						faildFn = $XF(params, 'faildFn');
@@ -16780,8 +21717,9 @@ function throttle(method, context)
 					self.set(post);
 					// Post Model Data Set to Server
 					IX.Debug.info("DEBUG: Gift Wizard Form Post Params:");
-					IX.Debug.info(self.getAll());
-					Hualala.Global.createMCMGift(self.getAll(), function (res) {
+                    var postData = IX.inherit({}, self.getAll());
+                    IX.Debug.info(encodeTextareaItem(postData, 'giftRemark'));
+                    Hualala.Global.createMCMGift(encodeTextareaItem(postData, 'giftRemark'), function (res) {
 						if ($XP(res, 'resultcode') == '000') {
 							successFn(res);
 						} else {
@@ -16798,7 +21736,8 @@ function throttle(method, context)
 					// Post Model Data Set to Server
 					IX.Debug.info("DEBUG: Gift Wizard Form Post Params:");
 					IX.Debug.info(self.getAll());
-					Hualala.Global.editMCMGift(self.getAll(), function (res) {
+                    var postData = IX.inherit({}, self.getAll());
+					Hualala.Global.editMCMGift(encodeTextareaItem(postData, 'giftRemark'), function (res) {
 						if ($XP(res, 'resultcode') == '000') {
 							successFn(res);
 						} else {
@@ -16862,7 +21801,7 @@ function throttle(method, context)
 		bindEvent : function () {
 			var self = this;
 			self.on({
-				delete : function (params) {
+				deleteItem : function (params) {
 					var eventID = $XP(params, 'itemID');
 					var successFn = $XF(params, 'successFn'),
 						faildFn = $XF(params, 'faildFn');
@@ -16882,6 +21821,9 @@ function throttle(method, context)
 						faildFn = $XF(params, 'faildFn');
 					Hualala.Global.switchMCMEvent(post, function (res) {
 						if ($XP(res, 'resultcode') == '000') {
+							self.set({
+								isActive : $XP(post, 'isActive')
+							});
 							successFn(res);
 						} else {
 							faildFn(res);
@@ -16925,8 +21867,9 @@ function throttle(method, context)
 				},
 				createEvent : function (params) {
 					var successFn = $XF(params, 'successFn'),
-						faildFn = $XF(params, 'faildFn');
-					Hualala.Global.createEvent($XP(params, 'params'), function (res) {
+						faildFn = $XF(params, 'faildFn'),
+                        postParams = IX.inherit({}, $XP(params, 'params'));
+                    Hualala.Global.createEvent(encodeTextareaItem(postParams, 'eventRemark'), function (res) {
 						if ($XP(res, 'resultcode') == '000') {
 							var d = $XP(res, 'data');
 							self.set(d);
@@ -16940,8 +21883,9 @@ function throttle(method, context)
 				editEvent : function (params) {
 					var successFn = $XF(params, 'successFn'),
 						faildFn = $XF(params, 'faildFn');
-					var setData = self.getAll();
-					Hualala.Global.editEvent(IX.inherit(setData, $XP(params, 'params')), function (res) {
+					var setData = self.getAll(),
+                        postParams = IX.inherit(setData, $XP(params, 'params'));
+					Hualala.Global.editEvent(encodeTextareaItem(postParams, 'eventRemark'), function (res) {
 						if ($XP(res, 'resultcode') == '000') {
 							var d = $XP(res, 'data');
 							self.set(d);
@@ -17018,12 +21962,22 @@ function throttle(method, context)
 		var ctx = Hualala.PageRoute.getPageContextByPath(), pageName = $XP(ctx, 'name'),
 			queryKeys = self.model.queryKeys;
 		var r = {value : "", text : ""}, v = $XP(row, colKey, '');
+		var userInfo = $XP(row, 'createBy', {});
+		var operator = $XP(row,'operator',{});
+			try {
+			  //createBy有可能不是合法的JSON字符串，便会产生异常
+			  userInfo = !IX.isEmpty(userInfo) && IX.isString(userInfo) ? JSON.parse(userInfo) : {};
+			  operator = !IX.isEmpty(operator) && IX.isString(operator) ? JSON.parse(operator) : {};
+			} catch (e) {
+			  userInfo = {};
+			  operator ={};
+			}
 		var formatDateTimeValue = Hualala.Common.formatDateTimeValue;
 		switch(colKey) {
 			// 礼品列表各列参数
 			case "giftType":
 				var giftCardTpl = self.get('giftCardTpl'),
-					giftValue = $XP(row, 'giftValue', 0),
+					giftValue = Hualala.Common.Math.prettyPrice($XP(row, 'giftValue', 0)),
 					giftTypes = Hualala.TypeDef.MCMDataSet.GiftTypes,
 					giftType = _.find(giftTypes, function (el) {return $XP(el, 'value') == v;});
 				// if (pageName == 'mcmGiftsMgr') {
@@ -17046,10 +22000,10 @@ function throttle(method, context)
 			// 	break;
 			case "createTime":
 				r.value = v;
-				r.text = IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd HH:mm');
+				r.text = (IX.isEmpty(v) || v == 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd HH:mm');
 				break;
 			case "createBy":
-				var userInfo = !IX.isEmpty(v) && IX.isString(v) ? JSON.parse(v) : {};
+				// var userInfo = !IX.isEmpty(v) && IX.isString(v) ? JSON.parse(v) : {};
 				r.value = $XP(userInfo, 'userID', '');
 				r.text = $XP(userInfo, 'userName', '') + '<br/>' + $XP(userInfo, 'userMobile', '');
 				break;
@@ -17073,17 +22027,17 @@ function throttle(method, context)
 			case "eventStartDate":
 				r.value = v;
 				var start = v, end = $XP(row, 'eventEndDate', '');
-				r.text = IX.Date.getDateByFormat(formatDateTimeValue(start), 'yyyy/MM/dd')
-					+ '至'
-					+ IX.Date.getDateByFormat(formatDateTimeValue(end), 'yyyy/MM/dd');
+				start = (IX.isEmpty(start) || start == 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(start), 'yyyy/MM/dd');
+				end = (IX.isEmpty(end) || end == 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(end), 'yyyy/MM/dd');
+				r.text = IX.isEmpty(start) || IX.isEmpty(end) ? '' : (start + '至' + end);
 				break;
 			case "operator":
-				var userInfo = !IX.isEmpty(v) && IX.isString(v) ? JSON.parse(v) : {};
-				r.value = $XP(userInfo, 'userID', '');
-				r.text = $XP(userInfo, 'userName', '') + '<br/>' + $XP(userInfo, 'userMobile', '');
+				// var userInfo = !IX.isEmpty(v) && IX.isString(v) ? JSON.parse(v) : {};
+				r.value = $XP(operator, 'userID', '');
+				r.text = $XP(operator, 'userName', '') + '<br/>' + $XP(operator, 'userMobile', '');
 				break;
 			case "isActive":
-				var eventID = $XP(row, 'isActive', 0);
+				var eventID = $XP(row, 'eventID', '');
 				r.value = v;
 				r.text = '<input type="checkbox" name="switch_event" data-event-id="' + eventID + '" ' 
 					+ (v != 0 ? 'checked ' : '') + ' data-key="' + $XP(row, '__id__', '') + '" ' + ' />';
@@ -17195,6 +22149,7 @@ function throttle(method, context)
 			return cols;
 		};
 		var rows = _.map(records, function (row, idx) {
+			var giftRules = $XP(row, 'giftRules', '');
 			var rowSet = {
 				clz : '',
 				cols : mapColsRenderData(row, idx)
@@ -17207,7 +22162,7 @@ function throttle(method, context)
 							clz : '',
 							colspan : 3,
 							rowspan : 1,
-							html : '礼品规则：'
+							html : IX.isEmpty(giftRules) ? '' : '礼品规则：<br/>' + $XP(row, 'giftRules', '')
 						}]
 					}]
 				};
@@ -17290,6 +22245,7 @@ function throttle(method, context)
 				case 'edit':
 				// TODO edit gift set
 					var wizardPanel = new Hualala.MCM.MCMWizardModal({
+						wizardType : 'edit',
 						parentView : self,
 						mode : 'edit',
 						successFn : function () {
@@ -17321,31 +22277,40 @@ function throttle(method, context)
 					break;
 				case 'delete':
 				// TODO delete gift set
-					self.emit('deleteItem', {
-						id : id,
-						key : giftItemID,
-						successFn : function (res) {
-							toptip({
-								msg : '删除成功',
-								type : 'success'
-							});
-							var $tr = $btn.parents('tr'),
-								$ruleRow = $tr.next('.gift-rule');
-							$tr.remove();
-							$ruleRow.remove();
-						},
-						faildFn : function (res) {
-							toptip({
-								msg : $XP(res, 'resultmsg', ''),
-								type : 'danger'
+					Hualala.UI.Confirm({
+						title : '删除礼品',
+						msg : '是否要删除该礼品？',
+						okLabel : '删除',
+						okFn : function () {
+							self.emit('deleteItem', {
+								id : id,
+								key : giftItemID,
+								successFn : function (res) {
+									toptip({
+										msg : '删除成功',
+										type : 'success'
+									});
+									var $tr = $btn.parents('tr'),
+										$ruleRow = $tr.next('.gift-rule');
+									$tr.remove();
+									$ruleRow.remove();
+								},
+								faildFn : function (res) {
+									toptip({
+										msg : $XP(res, 'resultmsg', ''),
+										type : 'danger'
+									});
+								}
 							});
 						}
 					});
+					
 					break;
 				case 'detail':
 				// TODO preview gift detail
 					var path = Hualala.PageRoute.createPath('mcmGiftDetail', [giftItemID]);
-					Hualala.PageRoute.jumpPage(path);
+					// Hualala.PageRoute.jumpPage(path);
+					window.open(document.location.protocol + '//' + document.location.host + '/' + path);
 					break;
 			}
 		});
@@ -17374,6 +22339,7 @@ function throttle(method, context)
 				case 'edit' :
 				// TODO edit event config set
 					var wizardPanel = new Hualala.MCM.MCMWizardModal({
+						wizardType : 'edit',
 						parentView : self,
 						mode : 'edit',
 						successFn : function () {
@@ -17405,21 +22371,28 @@ function throttle(method, context)
 					break;
 				case 'delete' :
 				// delete event
-					self.emit('deleteItem', {
-						id : id,
-						key : eventID,
-						successFn : function (res) {
-							toptip({
-								msg : '删除成功',
-								type : 'success'
-							});
-							var $tr = $btn.parents('tr');
-							$tr.remove();
-						},
-						faildFn : function (res) {
-							toptip({
-								msg : $XP(res, 'resultmsg', ''),
-								type : 'danger'
+					Hualala.UI.Confirm({
+						title : '删除活动',
+						msg : '是否要删除该活动？',
+						okLabel : '删除',
+						okFn : function () {
+							self.emit('deleteItem', {
+								id : id,
+								key : eventID,
+								successFn : function (res) {
+									toptip({
+										msg : '删除成功',
+										type : 'success'
+									});
+									var $tr = $btn.parents('tr');
+									$tr.remove();
+								},
+								faildFn : function (res) {
+									toptip({
+										msg : $XP(res, 'resultmsg', ''),
+										type : 'danger'
+									});
+								}
 							});
 						}
 					});
@@ -17431,7 +22404,8 @@ function throttle(method, context)
 				case 'track':
 				// TODO track event info
 					var path = Hualala.PageRoute.createPath('mcmEventTrack', [eventID]);
-					Hualala.PageRoute.jumpPage(path);
+					// Hualala.PageRoute.jumpPage(path);
+					window.open(document.location.protocol + '//' + document.location.host + '/' + path);
 					break;
 			}
 		});
@@ -17451,8 +22425,12 @@ function throttle(method, context)
 		if (pageName == 'mcmEventMgr') {
 			var $checkbox = self.$result.find(':checkbox[name=switch_event]');
 			initEventSwitcher.call(self, $checkbox);
-			
 		}
+
+        if (pageName == 'mcmEventTrack') {
+            var $checkbox = self.$result.find(':checkbox[name=switch_win_status]');
+            initWinSwitcher.call(self, $checkbox);
+        }
 	};
 
 	/**
@@ -17481,8 +22459,8 @@ function throttle(method, context)
 		var self = this;
 		var $tr = $chkbox.parents('tr'),
 			$col = $tr.find('.ctrlrow');
-		$col.find('.edit-event, .delete-event').addClass('hidden');
-		$col.find('.track-event').removeClass('hidden');
+		$col.find('.edit-event, .delete-event')[isActive == 0 ? 'removeClass' : 'addClass']('hidden');
+		$col.find('.track-event')[isActive == 0 ? 'addClass' : 'removeClass']('hidden');
 	};
 
 	/**
@@ -17491,23 +22469,38 @@ function throttle(method, context)
 	 */
 	var mapEventDetailRenderData = function (model) {
 		var self = this;
-		
+		var eventWay = model.get('eventWay');
+		var cardLevels = Hualala.TypeDef.MCMDataSet.EventCardLevels;
+		var cardLevels1 = _.filter(model.CardLevelIDSet, function (el) {
+			return $XP(el, 'isActive') == 1;
+		});
+		cardLevels1 = _.map(cardLevels1, function (el) {
+			return {
+				value : $XP(el, 'cardLevelID'),
+				label : $XP(el, 'cardLevelName', '')
+			};
+		});
+		cardLevels = cardLevels.concat(cardLevels1);
 		var mapCardData = function () {
 			var eventCardSet = model.getEventCardSet();
+			var eventCardClz = model.get('isActive') == 1 ? model.getEventCardClz() : 'disable';
 			return {
 				card : {
-					clz : $XP(eventCardSet, 'type', ''),
+					clz : eventCardClz,
 					label : $XP(eventCardSet, 'label', '')
 				}
 			};
 		};
 		var mapBaseInfoData = function () {
-			var keys = 'eventName,cardLevelLabel,eventRemark,deductPoints,sendPoints,eventRules'.split(',');
+			var keys = 'eventName,cardLevelLabel,eventRemark,deductPoints,sendPoints,eventRules,viewCount,userCount'.split(',');
 			var ret = {};
 			_.each(keys, function (k) {
 				switch (k) {
 					case 'cardLevelLabel':
-						ret[k] = model.get('cardLevelID');
+						ret[k] = _.find(cardLevels, function (el) {
+							return $XP(el, 'value') == model.get('cardLevelID');
+						});
+						ret[k] = $XP(ret[k], 'label');
 						break;
 					case 'deductPoints':
 					case 'sendPoints':
@@ -17518,12 +22511,24 @@ function throttle(method, context)
 						break;
 				}
 			});
+			if (eventWay == 22) {
+				// 报名活动，列出参与人数
+				var winCount = model.get('registerEventPartinPersion') || 0,
+					maxPartInPerson = model.get('maxPartInPerson') || 0,
+					surplusCount = parseInt(maxPartInPerson) - parseInt(winCount);
+				ret = IX.inherit(ret, {
+					'isApplyEvent' : true,
+					'winCount' : parseInt(model.get('registerEventPartinPersion') || 0),
+					'surplusCount' : surplusCount
+				});
+			}
 			return IX.inherit(ret, {
-				infoLabelClz : 'col-sm-3'
+				infoLabelClz : 'col-xs-3 col-sm-3',
+				infoTextClz : 'col-xs-8 col-sm-8'
 			});
 		};
 		var mapGiftsData = function () {
-			var giftKeys = 'EGiftID,EGiftName,EGiftOdds,EgiftSendCount,EGiftSingleCount,EGiftTotalCount,EGiftEffectTimeHours,EGiftValidUnitDayCount'.split(',');
+			var giftKeys = 'EGiftID,EGiftName,EGiftOdds,EGiftSendCount,EGiftSingleCount,EGiftTotalCount,EGiftEffectTimeHours,EGfitValidUntilDayCount'.split(',');
 			var mainKey = 'EGiftID';
 			var giftLevelCount = 0;
 			var data = model.getAll();
@@ -17533,21 +22538,41 @@ function throttle(method, context)
 					giftLevelCount++;
 				}
 			});
+            var giftLevelNames = eventWay == 20 ? HMCM.GiftLevelNames : HMCM.GiftNames;
 			for (var i = 1; i <= giftLevelCount; i++) {
 				var gift = {};
 				var vals = _.map(giftKeys, function (_k) {
-					return model.get(_k + '_' + i);
+					var v = model.get(_k + '_' + i);
+					switch(_k) {
+						case 'EGiftOdds' :
+							v = parseFloat(v);
+							break;
+						case 'EGiftSendCount':
+						case 'EGiftTotalCount':
+						case 'EGfitValidUntilDayCount':
+							v = IX.isEmpty(v) ? 0 : parseFloat(v);
+							break;
+						default :
+							break;
+					}
+					return v;
 				});
 				var r = _.object(giftKeys, vals);
 				r = IX.inherit(r, {
-					level : i + '等奖',
-					surplusCount : parseInt($XP(r, 'EGiftTotalCount', 0)) - parseInt(r, 'EgiftSendCount', 0)
+					level : giftLevelNames[i],
+					surplusCount : parseInt($XP(r, 'EGiftTotalCount', 0)) - parseInt($XP(r, 'EGiftSendCount', 0))
 				});
 				gifts.push(r);
 			}
-			gifts = _.reject(gifts, function (el) {return $XP(el, mainKey) != 0;})
+			gifts = _.filter(gifts, function (el) {return $XP(el, mainKey) != 0;});
+            var isDisplayGiftLevel = eventWay == 20 || eventWay == 40 || eventWay == 41;
 			return {
 				colCount : giftKeys.length,
+				hideEGiftOdds : eventWay == 20 ? '' : 'hidden',
+                hideEGiftLevel: isDisplayGiftLevel ? '' : 'hidden',
+                EGiftLevelTh: eventWay == 20 ? '中奖等级' : '礼品',
+                EGiftNameTh: eventWay == 20 ? '奖品名称' : '礼品名称',
+				hideEGfitValidUntilDayCount : '',
 				giftItems : gifts,
 				hasGifts : gifts.length > 0 ? true : false
 			};
@@ -17585,12 +22610,26 @@ function throttle(method, context)
 		}));
 		modal._.footer.find('.btn-default').attr('data-dismiss', 'modal');
 
+		var loadCardLevels = function () {
+			itemModel.emit('loadCardLevelIDs', {
+				successFn : function (res) {
+					var renderData = mapEventDetailRenderData.call(self, itemModel);
+					var $detail = $(layoutTpl(renderData));
+					modal._.body.append($detail);
+					modal.show();
+				},
+				faildFn : function (res) {
+					toptip({
+						msg : $XP(res, 'resultmsg', ''),
+						type : 'danger'
+					});
+					modal.hide();
+				}
+			});
+		};
 		itemModel.emit('update', {
 			successFn : function (res) {
-				var renderData = mapEventDetailRenderData.call(self, itemModel);
-				var $detail = $(layoutTpl(renderData));
-				modal._.body.append($detail);
-				modal.show();
+				loadCardLevels();
 			},
 			faildFn : function (res) {
 				toptip({
@@ -17617,31 +22656,97 @@ function throttle(method, context)
 				var $el = $(this);
 				var eventID = $el.attr('data-event-id'),
 					key = $el.attr('data-key');
-				self.emit('switchEvent', {
-					eventID : eventID,
-					isActive : +state,
-					key : key,
-					successFn : function (res) {
-						toptip({
-							msg : (!+state ? '关闭' : '开启') + '活动成功',
-							type : 'success'
+				var actStr = (state == 1 ? "开启" : "关闭");
+				Hualala.UI.Confirm({
+					title : actStr + "活动",
+					msg : "你确定要" + actStr + "此活动？",
+					okFn : function () {
+						self.emit('switchEvent', {
+							eventID : eventID,
+							isActive : +state,
+							key : key,
+							successFn : function (res) {
+								toptip({
+									msg : actStr + '活动成功',
+									type : 'success'
+								});
+								switchEventCardLayout.call(self, $el, +state);
+								switchEventCtrlRow.call(self, $el, +state);
+							},
+							faildFn : function (res) {
+								$el.bootstrapSwitch('toggleState', true);
+								toptip({
+									msg : $XP(res, 'resultmsg', ''),
+									type : 'danger'
+								});
+							}
 						});
-						switchEventCardLayout.call(self, $el, +state);
-						switchEventCtrlRow.call(self, $el, +state);
 					},
-					faildFn : function (res) {
+					cancelFn : function () {
 						$el.bootstrapSwitch('toggleState', true);
-						toptip({
-							msg : $XP(res, 'resultmsg', ''),
-							type : 'danger'
-						});
 					}
 				});
+
 			});
 		});
 	};
 
-	var QueryResultView = Stapes.subclass({
+    var initWinSwitcher = function ($checkbox) {
+        var self = this;
+        $checkbox.each(function () {
+            var $el = $(this),
+                onLabel = '已入围',
+                offLabel = '未入围';
+            $el.bootstrapSwitch({
+                state: !!$el.data('status'),
+                size : 'normal',
+                onColor : 'primary',
+                offColor : 'default',
+                onText : onLabel,
+                offText : offLabel
+            }).on('switchChange.bootstrapSwitch', function (e, state) {
+                var $el = $(this),
+                    key = $el.attr('data-key'),
+                    actStr = (state == 1 ? "入围" : "取消入围");
+                Hualala.UI.Confirm({
+                    title : "修改用户入围状态",
+                    msg : "你确定要将用户" + actStr + "吗？",
+                    okFn : function () {
+                        self.model.get('ds_record').get(key).emit('switchWin', {
+                            itemID : $(e.target).data('itemid'),
+                            winFlag: state ? 1 : 0,
+                            successFn : function (res) {
+                                toptip({
+                                    msg : '操作成功',
+                                    type : 'success'
+                                });
+                                var $winCount = $('.mcm-detail-info small span').eq(2).find('strong'),
+                                    $failCount = $('.mcm-detail-info small span').eq(3).find('strong'),
+                                    winCount = parseInt($winCount.text()),
+                                    failCount = parseInt($failCount.text());
+                                $winCount.text(state ? (winCount + 1) : (winCount - 1));
+                                $failCount.text(state ? (failCount - 1) : (failCount + 1));
+                            },
+                            faildFn : function (res) {
+                                $el.bootstrapSwitch('toggleState', true);
+                                toptip({
+                                    msg : $XP(res, 'resultmsg', ''),
+                                    type : 'danger'
+                                });
+                            }
+                        });
+
+                    },
+                    cancelFn : function () {
+                        $el.bootstrapSwitch('toggleState', true);
+                    }
+                });
+
+            });
+        });
+    };
+
+    var QueryResultView = Stapes.subclass({
 		/**
 		 * 构造礼品管理列表View层
 		 * 
@@ -17828,7 +22933,7 @@ function throttle(method, context)
 						successFn = $XF(params, 'successFn'),
 						faildFn = $XF(params, 'faildFn');
 					var itemModel = self.model.getRecordModelByID(id);
-					itemModel.emit('delete', {
+					itemModel.emit('deleteItem', {
 						itemID : key,
 						successFn : function (res) {
 							successFn(res);
@@ -18106,6 +23211,7 @@ function throttle(method, context)
 			if (act == 'addGift') {
 				// TODO Add Gift
 				var wizardPanel = new Hualala.MCM.MCMWizardModal({
+					wizardType : 'create',
 					parentView : self,
 					mode : 'create',
 					successFn : function () {
@@ -18147,6 +23253,7 @@ function throttle(method, context)
 			if (act == 'addEvent') {
 				// TODO Add Event
 				var wizardPanel = new Hualala.MCM.MCMWizardModal({
+					wizardType : 'create',
 					parentView : self,
 					mode : 'create',
 					successFn : function () {
@@ -18188,28 +23295,33 @@ function throttle(method, context)
 	Hualala.MCM.mapGiftQueryFormRenderData = function () {
 		var self = this;
 		var queryKeys = self.model.queryKeys;
-		var query = {
-			cols : [
-				{
-					colClz : 'col-md-4',
-					items : QueryFormElsHT.getByKeys(['giftName'])
-				},
-				{
-					colClz : 'col-md-4',
-					items : QueryFormElsHT.getByKeys(['giftType'])
-				},
-				{
-					colClz : 'col-md-2',
-					items : QueryFormElsHT.getByKeys(['search'])
-				},
-				{
-					colClz : 'col-md-2 ' + (self.hasAddBtn ? '' : 'hidden'),
-					items : QueryFormElsHT.getByKeys(['addGift'])
-				}
-			]
-		};
+		var queryElsClz = self.hasAddBtn ? 'col-md-4' : 'col-md-5',
+			queryBtnClz = 'col-md-2';
+		var cols = [
+			{
+				colClz : queryElsClz,
+				items : QueryFormElsHT.getByKeys(['giftName'])
+			},
+			{
+				colClz : queryElsClz,
+				items : QueryFormElsHT.getByKeys(['giftType'])
+			},
+			{
+				colClz : queryBtnClz,
+				items : QueryFormElsHT.getByKeys(['search'])
+			}
+		];
+		if (self.hasAddBtn) {
+			cols.push({
+				colClz : queryBtnClz,
+				items : QueryFormElsHT.getByKeys(['addGift'])
+			});
+		}
+		
 		return {
-			query : query
+			query : {
+				cols : cols
+			}
 		};
 	};
 
@@ -18259,7 +23371,7 @@ function throttle(method, context)
 		var query = {
 			cols : [
 				{
-					colClz : 'col-md-4',
+					colClz : 'col-md-5',
 					items : QueryFormElsHT.getByKeys(['timeRange'])
 				},
 				{
@@ -18271,7 +23383,7 @@ function throttle(method, context)
 					items : QueryFormElsHT.getByKeys(['giftStatus'])
 				},
 				{
-					colClz : 'col-md-2',
+					colClz : 'col-md-1',
 					items : QueryFormElsHT.getByKeys(['search', 'giftItemID'])
 				}
 			]
@@ -18287,7 +23399,7 @@ function throttle(method, context)
 		var query = {
 			cols : [
 				{
-					colClz : 'col-md-4',
+					colClz : 'col-md-5',
 					items : QueryFormElsHT.getByKeys(['timeRange'])
 				},
 				{
@@ -18295,7 +23407,7 @@ function throttle(method, context)
 					items : QueryFormElsHT.getByKeys(['usingShopID'])
 				},
 				{
-					colClz : 'col-md-offset-1 col-md-2',
+					colClz : 'col-md-offset-1 col-md-1',
 					items : QueryFormElsHT.getByKeys(['search', 'giftItemID'])
 				}
 			]
@@ -18310,6 +23422,12 @@ function throttle(method, context)
 		var queryKeys = self.model.queryKeys;
 		var eventDetail = self.$container.data('eventDetail'),
 			eventWay = $XP(eventDetail, 'eventWay');
+		var searchBtnCol = _.map(QueryFormElsHT.getByKeys(['search', 'eventID']), function (el, i) {
+			if (i == 0) return el;
+			return IX.inherit(el, {
+				value : $XP(eventDetail, 'eventID')
+			});
+		});
 		var query = {
 			cols : [
 				{
@@ -18322,7 +23440,7 @@ function throttle(method, context)
 				},
 				{
 					colClz : 'col-md-2',
-					items : QueryFormElsHT.getByKeys(['search', 'eventID'])
+					items : searchBtnCol
 				}
 			]
 		};
@@ -18343,7 +23461,7 @@ function throttle(method, context)
 					},
 					{
 						colClz : 'col-md-2',
-						items : QueryFormElsHT.getByKeys(['search', 'eventID'])
+						items : searchBtnCol
 					}
 				]
 			}
@@ -18729,6 +23847,10 @@ function throttle(method, context)
 			if (!this.container || !this.model || !this.view || !this.resultController) {
 				throw("QueryController init faild!");
 			}
+			this.container.data({
+				queryController : this,
+				resultController : this.resultController
+			});
 			this.init();
 		}
 	});
@@ -18802,6 +23924,7 @@ function throttle(method, context)
 		 */
 		constructor : function (cfg) {
 			this.parentView = $XP(cfg, 'parentView');
+			this.wizardType = $XP(cfg, 'wizardType', 'create');
 			this.mode = $XP(cfg, 'mode', 'create');
 			this.successFn = $XF(cfg, 'successFn');
 			this.faildFn = $XF(cfg, 'faildFn');
@@ -18974,7 +24097,10 @@ function throttle(method, context)
 		},
 		switchWizardCtrlStatus : function (status) {
 			var self = this;
-			self.$wizard.find('.wizard-ctrl .btn').button(status);
+			// self.$wizard.find('.wizard-ctrl .btn').button(status);
+			self.$wizard.find('.wizard-ctrl .btn').each(function () {
+				$(this).button(status);
+			})
 		},
 		getNextStep : function () {
 			var self = this;
@@ -19012,10 +24138,25 @@ function throttle(method, context)
 	var popoverMsg = Hualala.UI.PopoverMsgTip,
 		toptip = Hualala.UI.TopTip;
 
-	var giftEffectTimeHours = Hualala.Common.getMinuteIntervalOptions({
+	HMCM.giftEffectTimeHours = Hualala.Common.getMinuteIntervalOptions({
 		startLabel : '立即生效',
 		end : Hualala.Constants.SecondsOfDay / 60
 	});
+
+	HMCM.mapEGiftEffectTimeHourOptions = function (data) {
+		var opts = _.reduce(data, function (memo, el, i) {
+			if (i == 1) {
+				memo = [memo];
+			}
+			return el.value >= 180 ? memo.concat(el) : memo;
+		});
+		opts = _.map(opts, function (el) {
+			return IX.inherit(el, {
+				value : parseInt($XP(el, 'value')) / 60
+			});
+		});
+		return opts;
+	};
 
 	var GiftSetFormElsCfg = {
 		giftItemID : {
@@ -19103,7 +24244,7 @@ function throttle(method, context)
 						inclusive : false,
 						min : 0,
 						max : 10000,
-						message : "礼品价值必须在0到10000天之间"
+						message : "有效天数必须在1到9999天之间"
 					}
 				}
 			}
@@ -19112,12 +24253,13 @@ function throttle(method, context)
 			type : "combo",
 			label : "生效时间",
 			defaultVal : "0",
-			options : _.reduce(giftEffectTimeHours, function (memo, el, i) {
-				if (i == 1) {
-					memo = [memo];
-				}
-				return el.value >= 180 ? memo.concat(el) : memo;
-			}),
+			options : HMCM.mapEGiftEffectTimeHourOptions(HMCM.giftEffectTimeHours),
+			// options : _.reduce(giftEffectTimeHours, function (memo, el, i) {
+			// 	if (i == 1) {
+			// 		memo = [memo];
+			// 	}
+			// 	return el.value >= 180 ? memo.concat(el) : memo;
+			// }),
 			validCfg : {
 				validators : {}
 			}
@@ -19277,11 +24419,12 @@ function throttle(method, context)
 					options : options
 				});
 			} if (type == 'text' && key == 'giftName') {
-				var groupName = $XP(Hualala.getSessionSite(), 'groupName', ''),
+				var v = self.model.get(key) || $XP(elCfg, 'defaultVal', ''),
+					groupName = $XP(Hualala.getSessionSite(), 'groupName', ''),
 					giftType = self.model.get('giftType') || $XP(GiftSetFormElsHT.get('giftType'), 'defaultVal'),
 					giftLabel = $XP(getGiftTypeSet(giftType), 'label');
 				return IX.inherit(elCfg, {
-					value : groupName + giftLabel,
+					value : v.length == 0 ? (groupName + giftLabel) : v,
 					disabled : 'disabled'
 				});
 			} if (type == 'text' && key == 'giftValue') {
@@ -19289,7 +24432,11 @@ function throttle(method, context)
 					value : self.model.get(key) || $XP(elCfg, 'dafaultVal'),
 					disabled : (self.mode == 'edit') ? 'disabled' : ''
 				});
-			} else {
+			} if(type == 'textarea') {
+                return IX.inherit(elCfg, {
+                    value : Hualala.Common.decodeTextEnter(self.model.get(key) || '') || $XP(elCfg, 'dafaultVal')
+                });
+            }else {
 				return IX.inherit(elCfg, {
 					value : self.model.get(key) || $XP(elCfg, 'dafaultVal')
 				});
@@ -19398,8 +24545,11 @@ function throttle(method, context)
 				var $select = $(this),
 					giftType = $select.val();
 				var $giftValue = $(':text[name=giftValue]', self.container);
-				var $giftValueLabel = $giftValue.parents('.form-group').find('> label');
+				var $giftValueLabel = $giftValue.parents('.form-group').find('> label'),
+					$giftValueSurfix = $giftValue.parents('.form-group').find('.input-group-addon:last');
 				$giftValueLabel.text(giftType == 42 ? '积分点数' : '礼品价值');
+				$giftValueSurfix.text(giftType == 42 ? '点' : '元');
+
 				
 				self.container.find(':text[name=giftName]').trigger('change');
 
@@ -19465,8 +24615,8 @@ function throttle(method, context)
 				model : wizardModalView.model,
 				successFn : function () {
 					var self = this;
-					self.parentView.switchWizardCtrlStatus('reset');
 					self.parentView.getNextStep();
+					self.parentView.switchWizardCtrlStatus('reset');
 				},
 				failFn : function () {
 					var self = this;
@@ -19495,7 +24645,10 @@ function throttle(method, context)
 		if (!nextView) {
 			nIdx == 1 && HMCM.initGiftRuleStep.call(wizardModalView, $nextCnt, nextID, wizardModalView.mode);
 			nIdx == 0 && HMCM.initGiftBaseInfoStep.call(wizardModalView, $nextCnt, nextID, wizardModalView.mode);
+		} else {
+			nIdx == 1 && nextView.emit('reRender');
 		}
+		wizardModalView.switchWizardCtrlStatus('reset');
 		return true;
 	};
 
@@ -19522,16 +24675,26 @@ function throttle(method, context)
 		var wizardModalView = this;
 		wizardModalView.$wizard.find('.wizard-ctrl .btn-cancel').on('click', function (e) {
 			var $btn = $(this);
+			var wizardType = wizardModalView.wizardType;
 			var curIdx = wizardModalView.$wizard.bsWizard('currentIndex'), 
 				cntID = wizardModalView.getTabContentIDByIndex(wizardModalView.$wizard.find('.wizard-nav'), curIdx),
 				stepView = wizardModalView.stepViewHT.get(cntID);
-			var accountID = wizardModalView.model.get('accountID');
-			if (!accountID && curIdx == 0) {
+			var giftItemID = wizardModalView.model.get('giftItemID');
+			if (!giftItemID && curIdx == 0) {
 				wizardModalView.modal.hide();
-			} else {
+			} else if (giftItemID && wizardType == 'create') {
 				Hualala.UI.Confirm({
 					title : '取消创建礼品',
 					msg : '是否取消创建礼品的操作？<br/>之前的操作将不生效！',
+					okLabel : '确定',
+					okFn : function () {
+						wizardModalView.modal.hide();
+					}
+				});
+			} else {
+				Hualala.UI.Confirm({
+					title : '取消编辑礼品',
+					msg : '是否取消当前步骤的操作？<br/>当前步骤的修改将不保存！',
 					okLabel : '确定',
 					okFn : function () {
 						wizardModalView.modal.hide();
@@ -19547,7 +24710,8 @@ function throttle(method, context)
 		toptip = Hualala.UI.TopTip;
 	var GiftSetFormElsHT = HMCM.GiftSetFormElsHT;
 
-	var GiftRuleFormKeys = 'giftItemID,validityDays,egiftEffectTimeHours,isHolidaysUsing,usingTimeType,foodScope,supportOrderType,isOfflineCanUsing,moneyLimitType,moenyLimitValue,shopNames'.split(',');
+	// var GiftRuleFormKeys = 'giftItemID,validityDays,egiftEffectTimeHours,isHolidaysUsing,usingTimeType,foodScope,supportOrderType,isOfflineCanUsing,moneyLimitType,moenyLimitValue,shopNames'.split(',');
+	var GiftRuleFormKeys = 'giftItemID,isHolidaysUsing,usingTimeType,foodScope,supportOrderType,isOfflineCanUsing,moneyLimitType,moenyLimitValue,shopNames'.split(',');
 
 	/**
 	 * 整理礼品规则表单渲染数据
@@ -19605,7 +24769,43 @@ function throttle(method, context)
 			} else {
 				this.formKeys = [];
 			}
-			
+			this.on({
+				reRender : function () {
+					var self = this,
+						giftType = self.model.get('giftType'); 
+					if (giftType == 10) {
+						this.formKeys = GiftRuleFormKeys;
+					} else {
+						this.formKeys = [];
+					}
+					if (self.container.find('.wizard-step-form :text').length > 0) {
+						self.emit('switchGiftRuleForm');
+					} else {
+						self.renderForm();
+						self.initUIComponents();
+						self.bindEvent();
+					}
+				},
+				switchGiftRuleForm : function () {
+					var self = this,
+						giftType = self.model.get('giftType');
+					var $alertWarning = self.container.find('.alert-warning');
+					var $form = self.container.find('.wizard-step-form');
+					var alertMsg = giftType == 40 ? '顾客在获取会员充值类礼品后，将直接充入其会员储值余额账户中！' 
+						: (giftType == 42 ? '顾客在获取会员积分类礼品后，将直接充入其会员积分余额账户中！' : '');
+					if ($alertWarning.length == 0) {
+						$alertWarning = $('<p class="alert alert-warning alert-gift-rule"></p>');
+						self.container.append($alertWarning);
+					}
+					if (giftType == 10) {
+						$alertWarning.html(alertMsg).hide();
+						$form.show();
+					} else {
+						$alertWarning.html(alertMsg).show();
+						$form.hide();
+					}
+				}
+			}, this);
 		},
 		initUIComponents : function () {
 			var self = this,
@@ -19635,11 +24835,17 @@ function throttle(method, context)
 					items : renderData
 				});
 			self.container.html(htm);
-			if (giftType == 40) {
-				self.container.append('<p>顾客在获取会员充值类礼品后，将直接充入其会员储值余额账户中！');
-			} else if (giftType == 42) {
-				self.container.append('<p>顾客在获取会员积分类礼品后，将直接充入其会员积分余额账户中！');
-			}
+			self.emit('switchGiftRuleForm');
+			// var $form = self.container.find('.wizard-step-form');
+			// if (giftType == 40) {
+			// 	$form.hide();
+			// 	self.container.append('<p class="alert alert-warning">顾客在获取会员充值类礼品后，将直接充入其会员储值余额账户中！</p>');
+			// } else if (giftType == 42) {
+			// 	$form.hide();
+			// 	self.container.append('<p class="alert alert-warning">顾客在获取会员积分类礼品后，将直接充入其会员积分余额账户中！</p>');
+			// } else {
+			// 	$form.show();
+			// }
 			
 		},
 		bindEvent : function () {
@@ -19666,7 +24872,11 @@ function throttle(method, context)
 						self.failFn.call(self);
 					},
 					successFn : function () {
+						var resultController = self.parentView.parentView.$container.data('resultController');
 						self.successFn.call(self);
+						if (resultController) {
+							resultController.emit('load');
+						}
 						self.parentView.modal.hide();
 					}
 				});
@@ -19706,6 +24916,8 @@ function throttle(method, context)
 						ret[key] = self.getCheckboxVal(key);
 					} else if (type == 'radiogrp') {
 						ret[key] = self.getRadiboxVal(key);
+					} else if (type == 'selectShops') {
+						ret[key] = $('[name=shopNames] .choose-shop-val', self.container).text();
 					} else {
 						ret[key] = $('[name=' + key + ']', self.container).val() || '';	
 					}
@@ -19733,8 +24945,9 @@ function throttle(method, context)
 				model : wizardModalView.model,
 				successFn : function () {
 					var self = this;
-					self.parentView.switchWizardCtrlStatus('reset');
+					
 					self.parentView.getNextStep();
+					self.parentView.switchWizardCtrlStatus('reset');
 				},
 				failFn : function () {
 					var self = this;
@@ -19824,6 +25037,7 @@ function throttle(method, context)
 			this.modal = null;
 			this.$body = null;
 			this.model = ShopQueryModel;
+			this.model.clearChosenData();
 			this.modalTitle = $XP(cfg, 'modalTitle', '');
 			this.modalClz = $XP(cfg, 'modalClz', '');
 			this.chosenShopIDs = $XP(cfg, 'chosenShopIDs', []);
@@ -19959,9 +25173,14 @@ function throttle(method, context)
 						self.model.clearChosenData();
 						break;
 					case 'delete_items':
-						$comboRight.find('option:not(:selected)').each(function (i, el) {
-							shopIDs.push($(el).attr('value'));
-						});
+						var $unchosenOpts = $comboRight.find('option:not(:selected)');
+						if ($unchosenOpts.length == 0) {
+							self.model.clearChosenData();
+						} else {
+							$unchosenOpts.each(function (i, el) {
+								shopIDs.push($(el).attr('value'));
+							});
+						}
 						break;
 				}
 				self.model.initChosenData(shopIDs);
@@ -20006,7 +25225,7 @@ function throttle(method, context)
 		cardLevelID : {
 			type : 'combo',
 			label : "顾客范围",
-			defaultVal : "-1",
+			defaultVal : "0",
 			options : Hualala.TypeDef.MCMDataSet.EventCardLevels,
 			validCfg : {
 				validators : {
@@ -20182,7 +25401,7 @@ function throttle(method, context)
 		maxPartInPerson : {
 			type : "text",
 			label : "最大报名人数",
-			defaultVal : '0',
+			defaultVal : '',
 			validCfg : {
 				validators : {
 					notEmpty : {
@@ -20192,9 +25411,9 @@ function throttle(method, context)
 						message : "最大报名人数必须为数字"
 					},
 					greaterThan : {
-						inclusive : true,
+						inclusive : false,
 						value : 0,
-						message : "最大报名人数必须大于或等于0"
+						message : "最大报名人数必须大于0"
 					}
 				}
 			}
@@ -20319,7 +25538,11 @@ function throttle(method, context)
 					value : v,
 					options : options
 				});
-			} else {
+			} else if (type == 'textarea') {
+                return IX.inherit(elCfg, {
+                    value : Hualala.Common.decodeTextEnter(self.model.get(key) || '') || $XP(elCfg, 'dafaultVal')
+                });
+            }else {
 				return IX.inherit(elCfg, {
 					value : self.model.get(key) || $XP(elCfg, 'dafaultVal')
 				});
@@ -20381,7 +25604,9 @@ function throttle(method, context)
 			
 		},
 		initUIComponents : function () {
-
+			var self = this;
+			var eventWay = self.model.get('eventWay');
+			self.container.find('[name=eventWay]').attr('readonly', (self.mode == 'edit'));
 		},
 		bindEvent : function () {
 			var self = this,
@@ -20401,17 +25626,27 @@ function throttle(method, context)
 				var formParams = self.serializeForm();
 				IX.Debug.info("DEBUG: Event Wizard Form Params:");
 				IX.Debug.info(formParams);
-				
-				self.model.emit('saveCache', {
+				self.model.emit(act, {
 					params : formParams,
 					failFn : function () {
 						self.failFn.call(self);
 					},
 					successFn : function () {
+						self.switchViewMode('edit');
 						self.successFn.call(self);
-
+						
 					}
-				})
+				});
+				// self.model.emit('saveCache', {
+				// 	params : formParams,
+				// 	failFn : function () {
+				// 		self.failFn.call(self);
+				// 	},
+				// 	successFn : function () {
+				// 		self.successFn.call(self);
+
+				// 	}
+				// })
 			});
 		},
 		initValidFieldOpts : function () {
@@ -20439,6 +25674,23 @@ function throttle(method, context)
 		switchViewMode : function (mode) {
 			this.mode = mode;
 			this.parentView.switchViewMode(mode);
+		},
+		refresh : function () {
+			var self = this;
+			this.formParams = this.model.getAll();
+			self.initUIComponents();
+		},
+		delete : function (successFn, faildFn) {
+			var self = this;
+			self.model.emit('deleteItem', {
+				itemID : self.model.get('eventID'),
+				successFn : function (res) {
+					successFn(res);
+				},
+				faildFn : function (res) {
+					faildFn(res);
+				}
+			});
 		}
 	});
 	HMCM.EventBaseInfoStepView = EventBaseInfoStepView;
@@ -20501,6 +25753,8 @@ function throttle(method, context)
 			// nIdx == 2 && HMCM.initEventGiftSetStep.call(wizardModalView, $nextCnt, nextID, wizardModalView.mode);
 		} else {
 			nIdx == 1 && nextView.refresh();
+			nIdx == 0 && nextView.refresh();
+            nIdx == 3 && nextView.refresh();
 		}
 		return true;
 	};
@@ -20535,18 +25789,51 @@ function throttle(method, context)
 		var wizardModalView = this;
 		wizardModalView.$wizard.find('.wizard-ctrl .btn-cancel').on('click', function (e) {
 			var $btn = $(this);
+			var wizardType = wizardModalView.wizardType;
 			var curIdx = wizardModalView.$wizard.bsWizard('currentIndex'), 
 				cntID = wizardModalView.getTabContentIDByIndex(wizardModalView.$wizard.find('.wizard-nav'), curIdx),
 				stepView = wizardModalView.stepViewHT.get(cntID);
-			var accountID = wizardModalView.model.get('accountID');
-			if (!accountID && curIdx == 0) {
+			var eventID = wizardModalView.model.get('eventID');
+			if (!eventID && curIdx == 0) {
 				wizardModalView.modal.hide();
-			} else {
+			} else if (eventID && wizardType == 'create') {
 				Hualala.UI.Confirm({
-					title : '取消创建活动',
-					msg : '是否取消创建活动的操作？<br/>之前的操作将不生效！',
+					title : '取消创建活动配置',
+					msg : '是否取消创建活动的操作？<br/>所有操作步骤都不保存！',
 					okLabel : '确定',
 					okFn : function () {
+						stepView.delete(function (res) {
+							var pContainer = wizardModalView.parentView.$container;
+							var pResultController = pContainer.data('resultController'),
+								pResultView = null;
+							if (!pResultController) {
+								wizardModalView.parentView.model.emit('load');
+							} else {
+								pResultView = pResultController.model.emit('load');
+							}
+							wizardModalView.modal.hide();
+						}, function (res) {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+						});
+					}
+				});
+			} else {
+				Hualala.UI.Confirm({
+					title : '取消编辑活动配置',
+					msg : '是否取消当前步骤的操作？<br/>当前步骤的修改将不保存！',
+					okLabel : '确定',
+					okFn : function () {
+						var pContainer = wizardModalView.parentView.$container;
+						var pResultController = pContainer.data('resultController'),
+							pResultView = null;
+						if (!pResultController) {
+							wizardModalView.parentView.model.emit('load');
+						} else {
+							pResultView = pResultController.model.emit('load');
+						}
 						wizardModalView.modal.hide();
 					}
 				});
@@ -20576,6 +25863,8 @@ function throttle(method, context)
 			if (type == 'section') {
 				var eventStartDate = self.model.get('eventStartDate') || '',
 					eventEndDate = self.model.get('eventEndDate') || '';
+				eventStartDate = (IX.isEmpty(eventStartDate) || eventStartDate == 0) ? '' : eventStartDate;
+				eventEndDate = (IX.isEmpty(eventEndDate) || eventEndDate == 0) ? '' : eventEndDate;
 				return IX.inherit(elCfg, {
 					min : IX.inherit($XP(elCfg, 'min'), {
 						value : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(eventStartDate), 'yyyy/MM/dd')
@@ -20610,7 +25899,7 @@ function throttle(method, context)
 					v = 0;
 				if (countCycleDays == 0 && partInTimes == 0) {
 					v = 0;
-				} else if (countCycleDays !== 0 && partInTimes != 0) {
+				} else if (countCycleDays != 0 && partInTimes != 0) {
 					v = 2;
 				} else {
 					v = 1;
@@ -20693,6 +25982,9 @@ function throttle(method, context)
 			} else {
 				self.container.find(':text[name=maxPartInPerson]').parents('.form-group').show();
 			}
+			if(eventWay== 30){
+				self.container.find(':checkbox[name=chkSendPoints],:text[name=sendPoints]').parents('.form-group').hide();
+			}
 			if (eventWay == 40 || eventWay == 41) {
 				self.container.find(':checkbox[name=chkDeductPoints],:text[name=deductPoints]').parents('.form-group').hide();
 				// self.container.find(':text[name=deductPoints]').parents('.form-group').hide();
@@ -20736,7 +26028,18 @@ function throttle(method, context)
 				var formParams = self.serializeForm();
 				IX.Debug.info("DEBUG: Event Wizard Form Params:");
 				IX.Debug.info(formParams);
-				self.model.emit(act, {
+				// self.model.emit(act, {
+				// 	params : formParams,
+				// 	failFn : function () {
+				// 		self.failFn.call(self);
+				// 	},
+				// 	successFn : function () {
+				// 		self.successFn.call(self);
+				// 		self.switchViewMode('edit');
+				// 		// self.parentView.modal.hide();
+				// 	}
+				// });
+				self.model.emit('editEvent', {
 					params : formParams,
 					failFn : function () {
 						self.failFn.call(self);
@@ -20905,6 +26208,18 @@ function throttle(method, context)
 			var self = this;
 			this.formParams = this.model.getAll();
 			self.initUIComponents();
+		},
+		delete : function (successFn, faildFn) {
+			var self = this;
+			self.model.emit('deleteItem', {
+				itemID : self.model.get('eventID'),
+				successFn : function (res) {
+					successFn(res);
+				},
+				faildFn : function (res) {
+					faildFn(res);
+				}
+			});
 		}
 	});
 
@@ -20949,11 +26264,18 @@ function throttle(method, context)
 	});
 
 	var EventGiftsSetHT = new IX.IListManager();
-	var EventGiftSetFormKeys = "EGiftID,EGiftName,EGiftTotalCount,EGiftValidUntilDayCount,EGiftOdds,EGiftEffectTimeHours".split(',');
+	var EventGiftSetFormKeys = "EGiftID,EGiftType,EGiftName,EGiftTotalCount,EGfitValidUntilDayCount,EGiftOdds,EGiftEffectTimeHours".split(',');
 	var EventGiftLevelCount = 3;
 	var GiftLevelNames = ["", "一等奖","二等奖","三等奖"];
+	var GiftNames = ["", "礼品一","礼品二","礼品三"];
+	HMCM.GiftLevelNames = GiftLevelNames;
+	HMCM.GiftNames = GiftNames;
 	var EventGiftSetFormElsCfg = {
 		EGiftID : {
+			type : 'hidden',
+			defaultVal : ''
+		},
+		EGiftType : {
 			type : 'hidden',
 			defaultVal : ''
 		},
@@ -20984,14 +26306,14 @@ function throttle(method, context)
 						message : "奖品总数必须为数字"
 					},
 					greaterThan : {
-						inclusive : true,
+						inclusive : false,
 						value : 0,
-						message : "奖品总数必须大于或等于0"
+						message : "奖品总数必须大于0"
 					}
 				}
 			}
 		},
-		EGiftValidUntilDayCount : {
+		EGfitValidUntilDayCount : {
 			type : "text",
 			label : "有效天数",
 			defaultVal : "30",
@@ -21006,9 +26328,9 @@ function throttle(method, context)
 						message : "有效天数必须为数字"
 					},
 					greaterThan : {
-						inclusive : true,
+						inclusive : false,
 						value : 0,
-						message : "有效天数必须大于或等于0"
+						message : "有效天数必须大于0"
 					}
 				}
 			}
@@ -21024,6 +26346,26 @@ function throttle(method, context)
 					notEmpty : {
 						message : "请输入中奖概率"
 					},
+					callback : {
+						message : "所有奖品中奖概率总和不能超过100",
+						callback : function (value, validator, $field) {
+							var $fields = validator.$form.find(':text[name^=EGiftOdds_]');
+							var count = 0;
+							for (var i = 0, l = $fields.length; i < l; i++) {
+								var v = $fields.eq(i).val();
+								v = (isNaN(v) || IX.isEmpty(v)) ? 0 : parseFloat(v);
+								count += v;
+							}
+							if (count <= 100) {
+								$fields.each(function () {
+									validator.updateStatus($(this), validator.STATUS_VALID, 'callback');
+								});
+								return true;
+							}
+							return false;
+
+						}
+					},
 					between : {
 						min : 0.0001,
 						max : 100,
@@ -21036,12 +26378,13 @@ function throttle(method, context)
 			type : "combo",
 			label : "生效时间",
 			defaultVal : "0",
-			options : _.reduce(giftEffectTimeHours, function (memo, el, i) {
-				if (i == 1) {
-					memo = [memo];
-				}
-				return el.value >= 180 ? memo.concat(el) : memo;
-			}),
+			options : HMCM.mapEGiftEffectTimeHourOptions(giftEffectTimeHours),
+			// options : _.reduce(giftEffectTimeHours, function (memo, el, i) {
+			// 	if (i == 1) {
+			// 		memo = [memo];
+			// 	}
+			// 	return el.value >= 180 ? memo.concat(el) : memo;
+			// }),
 			validCfg : {
 				validators : {}
 			}
@@ -21071,18 +26414,25 @@ function throttle(method, context)
 		var self = this,
 			formKeys = self.formKeys;
 		var eventWay = self.model.get('eventWay');
+		var hasEGiftOdds = false;
+		var giftLevelNames = eventWay == 20 ? GiftLevelNames : GiftNames;
 		var ret = [];
 		for (var i = 1; i <= EventGiftLevelCount; i++) {
-			var giftLevelName = GiftLevelNames[i],
+			var giftLevelName = giftLevelNames[i],
 				panelClz = 'mcm-evtgift-panel ';
 			var EGiftID = self.model.get('EGiftID_' + i);
 			if ((EGiftID != 0 && !IX.isEmpty(EGiftID)) || i == 1) {
 				panelClz += ' isActive ';
 			}
-			if (eventWay == 21 || eventWay == 30) {
+			if (eventWay == 21 || eventWay == 22||eventWay == 30) {
 				panelClz += ' singlegift ';
 			}
-			var addbtn = {clz : 'btn-warning btn-add', name : 'addGift', label : '添加中奖等级'},
+			if (eventWay == 20) {
+				hasEGiftOdds = true;
+			}
+			
+
+			var addbtn = {clz : 'btn-warning btn-add', name : 'addGift', label : (eventWay == 20 ? '添加中奖等级' : '添加礼品')},
 				delbtn = {clz : 'btn-default btn-del', name : 'deleteGift', label : '删除' + giftLevelName};
 			var giftSet = {
 				giftLevelName : giftLevelName,
@@ -21105,6 +26455,25 @@ function throttle(method, context)
 						value : v,
 						options : options
 					});
+				} else if (k == 'EGiftOdds') {
+					v = self.model.get(key) || $XP(elCfg, 'defaultVal');
+					v = isNaN(v) ? 0 : parseFloat(v);
+					return IX.inherit(elCfg, {
+						value : v,
+						disabled : !hasEGiftOdds ? "disabled" : "",
+						readonly : !hasEGiftOdds ? "readonly" : "",
+						hidden : !hasEGiftOdds ? "hidden" : "",
+					});
+				} else if (k == 'EGiftName') {
+					return IX.inherit(elCfg, {
+						value : self.model.get(key) || $XP(elCfg, 'defaultVal'),
+						label : eventWay == 20 ? $XP(elCfg, 'label') : '礼品名称'
+					});
+				} else if (k == 'EGiftTotalCount') {
+					return IX.inherit(elCfg, {
+						value : self.model.get(key) || $XP(elCfg, 'defaultVal'),
+						label : eventWay == 20 ? $XP(elCfg, 'label') : '礼品总数'
+					});
 				} else {
 					return IX.inherit(elCfg, {
 						value : self.model.get(key) || $XP(elCfg, 'defaultVal')
@@ -21121,7 +26490,15 @@ function throttle(method, context)
 				// }
 			}));
 		}
-		return ret;
+		// return ret;
+		// 报名活动没有奖品设置表单
+		return {
+			hideTip : eventWay == 20 || eventWay == 22 ? '' : 'hidden',
+			tip : eventWay == 22 ? "报名活动，不需要设置礼品" : "活动所有奖品的中奖概率合计不能大于100%！",
+			giftSetTitle : eventWay == 20 ? '中奖等级设置' : '礼品设置',
+			hidden : eventWay == 22 ? "hidden" : "",
+			gifts : ret
+		};
 	};
 
 
@@ -21217,17 +26594,40 @@ function throttle(method, context)
 				});
 			});
 
+			self.container.on('change', ':text[name^=EGiftName]', function (e) {
+				var $txt = $(this),
+					name = $txt.attr('name');
+				self.container.find('form').bootstrapValidator('revalidateField', name);
+			});
+
+			self.container.on('change', ':hidden[name^=EGiftType]', function (e) {
+				var $txt = $(this),
+					name = $txt.attr('name'),
+					val = $txt.val();
+				var $els = $txt.parents('.mcm-evtgift-form').find('[name^=EGfitValidUntilDayCount], [name^=EGiftEffectTimeHours]'),
+					$fmgrps = $els.parents('.form-group');
+				if (val == 10) {
+					$els.attr('disabled', false);
+					$fmgrps.removeClass('hidden');
+				} else {
+					$els.attr('disabled', true);
+					$fmgrps.addClass('hidden');
+				}
+			});
+
 			self.container.on('click', '.btn[name=pickgift]', function (e) {
 				var $btn = $(this);
 				var modal = new HMCM.PickGiftModal({
 					trigger : $btn,
 					selectedFn : function (gift, $triggerEl) {
 						var giftID = $XP(gift, 'giftItemID', ''),
-							giftName = $XP(gift, 'giftName', '');
+							giftName = $XP(gift, 'giftName', ''),
+							giftType = $XP(gift, 'giftType', '');
 						var panel = $triggerEl.parents('.mcm-evtgift-panel'),
 							idx = parseInt(panel.attr('data-index')) + 1;
 						$('[name=EGiftID_' + idx + ']', panel).val(giftID);
-						$('[name=EGiftName_' + idx + ']', panel).val(giftName);
+						$('[name=EGiftName_' + idx + ']', panel).val(giftName).trigger('change');
+						$('[name=EGiftType_' + idx + ']', panel).val(giftType).trigger('change');
 					}
 				});
 			});
@@ -21242,6 +26642,7 @@ function throttle(method, context)
 				switch (k) {
 					case "EGiftID":
 					case "EGiftName":
+					case "EGiftType":
 						$el.val('');
 						break;
 					case "EGiftEffectTimeHours":
@@ -21249,7 +26650,7 @@ function throttle(method, context)
 					case "EGiftOdds":
 						$el.val(0);
 						break;
-					case "EGiftValidUntilDayCount":
+					case "EGfitValidUntilDayCount":
 						$el.val(30);
 						break;
 				}
@@ -21259,14 +26660,15 @@ function throttle(method, context)
 			var self = this,
 				renderData = self.mapFormElsData.call(self),
 				tpl = self.get('layoutTpl'),
-				htm = tpl({
-					gifts : renderData
-				});
+				// htm = tpl({
+				// 	gifts : renderData
+				// });
+				htm = tpl(renderData);
 			self.container.html(htm);
 		},
 		initValidFieldOpts : function () {
 			var self = this,
-				formKeys = _.reject(self.formKeys, function (k) {return k == 'EGiftID'}),
+				formKeys = _.reject(self.formKeys, function (k) {return k == 'EGiftID' || k == 'EGiftType'}),
 				ret = {};
 			for (var i = 1; i <= EventGiftLevelCount; i++) {
 				_.each(formKeys, function (k) {
@@ -21290,6 +26692,18 @@ function throttle(method, context)
 				});
 			}
 			return ret;
+		},
+		delete : function (successFn, faildFn) {
+			var self = this;
+			self.model.emit('deleteItem', {
+				itemID : self.model.get('eventID'),
+				successFn : function (res) {
+					successFn(res);
+				},
+				faildFn : function (res) {
+					faildFn(res);
+				}
+			})
 		}
 	});
 
@@ -21332,6 +26746,7 @@ function throttle(method, context)
 		toptip = Hualala.UI.TopTip;
 
 	var MCMGiftListHeaderCfg = [
+		{key : "giftItemID", clz : "hidden", label : ""},
 		{key : "giftType", clz : "", label : "礼品类型"},
 		{key : "giftName", clz : "text", label : "礼品名称"}
 	];
@@ -21344,12 +26759,19 @@ function throttle(method, context)
 		var formatDateTimeValue = Hualala.Common.formatDateTimeValue;
 		switch(colKey) {
 			// 礼品列表各列参数
-			case "giftType":
-				var giftCardTpl = self.get('giftCardTpl'),
-					giftValue = $XP(row, 'giftValue', 0),
-					giftTypes = Hualala.TypeDef.MCMDataSet.GiftTypes,
-					giftType = _.find(giftTypes, function (el) {return $XP(el, 'value') == v;});
+			// case "giftType":
+			// 	var giftCardTpl = self.get('giftCardTpl'),
+			// 		giftValue = $XP(row, 'giftValue', 0),
+			// 		giftItemID = $XP(row, 'giftItemID', ''),
+			// 		giftTypes = Hualala.TypeDef.MCMDataSet.GiftTypes,
+			// 		giftType = _.find(giftTypes, function (el) {return $XP(el, 'value') == v;});
 
+			// 	r.value = giftItemID;
+			// 	r.text = $XP(giftType, 'label', '');
+			// 	break;
+			case "giftType":
+				var giftTypes = Hualala.TypeDef.MCMDataSet.GiftTypes,
+					giftType = _.find(giftTypes, function (el) {return $XP(el, 'value') == v;});
 				r.value = v;
 				r.text = $XP(giftType, 'label', '');
 				break;
@@ -21496,7 +26918,8 @@ function throttle(method, context)
 				var $p = $tr.find('p[data-value]');
 				self.selectedFn({
 					giftItemID : $p.eq(0).attr('data-value'),
-					giftName : $p.eq(1).attr('data-value')
+					giftType : $p.eq(1).attr('data-value'),
+					giftName : $p.eq(2).attr('data-value')
 				}, self.trigger);
 				self.modal.hide();
 			});
@@ -21567,11 +26990,15 @@ function throttle(method, context)
 		bindEvent : function () {
 
 		},
+        refresh: function() {
+            var self = this;
+            self.renderForm()
+        },
 		submit : function () {
 			var self = this;
 			var eventID = self.model.get('eventID');
 			self.model.emit('switchEvent', {
-				params : {
+				post : {
 					eventID : eventID,
 					isActive : 1
 				},
@@ -21580,7 +27007,25 @@ function throttle(method, context)
 				},
 				successFn : function () {
 					self.successFn.call(self);
+					// self.parentView.parentView.emit('render');
+					var resultController = self.parentView.parentView.$container.data('resultController');
+					if (resultController) {
+						resultController.emit('load');
+					}
+					
 					self.parentView.modal.hide();
+				}
+			});
+		},
+		delete : function (successFn, faildFn) {
+			var self = this;
+			self.model.emit('deleteItem', {
+				itemID : self.model.get('eventID'),
+				successFn : function (res) {
+					successFn(res);
+				},
+				faildFn : function (res) {
+					faildFn(res);
 				}
 			});
 		}
@@ -21679,6 +27124,13 @@ function throttle(method, context)
 		var self = this;
 		var r = {value : '', text : ''}, v = $XP(row, colKey, '');
 		var userInfo = $XP(row, 'userInfo', {});
+			// userInfo = !IX.isEmpty(userInfo) && IX.isString(userInfo) ? JSON.parse(userInfo) : {};
+			try {
+			  //userinfo有可能不是合法的JSON字符串，便会产生异常
+			  userInfo = !IX.isEmpty(userInfo) && IX.isString(userInfo) ? JSON.parse(userInfo) : {};
+			} catch (e) {
+			  userInfo = {};
+			}
 		var formatDateTimeValue = Hualala.Common.formatDateTimeValue;
 		switch(colKey) {
 			case "getWay":
@@ -21693,7 +27145,8 @@ function throttle(method, context)
 				break;
 			case "validUntilDate":
 				r.value = v;
-				r.text = IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd');
+				r.text=(IX.isEmpty(v) || v== 0) ? '' : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd')
+				// r.text = IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd');
 				break;
 			case "giftStatus":
 				v = getGiftStatusTypeSet(v);
@@ -21797,6 +27250,13 @@ function throttle(method, context)
 		var self = this;
 		var r = {value : '', text : ''}, v = $XP(row, colKey, '');
 		var userInfo = $XP(row, 'userInfo', {});
+			// userInfo = !IX.isEmpty(userInfo) && IX.isString(userInfo) ? JSON.parse(userInfo) : {};
+			try {
+			  //userinfo有可能不是合法的JSON字符串，便会产生异常
+			  userInfo = !IX.isEmpty(userInfo) && IX.isString(userInfo) ? JSON.parse(userInfo) : {};
+			} catch (e) {
+			  userInfo = {};
+			}
 		var formatDateTimeValue = Hualala.Common.formatDateTimeValue;
 		switch(colKey) {
 			case "getWay":
@@ -21904,6 +27364,21 @@ function throttle(method, context)
 					},
 					mobile : {
 						message : "请输入正确的手机号"
+					},
+					ajaxValid : {
+						api : "queryUserBaseInfoByMobile",
+						name : 'regMobile',
+						data : {
+							regMobileStatus : 1
+						},
+						cbFn : function (res, $field) {
+							if (res.resultcode == '000') {
+								$field.data({
+									userBaseInfo : $XP(res, 'data.records')[0] || {}
+								});
+							}
+						},
+						message : "该手机号未注册为会员"
 					}
 				}
 			}
@@ -22035,6 +27510,11 @@ function throttle(method, context)
 					},
 					numeric : {
 						message : "请输数字"
+					},
+					greaterThan : {
+						inclusive : true,
+						value : 0,
+						message : "请输入大于等于0的数"
 					},
 					callback : {
 						message : "请输入正确格式的单价",
@@ -22177,8 +27657,9 @@ function throttle(method, context)
 			return IX.inherit(elCfg, {
 				id : $XP(elCfg, 'id', '') + '_' + IX.id().replaceAll('ix', ''),
 				value : key == 'giftItemID' ? $XP(parentView, 'giftItemID', '') : $XP(elCfg, 'defaultVal', ''),
+				validCfg : $XP(elCfg, 'validCfg', ''),
 				label : key == 'giftCount' ? '支付张数' : $XP(elCfg, 'label', '')
-			});
+			});  
 		});
 		return ret;
 	};
@@ -22325,6 +27806,7 @@ function throttle(method, context)
 			var $form = $(e.target),
 				bv = $form.data('bootstrapValidator');
 			var formParams = serializeDonateGiftForm.call(self);
+
 			IX.Debug.info("DEBUG: Donate Gift Form Params:");
 			IX.Debug.info(formParams);
 			Hualala.Global.giftDetailDonateGift(formParams, function (res) {
@@ -22333,6 +27815,33 @@ function throttle(method, context)
 						msg : "提交成功",
 						type : 'success'
 					});
+					
+					// TODO send sms
+					var $regMobile = $form.find('[name=regMobile]'),
+						userBaseInfo = $regMobile.data('userBaseInfo');
+					var chkSendSms = $XP(formParams, 'chkSendSms');
+					if (chkSendSms == 1) {
+						Hualala.Global.sendSMS({
+							userID : $XP(userBaseInfo, 'userID', ''),
+							userMobile : $XP(userBaseInfo, 'regMobile', ''),
+							content : $form.find('[name=smsContent]').val(),
+							giftItemID : $form.find('[name=giftItemID]').val()
+						}, function (res) {
+							if ($XP(res, 'resultcode', '000')) {
+								toptip({
+									msg : "发送完成",
+									type : 'success'
+								});
+							} else {
+								toptip({
+									msg : $XP(res, 'resultmsg', ''),
+									type : 'danger'
+								});
+							}
+
+							$regMobile.data('userBaseInfo', null);
+						});
+					}
 					self.initFormPanel();
 				} else {
 					toptip({
@@ -22380,6 +27889,7 @@ function throttle(method, context)
 			var $form = $(e.target),
 				bv = $form.data('bootstrapValidator');
 			var formParams = serializePayGiftForm.call(self);
+				formParams .validUntilDate= (formParams .validUntilDate|| '0').replace(/\//g, '');
 			
 			IX.Debug.info("DEBUG: Pay Gift Form Params:");
 			IX.Debug.info(formParams);
@@ -22389,6 +27899,32 @@ function throttle(method, context)
 						msg : "提交成功",
 						type : 'success'
 					});
+					// TODO send sms
+					var $regMobile = $form.find('[name=regMobile]'),
+						userBaseInfo = $regMobile.data('userBaseInfo');
+					var chkSendSms = $XP(formParams, 'chkSendSms');
+					if (chkSendSms == 1) {
+						Hualala.Global.sendSMS({
+							userID : $XP(userBaseInfo, 'userID', ''),
+							userMobile : $XP(userBaseInfo, 'regMobile', ''),
+							content : $form.find('[name=smsContent]').val(),
+							giftItemID : $form.find('[name=giftItemID]').val()
+						}, function (res) {
+							if ($XP(res, 'resultcode', '000')) {
+								toptip({
+									msg : "发送完成",
+									type : 'success'
+								});
+							} else {
+								toptip({
+									msg : $XP(res, 'resultmsg', ''),
+									type : 'danger'
+								});
+							}
+
+							$regMobile.data('userBaseInfo', null);
+						});
+					}
 					self.initFormPanel();
 				} else {
 					toptip({
@@ -22548,7 +28084,22 @@ function throttle(method, context)
 		_.each(formKeys, function (key) {
 			var elCfg = FormElsHT.get(key),
 				type = $XP(elCfg, 'type');
-			ret[key] = $XP(elCfg, 'validCfg', {});
+			ret[key] = key == 'giftCount' ? {
+				validators : {
+					notEmpty : {
+						message : "请输入支付张数"
+					},
+					integer : {
+						message : "请输入正确的支付张数"
+					},
+					between : {
+						inclusive : true,
+						min : 1,
+						max : 100000,
+						message : "请输入大于1到100000之间的整数"
+					}
+				}
+			} : $XP(elCfg, 'validCfg', {});
 		});
 		return ret;
 	};
@@ -22580,7 +28131,12 @@ function throttle(method, context)
 			formEls = _.map(formKeys, function (key) {
 				var elCfg = FormElsHT.get(key),
 					type = $XP(elCfg, 'type');
-				ret[key] = $('[name=' + key + ']', self.$form).val();
+				if (type == 'switcher') {
+					ret[key] = $('[name=' + key + ']', self.$form).bootstrapSwitch('state') == true ? 1 : 0;
+				} else {
+					ret[key] = $('[name=' + key + ']', self.$form).val();
+				}
+				
 			});
 		return ret;
 	};
@@ -22592,7 +28148,11 @@ function throttle(method, context)
 			formEls = _.map(formKeys, function (key) {
 				var elCfg = FormElsHT.get(key),
 					type = $XP(elCfg, 'type');
-				ret[key] = $('[name=' + key + ']', self.$form).val();
+				if (type == 'switcher') {
+					ret[key] = $('[name=' + key + ']', self.$form).bootstrapSwitch('state') == true ? 1 : 0;
+				} else {
+					ret[key] = $('[name=' + key + ']', self.$form).val();
+				}
 			});
 		return ret;
 	};
@@ -22789,7 +28349,8 @@ function throttle(method, context)
 			var self = this;
 			var tblClz = 'table-striped table-hover table-condensed';
 			var records = $XP(data, 'records', []),
-				total = $XP(data, 'total', {});
+				//total = $XP(data, 'total', {});
+				total = data;
 			var getways = _.reject(Hualala.TypeDef.MCMDataSet.GiftDistributeTypes, function (el) {
 				return IX.isEmpty(el.value) || !el.include;
 			});
@@ -22843,8 +28404,8 @@ function throttle(method, context)
 					cols.push({
 						clz : '',
 						type : 'text',
-						value : $XP(row, 'totalCount', 0),
-						text : $XP(row, 'totalCount', 0)
+						value : $XP(row, 'sum', 0),
+						text : $XP(row, 'sum', 0)
 					});
 					return {
 						clz : '',
@@ -22873,8 +28434,8 @@ function throttle(method, context)
 				});
 				cols.push({
 					clz : '',
-					value : $XP(total, 'totalCount', 0),
-					text : $XP(total, 'totalCount', 0)
+					value : $XP(total, 'countTotal', 0),
+					text : $XP(total, 'countTotal', 0)
 				});
 				return {
 					tfoot : [
@@ -22893,7 +28454,9 @@ function throttle(method, context)
 		},
 		mapLayoutRenderData : function (data) {
 			var self = this;
-			var giftData = $XP(data, 'records', [])[0];
+			var giftData = $XP(data, 'records', [])[0],
+				giftValue = $XP(giftData, 'giftValue', 0),
+				createTime = $XP(giftData, 'createTime', '');
 			var giftTypeSet = getGiftTypeSet($XP(giftData, 'giftType')),
 				navs = $XP(giftTypeSet, 'navs', []);
 			var ret = {};
@@ -22902,11 +28465,15 @@ function throttle(method, context)
 				label : $XP(giftData, 'giftValue', ''),
 				unit : $XP(giftTypeSet, 'unit', '')
 			};
+			createTime = (IX.isEmpty(createTime) || createTime == 0) ? '' : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(createTime), 'yyyy/MM/dd HH:mm');
 			ret = IX.inherit(giftData, {
 				card : card,
 				giftTypeLabel : $XP(giftTypeSet, 'label', ''),
 				giftTypeUnit : $XP(giftTypeSet, 'unit', ''),
-				infoLabelClz : 'col-sm-2',
+				giftValue : Hualala.Common.Math.prettyPrice(giftValue),
+				createTime : createTime,
+				infoLabelClz : 'col-sm-3',
+				infoTextClz : 'col-sm-7',
 				navs : self.mapTabNavData(navs),
 				grid : self.mapGiftStatisticGridData($XP(data, 'myGiftDataset.data', {}))
 			});
@@ -23098,7 +28665,18 @@ function throttle(method, context)
 		bindEvent : function () {
 			var self = this;
 			self.on({
-
+                switchWin: function (params) {
+                    //更改入围状态
+                    Hualala.Global.switchMCMTrackItem(_.pick(params, 'itemID', 'winFlag'), function (rsp) {
+                        if (rsp.resultcode != '000') {
+                            var failFn = $XF(params, 'failFn');
+                            failFn();
+                            return;
+                        }
+                        var successFn = $XF(params, 'successFn');
+                        successFn();
+                    });
+                }
 			}, self);
 		}
 	});
@@ -23108,22 +28686,51 @@ function throttle(method, context)
 	var MCMQueryEventTrackBaseHeaderCfg = [
 		{key : "customerName", clz : "text", label : "姓名"},
 		{key : "customerSex", clz : "text", label : "性别"},
-		{key : "cardNO", clz : "text", label : "卡号"},
+		{key : "cardNO", clz : "number", label : "卡号"},
 		{key : "customerMobile", clz : "text", label : "手机号"},
 		{key : "cardLevelName", clz : "text", label : "等级"},
-		{key : "consumptionTotal", clz : "text", label : "消费累计"},
-		{key : "consumptionCount", clz : "text", label : "消费次数"},
-		{key : "createTime", clz : "text", label : "参与时间"}
+		{key : "consumptionTotal", clz : "number", label : "消费累计"},
+		{key : "consumptionCount", clz : "number", label : "消费次数"},
+		{key : "createTime", clz : "date", label : "参与时间"}
 	];
 
 	var mapColItemRenderData = function (row, rowIdx, colKey, eventWay) {
 		var self = this;
 		var r = {value : '', text : ''}, v = $XP(row, colKey, '');
 		var formatDateTimeValue = Hualala.Common.formatDateTimeValue;
+		var HCMath = Hualala.Common.Math;
+		var mapWinLevel = function (winLevel) {
+			var n = winLevel.split('_')[1];
+			return n == undefined ? HMCM.GiftLevelNames[winLevel] : HMCM.GiftLevelNames[n];
+		};
 		switch(colKey) {
 			case "createTime":
 				r.value = v;
 				r.text = IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd HH:mm');
+				break;
+			case "customerSex":
+				r.value = v;
+				r.text = $XP(Hualala.Common.getGender(v), 'label', '');
+				break;
+			case "consumptionTotal":
+				r.value = v;
+				r.text = HCMath.prettyNumeric(HCMath.standardPrice(v));
+				break;
+			case "winFlag":
+				var opts = Hualala.TypeDef.MCMDataSet.JoinTypes;
+				if (eventWay == 20) {
+					r.value = v;
+					r.text = v == 0 ? '未中奖' : mapWinLevel(v);
+				} else {
+					v = _.find(opts, function (el) {
+						return $XP(el, 'value') == v;
+					});
+					r.value = $XP(v, 'value');
+					//r.text = IX.isEmpty(v.value) ? '' : $XP(v, 'label');
+					r.text = '<input type="checkbox" name="switch_win_status" data-status="' +
+                        + v.value + '" data-itemid="' + row.itemID + '"'
+                    + ' data-key="' + $XP(row, '__id__', '') + '" ' + (v.value == 1 ? 'checked ' : '') + '/>';
+				}
 				break;
 			default:
 				r.value = r.text = v;
@@ -23135,17 +28742,17 @@ function throttle(method, context)
 	HMCM.mapEventTrackQueryResultRenderData = function (records) {
 		var self = this;
 		var clz = 'col-md-12',
-			tblClz = ' table-hover mcm-grid',
+			tblClz = ' table-bordered table-striped table-hover ix-data-report mcm-grid',
 			tblHeaders = _.clone(MCMQueryEventTrackBaseHeaderCfg);
 		var eventDetail = self.$container.data('eventDetail'),
 			eventWay = $XP(eventDetail, 'eventWay');
 		if (eventWay == 20) {
 			tblHeaders.push({
-				key : "winFlag", clz : "text", label : "中奖情况"
+				key : "winFlag", clz : "status", label : "中奖情况"
 			});
 		} else if (eventWay == 22) {
 			tblHeaders.push({
-				key : "winFlag", clz : "text", label : "是否入围"
+				key : "winFlag", clz : "status", label : "是否入围"
 			});
 		}
 		var mapColsRenderData = function (row, idx) {
@@ -23274,29 +28881,46 @@ function throttle(method, context)
 				}
 			});
 		},
-		mapLayoutRenderData : function (data) {
+		mapLayoutRenderData : function () {
 			var self = this;
-			var model = new HMCM.BaseEventModel(data);
-			return HMCM.mapEventDetailRenderData(model);
+			var renderData = HMCM.mapEventDetailRenderData(self.eventModel);
+			return IX.inherit(renderData, {
+				evtBaseClz : 'col-sm-12 col-md-6',
+				evtRulesClz : 'col-sm-12 col-md-6',
+				evtGiftsClz : 'col-sm-12 col-md-12'
+			})
 		},
 		renderLayout : function () {
 			var self = this;
 			var eventID = $XP(self.pageCtx, 'params')[0];
-			var renderFn = function (res) {
+			var renderFn = function () {
 				var layoutTpl = self.get('layoutTpl'),
-					renderData = self.mapLayoutRenderData(res);
+					renderData = self.mapLayoutRenderData();
 				var htm = layoutTpl(renderData);
 				self.container.html(htm);
 				self.$nav = self.container.find('.detail-layout > .nav-bar');
 				self.$eventTrack = self.container.find('.event-track');
-				self.$eventTrack.data('eventDetail', res);
+				self.$eventTrack.data('eventDetail', self.eventModel.getAll());
 				self.initBreadCrumb();
 				self.initEventTrackData();
 			};
 			self.emit('getDetail', {
 				post : {eventID : eventID},
 				successFn : function (res) {
-					renderFn($XP(res, 'data.records', [])[0]);
+					var _data = $XP(res, 'data.records', [])[0];
+					self.eventModel = new HMCM.BaseEventModel(_data);
+					self.eventModel.emit('loadCardLevelIDs', {
+						successFn : function (res) {
+							renderFn();
+						},
+						faildFn : function (res) {
+							toptip({
+								msg : $XP(res, 'resultmsg', ''),
+								type : 'danger'
+							});
+							renderFn();
+						}
+					});
 				},
 				faildFn : function (res) {
 
@@ -23306,6 +28930,11 @@ function throttle(method, context)
 		initEventTrackData : function () {
 			var self = this;
 			var queryKeys = Hualala.MCM.QueryFormKeys.EventTrackBaseQueryKeys;
+			var eventDetail = self.$eventTrack.data('eventDetail'),
+				eventWay = $XP(eventDetail, 'eventWay');
+			if (eventWay == '20' || eventWay == '22') {
+				queryKeys.push('winFlag');
+			}
 			var panel = new HMCM.QueryController({
 				container : self.$eventTrack,
 				resultController : new HMCM.QueryResultControler({
@@ -23348,7 +28977,7 @@ function throttle(method, context)
 		var ctx = Hualala.PageRoute.getPageContextByPath(),
 			$body = $('#ix_wrapper > .ix-body > .container');
 		var queryKeys = Hualala.MCM.QueryFormKeys.GiftMgrQueryKeys;
-		$body.html('<h1>礼品管理页</h1>');
+		// $body.html('<h1>礼品管理页</h1>');
 		var panel = new HMCM.QueryController({
 			container : $body,
 			resultController : new HMCM.QueryResultControler({
@@ -23380,7 +29009,7 @@ function throttle(method, context)
 	var MCMGiftDetailInit = function () {
 		var ctx = Hualala.PageRoute.getPageContextByPath(),
 			$body = $('#ix_wrapper > .ix-body > .container');
-		$body.html('<h1>礼品详情页</h1>');
+		// $body.html('<h1>礼品详情页</h1>');
 		var panel = new HMCM.GiftDetailPage({
 			container : $body
 		});
@@ -23391,7 +29020,7 @@ function throttle(method, context)
 		var ctx = Hualala.PageRoute.getPageContextByPath(),
 			$body = $('#ix_wrapper > .ix-body > .container');
 		var queryKeys = Hualala.MCM.QueryFormKeys.EventMgrQueryKeys;
-		$body.html('<h1>活动管理页</h1>');
+		// $body.html('<h1>活动管理页</h1>');
 		var panel = new HMCM.QueryController({
 			container : $body,
 			resultController : new HMCM.QueryResultControler({
@@ -23426,7 +29055,7 @@ function throttle(method, context)
 	var MCMEventTrackInit = function () {
 		var ctx = Hualala.PageRoute.getPageContextByPath(),
 			$body = $('#ix_wrapper > .ix-body > .container');
-		$body.html('<h1>活动跟踪页</h1>');
+		// $body.html('<h1>活动跟踪页</h1>');
 		var panel = new HMCM.EventTrackPage({
 			container : $body
 		});
@@ -23438,6 +29067,1859 @@ function throttle(method, context)
 	HMCM.MCMEventMgrInit = MCMEventMgrInit;
 	HMCM.MCMEventTrackInit = MCMEventTrackInit;
 })(jQuery, window);;(function ($, window) {
+	IX.ns("Hualala.Agent");
+    
+    Hualala.Agent.AgentInfoInit = function()
+    {
+        var W = Hualala.Weixin,
+            G = Hualala.Global,
+            C = Hualala.Common,
+            tplLib = Hualala.TplLib,
+            U = Hualala.UI,
+            topTip = Hualala.UI.TopTip;
+        
+        var keys = {
+            shopName: '店铺名称',
+            shopID: '店铺账号',
+            shopTel: '店铺电话',
+            HLL_AgentLastRequestTime: '最后请求时间',
+            HLL_AgentRunStatus: '运行状态',
+            foodLastUpdateTimeAndSign: '菜品更新时间',
+            CSP_softName: '餐饮软件',
+            CSP_IFCurrVersionNo: '接口版本号',
+            HLL_AgentCurrVersionNo: '代理程序版本',
+            shopSecret: '通讯密钥',
+            pwd: '登录密码'
+        };
+        
+        var params = { pageNo: 1, pageSize: 15 }, 
+            items = [], page = null;
+            
+        var agentPath = Hualala.PageRoute.createPath('pcclient');
+        var tplAgent = Handlebars.compile(tplLib.get('tpl_agent'));
+        var $container = $('#ix_wrapper > .ix-body > .container');
+        $container.html(tplAgent({agentPath: agentPath}));
+        var $form = $container.find('form'),
+            $city = $form.find('[name=shopID]'),
+            $table = $container.find('table'),
+            $thead = $table.find('thead'),
+            $tbody = $table.find('tbody'),
+            $loading = $container.find('#loading'),
+            $pager = $container.find('#pager'),
+            $noTip = $container.find('#noTip');
+        
+        U.createSchemaChosen($city);
+        
+        var $theadTr = $('<tr>');
+        for(var key in keys)
+        {
+            $theadTr.append($('<th>').html(keys[key]));
+        }
+        $thead.append($theadTr);
+        
+        $pager.on('page', function(e, pageNo)
+        {
+            params.pageNo = pageNo;
+            getAgentInfo();
+        });
+        
+        $city.on('change', function()
+        {
+            params.pageNo = 1;
+            params.shopID = this.value;
+            getAgentInfo();
+        });
+        
+        $tbody.on('click', '.j-viewSecret', function()
+        {
+            var $me = $(this),
+                $secret = $me.siblings('div'),
+                shopID = $me.data('shopID');
+            C.loadData('getAgentInfo', {shopID: shopID}).done(function(records)
+            {
+                var secret = records[0].shopSecret;
+                $secret.text(secret);
+                if(!secret) topTip({msg: '通讯密钥为空!'});
+            });
+        });
+        
+        $tbody.on('click', '.j-resetSecret', function()
+        {
+            var $me = $(this);
+            U.Confirm({msg: '确定重置通讯密钥？', okFn: function()
+            {
+                var $secret = $me.siblings('div'),
+                    shopID = $me.data('shopID');
+                C.loadData('resetAgentSecret', {shopID: shopID}, null, 'data')
+                .done(function(data)
+                {
+                    topTip({msg: '重置成功!', type: 'success'});
+                    $secret.text(data.shopSecret);
+                });
+            }});
+        });
+        
+        $tbody.on('click', '.j-changePwd', function()
+        {
+            Hualala.Shop.resetAngentPwd($(this).data('shopID'));
+        });
+        
+        getAgentInfo();
+        
+        function getAgentInfo()
+        {
+            $table.hide();
+            $pager.hide();
+            $noTip.hide();
+            $loading.show();
+            C.loadData('getAgentInfo', params, null, 'data')
+            .done(function(data)
+            {
+                page = data.page;
+                items = data.records || [];
+                renderData();
+            }).always(function(){ $loading.hide(); });
+        }
+        
+        function renderData()
+        {
+            if(!items.length)
+            {
+                $noTip.show();
+                return;
+            }
+            
+            $table.show();
+            var trs = [];
+            for(var i = 0, item; item = items[i++];)
+            {
+                var $tr = $('<tr>');
+                for(var key in keys)
+                {
+                    var val = item[key] || '', cellCont = val, $cell = $('<td>');
+                    if(key == 'HLL_AgentRunStatus')
+                    {
+                        var t = item.delayTime;
+                        cellCont = val == 1 && t <= 2 ? '在线' :
+                        '离线' + (val == 0 ? '' : '<br>' + t + '分钟');
+                        $cell.addClass('t-c');
+                    }
+                    else if(key == 'shopSecret')
+                    {
+                        cellCont = $('<a href="javascript:;" class="j-viewSecret">查看</a><a href="javascript:;" class="j-resetSecret ml-8">重置</a><div></div>');
+                        cellCont.filter('a').data('shopID', item.shopID);
+                        $cell.addClass('t-c');
+                    }
+                    else if(key == 'pwd')
+                    {
+                        cellCont = $('<a href="javascript:;" class="j-changePwd">设置</a>')
+                        .data('shopID', item.shopID)
+                        $cell.addClass('t-c');
+                    }
+                    else if(key == 'CSP_softName')
+                    {
+                        cellCont = val.replace('餐饮软件', '');
+                    }
+                    else if(key == 'HLL_AgentLastRequestTime' || key == 'foodLastUpdateTimeAndSign')
+                    {
+                        cellCont = C.formatDateStr(val, 12).replace(' ', '<br>');
+                        $cell.addClass('t-c');
+                    }
+                    
+                    $cell.html(cellCont).appendTo($tr);
+                }
+                trs.push($tr);
+            }
+            $tbody.html(trs);
+            
+            $pager.IXPager({total : page.pageCount, page: page.pageNo, maxVisible: 10, href : 'javascript:;'});
+        }
+        
+    }
+    
+    
+})(jQuery, window);
+
+
+
+
+
+
+
+
+
+
+
+;(function(window, $) {
+    IX.ns('Hualala.Saas');
+    var ListModel = Stapes.subclass({
+        constructor: function () {
+            this.set({sessionData: Hualala.getSessionData()});
+            this.set({sessionSite: Hualala.getSessionSite()});
+            this.init();
+        }
+    });
+    var G = Hualala.Global;
+    ListModel.proto({
+        init: function (view) {
+            var self = this,
+                params = {groupID: $XP(self.get('sessionSite'), 'groupID', '')};
+
+            G.getSaasCategories(params, function (rsp) {
+                if (rsp.resultcode == '000') {
+                    self.set({categories: $.extend(true, {data: []}, {data: rsp.data.records}).data});
+                    if(view) view.emit('renderCategories', self.get('categories'));
+                }
+            });
+
+            G.querySaasGoods(params, function (rsp) {
+                if (rsp.resultcode == '000') {
+                    self.set({goods:  $.extend(true, {data: []}, {data: rsp.data.records}).data});
+                    if(view) view.emit('renderGoods', self.get('goods'));
+                }
+            });
+
+            G.getSaasDepartments($.extend(true, {departmentType: '1,3'}, params), function (rsp) {
+                if (rsp.resultcode == '000') {
+                    self.set({departments:  $.extend(true, {data: []}, {data: rsp.data.records}).data});
+                    if(view) view.emit('renderDepartments', self.get('departments'));
+                }
+            });
+        },
+        bindEvent: function () {
+        }
+    });
+    Hualala.Saas.ListModel = ListModel;
+})(window, jQuery);;(function(window, $) {
+    IX.ns('Hualala.Saas');
+    var toptip = Hualala.UI.TopTip,
+        U = Hualala.UI,
+        goodsInfo = {categories: [], departments: [], goods: []};
+    var ListView = Stapes.subclass({
+        constructor: function (cfg) {
+            this.container = $XP(cfg, 'container', null);
+            this.bindEvent();
+        }
+    });
+
+    var swichtOkCbFnMap = {
+            isActive: function(params) {console.log('isActive', params)},
+            isOpen: function(params) {console.log('isOpen', params)},
+            isDiscount: function(params) {console.log('isDiscount', params)}
+        },
+        goodsTableAttr = {
+            tableClass: 'saas-goods-table',
+            tableHeads: ["商品图片", "星级", "商品分类", "商品编码", "商品名称", "英文名", "是否外送", "自动加入", "启用状态", "网上开放", "参与打折", "操作"],
+            displayAttr: ["imageHWP", "starLevel", "foodCategoryName", "foodCode", "foodName", "foodEnName", "takeawayTag", "isAutoAdd", "isActive", "isOpen", "isDiscount", "rowControl"]
+        };
+
+    var initEventSwitch = function($checkbox) {
+        var self = this;
+        _.each($checkbox, function (el) {
+            $(el).bootstrapSwitch({
+                state: !!$(el).data('status'),
+                onColor: 'success',
+                onText: '已启用',
+                offText: '未启用'
+            });
+        });
+        $checkbox.on('switchChange.bootstrapSwitch', function (el, state) {
+            var $this = $(this),
+                stateText = state ? '开启' : '关闭',
+                params = {foodID: $this.parents('tr').data('foodid'), groupID: $XP(Hualala.getSessionSite(), 'groupID', '')};
+            params[$this.attr('name')] = +state;
+            Hualala.UI.Confirm({
+                title: stateText + $this.data('text') ,
+                msg: '确定' + stateText + $this.data('text') + '吗？',
+                okFn: function () {
+                    self.emit('switchEvent', _.extend(params, {
+                        successFn: function (res) {
+                            toptip({msg: stateText + $this.data('text') + '成功', type: 'success'});
+                        },
+                        faildFn: function () {
+                            $this.bootstrapSwitch('toggleState', true);
+                            toptip({msg: stateText + $this.data('text') + '失败', type: 'danger'});
+                        }
+                    }));
+                    swichtOkCbFnMap[$this.attr('name')](params);
+                },
+                cancelFn: function () {
+                    $this.bootstrapSwitch('toggleState', true);
+                }
+            });
+        });
+    };
+
+    var initFoodStarGrade = function (starCount) {
+        Handlebars.registerHelper('stars', function (starLevel, options) {
+            var lightStarCount = parseInt(starLevel/10),
+                hasHalfStar = starLevel%10 != 0,
+                stars = [];
+            for (var i = 0; i < starCount; i++) {
+                if (i < lightStarCount) {
+                    stars[i] = '<i class="glyphicon glyphicon-star"></i>';
+                } else {
+                    stars[i] = '<i class="glyphicon glyphicon-star star-gray"></i>'
+                }
+            }
+            if (hasHalfStar) {
+                stars[lightStarCount] = '<i class="glyphicon glyphicon-star half"></i>';
+            }
+            return stars.join('')
+        });
+    };
+
+    function bindViewEvent($container){
+        $container.parents('.container').on('click', '.query-form button[name="add-good"]', function () {
+            var modalTitle = '添加商品',
+                modalTpl = Handlebars.compile(Hualala.TplLib.get('tpl_edit_good')),
+                modalTplData = {
+                    categories: {options: _.map($.extend(true, {}, goodsInfo.categories), function (category) {
+                    return {name: category.foodCategoryName, value: category.foodCategoryKey};
+                    })},
+                    departments: {options: _.map($.extend(true, {}, goodsInfo.departments), function (d) {
+                        return {name: d.departmentName, value: d.departmentKey};
+                    })}
+                };
+            Handlebars.registerPartial('customSelect', Hualala.TplLib.get('tpl_select'));
+            var goodModal = new U.ModalDialog({id: 'editGood', title: modalTitle, html: modalTpl(modalTplData)}).show();
+        });
+    }
+
+    ListView.proto({
+        init: function () {
+        },
+        bindEvent: function () {
+            this.on('renderCategories', function (categories) {
+                var self = this,
+                    categories = $.extend(true, {data: []}, {data: categories}).data,
+                    searchForm = Handlebars.compile(Hualala.TplLib.get('tpl_search_goods')),
+                    searchParam = {firstItem: {name: 'foodName', value: '商品编码/名称/英文名'},
+                        secondItem: {name: 'foodCategoryKey', value: '商品分类'},
+                        operatorItem: {name: 'add-good', value: '增加商品'},
+                        select: {options: _.map(categories, function (category) {
+                            return {name: category.foodCategoryName, value: category.foodCategoryKey};
+                        }), defaultOption: {name: '全部', selected: 'selected'}, name: 'foodCategoryKey'}
+                    };
+                goodsInfo.categories = $.extend(true, {data: []}, {data: categories}).data;
+                Handlebars.registerPartial('customSelect', Hualala.TplLib.get('tpl_select'));
+                self.container.before(searchForm(searchParam));
+            }, this);
+            this.on('renderGoods', function (goods) {
+                var self = this,
+                    table = Handlebars.compile(Hualala.TplLib.get('tpl_category')),
+                    tbody = Handlebars.compile(Hualala.TplLib.get('tpl_goods_tbody')),
+                    noResult = Handlebars.compile(Hualala.TplLib.get('tpl_no_records'));
+                goodsInfo.goods = $.extend(true, {data: []}, {data: goods}).data;
+                initFoodStarGrade(5);
+                if(goods.length > 0) {
+                    $(table(goodsTableAttr)).appendTo(self.container);
+                    self.container.find('tbody').append($(tbody({goods:goods})));
+                    initEventSwitch.call(self, $('tbody').find('tr td input.status'));
+                } else {
+                    self.container.append(noResult({title: '商品'}))
+                }
+            });
+            this.on('renderDepartments', function (departments) {
+                goodsInfo.departments = $.extend(true, {data: []}, {data: departments}).data;
+            }, this);
+
+            bindViewEvent($(this.container));
+        }
+    });
+    Hualala.Saas.initEventSwitch = initEventSwitch;
+    Hualala.Saas.ListView = ListView;
+})(window, jQuery);;(function(window, $) {
+    IX.ns('Hualala.Saas');
+
+    var SaasListController = Stapes.subclass({
+            constructor: function (cfg) {
+                this.container = $XP(cfg, 'container', null);
+                this.model = new Hualala.Saas.ListModel();
+                this.view = new Hualala.Saas.ListView({container: this.container});
+                if (!this.view || !this.model || !this.container) {
+                    throw("init query failed!");
+                }
+                this.init();
+            }
+        });
+    SaasListController.proto({
+        init: function() {
+            var self = this;
+            self.model.init(self.view);
+            self.bindEvent();
+        },
+        bindEvent: function () {
+        }
+    });
+    Hualala.Saas.ListController = SaasListController;
+})(window, jQuery);;$( function ($, window) {
+    IX.ns('Hualala.Saas.Category');
+    var G = Hualala.Global,
+    /** staticData 表格需要显示的数据
+        *categories 从后台查询的分类信息
+        *categoryTableHead 表格的表头
+        * departments 从后台查询的部门信息
+     *  */
+        staticData = {
+            categories: [],
+            //tableHeads: ['分类编号 ', ' 分类名称 ', ' 出品部门 ', '排序 ', '启用状态 ', ' 操作 '],可以添加部门后使用改行代码
+            tableHeads: ['分类编号 ', ' 分类名称 ', '排序 ', '启用状态 ', ' 操作 '],
+            tableClass: 'saas-category-table',
+            departments:[]
+        },
+        topTip = Hualala.UI.TopTip,
+        $tbody, $container,
+        categoryTableTpl = Handlebars.compile(Hualala.TplLib.get('tpl_category')),
+        categoryTrTpl = Handlebars.compile(Hualala.TplLib.get('tpl_category_tr')),
+        noDataTipTpl = Handlebars.compile(Hualala.TplLib.get(('tpl_no_records'))),
+        shopID = '';
+
+    function initCategory($category, routeParam) {
+        if(routeParam) shopID = routeParam;
+        var btn = '<div class="t-r"><button class="btn btn-warning add-category">新增分类</button></div>';
+        $category.before($(btn));
+        //初始化表格
+        initCategoryTable();
+        //从后台请求部门数据
+        queryDepartments();
+        //从后台请求分类信息
+        queryCategories();
+        //绑定对分类数据的操作的事件
+        bindCategoryOperate();
+    };
+
+    function initCategoryTable() {
+        $container = $('.page-body');
+        $(categoryTableTpl(staticData)).appendTo($container);
+        $tbody = $container.find('tbody');
+    }
+
+    function renderCategories() {
+        if (staticData.categories.length > 0) {
+            _.each(staticData.categories, function (category) {
+                category.description = Hualala.Common.decodeTextEnter(category.description);
+            });
+            if($container.find('.saas-category-table').length == 0){
+                $container.empty();
+                initCategoryTable();
+            }
+            $tbody.empty();
+            $(categoryTrTpl(staticData)).appendTo($tbody);
+            //生成一个bootstrap的开关
+            createSwitch($tbody.find('input.status'));
+        } else {
+            $container.empty();
+            $(noDataTipTpl({title: '分类'})).appendTo($container);
+        }
+    }
+
+    function queryCategories() {
+        var params = {shopID: shopID};
+        G.getSaasCategories(extendGroupIDTo(params), function(rsp)
+        {
+            //用extend方法深度拷貝一份records
+            staticData.categories = $.extend(true, {records:[]}, rsp.data).records;
+            renderCategories();
+        });
+    }
+
+    function queryDepartments() {
+        var params = {departmentType: '1,3'};
+        G.getSaasDepartments(extendGroupIDTo(params), function (rsp) {
+            responseResult(rsp, function(result){
+                var records = result.data.records;
+                staticData.departments = _.map(records, function (record) {
+                    return {key: record.departmentKey, name: record.departmentName};
+                });
+            });
+        });
+    }
+
+    function createSwitch($checkbox)
+    {
+        _.each($checkbox, function (el) {
+            var $el = $(el);
+            $el.bootstrapSwitch({
+                state: !!$el.data('status'),
+                onColor : 'success',
+                onText : '已启用',
+                offText : '未启用'
+            });
+        });
+        $checkbox.on('switchChange.bootstrapSwitch', function (el, state)
+        {
+            var $this = $(this),
+                stateText = state ? '开启' : '关闭';
+            var categoryId = $this.parents('tr').data('foodid');
+            var params = {foodCategoryID: categoryId, isActive: state ? 1 : 0};
+            Hualala.UI.Confirm({
+                title : stateText + "分类",
+                msg : "你确定要" + stateText + "此分类吗？",
+                okFn : function () {
+                    G.switchSaasCategory(extendGroupIDTo(params, categoryId), function(rsp) {
+                        responseResult(rsp, function (data) {
+                            staticData.categories[findCategoryIndex(categoryId)].isActive = state;
+                        }, {msg: stateText + '成功', type: 'success'});
+                    });
+                },
+                cancelFn : function () {
+                    $this.bootstrapSwitch('toggleState', true);
+                }
+            });
+        });
+    }
+
+    function extendGroupIDTo(self, categoryID) {
+        var groupID = !categoryID ? $XP(Hualala.getSessionSite(), 'groupID', -1) : $XP(findCategoryBy(categoryID), 'groupID', '');
+        _.extend(self, {groupID: groupID});
+        return self;
+    }
+    function findCategoryBy(categoryID) {
+        return _.find(staticData.categories, function (category) {
+            return category.foodCategoryID == categoryID;
+        });
+    }
+
+    function findLastCategoryBy(currentID) {
+        return staticData.categories[findCategoryIndex(currentID) - 1];
+    }
+
+    function findNextCategoryBy(currentID) {
+        return staticData.categories[findCategoryIndex(currentID) + 1];
+    }
+
+    function findCategoryIndex(categoryID) {
+        var categoryIds = _.pluck(staticData.categories, 'foodCategoryID');
+        return _.indexOf(categoryIds, categoryID + '');
+    }
+
+    function findDepartmentBy(departmentKey){
+        return _.find(staticData.departments, function (d) {
+            return d.key == departmentKey;
+        });
+    }
+
+    function bindDeleteCategory() {
+        $container.on('click', 'tbody tr td a.delete-category', function () {
+            var $this = $(this);
+            var foodCategoryID = $this.parents('tr').data('foodid');
+            var params = {foodCategoryID: foodCategoryID};
+            params = extendGroupIDTo(params, foodCategoryID);
+            Hualala.UI.Confirm({
+                title: '刪除分类',
+                msg: '删除后该菜品分类信息以及该菜品分类下的菜品都将被清空，无法再进行任何操作!!!<br/>你确定要删除此分类吗？',
+                okFn: function () {
+                    G.deleteSaasCategory(IX.inherit({}, params, {shopID: shopID}), function (rsp) {
+                        var successMsg = {msg: '刪除成功', type: 'success'};
+                        responseResult(rsp, function (data) {
+                            staticData.categories.splice(findCategoryIndex(foodCategoryID), 1);
+                            renderCategories();
+                        },successMsg);
+                    });
+                }
+            });
+        });
+    }
+
+    function bindAddCategory(categoryModal) {
+        function initDepartments() {
+            _.each(staticData.departments, function (department) {
+                department.selected = '';
+            });
+        }
+        $container.parents('.container').on('click', '.add-category', function () {
+            initDepartments();
+            var updateModal = new Hualala.UI.ModalDialog({
+                title: '新增商品分类',
+                id: 'categoryInfoModal',
+                html: $(categoryModal({departments: staticData.departments}))
+            }).show();
+            updateModal._.footer.find('.btn-ok').text('提交');
+            updateModal._.footer.find('.btn-close').text('关闭');
+            //使用bootstrapValidator监听表单输入的数据是否符合要求
+            formValidateRegister();
+            //绑定添加或修改分类信息的提交表单事件
+            bindSubmit(updateModal);
+        });
+    }
+
+    function bindUpdateCategory(categoryModal) {
+        $container.on('click', 'tbody tr td a.update-category', function () {
+            var $current_tr = $(this).parents('tr'),
+                current_category = findCategoryBy($current_tr.data('foodid')),
+                departmentKey = current_category.departmentKey || current_category.departmentKeyLst;
+
+            staticData.departments = _.map(staticData.departments, function (department) {
+                return _.extend(department, {selected: department.key == departmentKey ? 'selected' : ''});
+            });
+            //当前正在修改的分类的信息
+            var categoryInfo = {
+                foodCategoryID: current_category.foodCategoryID,
+                foodCategoryName: current_category.foodCategoryName,
+                departments: staticData.departments,
+                description: current_category.description
+            };
+            var updateModal = new Hualala.UI.ModalDialog({
+                title: '修改商品分类',
+                id: 'categoryInfoModal',
+                html: $(categoryModal(categoryInfo))
+            }).show();
+            updateModal._.footer.find('.btn-ok').text('提交');
+            updateModal._.footer.find('.btn-close').text('关闭');
+            formValidateRegister();
+            bindSubmit(updateModal);
+        });
+    }
+
+    function bindSubmit(modalDialog) {
+        modalDialog._.footer.on('click', '.btn-ok', function () {
+            var $form = $(this).parents('.modal-footer').siblings('.modal-body').find('form');
+            if (!$form.data('bootstrapValidator').validate().isValid()) return;
+            var data = Hualala.Common.parseForm($form);
+            data.description = Hualala.Common.encodeTextEnter(data.description);
+            var $foodCategoryID = $form.find('[name="foodCategoryID"]');
+            var isAdd = $foodCategoryID.length == 0,
+                foodCategoryID = '', groupID = Hualala.getSessionSite().groupID;
+            if (!isAdd) {
+                foodCategoryID = $foodCategoryID.val();
+                groupID = findCategoryBy(foodCategoryID).groupID;
+                var selectedDepartment = {departmentName: $XP(findDepartmentBy(data.departmentKey), 'name', '')};
+            }
+            //_.extend(data, {foodCategoryID: foodCategoryID, groupID: groupID, shopID: shopID});
+            //权宜之计：等可以添加部门后，取上一行代码
+            _.extend(data, {foodCategoryID: foodCategoryID, groupID: groupID, shopID: shopID, departmentKey: '0'});
+            G[isAdd ? 'createSaasCategory' : 'updateSaasCategory'](data, function (rsp) {
+                var successMsg = {msg: (isAdd ? '添加' : '修改') + '成功！', type: 'success'};
+                responseResult(rsp, function (result) {
+                    if (isAdd) {
+                        var category = result.data.records[0],
+                            departmentName = $XP(_.findWhere(staticData.departments, {key: category.departmentKeyLst}), 'name', '');
+                        staticData.categories.push(IX.inherit({}, result.data.records[0], {departmentName: departmentName}));
+                    } else {
+                        _.extend(staticData.categories[findCategoryIndex(foodCategoryID)], data);
+                        _.extend(staticData.categories[findCategoryIndex(foodCategoryID)], selectedDepartment);
+                    }
+                    renderCategories();
+                }, successMsg, modalDialog);
+            });
+        });
+    }
+
+    function bindCategorySort() {
+        //绑定“移到顶部”事件
+        $container.on('click', 'tbody tr td a.sort-top', function () {
+            var foodid = $(this).parents('tr').data('foodid');
+            if (!findLastCategoryBy(foodid)) return;
+            var params = {foodCategoryID: foodid};
+            G.sortSaasCategoryTop(extendGroupIDTo(params, foodid), function (rsp) {
+                responseResult(rsp, queryCategories);
+            });
+        });
+
+        //绑定“向上/向下移动”事件
+        $container.on('click', 'tbody tr td a.sort-up, tbody tr td a.sort-down', function () {
+            var foodid = $(this).parents('tr').data('foodid');
+            var isMoveUp = $(this).hasClass('sort-up');
+            var currentCategory = findCategoryBy(foodid),
+                otherCategory = isMoveUp ? findLastCategoryBy(foodid) : findNextCategoryBy(foodid);
+            if (!otherCategory) return;
+            var params = {foodCategoryID: foodid, sortIndex: currentCategory.sortIndex,
+                foodCategoryID2: otherCategory.foodCategoryID, sortIndex2: otherCategory.sortIndex};
+            G.sortSaasCategoryUpOrDown(extendGroupIDTo(params, foodid), function (rsp) {
+                responseResult(rsp, queryCategories)
+            });
+        });
+
+        //绑定“移到底部”事件
+        $container.on('click', 'tbody tr td a.sort-bottom', function () {
+            var foodid = $(this).parents('tr').data('foodid');
+            if (!findNextCategoryBy(foodid)) return;
+            var params = {foodCategoryID: foodid};
+            G.sortSaasCategoryBottom(extendGroupIDTo(params, foodid), function (rsp) {
+                responseResult(rsp, queryCategories)
+            });
+        });
+    }
+
+    function bindCategoryOperate() {
+        //editModalTpl为添加或修改分类信息弹出的模态框
+        var editModalTpl = Handlebars.compile(Hualala.TplLib.get('tpl_category_modal'));
+        //绑定删除一条分类的事件
+        bindDeleteCategory();
+        //绑顶分类数据的排序事件
+        bindCategorySort();
+        //绑顶添加分类的事件
+        bindAddCategory(editModalTpl);
+        //绑顶修改分类的事件
+        bindUpdateCategory(editModalTpl);
+    }
+
+    function formValidateRegister() {
+        var $form = $('.modal-body').find('form');
+        var foodCategoryID = $form.find('input[name="foodCategoryID"]').val();
+        $form.bootstrapValidator({
+            fields: {
+                foodCategoryName: {
+                    validators: {
+                        notEmpty: {message: '分类名称不能为空'},
+                        stringLength: {
+                            min: 1,
+                            max: 80,
+                            message: '分类名称必须在1-80个字符之间'
+                        },
+                        ajaxValid : {
+                            api : "checkSaasCategoryNameExist",
+                            data : {
+                                shopID: shopID,
+                                groupID: $XP(Hualala.getSessionSite(), 'groupID', ''),
+                                foodCategoryID: foodCategoryID ? foodCategoryID : ''
+                            }
+                        }
+                    }
+                },
+                departmentKey: {
+                    validators: {
+                        notEmpty: { message: '部门不能为空' }
+                    }
+                }
+            }
+        });
+    }
+
+    //请求后台数据的success回调
+    function responseResult(rsp, successCbFn, successMsg, modal) {
+        if (rsp.resultcode != '000') {
+            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+            return;
+        }
+        if (modal != undefined) modal.hide();
+        if(IX.isFn(successCbFn)) successCbFn(rsp);
+        if(!!successMsg) topTip(successMsg);
+    }
+
+    Hualala.Saas.Category.initCategory = initCategory;
+
+}(jQuery , window ));
+;(function ($, window) {
+    IX.ns("Hualala.Saas.channel");
+    var G = Hualala.Global,
+        U = Hualala.UI,
+        topTip = U.TopTip,
+        parseForm = Hualala.Common.parseForm;
+        //channeltypedef=Hualala.TypeDef.ChannelStatus;
+        
+
+    var $alert = $('<div class="alert alert-warning t-c">暂无任何渠道内容。</div>'),
+        ChannnelSetsTpl = Handlebars.compile(Hualala.TplLib.get('tpl_channnel_sets')),
+        editChannelTpl = Handlebars.compile(Hualala.TplLib.get('tpl_channel_add_update')),
+        $table = null, channels = [], channel = null, setId = null, isAdd = null, isDelete = null,
+        $editSet = null, modal = null, bv = null, $c;
+               
+    Hualala.Saas.channel.initChannel = function($channel)
+    {
+        $c = $channel;
+        renderSets($c);
+        //增加和修改渠道事件绑定
+        $channel.on('click', '.well .btn, td .channel-update', renderDialog);
+        $channel.on('click', 'td .channel-delete', deleteChannel);
+        //table初始化
+    }
+
+    function renderSets($channel){
+        G.getSaasChannel({}, function(rsp)
+        {
+            if(rsp.resultcode != '000')
+            {
+                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                return;
+            }
+            //json深度复制
+            //channels = JSON.parse(JSON.stringify(rsp.data.records));
+            channels = rsp.data.records || [];
+            preProcessSets(channels);
+            $(ChannnelSetsTpl({channels: channels})).appendTo($channel.empty());
+            $table = $channel.find('table');
+            if(!channels.length)
+            {
+                $table.addClass('hidden');
+                $channel.append($alert);
+                return;
+            }
+            createSwitch($channel.find('table input'));
+        });
+    }
+    //添加和修改渠道模态框
+    function renderDialog(e){
+        var id = $(e.target).data('setid');
+        setId = id;
+        isAdd = id === undefined;
+        channel = getSetById(channels, id) || {};
+        if(id!=undefined){
+            channel.channelRemark  = Hualala.Common.decodeTextEnter(channel.channelRemark)
+        }
+        var dTitle = (isAdd ? '添加' : '修改') + '渠道',
+            itemID =channel.itemID || 0;
+        $editSet = $(editChannelTpl(channel));
+        modal = new U.ModalDialog({
+            title: dTitle,
+            html: $editSet
+        }).show();
+
+        $editSet.bootstrapValidator({
+            fields: {
+                channelName: {
+                    validators: {
+                        notEmpty: { message: '渠道名不能为空' },
+                        stringLength : {
+                            min : 1,
+                            max : 50,
+                            message : "渠道名称长度在1-50个字符之间"},
+                        ajaxValid : {
+                            api : "checkChannelName",
+                            name : 'channelName',
+                            data : {
+                                groupID: $XP(Hualala.getSessionSite(),'groupID',''),
+                                itemID: id ?itemID : ''
+                            }
+                        }
+                    }
+                },
+                channelRemark: {
+                    validators : {
+                        stringLength : {
+                            max : 250,
+                            message : '渠道说明不能超过250个字'}
+                    }
+                }   
+            }
+        });
+        bv = $editSet.data('bootstrapValidator');
+        modal._.footer.find('.btn-ok').on('click', submitSet);
+    }
+    //删除渠道
+    function deleteChannel(e){
+        var id = $(e.target).data('setid');
+        setId = id;
+        isDelete = id === undefined;
+        channel = getSetById(channels, id) || {};
+        var params ={itemID:id};
+        Hualala.UI.Confirm({
+            title: '刪除渠道',
+            msg: '你确定要删除此渠道吗？',
+            okFn: function () {
+                G.deleteSaasChannel(params, function (rsp) {
+                    if(rsp.resultcode != '000')
+                    {
+                        rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    topTip({msg:'删除成功',type: 'success'});
+                    renderSets($c);
+                    //modal.hide();
+                })
+            }
+        });
+    }
+    //添加和更新渠道列表
+    function submitSet(){
+        if(!bv.validate().isValid()) return;
+        var data = parseForm($editSet);
+        data.channelName =data.channelName || 0;
+        data.channelRemark =Hualala.Common.encodeTextEnter(data.channelRemark) || 0;
+        var user = $XP(Hualala.getSessionData(),'user',''),
+            loginName = $XP(user,'loginName',''),
+            groupLoginName = $XP(user,'groupLoginName','');
+            //groupID = $XP(user,'groupID','');
+        var createBy=groupLoginName+'_'+loginName;
+        _.extend(data,{createBy:createBy});
+
+        if(!isAdd) data.itemID = setId;
+        G[isAdd ? 'addSaasChannel' : 'updateSaasChannel'](data, function(rsp)
+        {
+            if(rsp.resultcode != '000')
+            {
+                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                return;
+            }
+            topTip({msg: (isAdd ? '添加' : '修改') + '成功！', type: 'success'});
+            renderSets($c);
+            modal.hide();
+        });
+        
+    }
+    /*
+    //判断是否是重名
+    function nameCheck(e){
+        var channelName = $(e.target).data('channelName');
+         G.checkChannelName(channelName, function(rsp)
+            {
+                if(rsp.resultcode != '000')
+                {
+                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+
+        });   
+    }*/
+    //获取渠道id
+    function getSetById(channels, id)
+    {
+        for(var i = channels.length - 1, channel; channel = channels[i--];)
+            if(channel.itemID == id) return channel;
+    }
+    //渠道的数据处理
+    function preProcessSets(channels)
+    {
+
+        for(var i = channels.length - 1, channel; channel = channels[i--];)
+        {
+            channel.checked = +channel.isActive ? 'checked' : '';
+            if (channel.isGlobal=="1") {
+                channel.nameisGlobal="是";
+                channel.channelGlobal=false;
+            }
+            else{
+                 channel.nameisGlobal="否";
+                 channel.channelGlobal=true;
+            };
+          if (channel.createBy=="0") {
+                channel.ncreateBy=" ";
+            }
+          else{
+                channel.ncreateBy=channel.createBy;
+            };
+          if(channel.channelRemark!="0"){
+                channel.shortRemarks=channel.channelRemark;
+                if(channel.shortRemarks.length<20){
+                    //channel.shortRemarks=channel.shortRemarks.substring(0,20)+'...';
+                    channel.shortRemarks =Hualala.Common.decodeTextEnter(channel.channelRemark);
+                   
+                }
+                else{
+                    channel.shortRemarks = Hualala.Common.decodeTextEnter(channel.channelRemark);
+                    channel.shortRemarks = Hualala.Common.substrByte(channel.shortRemarks, 40) + '...';
+                }
+            } 
+          else{
+                channel.channelRemark=" ";
+            };
+        }
+    }
+    //渠道开启和关闭操作
+    function createSwitch($checkbox){
+        $checkbox.bootstrapSwitch({
+            onColor : 'success',
+            onText : '已开启',
+            offText : '未开启'
+        }).on('switchChange.bootstrapSwitch', function (e, state)
+        {
+
+            var $this = $(this), setID = $this.data('setid'),
+                stateText = state ? '开启' : '关闭';
+            Hualala.UI.Confirm({
+                title : stateText + "渠道",
+                msg : "你确定要" + stateText + "此渠道吗？",
+                okFn : function () {
+                    G.switchChannelState({itemID: setID, isActive: +state}, function (rs)
+                    {
+                        if(rs.resultcode != '000')
+                        {
+                            $this.bootstrapSwitch('toggleState', true);
+                            topTip({msg: stateText + '失败' + (rs.resultmsg ? '：' + rs.resultmsg : ''), type: 'danger'});
+                            return;
+                        }
+                        topTip({msg: stateText + '成功！', type: 'success'})
+                    });
+                },
+                cancelFn : function () {
+                    $this.bootstrapSwitch('toggleState', true);
+                }
+            });
+        });
+    }  
+})(jQuery, window);
+
+
+
+
+
+
+
+
+
+
+
+
+;(function ($, window) {
+    IX.ns("Hualala.Saas.department");
+    var G = Hualala.Global,
+        U = Hualala.UI,
+        topTip = U.TopTip,
+        parseForm = Hualala.Common.parseForm,
+        dTypes = Hualala.TypeDef.SaasDepartmentType,
+        printTypes=Hualala.TypeDef.SaasPrintType;
+
+    var $alert = $('<div class="alert alert-warning t-c">暂无任何部门。</div>'),
+        DepartmentSetsTpl = Handlebars.compile(Hualala.TplLib.get('tpl_department_sets')),
+        editdepartmentTpl = Handlebars.compile(Hualala.TplLib.get('tpl_department_add_update')),
+        //printTpl = Handlebars.compile(Hualala.TplLib.get('tpl_print_add')),
+        //dTypes=null,printTypes = null,printType= null,
+        $table = null, departments = [], department = null, dType=null,
+        setId = null, isAdd = null, $editSet = null, modal = null, bv = null,$d;
+
+    Hualala.Saas.department.initDepartment = function($department){
+        $d = $department;
+        renderSets($d);
+        //增加和修改事件绑定
+        $department.on('click', '.well .btn, td .department-update', renderDialog);
+        $department.on('click', 'td .department-delete', deletedepartment);  
+    }
+    //部门渲染
+    function renderSets($department){
+        G.getSaasDepartments({}, function(rsp){
+            if(rsp.resultcode != '000'){
+                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                return;
+            }
+
+            departments = $.extend(true, {records:[]}, rsp.data).records;
+            // departments = rsp.data.records || [];
+            // getdepartmentType();
+            //getDeparmentPrintType();
+            preProcessSets(departments);
+            $(DepartmentSetsTpl({departments: departments})).appendTo($department.empty());
+            $table = $department.find('table');
+            if(!departments.length){
+                $table.addClass('hidden');
+                $department.append($alert);
+                return;
+            }
+        });
+    }
+    //获取部门id
+    function getSetById(departments, id){
+        for(var i = departments.length - 1, department; department = departments[i--];)
+            if(department.itemID == id) return department;
+    }
+    //获取部门类型释义
+    /*
+    function getdepartmentType(){
+        G.querySaasDepartmentType({},function (rsp){
+            if(rsp.resultcode != '000'){
+                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+            }
+                dTypes = rsp.data.records || []; 
+              /*
+                typesMap = new Object();
+                for (var i in rsp.data.records || []){
+                    typesMap[rsp.data.records[i].key] = rsp.data.records[i].text;
+                }
+                typesMap[department.departmentType];
+
+                preTypeSets(dTypes);             
+
+        }); 
+
+    }*/
+    //打印类型屏蔽功能
+    //需求：当部门类型为1和3可设置打印类型(isDiplay设置显示和开放的方式)
+    function preTypeSets(dTypes){
+        for (var i = dTypes.length - 1; dType; dType = dTypes[i--]){
+            if(dType.key=="1"||dType.key=="3"){
+                dType.isDisplay=true;
+            }
+            else{
+               dType.isDisplay=false;
+            }
+        }
+
+    }
+    /*
+    //获取部门打印类型的释义
+    function getDeparmentPrintType(){
+        G.querySaasDepartmentPrintType({},function (rsp){
+        if(rsp.resultcode != '000'){
+                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                return;
+            }
+            printTypes = rsp.data.records || [];
+        }); 
+
+    }*/
+    
+    //部门的数据处理
+    function preProcessSets(departments){
+        _.each(departments,function(department){
+            if(department.departmentRemark=="0"){
+               department.departmentRemark=" "; 
+            }
+            else{
+                department.shortRemarks=department.departmentRemark;
+                if(department.shortRemarks.length<20){
+                    department.shortRemarks = Hualala.Common.decodeTextEnter(department.departmentRemark)
+
+                }
+                else{
+                    department.shortRemarks =Hualala.Common.decodeTextEnter(department.departmentRemark);
+                    department.shortRemarks = Hualala.Common.substrByte(department.shortRemarks, 40) + '...';
+                }
+            }
+
+        })
+
+        // var currentType=_.findWhere(dTypes,{key:department.departmentType});
+        //     department.departmentTypeText=currentType.text;
+
+        // var currentPrintType = _.findWhere(printTypes,{key:department.printType});
+        // department.printTypeText=currentPrintType.text;
+    } 
+    //添加和修改部门模态框
+    function renderDialog(e){
+        var id = $(e.target).data('setid');
+        setId = id;
+        isAdd = id === undefined;
+        //department数组对象
+        department = getSetById(departments, id) || {};
+        if(id!=undefined){
+            department.departmentRemark = Hualala.Common.decodeTextEnter(department.departmentRemark)
+        }
+        //select下拉框的内容填充，扩充数据
+        dTypes=_.map(dTypes,function (dTypes){
+            return _.extend(dTypes,{selected:dTypes.value==department.departmentType ? 'selected' : ''});
+        })
+        printTypes=_.map(printTypes,function (printTypes) {
+            return _.extend(printTypes,{selected:printTypes.value==department.printType ? 'selected' :''});
+        }) 
+        var modalVals = {department: department, dTypes: dTypes,printTypes:printTypes};
+        var dTitle = (isAdd ? '添加' : '修改') + '部门',
+            itemID =department.itemID || 0 ;
+        $editSet = $(editdepartmentTpl(modalVals));
+        modal = new U.ModalDialog({
+            title: dTitle,
+            html: $editSet
+        }).show();
+        
+        $editSet.bootstrapValidator({
+            fields: {
+                departmentName: {
+                    validators: {
+                        notEmpty: { message: '部门名不能为空' },
+                        stringLength : {
+                            min : 1,
+                            max : 50,
+                            message : "部门名称长度在1-50个字符之间"},
+                        ajaxValid :{
+                            api: "checkDepartmentlName",
+                            name:'departmentName',
+                            data:{
+                                groupID: $XP(Hualala.getSessionSite(), 'groupID', ''),
+                                itemID: id ? itemID : ''
+                            }
+                        }
+                    }
+                },
+                departmentType: {
+                    validators: {
+                        notEmpty: { message: '部门类型不能为空' }
+                    }
+                },
+                departmentRemark: {
+                    validators : {
+                        stringLength : {
+                            max : 250,
+                            message : '部门描述不能超过250个字'}
+                    }
+                }   
+            }
+        });
+        bv = $editSet.data('bootstrapValidator');
+        modal._.footer.find('.btn-ok').on('click', submitSet);
+    }
+    //添加和更新部门列表
+    function submitSet(){
+        if(!bv.validate().isValid()) return;
+        var data = parseForm($editSet);
+        data.departmentName = data.departmentName || 0;
+        data.departmentRemark = Hualala.Common.encodeTextEnter(data.departmentRemark)|| 0;
+        data.departmentType =data.departmentType ||0;
+        var user = $XP(Hualala.getSessionData(),'user',''),
+            loginName = $XP(user,'loginName',''),
+            groupLoginName = $XP(user,'groupLoginName','');
+        var createBy=groupLoginName+'_'+loginName;
+
+        _.extend(data,{createBy:createBy});
+        
+        if(!isAdd)data.itemID = setId;
+        G[isAdd ? 'addSaasDepartment' : 'updateSaasDepartment'](data, function(rsp)
+        {
+            if(rsp.resultcode != '000')
+            {
+                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                return;
+            }
+            topTip({msg: (isAdd ? '添加' : '修改') + '成功！', type: 'success'});
+            renderSets($d);
+            modal.hide();
+        });
+        
+    }
+    //删除
+    function deletedepartment(e){
+        var id = $(e.target).data('setid');
+        setId = id;
+        department = getSetById(departments, id) || {};
+        var params ={itemID:id};
+        Hualala.UI.Confirm({
+            title: '刪除部门',
+            msg: '你确定要删除此部门吗？',
+            okFn: function () {
+                G.deleteSaasDepartment(params, function (rsp) {
+                    if(rsp.resultcode != '000'){
+                        rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    topTip({msg:'删除成功',type: 'success'});
+                    renderSets($d);
+                })
+            }
+        });
+    }
+})(jQuery, window);
+
+
+
+
+
+
+
+
+
+
+
+
+;$( function ($, window) {
+    IX.ns('Hualala.Saas.Subject');
+    var G = Hualala.Global,
+        U = Hualala.UI,
+        topTip = U.TopTip,
+        parseForm = Hualala.Common.parseForm;
+
+    subjectsTableAttr = {
+        tableClass: 'saas-subjects-table',
+        tableHeads: ["收款项目", "内置项目", "手续费率（%）", "是否用于结账", "创建人", "启用状态", "操作"],
+        displayAttr: ["subjectName", "isGlobal", "subjectRate", "isPay", "createBy", "isActive","rowControl"]
+    };
+
+   var $alert = $('<td colspan="7"> <p class="alert t-c">暂无任何收款项目信息。</p></td>'),
+        SubjectTab = Handlebars.compile(Hualala.TplLib.get('tpl_subject_tab')),
+        SubjectQueryForm =Handlebars.compile(Hualala.TplLib.get('tpl_subject_query')),
+   		SubjectTableTpl = Handlebars.compile(Hualala.TplLib.get('tpl_category')),
+   		subjectTrTpl =Handlebars.compile(Hualala.TplLib.get('tpl_subject_tbody')),
+        editsubjectTpl = Handlebars.compile(Hualala.TplLib.get('tpl_subject_modal')),
+        $table = null, $tbody=null,$container=null,$tab=null,$tabul=null,$tabcontent=null,modal = null, bv = null,setId = null, isAdd = null, 
+        $editSet = null,$form = null;
+               
+    Hualala.Saas.Subject.initSubject = function($subject){
+        var groupID =$XP(Hualala.getSessionSite(),'groupID','');
+        var params={groupID:groupID};
+        initTab();
+        preSubjectTable();
+        renderSets(params);
+        $form = $subject.find('form');
+        $subject.on('click', '.subject-tabs li a', function(){
+            $('.saleSubject').parentsUntil($("ul")).toggleClass('active');
+            $('.checkSubject').parentsUntil($("ul")).toggleClass("active");
+            renderSets(params);
+        });
+        $subject.on('click', 'td .subject-add,td .subject-update', renderDialog);
+        $subject.on('click', 'td .subject-delete', deleteSubject);
+        $subject.on('click','.query-form .btn',searchSubject);
+    }
+    function initTab(){
+        $container = $('.page-body');
+        $(SubjectTab()).appendTo($container.empty());
+        $tab = $container.find('.detail-tabs');
+        var tabFuncs = [
+            {key : "checkSubject", label : "结账项目"},
+            {key : "saleSubject", label : "销售项目"}
+        ],tabFunc;
+        $tabul = $tab.find(".navbar-nav");
+        $tab = $container.find('.detail-tabs');
+        for(var i=0;i<tabFuncs.length;i++){
+            var tabFunc =tabFuncs[i].key,
+                label = tabFuncs[i].label;
+            $('<li></li>').append($('<a></a>').attr({'href':'javascript:;', 'class':tabFunc}).text(label)).appendTo($tabul);
+        }
+        $('.checkSubject').parentsUntil($("ul")).addClass('active')
+        
+    }
+    function preSubjectTable() {
+        $tabcontent = $container.find('.tab-content');
+        searchParam = {
+            firstItem: {name: 'subjectName', value: '项目关键字'}
+        };
+        $(SubjectQueryForm(searchParam)).appendTo($tabcontent);
+        $(SubjectTableTpl(subjectsTableAttr)).appendTo($tabcontent);
+        $tbody = $tabcontent.find('tbody');
+    }
+    //获取查询数据
+    function renderSets(params, cbFn){
+        if($('.subject-tabs li.active a')[0].text=="结账项目"){
+            params=_.extend(params,{sellSubject:0})
+        }
+        else{
+            params=_.extend(params,{sellSubject:1})
+        }
+        G.querySaasSubject(params, function(rsp){
+            if(rsp.resultcode != '000'){
+                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                return;
+            }
+            subjects = $.extend(true, {records:[]}, rsp.data).records || [];
+            preProcessSets(subjects);
+            groupsubjects=_.groupBy(subjects,'subjectGroupName');
+            if(!subjects.length){
+                //$tbody.addClass('hidden');
+                $alert.appendTo($tbody.empty());
+                return;
+            }
+            else{
+              renderSubjectTable($tbody, groupsubjects);   
+            }
+        });
+    }
+    function renderSubjectTable($tbody, items){
+        $(subjectTrTpl({items: items})).appendTo($tbody.empty());
+        createSwitch($container.find('tbody input'));
+    }
+    //数据处理
+    function preProcessSets(subjects){
+        for(var i = subjects.length - 1, subject; subject = subjects[i--];){
+            subject.checked = +subject.isActive ? 'checked' : '';
+            if (subject.isGlobal=="1") {
+                subject.nameisGlobal="是";
+                subject.operateBtn=false;
+            }
+            else{
+                subject.nameisGlobal="否";
+                subject.operateBtn=true;
+            };
+            if(subject.isPay=="1"){
+                subject.nameisPay="是";
+            }
+            else{
+               subject.nameisPay="否"; 
+            }
+            if (subject.createBy=="0") {
+                subject.ncreateBy=" ";
+            }
+            else{
+                subject.ncreateBy=subject.createBy;
+            };
+            if(subject.payRemark!="0"){
+                if(subject.payRemark.length>0){
+                    subject.payRemark =Hualala.Common.decodeTextEnter(subject.payRemark); }
+            } 
+            else{
+                subject.payRemark=" ";
+            }
+            if(subject.subjectRate!="0.0000"){
+                subject.subjectRate=(subject.subjectRate).substring(0,(subject.subjectRate).indexOf(".") + 3);
+            }else{
+                subject.subjectRate=" ";
+            };
+        }
+    }
+
+    //获取id
+    function getSetById(subjects, id){
+        for(var i = subjects.length - 1, subject; subject = subjects[i--];)
+            if(subject.itemID == id) return subject;
+    }
+    function searchSubject(){
+        var groupID =$XP(Hualala.getSessionSite(),'groupID','');
+        var params={groupID:groupID};
+        var args = parseForm($form);
+        $.extend(params, args);
+        renderSets(params);
+    }
+    //开关操作
+    function createSwitch($checkbox){
+        $checkbox.bootstrapSwitch({
+            onColor : 'success',
+            onText : '已开启',
+            offText : '未开启'
+        }).on('switchChange.bootstrapSwitch', function (e, state){
+            var $this = $(this), setID = $this.data('setid'),
+                stateText = state ? '开启' : '关闭';
+            Hualala.UI.Confirm({
+                title : stateText + "项目",
+                msg : "您确定要" + stateText + "此项目吗？",
+                okFn : function () {
+                    G.switchSaasSubjectstate({itemID: setID, isActive: +state}, function (rs)
+                    {
+                        if(rs.resultcode != '000')
+                        {
+                            $this.bootstrapSwitch('toggleState', true);
+                            topTip({msg: stateText + '失败' + (rs.resultmsg ? '：' + rs.resultmsg : ''), type: 'danger'});
+                            return;
+                        }
+                        topTip({msg: stateText + '成功！', type: 'success'})
+                    });
+                },
+                cancelFn : function () {
+                    $this.bootstrapSwitch('toggleState', true);
+                }
+            });
+        });
+    }  
+    //添加和修改模态框
+    function renderDialog(e){
+        var id = $(e.target).data('setid');
+        var GroupName=$(e.target).data('setgroupname');
+        setId = id;
+        setgroupname =GroupName;
+        isAdd = id === undefined;
+        subject = getSetById(subjects, id) || {};
+        if(id!=undefined){
+            subject.payRemark  = Hualala.Common.decodeTextEnter(subject.payRemark)
+        }
+        var dTitle = (isAdd ? '添加' : '修改') + '项目',
+            itemID =subject.itemID || 0;
+            subject.subjectGroupName= GroupName||0;
+            subject.display=+subject.isPay ? 'checked' : '';
+            subject.selected =+subject.isMoneyWipeZero ? 'checked' : '';
+        $editSet = $(editsubjectTpl(subject));
+        modal = new U.ModalDialog({
+            title: dTitle,
+            html: $editSet
+        }).show();
+
+        $editSet.bootstrapValidator({
+            fields: {
+                subjectName: {
+                    validators: {
+                        notEmpty: { message: '项目名不能为空' },
+                        stringLength : {
+                            min : 1,
+                            max : 50,
+                            message : "项目名称长度在1-50个字符之间"},
+                        ajaxValid : {
+                            api : "checkSubjectlName",
+                            name : 'subjectName',
+                            data : {
+                                groupID: $XP(Hualala.getSessionSite(),'groupID',''),
+                                itemID: id ?itemID : ''
+                            }
+                        }
+                    }
+                },
+                subjectRate:{
+                    validators: {
+                        /*numeric : {message : "手续费率必须为数字"},
+                        greaterThan : {
+                            inclusive : true,
+                            value : 0,
+                            message : "手续费率必须大于或等于0"
+                        },
+                        between : {
+                            min : 0,
+                            max : 100,
+                            message : "手续费率百分比值在0~100之间"
+                        }*/
+                        callback:{
+                            message : '',
+                            callback : function (value, validator, $field) {
+                                value = value.trim();
+                                if (value =='') {
+                                    return true;
+                                }
+                                else{
+                                    var rst = /^(((\d|[1-9]\d)(\.\d{1,2})?)|100|100.0|100.00)$/.test(value);
+                                    if(!rst) return { valid: false, message: '请输入有效的数字' };
+                                }
+                                return true;
+                            }
+                        }
+                    }
+                },
+                payRemark: {
+                    validators : {
+                        stringLength : {
+                            max : 250,
+                            message : '项目说明不能超过250个字'}
+                    }
+                }   
+            }
+        });
+        bv = $editSet.data('bootstrapValidator');
+        modal._.footer.find('.btn-ok').on('click', submitSet);
+    }
+    //删除
+    function deleteSubject(e){
+        var id = $(e.target).data('setid');
+        var subjectName=$(e.target).data('setname');
+        setId = id;
+        subject = getSetById(subjects, id) || {};
+        var params ={itemID:id};
+        Hualala.UI.Confirm({
+            title: '刪除项目',
+            msg: '您确定要删除收款项目:'+subjectName,
+            okFn: function () {
+                G.deleteSaasSubject(params, function (rsp) {
+                    if(rsp.resultcode != '000')
+                    {
+                        rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    topTip({msg:'删除成功',type: 'success'});
+                    searchSubject();
+                })
+            }
+        });
+    }
+    //添加和更新列表
+    function submitSet(){
+        if(!bv.validate().isValid()) return;
+        var data = parseForm($editSet);
+        data.subjectGroupName =subject.subjectGroupName || 0;
+        data.isMoneyWipeZero =data.isMoneyWipeZero || 0;
+        data.isPay=data.isPay || 0;
+        data.subjectRate=(data.subjectRate).trim() || 0;
+        data.payRemark =data.payRemark || 0;
+        data.payRemark =Hualala.Common.encodeTextEnter(data.payRemark) || 0;
+        var user = $XP(Hualala.getSessionData(),'user',''),
+            loginName = $XP(user,'loginName',''),
+            groupLoginName = $XP(user,'groupLoginName','');
+        var createBy=groupLoginName+'_'+loginName;
+        _.extend(data,{createBy:createBy});
+
+        if(!isAdd) data.itemID = setId;
+        G[isAdd ? 'addSaasSubject' : 'updateSaasSubject'](data, function(rsp)
+        {
+            if(rsp.resultcode != '000')
+            {
+                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                return;
+            }
+            topTip({msg: (isAdd ? '添加' : '修改') + '成功！', type: 'success'});
+            searchSubject();
+            modal.hide();
+        });
+        
+    }
+
+}(jQuery , window ));;$( function ($, window) {
+    IX.ns('Hualala.Saas.remarks');
+    var G = Hualala.Global,
+        U = Hualala.UI,
+        topTip = U.TopTip,
+        parseForm = Hualala.Common.parseForm,
+        nTypes = Hualala.TypeDef.SaasNotesType,
+        addPriceTypes = Hualala.TypeDef.SaasaddPriceType;
+    Hualala.Saas.remarks.initRemark = function($remark,shopID){
+        var RemarkQueryForm,RemarklistTpl,editRemarkTpl,remarks = null,newRecord=null,
+            modal = null, bv = null, isAdd = null,newRecord=null,
+            $editSet = null,$form=null;
+        var groupID =$XP(Hualala.getSessionSite(),'groupID','');
+        //模版，数据，绑定事件  
+        initTemplate();
+        renderCards({groupID:groupID,shopID:shopID});
+        bindEvent();
+        function initTemplate() {
+            RemarkQueryForm = Handlebars.compile(Hualala.TplLib.get('tpl_remark_query'));
+            RemarklistTpl = Handlebars.compile(Hualala.TplLib.get('tpl_remark_card'));
+            editRemarkTpl = Handlebars.compile(Hualala.TplLib.get('tpl_remark_modal'));
+            $(RemarkQueryForm({nTypes:nTypes})).appendTo($remark);
+            $remarklist=$remark.find('.remark-list');
+        }
+        function renderCards(params){
+            G.querySaasRemark(params, function(rsp){
+                if(rsp.resultcode != '000'){
+                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                else{
+                    remarks = $.extend(true, {records:[]}, rsp.data).records || [];
+                    newRecord= IX.clone(nTypes);
+                    if(params.notesType){
+                        var searchRecords = {},searchData={};
+                            searchRecords = _.findWhere(nTypes, {value:params.notesType});
+                            searchData[0]=IX.clone(searchRecords);
+                            searchData[0].records=[];
+                        for(var j=0;j<remarks.length;j++){
+                            searchData[0].records.push(remarks[j]);
+                            }
+                        renderRemarkList($remarklist, searchData);
+                    }
+                    else{
+                        for(var i=0;i<newRecord.length;i++){
+                            newRecord[i].records=[];
+                            for(var j=0;j<remarks.length;j++){
+                                if(newRecord[i].value==remarks[j].notesType){
+                                    newRecord[i].records.push(remarks[j]);
+                                }
+                            }
+                        } 
+                        renderRemarkList($remarklist, newRecord);
+                    }  
+                }     
+            });
+        }
+        //数据渲染
+        function renderRemarkList($remarklist, items){
+            $(RemarklistTpl({items: items})).appendTo($remarklist.empty());
+        }
+        function bindEvent(){
+            $remark.on('click', '.operate', function (e) {
+                var act = $(this).attr('data-type');
+                    itemID =$(this).attr('data-id')||undefined;
+                    GroupName=$(this).attr('data-typevalue');
+                var params ={itemID:itemID,shopID:shopID};
+                switch(act) {
+                        //添加修改
+                        case "addRemark":
+                        case "editRemark" :
+                            renderDialog(itemID,shopID,GroupName);
+                            break;
+                        //删除
+                        case "deleteRemark":
+                            Hualala.UI.Confirm({
+                                title: '刪除字典',
+                                msg: '您确定要删除此字典信息',
+                                okFn: function () {
+                                    G.deleteSaasRemark(params, function (rsp) {
+                                        if(rsp.resultcode != '000')
+                                        {
+                                            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                                            return;
+                                        }
+                                        topTip({msg:'删除成功',type: 'success'});
+                                        searchRemark();             
+                                    })
+                                }
+                            });
+                            break;
+                    }
+            });
+            $remark.on('change','.query-form #notesTypeTag',searchRemark);
+        }
+        //搜索
+        function searchRemark(){
+            $form=$remark.find('.query-form');
+            $select = $form.find('#notesTypeTag');
+            var noteTypeVal = $.trim($select.val()),
+                notesType={},
+                params={groupID:groupID,shopID:shopID};
+            if(noteTypeVal!=""){
+                notesType={notesType:noteTypeVal};
+                $.extend(params, notesType);
+            }
+            else{
+                notesType={}
+            }
+            renderCards(params);
+        } 
+        //添加和修改模态框
+        function renderDialog(itemID,shopID,GroupName){
+            var remarkData = {};
+                remarkData = _.findWhere(remarks, {itemID: itemID});
+                nTypes=_.map(nTypes,function (nTypes){
+                    return _.extend(nTypes,{selected:nTypes.value==GroupName ? 'selected' : ''});
+                })
+            if(remarkData){
+                //select下拉框的内容填充，扩充数据
+                addPriceTypes=_.map(addPriceTypes,function (addPriceTypes) {
+                    return _.extend(addPriceTypes,{selected:addPriceTypes.value==remarkData.addPriceType ? 'selected' :''});
+                });
+            }
+            else{
+                addPriceTypes=_.map(addPriceTypes,function (addPriceTypes) {
+                    return _.extend(addPriceTypes,{selected:''});
+                });  
+            }
+            isAdd = itemID === undefined;
+            var dTitle = (isAdd ? '添加' : '修改') + '字典';
+            var modalVals = {remarkData: remarkData, nTypes: nTypes,addPriceTypes:addPriceTypes};
+            $editSet = $(editRemarkTpl(modalVals));
+            if(GroupName!=20){
+                $editSet.find("select[name=addPriceType]").parent().parent().addClass('hidden');
+                $editSet.find(":text[name=addPriceValue]").parent().parent().addClass('hidden');
+            }
+            modal = new U.ModalDialog({
+                title: dTitle,
+                html: $editSet
+            }).show();
+            $editSet.bootstrapValidator({
+                fields: {
+                    notesType: {
+                        validators: {
+                            notEmpty: { message: '字典类型不能为空' }
+                        }
+                    },
+                    notesName: {
+                        validators: {
+                            notEmpty: { message: '字典名不能为空' },
+                            stringLength : {
+                                min : 1,
+                                max : 50,
+                                message : "项目名称长度在1-50个字符之间"
+                            }
+                        }
+                    },
+                    addPriceType:{
+                        validators: {
+                            notEmpty: { message: '加价方式不能为空' }
+                        }
+                    },
+                    addPriceValue: {
+                        validators :{
+                            numeric : {message : "加价金额必须为数字"},
+                            greaterThan : {
+                                inclusive : true,
+                                value : 0,
+                                message : "加价金额必须大于或等于0"
+                            }
+                        }
+                    }
+                }
+            });
+            bv = $editSet.data('bootstrapValidator');
+            bindModalevent(itemID,shopID)
+            //modal._.footer.find('.btn-ok').on('click', submitSet);
+        }
+        //添加和更新列表
+        function bindModalevent(itemID,shopID){
+            modal._.footer.find('.btn-ok').on('click',function (e){
+            if(!bv.validate().isValid()) return;
+            var data = parseForm($editSet);
+            $.extend(data,{ shopID:shopID,groupID:groupID,itemID:itemID});
+            //parseForm对于无效的表单元素是不能序列化的。
+            data.notesType =$editSet.find('[name=notesType] option:selected').val()||0;
+            data.addPriceType= data.addPriceType || 0;
+            data.addPriceValue= data.addPriceValue || 0;
+            G[isAdd ? 'addSaasRemark' : 'editSaasRemark'](data, function(rsp)
+            {
+                if(rsp.resultcode != '000')
+                {
+                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                topTip({msg: (isAdd ? '添加' : '修改') + '成功！', type: 'success'});
+                searchRemark();
+                modal.hide();
+            }); 
+            })
+        }
+    }
+}(jQuery , window ));;(function ($, window) {
+    IX.ns("Hualala.Saas");
+    /*收银软件模块子页面布局*/
+    var initSaasPageLayout = function () {
+        var ctx = Hualala.PageRoute.getPageContextByPath();
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        $body.empty();
+        var mapNavRenderData = function () {
+            var navs = _.map(Hualala.TypeDef.SaasSubNavType, function (v, i, list) {
+                var params = _.map($XP(v, 'pkeys', []), function (v) {
+                    return '';
+                });
+
+                return {
+                    active : $XP(ctx, 'name') == v.name ? 'active' : '',
+                    disabled : '',
+                    path : Hualala.PageRoute.createPath(v.name, params) || '#',
+                    name : v.name,
+                    label : v.label
+                };
+            });
+            return {
+                toggle : {
+                    target : '#order_navbar'
+                },
+                items : navs
+            };
+        };
+        var navTpl = Handlebars.compile(Hualala.TplLib.get('tpl_order_subnav'));
+        Handlebars.registerPartial("toggle", Hualala.TplLib.get('tpl_site_navbarToggle'));
+        $body.html('<div class="page-subnav clearfix" /><div class="page-body clearfix"></div>');
+        var $navbar = $body.find('.page-subnav');
+        $navbar.html(navTpl(mapNavRenderData()));
+    };
+
+
+    //收款项目
+    var initSubjectPage =function(){
+        // var ctx = Hualala.PageRoute.getPageContextByPath();
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        initSaasPageLayout();
+        var $pageBody = $body.find('.page-body');
+        Hualala.Saas.Subject.initSubject($pageBody);
+      document.location.href = Hualala.PageRoute.createPath('saasReceivables');
+
+    };
+    //部门
+    var initQueryDepartmentPage =function(){
+        //var ctx = Hualala.PageRoute.getPageContextByPath();
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        initSaasPageLayout();
+        var $pageBody = $body.find('.page-body');
+        Hualala.Saas.department.initDepartment($pageBody);
+      document.location.href = Hualala.PageRoute.createPath('saasDepartment');
+    };
+    //备注
+    var initQueryRemarksPage =function(){
+        //var ctx = Hualala.PageRoute.getPageContextByPath();
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        initSaasPageLayout();
+        var $pageBody = $body.find('.page-body');
+        Hualala.Saas.remarks.initRemark($pageBody);
+        document.location.href = Hualala.PageRoute.createPath('saasRemarks');
+    };
+    //商品分类
+    var initQueryCategoriesPage =function(){
+        //var ctx = Hualala.PageRoute.getPageContextByPath();
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        initSaasPageLayout();
+        var $pageBody = $body.find('.page-body');
+        Hualala.Saas.Category.initCategory($pageBody);
+        document.location.href = Hualala.PageRoute.createPath('saasCategories');
+    };
+    //商品
+    var initQueryGoodsPage = function(){
+        var ctx = Hualala.PageRoute.getPageContextByPath();
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        initSaasPageLayout();
+        var $container = $body.find('.page-body');
+        var queryGoods = new Hualala.Saas.ListController({
+            container: $container
+        });
+        document.location.href = Hualala.PageRoute.createPath('saasCommodity');
+    };
+    //渠道
+    var initQuerychannelPage =function(){
+        //var ctx = Hualala.PageRoute.getPageContextByPath();
+        var $body = $('#ix_wrapper > .ix-body > .container');
+        initSaasPageLayout();
+        var $pageBody = $body.find('.page-body');
+         Hualala.Saas.channel.initChannel($pageBody);
+
+      document.location.href = Hualala.PageRoute.createPath('saasChannel');
+    };
+
+
+    Hualala.Saas.SaasPageLayoutInit = initSaasPageLayout;
+    Hualala.Saas.SaasInit = initSubjectPage;
+    Hualala.Saas.receivableInit = initSubjectPage;
+    Hualala.Saas.departmentInit = initQueryDepartmentPage;
+    Hualala.Saas.remarksInit = initQueryRemarksPage;
+    Hualala.Saas.categoriesInit = initQueryCategoriesPage;
+    Hualala.Saas.GoodsInit = initQueryGoodsPage;
+    Hualala.Saas.channelInit = initQuerychannelPage;
+
+})(jQuery, window);;(function ($, window) {
 	IX.ns("Hualala.Common");
 	var pageBrickConfigs = [
 		{name : 'setting', title : '业务', label : '开通业务•业务参数', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-setting'},
@@ -23445,15 +30927,16 @@ function throttle(method, context)
 		{name : 'order', title : '订单', label : '查询•报表•菜品排行', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-order'},
 		{name : 'shop', title : '店铺', label : '开店•信息•菜谱', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-home'},
 
-		{name : 'pcclient', title : '下载', label : '哗啦啦代理程序', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-download'},
+		{name : 'agent', title : '代理程序', label : '下载•监控', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-agent'},
 		{name : 'user', title : '权限', label : '用户•权限', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-lock'},
         {name : 'weixin', title : '微信', label : '网络餐厅•营销', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-weixin'},
 		{name : 'crm', title : '会员', label : '概览•报表•参数•营销', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-crm'},
-		{name : 'mcm', title : '营销', label : '礼品•营销活动', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-crm'}
-		
-		
-		
-	];
+		{name : 'mcm', title : '营销', label : '礼品•营销活动', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-mcm'},
+        
+        {brickClz : 'home-brick-md-3'},
+        {name : 'saas', title : '收银软件', label : '商品', brickClz : 'home-brick-md-1', itemClz : 'brick-item brick-item-low'},
+        {name : 'boss', title : '老板通', label : '下载', brickClz : 'home-brick-md-2', itemClz : 'brick-item brick-item-low', icon : 'icon-boss'}
+    ];
 	function isSupportedBrowser () {
 		var bd = Hualala.Common.Browser;
 		var isIE = !$XP(bd, 'ie', null) ? false : true,
@@ -23547,7 +31030,7 @@ function throttle(method, context)
 		$('body > #ix_wrapper').remove();
 		if (isSupportedBrowser()) {
 			$wrapper.appendTo($('body'));
-            if(/main|pcclient|about|contact|login/.test(pageType))
+            if(/main|pcclient|about|contact|login|boss/.test(pageType))
                 $wrapper.addClass('no-nav');
 			if (isLogin) {
 				userMgr = new Hualala.User.UserMgrModal({
@@ -23635,21 +31118,40 @@ function throttle(method, context)
 			// 		label : v.label,
 			// 	};
 			// });
-			var navs = _.map(Hualala.TypeDef.SiteNavType, function (v, i, list) {
+            var navTypes = Hualala.TypeDef.SiteNavType;
+            if (window.location.host == 'dianpu.hualala.com') {
+                navTypes = _.reject(navTypes, function (nav) {
+                    return nav.name == 'saas';
+                });
+            }
+			var navs = _.map(navTypes, function (v, i, list) {
 				var hasRight = !rightHT.get(v.name) ? false : true;
+                var currentPageName = Hualala.PageRoute.getPageContextByPath().name;
+                var isMore = v.name == 'more';
 				var subnavs = $XP(v, 'subnavs', []);
+                var isMoreSubNav = false;
+                for(var i = 0, subnav; subnav = subnavs[i++];)
+                {
+                    if(isMoreSubNav = (isMore && subnav.name == currentPageName)) break;
+                }
+                
 				subnavs = _.map(subnavs, function (s) {
+                    var hasRight = !rightHT.get(s.name) ? false : true;
+                    var disabled = isMore && !hasRight ? 'disabled' : '';
 					return {
-						path : Hualala.PageRoute.createPath(s.name) || '#',
+						path : disabled ? 'javascript:;' : Hualala.PageRoute.createPath(s.name) || '#',
 						name : s.name,
+                        active: isMore && s.name == currentPageName ? 'active' : '',
+                        disabled : disabled,
 						label : s.label
 					};
 				});
+                
 				var list = {
-					active : !Hualala.Global.isCurrentPage(v.name) ? '' : 'active',
-					disabled : !hasRight ? 'disabled' : '',
-					noPath : !hasRight ? true : false,
-					path : Hualala.PageRoute.createPath(v.name) || '#',
+					active : isMoreSubNav || !isMore && Hualala.Global.isCurrentPage(v.name) ? 'active' : '',
+					disabled : isMore || hasRight ? '' : 'disabled',
+					noPath : isMore || !hasRight ? true : false,
+					path : isMore ? '#' : Hualala.PageRoute.createPath(v.name) || '#',
 					name : v.name,
 					label : v.label,
 					isSubNav : v.type == 'subnav' ? true : false,
@@ -23674,6 +31176,7 @@ function throttle(method, context)
 			user = Hualala.getSessionUser(),
 			roles = Hualala.getSessionRoles(),
 			pcclient = Hualala.getSessionPCClient(),
+            agentPath = Hualala.PageRoute.createPath('pcclient'),
 			rights = Hualala.getSessionUserRight();
 		var $body = $('#ix_wrapper > .ix-body > .container');
 		var mapRanderData = function () {
@@ -23682,6 +31185,11 @@ function throttle(method, context)
 			IX.iterate(rights, function (el) {
 				ht.register(el.name, el);
 			});
+            if (window.location.host == 'dianpu.hualala.com' ) {
+                pageBrickConfigs = _.map( pageBrickConfigs , function (config) {
+                    return config.name == 'saas' ? {brickClz : 'home-brick-md-1'} : config;
+                });
+            }
 			ret = _.map(pageBrickConfigs, function (el, i, l) {
 				var name = $XP(el, 'name');
 				var hasRight = !ht.get(name) ? false : true;
@@ -23693,7 +31201,7 @@ function throttle(method, context)
 		};
 		// Home Page 
 		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_site_homepage'));
-		var $bricks = $(tpl({bricks : mapRanderData()}));
+		var $bricks = $(tpl({bricks : mapRanderData(), agentPath: agentPath}));
 		$body.html($bricks);
 		$bricks.on('mouseenter mouseleave click', '.brick-item', function (e) {
 			var $this = $(this), pageName = $this.attr('data-pagename'),
@@ -23707,6 +31215,54 @@ function throttle(method, context)
 			}
 			
 		});
+        
+        var G = Hualala.Global,
+            C = Hualala.Common,
+            U = Hualala.UI;
+        var $brand = $bricks.filter('#brandLogo'),
+            $img = $brand.find('img').attr('src', G.IMAGE_ROOT + '/brand_logo.png');
+        var brandLogoImg = '';
+        C.loadData('getGroupInfo').done(function(records)
+        {
+            var logoPath = records[0].brandLogoImg;
+            if(!logoPath) return;
+            brandLogoImg = logoPath;
+            var logoUrl = C.getSourceImage(logoPath, {width: 128, height: 128});
+            $img.attr('src', logoUrl);
+        });
+        
+        $brand.find('a.btn-link').on('click', function()
+        {
+            var logoPath = '';
+            var $dialog = U.uploadImg({
+                    onSuccess: function (imgPath){ logoPath = imgPath; },
+                    minSize: '128',
+                    saveSize: '512'
+                });
+            
+            $dialog.find('.modal-content').append('<div class="modal-footer"><button class="btn btn-warning btn-ok">保存</button></div>');
+            
+            $dialog.on('click', '.btn-ok', function()
+            {
+                if(!logoPath)
+                {
+                    U.TopTip({msg: '请先上传logo图片！'});
+                    return;
+                }
+                
+                var params = {brandLogoImg: logoPath, brandLogoHWP: 1};
+                C.loadData('setBrandLogo', params, null, false)
+                .done(function()
+                {
+                    U.TopTip({msg: '保存成功！', type: 'success'});
+                    brandLogoImg = logoPath;
+                    var logoUrl = C.getSourceImage(brandLogoImg, {width: 128, height: 128});
+                    $img.attr('src', logoUrl);
+                    $dialog.modal('hide');
+                });
+            });
+            
+        });
 	}
 
 	function initLoginPage (pageType, params) {
@@ -23746,7 +31302,20 @@ function throttle(method, context)
 		}));
 		$page.replaceAll($body);
 	}
+    
+    function initBossClientDownloadPage () {
+		var $body = $('#ix_wrapper > .ix-body');
+		var tpl = Handlebars.compile(Hualala.TplLib.get('tpl_boss_download'));
+		var imgPath = Hualala.Global.IMAGE_ROOT + '/boss/';
 
+		var $page = $(tpl({
+			logo: imgPath + 'boss_logo.png',
+			qrcode: imgPath + 'qrcode_boss.png',
+            dragon: imgPath + 'dragon.png',
+            starfish: imgPath + 'starfish.png',
+		}));
+		$page.replaceAll($body);
+	}
 
 	Hualala.Common.LoginInit = initLoginPage;
 	Hualala.Common.initPageLayout = initPageLayout;
@@ -23755,12 +31324,13 @@ function throttle(method, context)
 	Hualala.Common.AboutInit = initAboutPage;
 	Hualala.Common.ContactInit = initContactPage;
 	Hualala.Common.PCClientDownloadInit = initPCClientDownloadPage;
+    Hualala.Common.BossClientDownloadInit = initBossClientDownloadPage;
 	
 
 	Hualala.Common.IndexInit = function () {
 		document.location.href = Hualala.PageRoute.createPath("main");
 	}
-	
+
 })(jQuery, window);;(function ($, window) {
 	IX.ns("Hualala");
 	var sessionData = null;
@@ -23791,14 +31361,14 @@ function throttle(method, context)
 		log("Merchant Sys INIT : " + tick);
 		Hualala.Global.loadAppData({}, function (appData) {
 			log("Load Merchant APP Data in (ms): " + (IX.getTimeInMS() - tick));
-			if ($XP(appData, 'resultcode') != 0) {
+			if ($XP(appData, 'resultcode') != '000') {
 				sessionData = null;
 				document.location.href = Hualala.PageRoute.createPath('login');
 				throw("Session Data Load Faild!! resultcode = " + $XP(appData, 'resultcode', '') + "; resultMsg = " + $XP(appData, 'resultmsg', ''));
 				return;	
 			}
 			loadSession($XP(appData, 'data', {}), function () {
-				log("Merchant Sys INIT DONE in (ms): " + (IX.getTimeInMS() - tick));
+				//log("Merchant Sys INIT DONE in (ms): " + (IX.getTimeInMS() - tick));
 				cbFn();
 			});
 		}, function () {
@@ -23846,7 +31416,7 @@ function throttle(method, context)
 			// });
 
 			Hualala.PageRoute.start(function (pageName, pageParams, pageInitFn) {
-				var hasNoNavPages = 'main,pcclient,about,contact,login';
+				var hasNoNavPages = 'main,pcclient,about,contact,login,boss';
 				var commonPages = _.filter(hasNoNavPages.split(','), function (v) {return v != 'main'}).join(',');
 				if (commonPages.indexOf(pageName) >= 0) {
 					Hualala.Common.initPageLayout({}, pageName);
@@ -23857,6 +31427,7 @@ function throttle(method, context)
 					return ;
 				}
 				initMainPage(function () {
+                    Hualala.UI.clearEditors();
 					Hualala.Common.initPageLayout({}, pageName);
 					if (hasNoNavPages.indexOf(pageName) < 0) {
 						Hualala.Common.initSiteNavBar(pageName);
@@ -23959,7 +31530,7 @@ function throttle(method, context)
 	function getPathByName (name, params) {
 		var cfg = PageConfigurations[name];
 		if (!cfg) 
-			return console.err("Can't find route : " + name);
+			return console.error("Can't find route : " + name);
 		var path = $XP(cfg, 'path'), reg = $XP(cfg, 'reg'),
 			match = path.match(reg);
 		var genPath = function (p) {
@@ -24016,12 +31587,51 @@ function throttle(method, context)
 			name : "shopInfo", path : "/#shop/{id}/info", reg : /shop\/(.*)\/info$/, bodyClz : "",
 			PageInitiator : "Hualala.Shop.BaseInfoMgrInit", parentName : "shop", label : "店铺信息"
 		},
+        // 店铺菜品分类管理
+        {
+            name : "shopCategory", path : "/#shop/{id}/category", reg : /shop\/(.*)\/category$/, bodyClz : "",
+            PageInitiator : "Hualala.Shop.CategoryInit", parentName : "shop", label : "菜品分类"
+        },
 		// 店铺菜单管理
 		{
 			name : "shopMenu", path : "/#shop/{id}/menu", reg : /shop\/(.*)\/menu$/, bodyClz : "",
-			PageInitiator : "Hualala.Shop.FoodMenuMgrInit", parentName : "shop", label : "菜单管理"
+			PageInitiator : "Hualala.Shop.FoodMenuMgrInit", parentName : "shop", label : "菜谱管理"
 		},
-
+        // 店铺人员管理
+        {
+            name : "shopMember", path : "/#shop/{id}/member", reg : /shop\/(.*)\/member$/, bodyClz : "",
+            PageInitiator : "Hualala.Shop.MemberMgrInit", parentName : "shop", label : "人员管理"
+        },
+        //店铺字典管理
+        {
+			name : "shopRemarks", path : "/#shop/{id}/remarks",reg : /shop\/(.*)\/remarks$/, bodyClz : "",
+			PageInitiator : "Hualala.Shop.remarksInit", parentName : "shop", label : "字典管理"
+		},
+        //店铺桌台管理
+        {
+            name : "shopTable", path : "/#shop/{id}/table", reg :/shop\/(.*)\/table$/, bodyClz: "",
+            PageInitiator : "Hualala.Shop.TableMgrInit", parentName : "shop", label : "桌台管理"
+        },
+        //店铺桌台》区域管理
+        {
+            name : "tableArea", path : "/#shop/{id}/table/area", reg :/shop\/(.*)\/table\/area$/, bodyClz: "",
+            PageInitiator : "Hualala.Shop.TableAreaMgrInit", parentName : "shopTable", label : "区域管理"
+        },
+        //店铺促销
+        {
+            name : "shopPromotion", path : "/#shop/{id}/promotion", reg : /shop\/(.*)\/promotion$/, bodyClz : "",
+            PageInitiator : "Hualala.Shop.PromotionInit", parentName : "shop", label : "店铺促销"
+        },
+        //打印机设置
+        {
+            name : "shopPrinterSetting", path : "/#shop/{id}/printer", reg : /shop\/(.*)\/printer$/, bodyClz : "",
+            PageInitiator : "Hualala.Shop.PrinterInit", parentName : "shop", label : "打印机设置"
+        },
+        //打印机区域设置
+        {
+            name : "shopPrinterAreaSetting", path : "/#shop/{id}/printerArea", reg : /shop\/(.*)\/printerArea$/, bodyClz : "",
+            PageInitiator : "Hualala.Shop.PrinterAreaInit", parentName : "shop", label : "打印区域设置"
+        },
 		// 店铺功能设置页面
 		{
 			name : "setting", path : "/#setting", reg : /setting$/, bodyClz : "",
@@ -24037,6 +31647,11 @@ function throttle(method, context)
 		{
 			name : "accountDetail", path : "/#account/{id}/detail", reg : /account\/(.*)\/detail$/, bodyClz : "",
 			PageInitiator : "Hualala.Account.AccountMgrInit", parentName : "account", label : "账户明细"
+		},
+		// 结算报表查询页面
+		{
+			name : "accountDailyReport", path : "/#account/{id}/dailyreport", reg : /account\/(.*)\/dailyreport$/, bodyClz : "",
+			PageInitiator : "Hualala.Account.AccountDailyReportInit", parentName : "account", label : "汇总报表"
 		},
 
 		// 用户管理页面
@@ -24065,8 +31680,8 @@ function throttle(method, context)
 
 		 */
 		{
-			name : "orderQuery", path : "/#order/query/b{begin}/e{end}/c{cityID}/n{shopID}/s{status}/m{mobile}/o{orderKey}/i{minAmount}/a{maxAmount}", 
-			reg : /order\/query\/b(.*)\/e(.*)\/c(.*)\/n(.*)\/s(.*)\/m(.*)\/o(.*)\/i(.*)\/a(.*)$/,
+			name : "orderQuery", path : "/#order/query/b{begin}/e{end}/c{cityID}/n{shopID}/s{status}/m{mobile}/o{orderKey}/i{minAmount}/a{maxAmount}/v{vipOrder}", 
+			reg : /order\/query\/b(.*)\/e(.*)\/c(.*)\/n(.*)\/s(.*)\/m(.*)\/o(.*)\/i(.*)\/a(.*)\/v(.*)$/,
 			bodyClz : "", PageInitiator : "Hualala.Order.QueryOrderInit", parentName : "main", label : "订单查询"
 		},
 
@@ -24199,6 +31814,11 @@ function throttle(method, context)
 			PageInitiator : "Hualala.CRM.RechargeReconciliationInit", parentName : "crm", label : "储值对账"
 		},
 		{
+			name : "memberQueryDay", path : "/#crm/deal/memberQueryDay",
+			reg : /crm\/deal\/memberQueryDay/, bodyClz : "",
+			PageInitiator : "Hualala.CRM.memberQueryDayInit", parentName : "crm", label : "会员日报表"
+		},
+		{
 			name : "crmParameter", path : "/#crm/settings/params",
 			reg : /crm\/settings\/params$/, bodyClz : "",
 			PageInitiator : "Hualala.CRM.CRMSettingsParamsInit", parentName : "crm", label : "会员系统参数"
@@ -24225,6 +31845,11 @@ function throttle(method, context)
 			reg : /weixin$/, bodyClz : "",
 			PageInitiator : "Hualala.Weixin.homeInit", parentName : "main", label : "微信管理"
 		},
+        {
+			name : "wxAccounts", path : "/#weixin/admin/accounts",
+			reg : /weixin\/admin\/accounts$/, bodyClz : "wx-accounts",
+			PageInitiator : "Hualala.Weixin.accountsInit", parentName : "weixin", label : "公众账号"
+		},
 		{
 			name : "wxReply", path : "/#weixin/admin/reply",
 			reg : /weixin\/admin\/reply$/, bodyClz : "wx-reply",
@@ -24240,11 +31865,11 @@ function throttle(method, context)
 			reg : /weixin\/admin\/menu$/, bodyClz : "wx-menu",
 			PageInitiator : "Hualala.Weixin.menuInit", parentName : "weixin", label : "自定义菜单"
 		},
-        {
-			name : "wxQrCode", path : "/#weixin/admin/qrcode",
+        /*{
+			name : "wxQrcode", path : "/#weixin/admin/qrcode",
 			reg : /weixin\/admin\/qrcode$/, bodyClz : "wx-qrcode",
-			PageInitiator : "Hualala.Weixin.qrCodeInit", parentName : "weixin", label : "二维码维护"
-		},
+			PageInitiator : "Hualala.Weixin.qrcodeInit", parentName : "weixin", label : "二维码管理"
+		},*/
 		{
 			name : "wxAdvertorial", path : "/#weixin/material/advertorial",
 			reg : /weixin\/material\/advertorial$/, bodyClz : "wx-advertorial",
@@ -24261,10 +31886,22 @@ function throttle(method, context)
 			PageInitiator : "Hualala.Weixin.textInit", parentName : "weixin", label : "文本管理"
 		},
 
-		// PC客户端下载页面
+        // 代理程序信息页面
+		{
+			name : "agent", path : "/#agent", reg : /agent$/, bodyClz : "agent",
+			PageInitiator : "Hualala.Agent.AgentInfoInit", parentName : "main", label : "代理程序"
+		},
+
+		// 代理程序下载页面
 		{
 			name : "pcclient", path : "/#download", reg : /download$/, bodyClz : "",
-			PageInitiator : "Hualala.Common.PCClientDownloadInit", parentName : "main", label : "客户端下载"
+			PageInitiator : "Hualala.Common.PCClientDownloadInit", parentName : "main", label : "代理程序下载"
+		},
+        
+        // 老板通下载页面
+		{
+			name : "boss", path : "/#boss", reg : /boss$/, bodyClz : "",
+			PageInitiator : "Hualala.Common.BossClientDownloadInit", parentName : "main", label : "老板通下载"
 		},
 
 		// 关于商户中心
@@ -24278,6 +31915,45 @@ function throttle(method, context)
 			name : "contact", path : "/#contact", reg : /contact$/, bodyClz : "",
 			PageInitiator : "Hualala.Common.ContactInit", parentName : "main", label : "联系我们"
 		},
+
+        //saas功能模块
+		{
+			name : "saas", path : "/#saas", reg : /saas$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.SaasInit", parentName : "main", label : "收银软件"
+		},
+        {
+			name : "saasReceivables", path : "/#saas/admin/receivables",
+			reg : /saas\/admin\/receivables$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.receivableInit", parentName : "saas", label : "收款项目"
+		},
+		{
+			name : "saasDepartment", path : "/#saas/admin/department",
+			reg : /saas\/admin\/department$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.departmentInit", parentName : "saas", label : "部门"
+		},
+		{
+			name : "saasRemarks", path : "/#saas/admin/remarks",
+			reg : /saas\/admin\/remarks$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.remarksInit", parentName : "saas", label : "字典"
+		},
+		{
+			name : "saasCategories", path : "/#saas/admin/categories",
+			reg : /saas\/admin\/categories$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.categoriesInit", parentName : "saas", label : "商品分类"
+		},
+		{
+			name : "saasCommodity", path : "/#saas/admin/commodity",
+			reg : /saas\/admin\/commodity$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.GoodsInit", parentName : "saas", label : "商品"
+		},
+		{
+			name : "saasChannel", path : "/#saas/admin/channel",
+			reg : /saas\/admin\/channel$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.channelInit", parentName : "saas", label : "渠道"
+		},
+
+
+
 		// 上面的path都匹配不到，需要自动跳转home
 		{
 			name : "index", path : "", reg : /(.*)$/, bodyClz : "",

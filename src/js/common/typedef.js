@@ -33,12 +33,14 @@
 		},
 		{name : 'weixin', label : '微信', type: "subnav",
 			subnavs : [
-				{name : "wxReply", label : "微信管理", type : "link", src : "WeixinAdminSubNavType"},
+				{name : "wxAccounts", label : "微信管理", type : "link", src : "WeixinAdminSubNavType"},
 				{name : "wxAdvertorial", label : "素材管理", type : "link", src : "WeixinMaterialSubNavType"}
 			]
 		},
         {name : 'more', label : '更多', type: "subnav",
 			subnavs : [
+				//saas
+				{name : 'saas', label : '收银软件', type:"link"},
 				{name : "agent", label : "代理程序", type : "link"},
 				{name : "user", label : "权限", type : "link"}
 			]
@@ -47,10 +49,11 @@
 	];
     
     Hualala.TypeDef.WeixinAdminSubNavType = [
-		{name : "wxReply", label : "自动回复"},
+		{name : "wxAccounts", label : "公众账号"},
+        {name : "wxReply", label : "自动回复"},
 		{name : "wxSubscribe", label : "关注自动回复"},
 		{name : "wxMenu", label : "自定义菜单"}//,
-        //{name : "wxQrCode", label : "二维码维护"}
+        //{name : "wxQrCode", label : "二维码管理"}
 	];
     Hualala.TypeDef.WeixinMaterialSubNavType = [
         {name : "wxAdvertorial", label : "软文管理"},
@@ -66,7 +69,8 @@
 	Hualala.TypeDef.CRMDealSubNavType = [
 		{name : "crmDealSummary", label : "储值消费汇总", pkeys : []},
 		{name : "crmDealDetail", label : "交易明细", pkeys : []},
-		{name : "crmRechargeReconciliation", label : "储值对账", pkeys : []}
+		{name : "crmRechargeReconciliation", label : "储值对账", pkeys : []},
+		{name : "memberQueryDay", label : "会员日报表", pkeys : []}
 	];
 	Hualala.TypeDef.CRMParamsSubNavType = [
 		{name : "crmParameter", label : "会员系统参数", pkeys : []},
@@ -80,11 +84,22 @@
 	Hualala.TypeDef.OrderSubNavType = [
 		// Note：先屏蔽，第二版本开放
 		// {name : 'order', label : '概览', pkeys : []},
-		{name : 'orderQuery', label : '订单查询', pkeys : ['startDate','endDate','cityID','shopID','orderStatus','userMobile','orderID','s_orderTotal','e_orderTotal']},
-		{name : 'orderQueryDay', label : '订单日汇总', pkeys : ['startDate','endDate','cityID','shopID','orderStatus']},
-		{name : 'orderQueryDuring', label : '订单期间汇总', pkeys : ['startDate','endDate','cityID','shopID','orderStatus']},
-		{name : 'orderDishesHot', label : '菜品销量排行', pkeys : ['startDate','endDate','cityID','shopID','foodCategoryName']},
+		{name : 'orderQuery', label : '订单查询', pkeys : ['startDate','endDate','cityID','shopID','queryStatus','userMobile','orderID','s_orderTotal','e_orderTotal','vipOrder']},
+		{name : 'orderQueryDay', label : '订单日汇总', pkeys : ['startDate','endDate','cityID','shopID','queryStatus']},
+		{name : 'orderQueryDuring', label : '订单期间汇总', pkeys : ['startDate','endDate','cityID','shopID','queryStatus']},
+		{name : 'orderDishesHot', label : '菜品销量排行', pkeys : ['startDate','endDate','cityID','shopID','foodCategoryName','grouping']},
 		{name : 'orderQueryCustomer', label : '顾客统计', pkeys : ['startDate','endDate','cityID','shopID','userLoginMobile','userName']}
+	];
+
+	/*saas*/
+	Hualala.TypeDef.SaasSubNavType = [
+		{name : 'saasReceivables', label : '收款科目', pkeys : []},
+		{name : 'saasDepartment', label : '部门', pkeys : []},
+		//{name : 'saasRemarks', label : '字典', pkeys : []},
+		// {name : 'saasCategories', label : '商品分类', pkeys : []},
+		// {name : 'saasCommodity', label : '商品', pkeys : []},
+		{name : 'saasChannel', label : '渠道', pkeys : []}
+		
 	];
 
 	Hualala.TypeDef.GENDER = [
@@ -143,16 +158,31 @@
 		{value : 9, label : "已关闭"}
 	];
 
+	/** 
+	 *查询订单的状态
+	 *BUG #5570 【Dohko-dianpu】订单查询不能显示待消费订单且导出订单也无此数据
+	 */
+	Hualala.TypeDef.queryStatus = [
+		{value : '2', label : "已消费"},
+		{value : '1', label : "待消费"},			
+		{value : '3', label : "已退款"}
+	];
+	/** 
+	 *菜品的筛选统计类型（按分类，按菜品）
+	 */
+	Hualala.TypeDef.foodCountStatus = [
+		{value : '1', label : "按菜品"},
+		{value : '2', label : "按分类"}
+	];
 	/**
 	 * 订单状态
 	 * @type {Array}
 	 */
 	Hualala.TypeDef.OrderStatus = [
-		{value : '', label : "全部"},
 		// {value : '0', label : "已取消"},
 		// {value : '10', label : "未完成"},
 		// {value : '15', label : "已确认"},
-		{value : '20', label : "待消费(已付款)"},
+		{value : '20', label : "待消费"},
 		{value : '30', label : "已退单"},
 		{value : '40', label : "已消费"}
 		// {value : '50', label : "已完成 "},
@@ -186,13 +216,29 @@
 		},
 		HASIMAGE : 1
 	};
+
+    Hualala.TypeDef.FoodAttrSelect = {
+        TakeawayType: [{name: '堂食外送均可', value: '1'}, {name: '仅堂食', value: '0'}, {name: '仅外送', value: '2'}],
+        HotTag: [{name: '不辣', value: '0'}, {name: '微辣', value: '1'}, {name: '中辣', value: '2'}, {name: '重辣', value: '3'}]
+    };
+    Hualala.TypeDef.FoodSettings = [
+        {name: 'IsNeedConfirmFoodNumber', text: '需要确定数量'},
+        {name: 'isAutoAdd', text: '默认自动加入'}
+        //{name: 'isComments', text: '允许点评'}暂时屏蔽掉
+    ];
+    Hualala.TypeDef.FoodAttrSNewR = [
+        {name: 'isSpecialty', text: '招牌菜'},
+        {name: 'isNew', text: '新菜'},
+        {name: 'isRecommend', text: '推荐菜'}
+    ];
 	/**
 	 * 交易类型 
 	 * 101：网上订餐消费（卖出）+ 102：账户充值+ 199：账户资金调加+ 201：订餐消费后退款（退款）- 202：平台预付款- 203：提现- 204：支付平台服务费- 205：支付平台广告费- 206：支付平台信息费- 299：账户资金调减-
 	 */
 	Hualala.TypeDef.FSMTransType = [
 		{value : '', label : "全部"},
-		{value : 101, label : "网上订餐", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		{value :511,label : "用户自助订餐/结帐", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		//{value : 101, label : "网上订餐", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
 		//{value : 102, label : "账户充值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
 		//{value : 103, label : "网上订餐用券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
 		//{value : 104, label : "到店消费验券", tpl : "tpl_chktick_detail", queryCall : null, queryKeys : null},
@@ -206,7 +252,8 @@
 		// {value : 206, label : "支付平台信息费"},
 		//{value : 207, label : "订餐消费后退券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
 		//{value : 299, label : "账户资金调减"},
-		{value : 410, label : "店内自助点菜结账", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"}
+		//{value : 410, label : "店内自助点菜结账", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"}
+		{value : 208, label : "短信结算", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"}
 	];
 	/**
 	 * 交易状态
@@ -254,6 +301,69 @@
 		{value : 1, label : "快餐"},
 		{value : 2, label : "美食广场"}
 	];
+	Hualala.TypeDef.ShopPrinterDataSet = {
+		/* 打印机状态
+		 * 0：未知 1：正常 2:打印机出错 3:打印机无法连接 4:打印机脱机 
+		 * 5:上盖打开 6:切刀出错 7:纸将尽 8:缺纸
+		 */
+		currPrinterStatusData : [
+			{value : "0", label : "未知"},
+			{value : "1", label : "正常"},
+			{value : "2", label : "打印机出错"},
+			{value : "3", label : "打印机无法连接"},
+			{value : "4", label : "打印机脱机"},
+			{value : "5", label : "上盖打开"},
+			{value : "6", label : "切刀出错"},
+			{value : "7", label : "纸将尽"},
+			{value : "8", label : "缺纸"}
+		],
+		/*打印机端口类型 : 0：串口 1：网口 2：并口 3：驱动 4：USB 5：蓝牙 */
+		printerPortTypes : [
+			{value : "0", label : "串口"},
+			{value : "1", label : "网口"},
+			{value : "2", label : "并口"},
+			{value : "3", label : "驱动"},
+			{value : "4", label : "USB"},
+			{value : "5", label : "蓝牙"}
+		],
+		//打印机纸张宽度 80，76，58
+		printerPaperSizeTypes :[
+			{value: "58", label:"58毫米"},
+			{value: "76", label:"76毫米"},
+			{value: "80", label:"80毫米"}
+		]
+	};
+	Hualala.TypeDef.ShopPromotionDataSet = {
+		/* 促销或送适用的业务类型
+		 * 0:预订（常规预订+闪吃预订） 1：外送/自提 2：全部 3:店内自助
+		 */
+		supportOrderTypes : [
+			{value : 2, label : "全部"},
+			{value : 0, label : "预订(常规+闪吃)"},
+			{value : 1, label : "外送/自提"},
+			{value : 3, label : "店内自助"}
+		],
+		/*tag : 标签（0无，1券，2减，3送，4折，5惠）*/
+		tagTypes : [
+			{value : "0", label : "无"},
+			{value : "1", label : "券"},
+			{value : "2", label : "减"},
+			{value : "3", label : "送"},
+			{value : "4", label : "折"},
+		],
+		//促销规则
+		stageTypes :[
+			{value: "0", label:"下单就有优惠", help:"如：全场8折,消费就送招财猫"},
+			{value: "1", label:"消费每满一定金额就有优惠", help:"如：每满100返20优惠券"},
+			{value: "2", label:"消费一定金额就有优惠", help:"如：消费满100减30，满200减70"}
+		],
+		//返券规则 1：不限制 2：用券不返券 3现金部分返券
+		returnVoucherTypes:[
+			{value:"1",label:"不限制"},
+			{value:"2",label:"用券不返券"},
+			{value:"3",label:"现金部分返券"}
+		]
+	};
 
 	/**
 	 * 店铺业务类型
@@ -283,42 +393,45 @@
 	 * checkSpotOrder: 顾客可通过手机结账 int 0: 不支持；1:支持
 	 * payBeforeCommit: 支付完成后才能下单 int 0：不支持（不支持）；1：支持
 	 * fetchFoodMode : 取餐模式 int 0：流水号模式（默认）；1：牌号模式；2：收银台直接出餐
-	 * 
+	 * commitSafeLevel：下单验证 int  1：不验证（默认） ； 2：在餐厅一定范围外需验证 ；3:必须验证
+     * foodUITemplate ：菜品展示模式 int 1：列表模式（默认）；2：大图模式 ； 3：瀑布流模式
+     * adsID ：软文介绍  int 0 未设置（默认）
+     *
 	 */
 	Hualala.TypeDef.ShopBusiness = [
 		{id : 41, label : "店内自助", name : "spot_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setSpotOrderParams',
 			// formKeys : 'fetchFoodMode,payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
-			formKeys : 'fetchFoodMode,checkSpotOrder,payBeforeCommit,supportCommitToSoftware',
+			//formKeys : 'foodUITemplate,checkSpotOrder,commitSafeLevel,payBeforeCommit,supportCommitToSoftware',
 			operationMode : {
 				// 正餐
 				// 0 : 'payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
 				// @Note for 1.1 delete supportCommitToSoftware(#4105)
-				0 : 'payBeforeCommit',
+				0 : 'foodUITemplate,payBeforeCommit,commitSafeLevel,adsID',
 				// 快餐
 				// @Note for 1.1 delete supportCommitToSoftware(#4105)
-				1 : 'fetchFoodMode',
-				2 : 'payBeforeCommit'
+				1 : 'foodUITemplate,fetchFoodMode',
+				2 : 'foodUITemplate,payBeforeCommit,commitSafeLevel,adsID'
 			}
 		},
 		{
 			id : 10, label : "订座点菜", name : "commonreserve_order", businessIsSupported : true, 
 			callServer : 'Hualala.Global.setCommonReserveParams',
-			formKeys : 'advanceTime,noticeTime,minAmount,reserveTableTime,reserveTableDesc,payMethod'
+			formKeys : 'foodUITemplate,advanceTime,noticeTime,minAmount,reserveTableTime,reserveTableDesc,payMethod,adsID'
 		},
 		{id : 11, label : "闪吃", name : "justeat_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setJustEatParams',
-			formKeys : 'advanceTime,noticeTime,minAmount,holidayFlag,servicePeriods,reserveTableTime,reserveTableDesc,payMethod'
+			formKeys : 'foodUITemplate,advanceTime,noticeTime,minAmount,holidayFlag,servicePeriods,reserveTableTime,reserveTableDesc,payMethod,adsID'
 		},
 		{id : 20, label : "外送", name : "takeaway_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setTakeAwayParams',
 			// formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,servicePeriods,takeawayDeliveryAgent,takeawayDeliveryTime,takeawayScope,takeawayScopeDesc,payMethod'
-			formKeys : 'noticeTime,servicePeriods,holidayFlag,takeawayDeliveryTime,minAmount,serviceAmount,freeServiceAmount,takeawayScope,payMethod'
+			formKeys : 'foodUITemplate,holidayFlag,servicePeriods,servicePeriods2,takeawayDeliveryTime,advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,takeawayScope,payMethod,adsID'
 		},
 		{id : 21, label : "自提", name : "takeout_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setTakeOutParams',
 			// formKeys : 'advanceTime,freeServiceAmount,holidayFlag,minAmount,serviceAmount,servicePeriods,noticeTime,payMethod'
-			formKeys : 'noticeTime,servicePeriods,holidayFlag,advanceTime,minAmount,payMethod'
+			formKeys : 'foodUITemplate,holidayFlag,servicePeriods,servicePeriods2,noticeTime,advanceTime,minAmount,payMethod,adsID'
 		},
 		{id : 1000, label : "会员卡", name : "crm", businessIsSupported : true, callServer : null, formKeys : null},
 		{id : 2000, label : "老板通", name : "bi", businessIsSupported : true, callServer : null, formKeys : null}
@@ -384,7 +497,13 @@
 	Hualala.TypeDef.PayMethodOptions = [
 		{value : 0, label : "仅支持在线支付"},
 		{value : 1, label : "仅支持线下支付"},
-		{value : 2, label : "均支持"},
+		{value : 2, label : "线上及线下支付均支持"},
+	];
+	/*店铺促销优惠支持0,只支持网上支付促销;1,只支持到店付款;2,网上及到店付均支持*/
+	Hualala.TypeDef.PromotionScopeOptions = [
+		{value : 0, label : "只支持网上支付"},
+		{value : 1, label : "只支持到店付款"},
+		{value : 2, label : "网上及到店付均支持"},
 	];
 
 	Hualala.TypeDef.PayMethodAtShopOptions = [
@@ -401,16 +520,34 @@
 	];
 
 	Hualala.TypeDef.HolidayFlagOptions = [
-		{value : 0, label : "包含节假日"},
-		{value : 1, label : "只能在节假日"},
-		{value : 2, label : "不包含节假日"}
+		{value : 0, label : "工作日及节假日均开放"},
+		{value : 1, label : "仅节假日开放"},
+		{value : 2, label : "仅工作日开放"}
 	];
 
 	Hualala.TypeDef.PayBeforeCommitOptions = [
-		{value : 1, label : "餐前结账"},
-		{value : 0, label : "餐后结账"}
+		{value : 0, label : "餐后结账"},
+		{value : 1, label : "餐前结账"}
+		
 	];
-
+	//菜品展示模式
+	Hualala.TypeDef.foodUITemplateOptions = [
+		{value : 1, label : "列表模式"},
+		{value : 2, label : "大图模式"},
+		{value : 3, label : "瀑布流模式"}
+	];
+    //下单安全级别设置
+    Hualala.TypeDef.CommitSafeLevelOptions = [
+    	{value : 1, label : "不验证"},
+    	{value : 2, label : "在餐厅一定范围外需验证"},
+    	{value : 3, label : "必须验证"}
+    ];
+    //软文设置
+    Hualala.TypeDef.adsIDOptions = [
+    	{value : 0, label : "未设置" }
+    	
+    	
+    ];
 	/**
 	 * 获取一天(默认)的时间间隔选项数据
 	 * 1小时内，时间间隔15分钟
@@ -451,7 +588,6 @@
 		}
 		return list;
 	};
-
 	/*银行代码列表*/
 	Hualala.TypeDef.BankOptions = [
 		{
@@ -516,7 +652,7 @@
 		},
 		{
 			value: "Other",
-			label: "其他"
+			label: "其它"
 		}
 	];
 
@@ -525,7 +661,6 @@
 		{value : 0, label : "停用"},
 		{value : 1, label : "正常"}
 	];
-
 	Hualala.TypeDef.MCMDataSet = {
 		/*礼品类型*/
 		GiftTypes : [
@@ -552,7 +687,9 @@
 					{label : "发送数", value : "tab_send"},
 				 	{label : "使用数", value : "tab_used"}
 				]
-			}
+			},
+			{value: 20, label: '菜品优惠券', type: 'preferential', unit: '元', bgColor: '#669900'},
+			{value: 30, label: '实物礼品', type: 'physical', unit: '元', bgColor: '#0033FF'}
 		],
 		/*礼品发出方式*/
 		GiftDistributeTypes : [
@@ -571,7 +708,9 @@
 			{value : "93", label : "积分兑换"},
 			{value : "94", label : "参与活动"},
 			{value : "95", label : "有奖竞猜"},
-			{value : "96", label : "套餐充值"}
+			{value : "96", label : "套餐充值"},
+            {value : "97", label : "会员开卡送礼品"},
+            {value : "98", label : "会员生日赠送"}
 		],
 		/*礼品使用状态*/
 		GiftStatus : [
@@ -637,7 +776,23 @@
 			{value : "22", label : "报名活动", type : "apply-evt", bgColor : "rgb(102, 51, 102)"},
 			{value : "30", label : "积分兑换", type : "credit-exchange", bgColor : "rgb(0, 153, 204)"},
 			{value : "40", label : "营销红包", type : "marketing-redenvelope", bgColor : "rgb(156, 111, 109)"},
-			{value : "41", label : "消费红包", type : "consume-redenvelope", bgColor : "rgb(199, 148, 148)"}
+			{value : "41", label : "消费红包", type : "consume-redenvelope", bgColor : "rgb(199, 148, 148)"},
+			{value : "50", label : "群发短信", type : "mass-texting", bgColor : "rgb(0, 153, 204)"}
+		],
+		/*群发短信状态定义*0，定义中，1，待开始，2，进行中，3，发送完毕，4，失败*/
+		SmsSendStatus :[
+			{value : "0", label : "定义中"},
+			{value : "1", label : "待开始"},
+			{value : "2", label : "进行中"},
+			{value : "3", label : "发送完毕"},
+			{value : "4", label : "失败"}
+		],
+		/*settleStatus 结算状态:0不需要结算，1、待结算、2、结算完成、3、结算失败'*/
+		SmsSettleStatus :[
+			{value : "0", label : "不需要结算"},
+			{value : "1", label : "待结算"},
+			{value : "2", label : "结算完成"},
+			{value : "3", label : "结算失败"}
 		],
 		/*营销活动摇奖方式*/
 		EventLuckJoyTypes : [
@@ -670,8 +825,8 @@
 
 		],
 		EventCardLevels : [
-			{value : "-1", label : "所有顾客参与（含非会员）"},
-			{value : "0", label : "仅会员"}
+			// {value : "-1", label : "所有顾客参与（含非会员）"},
+			{value : "0", label : "全部会员"}
 		],
 		EventCountCycleDays : [
 			{value : 0, label : "不限次数"},
@@ -725,6 +880,7 @@
             '10': '初始转入', 
             '20': '储值', 
             '30': '消费', 
+            '40': '调账',
             '50': '活动赠积分', 
             '60': '积分兑换', 
             '70': '积分清零', 
@@ -755,14 +911,16 @@
             '93': '积分兑换',
             '94': '参与活动',
             '95': '有奖竞猜',
-            '96': '套餐充值',  
+            '96': '套餐充值',
+			'97': '会员开卡送礼品',
+            '98': '会员生日赠送',
             '100': '批量导入'
         },
         //会员优惠券状态
         giftStatus: { '1': '未使用', '2': '已使用', '3': '已过期', '4': '已退订' },
         //会员卡日志类型
         logType: {
-            '0': '其他', 
+            '0': '其它', 
             '10': '挂失', 
             '11': '解除挂失', 
             '20': '冻结', 
@@ -776,8 +934,147 @@
             '60': '升级', 
             '61': '降级'
         }
-    }
+    };
+    /**
+	 * 是否内置渠道
+	 * 0：内置渠道 1：不是内置渠道
+	 * 
+	 */
+	Hualala.TypeDef.ChannelStatus = [
+		{value : 0, label : "是"},
+		{value : 1, label : "否"}
+	];
+	/**
+	 * 部门类型
+	 * 0：未知 1：出品部门 2：领料部门 3：出品及领料部门
+	 * 
+	 */
+	Hualala.TypeDef.SaasDepartmentType = [
+		{value : 0, label : "未知"},
+		{value : 1, label : "出品部门"},
+		{value : 2, label : "领料部门"},
+		{value : 3, label : "出品及领料部门"}
+	];
+	/**
+	 * 打印类型
+	 * 0：不打印 1：一菜一单 2：多菜一单
+	 * 
+	 */
+	Hualala.TypeDef.SaasPrintType = [
+		{value : 0, title : "不打印"},
+		{value : 1, title : "一菜一单"},
+		{value : 2, title : "多菜一单"}
+	];
+	/**
+	 *saas备注类型
+	 *10：点单备注 20：作法 30：口味 40：退菜原因 50：赠菜原因
+	 *60：改价原因 70：改单原因  80：预订退订原因  90：外卖退单原因
+	 */
+	Hualala.TypeDef.SaasNotesType =[
+		{value : "10",  label: "点单备注" },
+		{value : "20",  label: "作法" },
+		{value : "30",  label: "口味" },
+		{value : "40",  label: "退菜原因" },
+		{value : "50",  label: "赠菜原因" },
+		{value : "60",  label: "改价原因" },
+		{value : "70",  label: "改单原因" },
+		{value : "80",  label: "预订退订原因" },
+		{value : "90",  label: "外卖退单原因" },
+		{value : "100",  label: "退款原因" }
+	];
+	/**
+	 *saas备注加价方式
+	 *0：不加价 1：固定加价 2：按数量加价 3：按人数加价 
+	 *
+	 */
+	Hualala.TypeDef.SaasaddPriceType =[
+		{value : "0",  label: "不加价" },
+		{value : "1",  label: "固定加价" },
+		{value : "2",  label: "按数量加价" },
+		{value : "3",  label: "按人数加价" }
+	];
 
+	Hualala.TypeDef.ShopDiscountDataSet = {
+		/*折扣范围* 0：部分打折 1：全部打折 */
+		DiscountRangeTypes : [
+			{value : "0",  label: "部分打折" },
+			{value : "1",  label: "全部打折" }
+		],
+		/*是否启用*/
+		DiscountIsActive : [
+			{value : "1", label : "已启用"},
+			{value : "0", label : "未启用"}
+		],
+		//是否享受会员价
+		DiscountIsVipPrice :[
+			{value : "0", label : "不享受"},
+			{value : "1", label : "享受"}
+		]
+	};
+
+	/*
+	* 店铺》站点及参数设置的一些常量
+	* */
+	Hualala.TypeDef.ShopSaasParams = {
+		//账单抹零方式
+		moneyWipeZeroTypes: [
+			{value: '0', label: '不抹零'},
+			{value: '1', label: '四舍五入到角'},
+			{value: '2', label: '向上抹零到角'},
+			{value: '3', label: '向下抹零到角'},
+			{value: '4', label: '四舍五入到元'},
+			{value: '5', label: '向上抹零到元'},
+			{value: '6', label: '向下抹零到元'},
+		],
+		//结账清单打印份数
+		checkoutBillPrintCopies: [
+			{value: '0', label: '不打印'},
+			{value: '1', label: '打印1份'},
+			{value: '2', label: '打印2份'},
+			{value: '3', label: '打印3份'},
+			{value: '4', label: '打印4份'}
+		],
+		//明细打印方式
+		checkoutBillDetailPrintWays: [
+			{value: '0', label: '不打印明细项目'},
+			{value: '1', label: '打印明细项目'},
+			{value: '2', label: '相同项目合并打印'}
+		],
+		//明细金额类型
+		checkoutBillDetailAmountTypes: [
+			{value: '0', label: '优惠前金额小计'},
+			{value: '1', label: '优惠后金额小计'}
+		],
+		//收到网上订单语音提醒方式
+		revOrderAfterPlayVoiceTypes: [
+			{value: '0', label: '不提醒'},
+			{value: '1', label: '每订单提醒一次'},
+			{value: '9', label: '语音重复提醒'}
+		],
+		//语音播报速度
+		TTSVoiceSpeedTypes: [
+			{value: '0', label: '慢'},
+			{value: '1', label: '略快'},
+			{value: '2', label: '快'},
+			{value: '3', label: '很快'}
+		],
+		//厨房打印凭证类型
+		kitchenPrintBillTypeLst: [
+			{value: 'LTD', label: '留台单'},
+			{value: 'ZZD', label: '制作单'},
+			{value: 'CCD', label: '传菜单'},
+			{value: 'CJD', label: '催叫单'},
+			{value: 'TCD', label: '退菜单'},
+			{value: 'HTD', label: '换台单'},
+			{value: 'ZCD', label: '转菜单'}
+		],
+		//站点业态模式
+		siteBizModelTypes: [
+			{ value: '0', label: '快餐'},
+			{ value: '1', label: '正餐'},
+			{ value: '9', label: '零售'}
+		]
+	};
 
 })(jQuery);
 

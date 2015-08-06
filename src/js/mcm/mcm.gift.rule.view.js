@@ -5,7 +5,8 @@
 		toptip = Hualala.UI.TopTip;
 	var GiftSetFormElsHT = HMCM.GiftSetFormElsHT;
 
-	var GiftRuleFormKeys = 'giftItemID,validityDays,egiftEffectTimeHours,isHolidaysUsing,usingTimeType,foodScope,supportOrderType,isOfflineCanUsing,moneyLimitType,moenyLimitValue,shopNames'.split(',');
+	// var GiftRuleFormKeys = 'giftItemID,validityDays,egiftEffectTimeHours,isHolidaysUsing,usingTimeType,foodScope,supportOrderType,isOfflineCanUsing,moneyLimitType,moenyLimitValue,shopNames'.split(',');
+	var GiftRuleFormKeys = 'giftItemID,isHolidaysUsing,usingTimeType,foodScope,supportOrderType,isOfflineCanUsing,moneyLimitType,moenyLimitValue,shopNames'.split(',');
 
 	/**
 	 * 整理礼品规则表单渲染数据
@@ -82,11 +83,15 @@
 				},
 				switchGiftRuleForm : function () {
 					var self = this,
-						giftType = self.model.get('giftType');
+						giftType = self.model.get('giftType'),
+						alertMsgMap = {
+							'30': '顾客在获取实物礼品后,商家会在核对信息无误后派送给顾客或者需要顾客到店领取',
+							'40': '顾客在获取会员充值类礼品后，将直接充入其会员储值余额账户中！',
+							'42': '顾客在获取会员积分类礼品后，将直接充入其会员积分余额账户中！'
+						};
 					var $alertWarning = self.container.find('.alert-warning');
 					var $form = self.container.find('.wizard-step-form');
-					var alertMsg = giftType == 40 ? '顾客在获取会员充值类礼品后，将直接充入其会员储值余额账户中！' 
-						: (giftType == 42 ? '顾客在获取会员积分类礼品后，将直接充入其会员积分余额账户中！' : '');
+					var alertMsg = alertMsgMap[giftType];
 					if ($alertWarning.length == 0) {
 						$alertWarning = $('<p class="alert alert-warning alert-gift-rule"></p>');
 						self.container.append($alertWarning);
@@ -239,8 +244,9 @@
 				model : wizardModalView.model,
 				successFn : function () {
 					var self = this;
-					self.parentView.switchWizardCtrlStatus('reset');
+					
 					self.parentView.getNextStep();
+					self.parentView.switchWizardCtrlStatus('reset');
 				},
 				failFn : function () {
 					var self = this;

@@ -52,7 +52,7 @@
 		"orderStatus": "20",
 		"orderSubtype": "20",
 		"orderTime": "201409161448",
-		"orderTotal": "128.00",
+		"needPayAmount": "128.00",
 		"orederAmount": "0",
 		"pointBalance": "0.00",
 		"serviceAmount": "0.00",

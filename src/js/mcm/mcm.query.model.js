@@ -10,6 +10,7 @@
 			this.origAreas = [];
 			this.origShops = [];
 			this.queryKeys = $XP(cfg, 'queryKeys', []);
+            this.selectGiftType = $XP(cfg, 'selectGiftTypes');
 			// 数据是否已经加载完毕
 			this.isReady = false;
 			this.callServer = Hualala.Global.getShopQuerySchema;
@@ -25,7 +26,11 @@
 			IX.Debug.info("DEBUG: Order Query Model Query Params:");
 			IX.Debug.info(params);
 			return params;
-		}
+		},
+        getSelectGiftType : function () {
+            var self = this;
+            return self.selectGiftType;
+        }
 	});
 	Hualala.MCM.QueryModel = QueryModel;
 })(jQuery, window);

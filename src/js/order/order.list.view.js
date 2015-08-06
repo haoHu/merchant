@@ -11,10 +11,10 @@
 		{key : "userName", clz : "text", label : "客户姓名"},
 		{key : "orderTime", clz : "date", label : "就餐时间"},
 		{key : "orderStatus", clz : "status", label : "订单状态"},
-		{key : "orderTotal", clz : "number", label : "应付金额"},
+		{key : "needPayAmount", clz : "number", label : "应付金额"},
 		{key : "moneyBalance", clz : "number", label : "会员卡支付"},
 		{key : "pointBalance", clz : "number", label : "会员卡积分支付"},
-		{key : "orderRefundAmount", clz : "number", label : "退订/退款"},
+		{key : "shopRefundAmount", clz : "number", label : "退订/退款"},
 		{key : "total", clz : "number", label : "应结金额"},
 		{key : "shouldSettlementTotal", clz : "number", label : "结算金额"},
 		{key : "rowControl", clz : "", label : "操作"}
@@ -29,7 +29,7 @@
 		{key : "orderRegAmount", clz : "number", label : "退款金额"},
 		{key : "orderRefundAmount", clz : "number", label : "退订金额"},
 		{key : "total", clz : "number", label : "成交金额"},
-		{key : "orderTotal", clz : "number", label : "线下金额"},
+		{key : "orderAmount", clz : "number", label : "线下金额"},
 		{key : "rowControl", clz : "", label : "操作"}
 	];
 
@@ -37,8 +37,16 @@
 		{key : "index", clz : "number", label : "序号"},
 		{key : "foodName", clz : "text", label : "菜品名称"},
 		{key : "foodCategoryName", clz : "text", label : "分类名称"},
-		{key : "sumPrice", clz : "number", label : "平均价格"},
-		{key : "sumMaster", clz : "number", label : "销售份数"}
+		{key : "sumAvgPrice", clz : "number", label : "平均价格"},
+		{key : "sumMaster", clz : "number", label : "销售份数"},
+		{key : "sumPrice", clz : "number", label : "销售总额"},
+	];
+	var OrderQueryDishHotCategoryTableHeaderCfg = [
+		{key : "index", clz : "number", label : "序号"},
+		{key : "foodCategoryName", clz : "text", label : "分类名称"},
+		{key : "sumAvgPrice", clz : "number", label : "平均价格"},
+		{key : "sumMaster", clz : "number", label : "销售份数"},
+		{key : "sumPrice", clz : "number", label : "销售总额"},
 	];
 
 	var OrderQueryUserTableHeaderCfg = [
@@ -50,6 +58,8 @@
 		{key : "minOrderTime", clz : "date", label : "首次订餐时间"},
 		{key : "maxOrderTime", clz : "date", label : "最近订餐时间"}
 	];
+
+	var QueryOrderDuringStatisticKeys = 'count,giftAmountTotal,orderTotal,orderWaitTotal,orderRegAmount,orderRefundAmount,total,orderAmount';
 
 	var mapColItemRenderData = function (row, rowIdx, colKey) {
 		var self = this;
@@ -94,9 +104,13 @@
 				r.value = v;
 				r.text = v + "&nbsp;" + $XP(row, 'foodUnit', '');
 				break;
+			case "sumAvgPrice":
+				r.value = v || 0;
+				r.text = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(Hualala.Common.Math.div($XP(row, 'sumPrice', ''), $XP(row, 'sumMaster', 1))));
+				break;
 			case "sumPrice":
 				r.value = v || 0;
-				r.text = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(Hualala.Common.Math.div(r.value, $XP(row, 'sumMaster', 1))));
+				r.text = Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(v));
 				break;
 			case "userSex":
 				r.value = v;
@@ -130,11 +144,14 @@
 						]
 					};
 				} else if (pageName == 'orderQueryDay' || pageName == 'orderQueryDuring' ) {
-					pagerParams = IX.inherit(pagerParams, {
-						shopID : $XP(row, 'shopID', '')
-					});
-					if (pageName == "orderQueryDay") {
+					if(pageName == "orderQueryDuring") {
 						pagerParams = IX.inherit(pagerParams, {
+							shopID : $XP(row, 'shopID', '')
+						});
+					}
+					else{
+						pagerParams = IX.inherit(pagerParams, {
+							cityID : $XP(row, 'cityID', ''),
 							startDate : $XP(row, 'billDate', ''),
 							endDate : $XP(row, 'billDate', '')
 						});
@@ -145,7 +162,7 @@
 						}),
 						link = '';
 						if (n == 'orderQuery') {
-							params = params.concat(['','','','']);
+							params = params.concat(['','','','','']);
 						}
 						link = Hualala.PageRoute.createPath(n, params);
 					r = {
@@ -199,22 +216,33 @@
 				cols : mapColsRenderData(row, idx)
 			};
 		});
-		var statisticKeys = 'orderTotal,orderRefundAmount,total,shouldSettlementTotal';
+		var statisticKeys = 'count,needPayAmount,shopRefundAmount,total,shouldSettlementTotal';
 		var ftCols = _.map(statisticKeys.split(','), function (k) {
 			var v = $XP(statisticData, k, 0), rowspan = 1, clz = '', 
-				colspan = k == "orderTotal" ? 3 : 1;
-
-			return {
-				clz : clz,
-				colspan : colspan,
-				rowspan : rowspan,
-				text : Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(v)),
-				value : v
-			};
+				colspan = k == "needPayAmount" ? 3 : 1;
+			if(k=="count"){
+				return {
+					clz : 'title', 
+					colspan : '6', 
+					rowspan : '1', 
+					value : '', 
+					text : '共计 '+v+' 个订单'
+				};
+			}
+			else{
+				return {
+					clz : clz,
+					colspan : colspan,
+					rowspan : rowspan,
+					text : Hualala.Common.Math.prettyNumeric(Hualala.Common.Math.standardPrice(v)),
+					value : v
+				};
+			}
 		});
-		ftCols.unshift({
-			clz : 'title', colspan : '6', rowspan : '1', value : '', text : '共计：'
-		});
+		//去掉共计的字段，改为统计订单的数量
+		// ftCols.unshift({
+		// 	clz : 'title', colspan : '6', rowspan : '1', value : '', text : '共计：'
+		// });
 		ftCols.push({clz : '', colspan : '', rowspan : '', value : '', text : ''});
 		var tfoot = [{
 			clz : '',
@@ -275,7 +303,7 @@
 				cols : mapColsRenderData(row, idx)
 			};
 		});
-		var statisticKeys = 'count,giftAmountTotal,orderTotal,orderWaitTotal,orderRegAmount,orderRefundAmount,total,orderAmount';
+		var statisticKeys = QueryOrderDuringStatisticKeys;
 		var ftCols = _.map(statisticKeys.split(','), function (k) {
 			var v = $XP(statisticData, k, 0), rowspan = 1, clz = '', 
 				colspan = 1;
@@ -314,8 +342,12 @@
 	Hualala.Order.mapQueryDishesHotRenderData = function (records) {
 		var self = this;
 		var clz = "col-md-12",
-			tblClz = "table-bordered table-striped table-hover ix-data-report",
-			tblHeaders = OrderQueryDishHotTableHeaderCfg;
+			tblClz = "table-bordered table-striped table-hover ix-data-report";
+		var	$body = $('#ix_wrapper > .ix-body > .container'),
+			$pageBody = $body.find('.order-body'),
+			$well = $pageBody.find('.well'),
+			group=$well.find('select[name="grouping"] option:selected').val();
+		var	tblHeaders =group=="2"? OrderQueryDishHotCategoryTableHeaderCfg:OrderQueryDishHotTableHeaderCfg;
 		var mapColsRenderData = function (row, idx) {
 			var colKeys = _.map(tblHeaders, function (el) {
 				// return $XP(el, 'key', '');
@@ -516,6 +548,7 @@
 	});
 
 	Hualala.Order.OrderQueryResultView = OrderQueryResultView;
+	Hualala.Order.QueryOrderDuringStatisticKeys = QueryOrderDuringStatisticKeys;
 })(jQuery, window);
 
 

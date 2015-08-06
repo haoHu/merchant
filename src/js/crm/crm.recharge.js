@@ -14,34 +14,41 @@
             $table = null, sets = [], levels = null,
             set = null, setId = null, isAdd = null, 
             $editSet = null, modal = null, bv = null;
-            
-        renderSets();
-        $crm.on('click', '.well .btn, td .btn', renderDialog);
-        
-        function renderSets()
-        {
-            G.getCrmRechargeSets({}, function(rsp)
-            {
-                if(rsp.resultcode != '000')
-                {
+
+        var renderSets = function () {
+            G.getCrmRechargeSets({}, function (rsp) {
+                if (rsp.resultcode != '000') {
                     rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
                     return;
                 }
-                
+
                 sets = rsp.data.records || [];
+                _.each(sets, function (set) {
+                    var startDate = set.startDate || '',
+                        endDate = set.endDate || '';
+                    set.setDate = Hualala.Common.formatDateStr(startDate) + ' 到 ' + Hualala.Common.formatDateStr(endDate);
+                });
                 preProcessSets(sets);
                 $(crmRechargeSetsTpl({sets: sets})).appendTo($crm.empty());
                 $table = $crm.find('table');
-                if(!sets.length)
-                {
+                if (!sets.length) {
                     $table.addClass('hidden');
                     $crm.append($alert);
                     return;
                 }
                 createSwitch($crm.find('table input'));
             });
-        }
-        
+        };
+        Hualala.CRM.RenderSets = renderSets;
+
+        renderSets();
+        $crm.on('click', '.well .btn, td .btn', function() {
+            var $this = $(this),
+                setId = $this.data('setid');
+            set = getSetById(sets, setId) || {};
+            Hualala.CRM.RenderWizard(set);
+        });
+
         function renderDialog(e)
         {
             var id = $(e.target).data('setid');
@@ -83,17 +90,32 @@
                     setSaveMoney: {
                         validators: {
                             notEmpty: { message: '充值金额不能为空' },
-                            numeric: { message: '充值金额必须是金额数字' }
+                            numeric: { message: '充值金额必须是金额数字' },
+                            greaterThan : {
+                                inclusive : false,
+                                value : 0,
+                                message : "请输入大于0的数"
+                            }
                         }
                     },
                     returnMoney: {
                         validators: {
-                            numeric: { message: '返金额数必须是金额数字' }
+                            numeric: { message: '返金额数必须是金额数字' },
+                            greaterThan : {
+                                inclusive : true,
+                                value : 0,
+                                message : "请输入大于或等于0的数"
+                            }
                         }
                     },
                     returnPoint: {
                         validators: {
-                            numeric: { message: '返积分数必须是数字' }
+                            numeric: { message: '返积分数必须是数字' },
+                            greaterThan : {
+                                inclusive : true,
+                                value : 0,
+                                message : "请输入大于或等于0的数"
+                            }
                         }
                     }
                 }

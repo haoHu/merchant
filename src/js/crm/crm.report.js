@@ -16,7 +16,9 @@
             TransSum: 'summerizingGroupByTransWayDs',
             TransDetail: 'detailGroupByTransWayDs',
             CardSum: 'cardCreateSumarizeGroupByTransWayDs',
-            RechargeSum: 'summerizingGroupByTransWayDs'
+            RechargeSum: 'summerizingGroupByTransWayDs',
+            //会员日报表
+            MemberDailyreport: 'sumData'
         };
     var Funcs = {
         date: function(v){ return formatDateStr(v.replace(/-/g, ''), 12); },
@@ -35,14 +37,29 @@
         transType: function(v, item) { return CrmTypeDef.transType[v]; },
         viewDetail: function(v, item) { return $('<a href="javascript:;">详情</a>').data('transid', item.transID) },
         sum: function(v, item, keyInfo) { return sumWay[item[keyInfo['sumWay']]] + (keyInfo.count ? ('(共' + v + '笔)') : '') },
-        shopName: function(v, item, keyInfo ,c, i) { return (keyInfo.count ? i + '. ' : '') + (+item[keyInfo['shopID']] ? v : '网上储值') }
+        shopName: function(v, item, keyInfo ,c, i, module) { return (keyInfo.count ? i + '. ' : '') + (+item[keyInfo['shopID']] ? v : module == 'CardSum' ? '网上自助入会' : '网上储值') }
     };
-    
+    var d = new Date(),year = d.getFullYear(),mon=d.getMonth()+1,day=d.getDate();
+        if(day <= 3){
+            if(mon>1) {
+               mon=mon-1;
+            }
+           else {
+             year = year-1;
+             mon = 12;
+            }
+        }
+        d.setDate(d.getDate()-3);
+        year = d.getFullYear();
+        mon=d.getMonth()+1;
+        day=d.getDate();
+        Beforeyesterday = year+"/"+(mon<10?('0'+mon):mon)+"/"+(day<10?('0'+day):day);
+
     var keys, fkeys, module, params, transRecords,
         today = IX.Date.getDateByFormat(IX.Date.formatDate(new Date), 'yyyy/MM/dd'),
-        tplWell = Handlebars.compile(tplLib.get('tpl_crm_query_panel'))({today: today}),
+        tplWell = Handlebars.compile(tplLib.get('tpl_crm_query_panel'))({Beforeyesterday:Beforeyesterday,today: today}),
         tplTable = tplLib.get('tpl_report_table'),
-        $mbody, $well, $form, $thead, $tbody, $pager;
+        $mbody, $queryBox,$resultBox,$well, $form, $thead, $tbody, $pager;
     
     function renderThead($thead, keys)
     {
@@ -68,22 +85,30 @@
         $thead.append($tr);
     }
     
-    function renderData($container, items, keys)
+    function renderData($container, items, keys, module)
     {
         var trs = [];
-        for(var i = 0, item; item = items[i++];)
-        {
-            var $tr = $('<tr>');
-            for(var key in keys)
-            {
-                var val = item[key] || '', keyInfo = keys[key], 
-                    type = keyInfo.type, $cell = $(type == 'sum' ? '<th>' : '<td>');
-                if(keyInfo.ignore) continue;
-                if(type) val = Funcs[type](val, item, keyInfo, $cell, i);
-                if(keyInfo.colspan) $cell.attr('colspan', keyInfo.colspan);
-                $cell.html(val).appendTo($tr);
-            }
+        if (module == 'TransDetail' && items.length == 0) {
+            var $tr = $('<tr>'),
+                $td = $('<td colspan="'+ Object.keys(keys).length +'"><p class="text-center">无结果</p></td>');
+            $tr.append($td);
             trs.push($tr);
+        } else {
+            if (module == 'TransSum' || module == 'RechargeSum') items = _.reject(items, function (item) { return item.transShopID == 0;});
+            for(var i = 0, item; item = items[i++];) {
+                var $tr = $('<tr>');
+                for(var key in keys)
+                {
+                    var val = item[key] || '', keyInfo = keys[key],
+                        type = keyInfo.type, $cell = $(type == 'sum' ? '<th>' : '<td>');
+                    if(keyInfo.ignore) continue;
+                    if(type) val = Funcs[type](val, item, keyInfo, $cell, i, module);
+                    if(keyInfo.colspan) $cell.attr('colspan', keyInfo.colspan);
+                    if(key == 'customerMobile') val = '<a href=/#crm/member/' + item.cardID + '/detail target=_blank>'+ val + '</a>';
+                    $cell.html(val).appendTo($tr);
+                }
+                trs.push($tr);
+            }
         }
         $container.html(trs);
     }
@@ -94,6 +119,7 @@
         {
             params.queryStartTime = params.queryStartTime.replace(/\//g, '');
             params.queryEndTime = params.queryEndTime.replace(/\//g, '');
+            
         }
         G['getCrm' + module](params, function(rsp)
         {
@@ -105,8 +131,14 @@
             var records = rsp.data.records || [],
                 sumRecords = rsp.data.datasets[sumSets[module]].data.records || [],
                 page = rsp.data.page;
-            renderData($tbody, records, keys);
-            renderData($tfoot, sumRecords, fkeys);
+            renderData($tbody, records, keys, module);
+            if(!_.contains(['TransDetail', 'TransSum', 'RechargeSum'], module)) renderData($tfoot, sumRecords, fkeys);
+            if(_.contains(['TransSum', 'RechargeSum'], module)) {
+                var $statistics = $('<tbody>');
+                renderData($statistics, sumRecords.slice(0, sumRecords.length - 1), fkeys);
+                $tbody.prepend($statistics.children());
+                renderData($tfoot, sumRecords.slice(sumRecords.length - 1), fkeys);
+            }
             if(module == 'TransDetail') transRecords = records;
             $pager.IXPager({total : page.pageCount, page: page.pageNo, maxVisible: 10, href : 'javascript:;'});
         });
@@ -116,6 +148,9 @@
     {
         module = module;
         $mbody = $mbody.addClass(module);
+        $queryBox =$mbody.find(".crm-query-box");
+        $resultBox =$mbody.find(".crm-result-box")
+
         params = {pageNo: 1, pageSize: 15};
         
         if(module != 'TransDetail')
@@ -131,10 +166,17 @@
         
         if(module != 'CardSum')
         {
-            params = {pageNo: 1, pageSize: 15, queryStartTime: today, queryEndTime: today};
-            $well = $(tplWell).appendTo($mbody);
+            params = {pageNo: 1, pageSize: 15, queryStartTime: Beforeyesterday, queryEndTime: today};
+            $well = $(tplWell).appendTo($queryBox);
             $form = $well.find('form');
-            U.createSchemaChosen($('[name=transShopID]'), $('[name=cityID]'));
+            if(module=="MemberDailyreport"){
+                params = {pageNo: 1, pageSize: 15, queryStartTime: Beforeyesterday, queryEndTime: today};
+                $('.shop').addClass("hidden");
+                $('.city').addClass("hidden")
+            }
+            else{
+                U.createSchemaChosen($('[name=transShopID]'), $('[name=cityID]'));
+            }
             $form.find('[name=queryStartTime], [name=queryEndTime]').datetimepicker({
                 format : 'yyyy/mm/dd',
                 startDate : '2010/10/10',
@@ -145,20 +187,94 @@
                 language : 'zh-CN'
             });
             
-            $well.on('click', '.btn', function()
+            $well.on('click', '.btn[name="searchbutton"]', function()
             {
                 params.pageNo = 1;
                 $.extend(params, parseForm($form));
                 getData(module, params);
             });
+
         }
         
-        var $table = $(tplTable).appendTo($mbody);
+        var $table = $(tplTable).appendTo($resultBox);
         $thead = $table.find('thead');
         $tbody = $table.find('tbody');
         $tfoot = $table.find('tfoot');
-        $pager = $('<div>').addClass('pull-right').appendTo($mbody);
-        
+        $pager = $('<div>').addClass('pull-right').appendTo($resultBox);
+        if(module=="MemberDailyreport"){
+            var tips = '<p>实收指线下储值时收款方式为现金、银行卡、支票的总计金额</p>';
+            $pager.before($(tips));
+        }
+        if(module=="CardSum"){
+            var excelbutton = '<div class="well well-sm t-r"><button class="btn btn-warning" name="excelbutton">报表导出</button></div>';
+            $(excelbutton).appendTo($queryBox); 
+        }
+        $queryBox.on('click', '.btn[name="excelbutton"]', function(){
+                var data=parseForm($form);
+                if(data!=null){
+                    if(data.queryStartTime!=undefined&&data.queryEndTime!=undefined){
+                        data.queryStartTime = data.queryStartTime.replace(/\//g, '');
+                        data.queryEndTime = data.queryEndTime.replace(/\//g, '');
+                    }
+                }
+                var pagename=Hualala.PageRoute.getPageContextByPath().name;
+                var serviceName,templateName,ExcelfilePath,extraparams,globalparams;        
+                var group = $XP(Hualala.getSessionData(),'site',''),
+                    groupName = $XP(group,'groupName','');
+                    currentNav = Hualala.PageRoute.getPageContextByPath(),
+                    currentLabel = $XP(currentNav,'label',''),
+                    fileName =groupName+currentLabel+".xls";
+                switch(pagename) {
+                        //入会统计
+                        case "crmCardStats":
+                            serviceName = "pay_crmCustomerCardCreateSummarizeService";
+                            templateName ="crmCustomerCardCreateSummarizeReport.xml";
+                            extraparams= {serviceName:serviceName,templateName:templateName};
+                            globalparams=_.extend(extraparams,{fileName:fileName});
+                            break;
+                        //储值消费汇总
+                        case "crmDealSummary":
+                            serviceName = "pay_crmTransDetailSummrizingService";
+                            templateName = "crmTransDetailSummrizingReport.xml";
+                            transShopName = $('select[name=transShopID] option:selected').text();
+                            extraparams= {serviceName:serviceName,templateName:templateName,transShopName:transShopName};
+                            globalparams=_.extend(data,extraparams,{fileName:fileName});
+                            break;
+                        //交易明细
+                        case "crmDealDetail":
+                            serviceName = "pay_crmTransDetailQueryService";
+                            templateName ="crmTransDetailQueryReport.xml";
+                            transShopName = $('select[name=transShopID] option:selected').text();
+                            extraparams= {serviceName:serviceName,templateName:templateName,transShopName:transShopName};
+                            globalparams=_.extend(data,extraparams,{fileName:fileName});
+                            break;
+                        //储值对账
+                        case "crmRechargeReconciliation":
+                            serviceName = "pay_crmTransDetailSaveMoneyReconcileQueryService";
+                            templateName ="crmTransDetailSaveMoneyReconcileReport.xml";
+                            transShopName = $('select[name=transShopID] option:selected').text();
+                            extraparams= {serviceName:serviceName,templateName:templateName,transShopName:transShopName};
+                            globalparams=_.extend(data,extraparams,{fileName:fileName});
+                            break;
+                        //会员日报表
+                        case "memberQueryDay":
+                            serviceName = "crm_customerDayReport";
+                            templateName ="customerDayReport.xml";
+                            extraparams= {serviceName:serviceName,templateName:templateName};
+                            globalparams=_.extend(data,extraparams,{fileName:fileName});
+                            break;
+                    }
+                    G.OrderExport(globalparams, function (rsp) {
+                        if(rsp.resultcode != '000'){
+                            rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                            return;
+                        }
+                        ExcelfilePath =rsp.data.filePath || [];
+                        var dowloadhref=ExcelfilePath;
+                        window.open(dowloadhref); 
+                    })
+            
+            });
         renderThead($thead, keys);
         var $sort = $thead.find('.sort');
         $thead.on('click', '.sort', function()
@@ -190,16 +306,17 @@
             transShopName: { title: '店铺', type: 'shopName', shopID: 'transShopID', count: 1, rowspan: 2 },
             
             shopCharge: { title: '储值业务', ignore: 1, colspan: 4 },
-            shopConsumption: { title: '消费业务', ignore: 1, colspan: 5 },
+            shopConsumption: { title: '消费业务', ignore: 1, colspan: 6 },
             //储值业务
             shopChargeCount: { title: '笔数', type: 'number', sort: 1, newRow: 1 },
-            shopChargeSum: { title: '现金金额', type: 'number', sort: 1 },
-            shopChargeGiftSum: { title: '赠送金额', type: 'number', sort: 1 },
+            shopChargeSum: { title: '现金卡值', type: 'number', sort: 1 },
+            shopChargeGiftSum: { title: '赠送卡值', type: 'number', sort: 1 },
             shopChargeReturnPointSum: { title: '返积分数', type: 'number', sort: 1 },
             //消费业务
             shopConsumptionCount: { title: '笔数', type: 'number', sort: 1 },
-            shopconsumptionAmountSum: { title: '消费金额', type: 'number', sort: 1 },
-            shopMinusMoneySum: { title: '余额支付', type: 'number', sort: 1 },
+            //shopconsumptionAmountSum: { title: '消费金额', type: 'number', sort: 1 },
+            deductionMoneyAmountSum : { title: '现金卡值', type: 'number', sort: 1 },
+            giveBalancePaySum  : { title: '赠送卡值', type: 'number', sort: 1 },
             shopConsumeDeductPointSum: { title: '积分抵扣', type: 'number', sort: 1 },
             shopConsumptionReturnPointSum: { title: '返积分', type: 'number', sort: 1 }
         };
@@ -215,8 +332,10 @@
             customerMobile: { title: '手机号(卡号)', type: 'mobile' },
             transType: { title: '交易类型', type: 'transType' },
             consumptionAmount: { title: '消费金额', type: 'number', sort: 1 },
-            moneyChange: { title: '储值余额变动', type: 'number', sort: 1 },
-            pointChange: { title: '积分余额变动', type: 'number', sort: 1 },
+            saveMoneyAmountSum: { title: '现金卡值', type: 'number', sort: 1 },
+            giveBalancePaySum: { title: '赠送卡值', type: 'number', sort: 1 },
+            deductionPointAmount: { title: '扣积分', type: 'number', sort: 1 },
+            returnPointAmount: { title: '赠积分', type: 'number', sort: 1 },
             transRemark: { title: '交易备注' },
             action: { title: '操作', type: 'viewDetail' }
         };
@@ -267,16 +386,88 @@
         keys = {
             transShopName: { title: '店铺', type: 'shopName', shopID: 'transShopID', rowspan: '2' },
             saveMoneyCount: { title: '笔数', type: 'number', rowspan: '2'  },
-            saveMoneyAmountSum: { title: '现金储值金额', type: 'number', rowspan: '2' },
-            saveReturnMoneyAmountSum: { title: '赠送储值金额', type: 'number', rowspan: '2' },
+            saveMoneyAmountSum: { title: '现金卡值', type: 'number', rowspan: '2' },
+            saveReturnMoneyAmountSum: { title: '赠送卡值', type: 'number', rowspan: '2' },
             rechargeWay: { title: '收款方式', ignore: 1, colspan: 5 },
             saveMoneyCashSum: { title: '现金', type: 'number', newRow: 1 },
             saveMoneyCardSum: { title: '银行卡', type: 'number' },
             saveMoneyCheckSum: { title: '支票', type: 'number' },
-            saveMoneyOtherSum: { title: '其他', type: 'number' },
+            saveMoneyOtherSum: { title: '其它', type: 'number' },
             saveMoneyOnlineChargeSum: { title: '哗啦啦付款', type: 'number' }
         };
         initModule('RechargeSum', $mbody);
+    }
+    //会员日报表
+    Hualala.CRM.initMemberDailyreport = function($mbody)
+    {
+        keys = {
+            dt: { title: '日期', type: 'date', rowspan: '2' },
+            newCardCnt: { title: '新增会员数', type: 'number', rowspan: '2'  },
+            withdrawCardCnt: {title: '注销会员数',type:'number',rowspan: '2'},
+            saveMoneyOffline: { title: '线下储值', ignore: 1, colspan: 5 },
+            saveMoneyOnline: { title: '线上储值', ignore: 1, colspan: 4 },
+            activeRows:{title: '活动', ignore: 1, colspan: 4},
+            cardPayCount: { title: '消费', ignore: 1, colspan: 5 },
+            cardCount: { title: '当前会员卡', ignore: 1, colspan: 4 },
+            //线下储值
+            saveMoneyOfflineCnt: { title: '笔数', type: 'number', newRow: 1 },
+            saveMoneyOfflineCashAmt:{title:'实收',type: 'number'},
+            saveMoneyOfflineAmt: { title: '现金卡值', type: 'number' },
+            saveMoneyOfflineGiveAmt: { title: '赠送卡值', type: 'number' },
+            saveMoneyOfflineRtnPoint: { title: '积分赠送', type: 'number' },
+            //线上储值
+            saveMoneyOnlineCnt: { title: '笔数', type: 'number' },
+            saveMoneyOnlineAmt: { title: '现金卡值', type: 'number' },
+            saveMoneyOnlineGiveAmt: { title: '赠送卡值', type: 'number' },
+            saveMoneyOnlineRtnPoint: { title: '积分赠送', type: 'number' },
+            //活动
+            activeCnt: { title: '参与次数', type: 'number' },
+            activePointPayAmt: { title: '积分减少', type: 'number' },
+            activeGiveAmt: { title: '赠送卡值增加', type: 'number' },
+            activePointAmt: { title: '积分增加', type: 'number' },
+            
+            //消费
+            cardPayCnt: { title: '笔数', type: 'number' },
+            cardPayAmt: { title: '现金卡值', type: 'number' },
+            cardPayGiveAmt: { title: '赠送卡值', type: 'number' },
+            cardPayPointAmt: { title: '积分抵扣', type: 'number' },
+            cardPayRtnPoint: { title: '返积分', type: 'number' },
+            //会员卡
+            cardCnt: { title: '卡数', type: 'number'},
+            cardMoneyBal: { title: '现金卡值', type: 'number' },
+            cardGiveBal: { title: '赠送卡值', type: 'number' },
+            cardPointBal: { title: '积分总数', type: 'number' }
+        };
+        initModule('MemberDailyreport', $mbody);
+        fkeys = {
+            transCount: { sumWay: 'transWay', type: 'sum'},
+            newCardCntSum : {type: 'number'},
+            withdrawCardCntSum :{type: 'number'},
+            //线下            
+            saveMoneyOfflineCntSum : { type: 'number'},
+            saveMoneyOfflineCashAmtSum : { type: 'number'},
+            saveMoneyOfflineAmtSum : { type: 'number'},
+            saveMoneyOfflineGiveAmtSum : { type: 'number'},
+            saveMoneyOfflineRtnPointSum : { type:'number'},
+            //线上
+            saveMoneyOnlineCntSum :{ type: 'number'},
+            saveMoneyOnlineAmtSum :{ type: 'number'},
+            saveMoneyOnlineGiveAmtSum : { type: 'number'},
+            saveMoneyOnlineRtnPointSum : { type: 'number'},
+            //活动
+            activeCntSum: { type: 'number' }, 
+            activePointPayAmtSum: { type: 'number' },  
+            activeGiveAmtSum: {  type: 'number' },
+            activePointAmtSum: {  type: 'number' },
+            //消费
+            cardPayCntSum :{ type: 'number'},
+            cardPayAmtSum :{ type: 'number'},
+            cardPayGiveAmtSum :{ type: 'number'},
+            cardPayPointAmtSum :{ type: 'number'},
+            cardPayRtnPointSum :{ type: 'number'},
+            empty: { colspan: 4 }
+        };
+ 
     }
     
 })(jQuery, window);

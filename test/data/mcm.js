@@ -38,9 +38,9 @@
 	};
 
 	var EventItemTpl = {
-		"EGfitValidUntilDayCount_1":"30",
-		"EGfitValidUntilDayCount_2":"30",
-		"EGfitValidUntilDayCount_3":"30",
+		"EGiftValidUntilDayCount_1":"30",
+		"EGiftValidUntilDayCount_2":"30",
+		"EGiftValidUntilDayCount_3":"30",
 		"EGiftEffectTimeHours_1":"0",
 		"EGiftEffectTimeHours_2":"0",
 		"EGiftEffectTimeHours_3":"0",
@@ -84,7 +84,15 @@
 		"sendPoints":"0.00",
 		"userCount":"0",
 		"viewCount":"0",
-		"winType":"0"
+		"winType":"0",
+		"smsTemplate": "尊敬的XXX，您有幸获得我们店铺赠送的精美礼品一份，请在有效期内领取奖品，过期失效",
+		"smsPersonNum": "20" ,
+		"smsCount": "2" ,
+		"settleStatus": "1" ,
+		"settleFailedReason": "网络不通，连接失败" ,
+		"settleAmount": "100" ,
+		"startTime": "20150723" ,
+		"status": "4"
 	};
 
 	var totalCount = 100;
@@ -95,8 +103,8 @@
 		for (var i = 0; i < total; i++) {
 			var gift = IX.inherit(GiftItemTpl, {
 				giftItemID : IX.id().replaceAll('ix', ''),
-				giftType : $XP(giftTypes[i % 3], 'value', 10),
-				giftName : $XP(GiftItemTpl, 'groupName') + $XP(GiftItemTpl, 'giftValue', 0) + $XP(giftTypes[i % 3], 'label', '')
+				giftType : $XP(giftTypes[i % 5], 'value', 10),
+				giftName : $XP(GiftItemTpl, 'groupName') + $XP(GiftItemTpl, 'giftValue', 0) + $XP(giftTypes[i % 5], 'label', '')
 			});
 			ret[i] = gift;
 		}
@@ -109,8 +117,8 @@
 		for (var i = 0; i < total; i++) {
 			var evt = IX.inherit(EventItemTpl, {
 				eventID : IX.id().replaceAll('ix', ''),
-				eventWay : $XP(eventTypes[i % 6], 'value', 20),
-				eventName : '集团' + $XP(EventItemTpl, 'groupID', '') + $XP(eventTypes[i % 6], 'label', '')
+				eventWay : $XP(eventTypes[i % 8], 'value', 20),
+				eventName : '集团' + $XP(EventItemTpl, 'groupID', '') + $XP(eventTypes[i % 7], 'label', '')
 			});
 			ret[i] = evt;
 		}
@@ -377,6 +385,33 @@
 	Test.getGiftUsedData = getGiftUsedData;
 	Test.getEventTrackData = getEventTrackData;
 
+	Test.userBaseInfo = {
+		regMobile : 19900404,
+		cityID : 1010,
+		description : '',
+		nickname : "cc",
+		photoImage : "",
+		provinceID : 10,
+		regEmail : "cc@11.com",
+		regMobile : "18500000000",
+		regMobileStatus : 1,
+		userID : 35555,
+		userLoginName : 'cccc',
+		userName : 'ccc1',
+		userSex : 0
+	};
 
-
+	Test.smsEventInfo = {
+		"data": {
+			records: [
+				{
+					"smsTemplate": "短信模版" ,
+					"smsPersonNum": "20" ,
+				}
+			]
+		},
+		"processTime": "20150114174800759",
+		"resultcode": "000",
+		"resultmsg": ""
+	}
 })();

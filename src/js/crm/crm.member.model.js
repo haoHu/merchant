@@ -48,7 +48,8 @@
 				{clz : '', label : '所占比率', colspan : '', rowspan : '2'},
 				{clz : '', label : '性别比率', colspan : '3', rowspan : ''},
 				{clz : '', label : '来源比率', colspan : '2', rowspan : ''},
-				{clz : '', label : '储值余额', colspan : '', rowspan : '2'},
+				{clz : '', label : '现金卡值', colspan : '', rowspan : '2'},
+				{clz : '', label : '赠送卡值', colspan : '', rowspan : '2'},
 				{clz : '', label : '积分余额', colspan : '', rowspan : '2'},
 				{clz : '', label : '客单价<br/>(平均每单消费金额)', colspan : '', rowspan : '2'}
 			]

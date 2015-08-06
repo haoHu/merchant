@@ -131,6 +131,14 @@
 		background-color : #009999;
 		border-color : lighten(#009999, .3);
 	}
+  &.preferential > .card {
+	background-color: #669900;
+	border-color: lighten(#669900, .3);
+  }
+  &.physical > .card {
+	background-color: #0033ff;
+	border-color: lighten(#0033ff, .3);
+  }
 }
 
 .mcm-card-box.event-card {
@@ -138,6 +146,7 @@
 	@luck-joy : #f60; @free-get : rgb(102, 153, 0); 
 	@apply-evt : rgb(102, 51, 102); @credit-exchange : #099; 
 	@marketing-redenvelope : #c00; @consume-redenvelop : #900;
+	@mass-texting : #099;
 	
 	&.disable {
 		.mcm-card-box > .event-card(@cardw, @cardh, @cardBG);
@@ -161,6 +170,10 @@
 	&.consume-redenvelope {
 		// .mcm-card-box > .event-card(@cardw, @cardh, #c00);
 		.mcm-card-box > .event-card(@cardw, @cardh, @consume-redenvelop);
+	}
+	&.mass-texting {
+		// .mcm-card-box > .event-card(@cardw, @cardh, rgb(0, 153, 204));
+		.mcm-card-box > .event-card(@cardw, @cardh, @mass-texting);
 	}
 }
 
@@ -197,7 +210,7 @@
 	.select-left, .select-right {
 		display: block; height : 300px; width : 100%; 
 		& > select {
-			height : 300px;
+			height : 300px; overflow: auto;
 			> optgroup {
 				display : block; position : relative; padding-left : 20px; font-size : 1.5rem; 
 				&.open:before {
@@ -220,6 +233,30 @@
 }
 
 .mcm-gift-wizard, .mcm-event-wizard {
+  .gift-img {
+	position: relative;
+	div {
+	  position: relative;
+	  span {
+		display: none;
+		position: absolute;
+		bottom: 50%;
+		text-align: center;
+		color: #fff;
+		left: 36%;
+	  }
+	}
+	&.loading {
+	  div {
+		background: #999;
+		img {
+		  filter: alpha(opacity=50); opacity: 0.5;
+		}
+		span {display: block;}
+		label {display: none;}
+	  }
+	}
+  }
 	.tab-content {
 		margin-top : 20px;
 	}
@@ -251,6 +288,27 @@
 		> .form-control {display: inline-block; width : 100px;}
 		.form-control-feedback {right : -34px;}
 	}
+  form {
+	.fwc {
+	  input[name^="event"] {
+		display: inline-block;
+		width: 120px;
+	  }
+	  input[name^="SMS"] {
+		float: left;
+		width: 120px;
+	  }
+	  input[name="SMSStartTime"] { margin-left: 8px; }
+	  .input-group {
+		input {
+		  width: 80px;
+		}
+		.input-group-addon {
+		  width: 40px;
+		}
+	  }
+	}
+  }
 }
 
 .mcm-event-modal {
@@ -296,4 +354,43 @@
 	.tab-pane {
 		margin-top : 2em;
 	}
+}
+#Event_Type_Modal{
+	.event-card-choice{
+		width:20%;
+		float: left;
+		height: 104px;
+		text-align: center;
+		margin-bottom: 15px;
+		.choice-eventWay{
+			display: block;
+			.eventWay{
+			width:100%;
+			height: 100%;
+			display: none;
+			}
+
+			
+		}
+	}
+}
+
+.mcm-event-modal {
+  &.modal {overflow-y: auto;}
+  @media (min-width: 768px) {
+	.modal-dialog {
+		width: 768px;
+	}
+  }
+
+  #mcm_wizard {
+	textarea[name="smsTemplate"] {
+	  height: 180px;
+	  max-height: 180px;
+	  overflow-y: auto;
+	}
+	.alert-warning {
+	  strong {color: #000;}
+	}
+  }
 }

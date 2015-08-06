@@ -14,19 +14,19 @@
         customerSex: CrmTypeDef.customerSex,
         sourceWay: CrmTypeDef.sourceWay,
         
-        crmQueryTableHeads: ['姓名', '性别', '手机号(卡号)', '生日', '等级', '入会日期', '储值余额', '积分余额', '累计储值总额', '累计消费总额', '状态', '查看'],
-        crmQueryTableKeys: ['customerName', 'customerSex', 'customerMobile', 'customerBirthday', 'cardLevelName', 'createTime', 'moneyBalance', 'pointBalance', 'saveMoneyTotal', 'consumptionTotal', 'cardStatus', 'cardID']
+        crmQueryTableHeads: ['姓名', '性别', '手机号(卡号)', '生日', '等级', '入会日期', '现金卡值', '赠送卡值', '积分余额', '累计储值总额', '累计消费总额', '状态', '查看'],
+        crmQueryTableKeys: ['customerName', 'customerSex', 'customerMobile', 'customerBirthday', 'cardLevelName', 'createTime', 'moneyBalance', 'giveBalance', 'pointBalance', 'saveMoneyTotal', 'consumptionTotal', 'cardStatus', 'cardID']
     };
     
     var levels = null, pageSize = 15,
-        $tbody = null, $pager = $('<div>').addClass('pull-right'),
+        $tbody = null, $queryBox,$pager = $('<div>').addClass('pull-right'),
         vipLevelTpl = Handlebars.compile(tplLib.get('tpl_crm_recharge_set_vip_level'));
     
 	Hualala.CRM.initQuery = function($crm)
     {
         var params = {pageNo: 1, pageSize: pageSize}, $form = null;
-        
-        $(Handlebars.compile(tplLib.get('tpl_crm_query'))(staticData)).appendTo($crm);
+        $queryBox =$crm.find(".crm-query-box");
+        $(Handlebars.compile(tplLib.get('tpl_crm_query'))(staticData)).appendTo($queryBox);
         $crm.append($pager);
         
         $crm.find('[data-type=datetimepicker]').datetimepicker({
@@ -68,7 +68,7 @@
             this.text = this.text == '收起' ? '更多查询条件' : '收起';
         });
         
-        $crm.find('.well .btn').on('click', function()
+        $crm.find('.well .btn[name="searchbutton"]').on('click', function()
         {
             var args = parseForm($form);
             args.createTimeStart = formatPostDate(args.createTimeStart);
@@ -77,6 +77,33 @@
             params.pageNo = 1;
             queryCrm(params);
         });
+        $crm.find('.well .btn[name="excelbutton"]').on('click', function()
+        {
+            var args = parseForm($form);
+            args.createTimeStart = formatPostDate(args.createTimeStart);
+            args.createTimeEnd = formatPostDate(args.createTimeEnd);
+            var serviceName = "pay_crmCustomerCardComplexQueryService",
+                templateName ="crmCustomerCardComplexQueryReport.xml";
+            var group = $XP(Hualala.getSessionData(),'site',''),
+                groupName = $XP(group,'groupName',''),
+                currentNav = Hualala.PageRoute.getPageContextByPath(),
+                currentLabel = $XP(currentNav,'label',''),
+                fileName = groupName+currentLabel+".xls",
+                cardLevelName = $('select[name=cardLevelID] option:selected').text();
+            var extraparams ={serviceName:serviceName,templateName:templateName,fileName:fileName,cardLevelName:cardLevelName},
+                ExcelfilePath,
+                globalparams=_.extend(args,extraparams);
+            G.OrderExport(globalparams, function (rsp) {
+                if(rsp.resultcode != '000'){
+                    rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                ExcelfilePath =rsp.data.filePath || [];
+                var dowloadhref=ExcelfilePath;
+                window.open(dowloadhref); 
+            })
+        });
+
         
         $pager.on('page', function(e, pageNo)
         {
@@ -99,14 +126,15 @@
                 
                 if(key == 'customerMobile' && item.cardNO)
                 {
-                    val += '(卡号)';
-                    $td.attr('title', '卡号：' + item.cardNO).attr('data-toggle', 'tooltip')
-                    .tooltip({ trigger: 'click | hover', container: 'body' })
+                    val += '(卡号:'+ item.cardNO+')';
+                    //BUG #5874 去掉悬浮显示卡号
+                    // $td.attr('title', '卡号：' + item.cardNO).attr('data-toggle', 'tooltip')
+                    // .tooltip({ trigger: 'click | hover', container: 'body' })
                 }
                 
                 if(/customerSex|cardStatus/.test(key))
                     val = staticData[key][val];
-                else if(/saveMoneyTotal|moneyBalance|giveBalance|consumptionTotal|pointBalance/.test(key))
+                else if(/saveMoneyTotal|moneyBalance|saveMoneyAmountSum|giveBalancePaySum|returnPointAmount|deductionPointAmount|giveBalance|consumptionTotal|pointBalance/.test(key))
                     val = M.prettyNumeric(val);
                 else if(/createTime|customerBirthday/.test(key))
                     val = C.formatDateStr(val.replace(/-/g, ''));

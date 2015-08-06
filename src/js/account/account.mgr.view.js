@@ -22,6 +22,7 @@
 			this.$schema = null;
 			// 交易详情
 			this.$detail = null;
+			this.$tab =null;
 
 			this.model = null;
 
@@ -52,6 +53,7 @@
 			this.$nav = this.$container.find('.account-nav');
 			this.$schema = this.$container.find('.account-schema-box');
 			this.$detail = this.$container.find('.account-detail-box');
+			this.$tab = this.$container.find('.account-tab');
 			this.bindEvent();
 		},
 		initBreadCrumbs : function () {
@@ -88,6 +90,27 @@
 				}
 
 			});
+
+		},
+		initTab :function(){
+			var self = this,
+				$tab =self.$tab,
+			settleUnitID = self.model.get('settleUnitID'),
+			currentPageName = Hualala.PageRoute.getPageContextByPath().name;
+			$tab.empty();
+			var tabFuncs = ['accountDailyReport', 'accountDetail'],
+		        R = Hualala.PageRoute,
+		        $ul = $('<ul class="nav navbar-nav"></ul>');
+		    
+		    for(i = 0, l = tabFuncs.length; i < l; i++)
+		    {
+		        var tabFunc = tabFuncs[i],
+		            isActive = tabFunc==currentPageName ,
+		            path = isActive ? 'javascript:;' : R.createPath(tabFunc, [settleUnitID]),
+		            label = R.getPageLabelByName(tabFunc);
+		        $('<li></li>').toggleClass('active', isActive).append($('<a></a>').attr('href', path).text(label)).appendTo($ul);
+		    }
+		return $tab.append($ul);
 
 		},
 		loadTemplates : function () {
@@ -243,7 +266,9 @@
 				tpl = self.get('schemaTpl');
 			var htm = tpl(renderData);
 			self.initBreadCrumbs();
+			
 			self.$schema.html(htm);
+			self.initTab();
 		},
 		refresh : function () {
 			this.render();
@@ -932,6 +957,7 @@
 		categories = _.map(categories, function (cate, key) {
 			var foodCategoryName = '';
 			var foodCategorySum = cate.length;
+			var Indent = '';
 			var _dishes = _.map(cate, function (dish) {
 				var _dish = {};
 				_.each(fields, function (k) {
@@ -944,15 +970,17 @@
 					if (k == 'foodCategoryName') {
 						foodCategoryName = v;
 					}
-					
+					_dish.Indent =$XP(dish, "isSetFood", '')=="1"?"indentspace":"";
 					_dish[k] = v + unit;
 				});
 				return _dish;
 			});
+			_dishes[0].Indent="";
 			return {
 				foodCategoryName : foodCategoryName,
 				foodCategorySum : '(' + foodCategorySum + ')',
 				foodCategoryID : key,
+				Indent : Indent,
 				rows : _dishes
 			}
 		});
@@ -1022,7 +1050,7 @@
 		foodsFields : {
 			label : "菜品信息",
 			fieldType : "table",
-			fields : ["foodCategoryName","foodCategoryID","foodName","foodUnit","foodPrice","foodAmount"],
+			fields : ["foodCategoryName","foodCategoryID","isSetFood","foodName","foodUnit","foodPrice","foodAmount"],
 			mapFn : mapFoodsFields
 		}
 
@@ -1044,6 +1072,9 @@
 			this.transTypeHT = new IX.IListManager();
 			this.initTransTypeLib();
 			this.modal = null;
+			if(this.transType=='101'||this.transType=='410'){
+				this.transType='511';
+			}
 			this.tplName = $XP(this.transTypeHT.get(this.transType), 'tpl', null);
 			this.callServerName = $XP(this.transTypeHT.get(this.transType), 'queryCall', null);
 			this.callServer = null;
@@ -1134,8 +1165,20 @@
 				var fieldCfg = OrderPayDetailElsCfg[key];
 				var mapFn = $XF(fieldCfg, 'mapFn');
 				var cfg = _.pick(fieldCfg, 'label', 'fieldType', 'fields');
-				// return mapFn(cfg, $XP(data, 'data', {}));
-				return mapFn(cfg, data);
+				if(key=="foodsFields"){
+					var Params =self.mapQueryParams(),
+						callparams=_.extend({hisData:0,orderKey:Params.orderKey});
+					Hualala.Global.queryOrderInfoByKey(callparams, function(rsp){
+			            if(rsp.resultcode != '000'){
+			                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+			                return;
+			            }
+			            else{
+			            	data = rsp.data;
+			            }
+			        });
+				}
+				return mapFn(cfg, data);	
 			});
 			IX.Debug.info("DEBUG: Account TransDetail Modal Order Pay Detail Fieldsets : ");
 			IX.Debug.info(fieldsets);

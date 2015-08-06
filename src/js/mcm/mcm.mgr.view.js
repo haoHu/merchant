@@ -18,10 +18,24 @@
 	 * 创建活动向导步骤设置
 	 * @type {Array}
 	 */
+	//HMCM.EventWizardCfg = [
+	//	{id : "event_base_info", label : "基本信息"},
+	//	{id : "event_rule", label : "活动规则"},
+	//	{id : "event_gift", label : "设置礼品、奖品"},
+	//	{id : "event_on", label : "预览并启用"}
+	//];
 	HMCM.EventWizardCfg = [
 		{id : "event_base_info", label : "基本信息"},
-		{id : "event_rule", label : "活动规则"},
-		{id : "event_gift", label : "设置礼品、奖品"},
+		{id : "event_customer_range", label : "设置群体"},
+		{id : "event_rule", label : "设置规则"},
+		{id : "event_gift", label : "设置奖品"},
+		{id : "event_on", label : "预览并启用"}
+	];
+
+	HMCM.EventSmsWizardCfg = [
+		{id : "event_base_info", label : "基本信息"},
+		{id : "event_customer_range", label : "群体"},
+		{id : "event_sms_template", label : "设置短信模版"},
 		{id : "event_on", label : "预览并启用"}
 	];
 
@@ -31,7 +45,7 @@
 	 */
 	HMCM.WizardCtrls = [
 		{clz : 'btn-default btn-prev', name : 'prev', label : '上一步', loadingText : '请稍候...'},
-		{clz : 'btn-default btn-cancel', name : 'cancel', label : '取消', loadingText : '取消'},
+		{clz : 'btn-default btn-cancel', name : 'cancel', label : '取消', loadingText : '取消', dismiss: 'modal'},
 		{clz : 'btn-default btn-next', name : 'next', label : '下一步', loadingText : '请稍候...'},
 		{clz : 'btn-default btn-finish', name : 'finish', label : '启用', loadingText : '提交中...'}
 	];
@@ -61,6 +75,7 @@
 		 */
 		constructor : function (cfg) {
 			this.parentView = $XP(cfg, 'parentView');
+			this.wizardType = $XP(cfg, 'wizardType', 'create');
 			this.mode = $XP(cfg, 'mode', 'create');
 			this.successFn = $XF(cfg, 'successFn');
 			this.faildFn = $XF(cfg, 'faildFn');
@@ -233,7 +248,10 @@
 		},
 		switchWizardCtrlStatus : function (status) {
 			var self = this;
-			self.$wizard.find('.wizard-ctrl .btn').button(status);
+			// self.$wizard.find('.wizard-ctrl .btn').button(status);
+			self.$wizard.find('.wizard-ctrl .btn').each(function () {
+				$(this).button(status);
+			})
 		},
 		getNextStep : function () {
 			var self = this;

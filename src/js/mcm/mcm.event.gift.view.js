@@ -10,12 +10,18 @@
 	});
 
 	var EventGiftsSetHT = new IX.IListManager();
-	var EventGiftSetFormKeys = "EGiftID,EGiftName,EGiftTotalCount,EGiftValidUntilDayCount,EGiftOdds,EGiftEffectTimeHours".split(',');
+	var EventGiftSetFormKeys = "EGiftID,EGiftType,EGiftName,EGiftTotalCount,EGfitValidUntilDayCount,EGiftOdds,EGiftEffectTimeHours".split(',');
 	var EventGiftLevelCount = 3;
 	var GiftLevelNames = ["", "一等奖","二等奖","三等奖"];
+	var GiftNames = ["", "礼品一","礼品二","礼品三"];
 	HMCM.GiftLevelNames = GiftLevelNames;
+	HMCM.GiftNames = GiftNames;
 	var EventGiftSetFormElsCfg = {
 		EGiftID : {
+			type : 'hidden',
+			defaultVal : ''
+		},
+		EGiftType : {
 			type : 'hidden',
 			defaultVal : ''
 		},
@@ -53,7 +59,7 @@
 				}
 			}
 		},
-		EGiftValidUntilDayCount : {
+		EGfitValidUntilDayCount : {
 			type : "text",
 			label : "有效天数",
 			defaultVal : "30",
@@ -86,6 +92,26 @@
 					notEmpty : {
 						message : "请输入中奖概率"
 					},
+					callback : {
+						message : "所有奖品中奖概率总和不能超过100",
+						callback : function (value, validator, $field) {
+							var $fields = validator.$form.find(':text[name^=EGiftOdds_]');
+							var count = 0;
+							for (var i = 0, l = $fields.length; i < l; i++) {
+								var v = $fields.eq(i).val();
+								v = (isNaN(v) || IX.isEmpty(v)) ? 0 : parseFloat(v);
+								count += v;
+							}
+							if (count <= 100) {
+								$fields.each(function () {
+									validator.updateStatus($(this), validator.STATUS_VALID, 'callback');
+								});
+								return true;
+							}
+							return false;
+
+						}
+					},
 					between : {
 						min : 0.0001,
 						max : 100,
@@ -98,12 +124,13 @@
 			type : "combo",
 			label : "生效时间",
 			defaultVal : "0",
-			options : _.reduce(giftEffectTimeHours, function (memo, el, i) {
-				if (i == 1) {
-					memo = [memo];
-				}
-				return el.value >= 180 ? memo.concat(el) : memo;
-			}),
+			options : HMCM.mapEGiftEffectTimeHourOptions(giftEffectTimeHours),
+			// options : _.reduce(giftEffectTimeHours, function (memo, el, i) {
+			// 	if (i == 1) {
+			// 		memo = [memo];
+			// 	}
+			// 	return el.value >= 180 ? memo.concat(el) : memo;
+			// }),
 			validCfg : {
 				validators : {}
 			}
@@ -132,19 +159,27 @@
 	var mapEventGiftFormElsData = function () {
 		var self = this,
 			formKeys = self.formKeys;
-		var eventWay = self.model.get('eventWay');
+		var eventWay = self.model.get('eventWay'),
+			smsGate = self.model.get('smsGate');
+		var hasEGiftOdds = false;
+		var giftLevelNames = eventWay == 20 ? GiftLevelNames : GiftNames;
 		var ret = [];
 		for (var i = 1; i <= EventGiftLevelCount; i++) {
-			var giftLevelName = GiftLevelNames[i],
+			var giftLevelName = giftLevelNames[i],
 				panelClz = 'mcm-evtgift-panel ';
 			var EGiftID = self.model.get('EGiftID_' + i);
 			if ((EGiftID != 0 && !IX.isEmpty(EGiftID)) || i == 1) {
 				panelClz += ' isActive ';
 			}
-			if (eventWay == 21 || eventWay == 30) {
+			if (eventWay == 21 || eventWay == 22||eventWay == 30) {
 				panelClz += ' singlegift ';
 			}
-			var addbtn = {clz : 'btn-warning btn-add', name : 'addGift', label : '添加中奖等级'},
+			if (eventWay == 20) {
+				hasEGiftOdds = true;
+			}
+			
+
+			var addbtn = {clz : 'btn-warning btn-add', name : 'addGift', label : (eventWay == 20 ? '添加中奖等级' : '添加礼品')},
 				delbtn = {clz : 'btn-default btn-del', name : 'deleteGift', label : '删除' + giftLevelName};
 			var giftSet = {
 				giftLevelName : giftLevelName,
@@ -171,7 +206,20 @@
 					v = self.model.get(key) || $XP(elCfg, 'defaultVal');
 					v = isNaN(v) ? 0 : parseFloat(v);
 					return IX.inherit(elCfg, {
-						value : v
+						value : v,
+						disabled : !hasEGiftOdds ? "disabled" : "",
+						readonly : !hasEGiftOdds ? "readonly" : "",
+						hidden : !hasEGiftOdds ? "hidden" : "",
+					});
+				} else if (k == 'EGiftName') {
+					return IX.inherit(elCfg, {
+						value : self.model.get(key) || $XP(elCfg, 'defaultVal'),
+						label : eventWay == 20 ? $XP(elCfg, 'label') : '礼品名称'
+					});
+				} else if (k == 'EGiftTotalCount') {
+					return IX.inherit(elCfg, {
+						value : self.model.get(key) || $XP(elCfg, 'defaultVal'),
+						label : eventWay == 20 ? $XP(elCfg, 'label') : '礼品总数'
 					});
 				} else {
 					return IX.inherit(elCfg, {
@@ -189,7 +237,15 @@
 				// }
 			}));
 		}
-		return ret;
+		// return ret;
+		// 报名活动没有奖品设置表单
+		return {
+			hideTip : eventWay == 20 || eventWay == 22 ? '' : 'hidden',
+			tip : eventWay == 22 ? "报名活动，不需要设置礼品" : "活动所有奖品的中奖概率合计不能大于100%！",
+			giftSetTitle : eventWay == 20 ? '中奖等级设置' : '礼品设置',
+			hidden : eventWay == 22 ? "hidden" : "",
+			gifts : ret
+		};
 	};
 
 
@@ -291,17 +347,34 @@
 				self.container.find('form').bootstrapValidator('revalidateField', name);
 			});
 
+			self.container.on('change', ':hidden[name^=EGiftType]', function (e) {
+				var $txt = $(this),
+					name = $txt.attr('name'),
+					val = $txt.val();
+				var $els = $txt.parents('.mcm-evtgift-form').find('[name^=EGfitValidUntilDayCount], [name^=EGiftEffectTimeHours]'),
+					$fmgrps = $els.parents('.form-group');
+				if (val == 10) {
+					$els.attr('disabled', false);
+					$fmgrps.removeClass('hidden');
+				} else {
+					$els.attr('disabled', true);
+					$fmgrps.addClass('hidden');
+				}
+			});
+
 			self.container.on('click', '.btn[name=pickgift]', function (e) {
 				var $btn = $(this);
 				var modal = new HMCM.PickGiftModal({
 					trigger : $btn,
 					selectedFn : function (gift, $triggerEl) {
 						var giftID = $XP(gift, 'giftItemID', ''),
-							giftName = $XP(gift, 'giftName', '');
+							giftName = $XP(gift, 'giftName', ''),
+							giftType = $XP(gift, 'giftType', '');
 						var panel = $triggerEl.parents('.mcm-evtgift-panel'),
 							idx = parseInt(panel.attr('data-index')) + 1;
 						$('[name=EGiftID_' + idx + ']', panel).val(giftID);
 						$('[name=EGiftName_' + idx + ']', panel).val(giftName).trigger('change');
+						$('[name=EGiftType_' + idx + ']', panel).val(giftType).trigger('change');
 					}
 				});
 			});
@@ -316,6 +389,7 @@
 				switch (k) {
 					case "EGiftID":
 					case "EGiftName":
+					case "EGiftType":
 						$el.val('');
 						break;
 					case "EGiftEffectTimeHours":
@@ -323,7 +397,7 @@
 					case "EGiftOdds":
 						$el.val(0);
 						break;
-					case "EGiftValidUntilDayCount":
+					case "EGfitValidUntilDayCount":
 						$el.val(30);
 						break;
 				}
@@ -333,14 +407,15 @@
 			var self = this,
 				renderData = self.mapFormElsData.call(self),
 				tpl = self.get('layoutTpl'),
-				htm = tpl({
-					gifts : renderData
-				});
+				// htm = tpl({
+				// 	gifts : renderData
+				// });
+				htm = tpl(renderData);
 			self.container.html(htm);
 		},
 		initValidFieldOpts : function () {
 			var self = this,
-				formKeys = _.reject(self.formKeys, function (k) {return k == 'EGiftID'}),
+				formKeys = _.reject(self.formKeys, function (k) {return k == 'EGiftID' || k == 'EGiftType'}),
 				ret = {};
 			for (var i = 1; i <= EventGiftLevelCount; i++) {
 				_.each(formKeys, function (k) {
@@ -364,6 +439,18 @@
 				});
 			}
 			return ret;
+		},
+		delete : function (successFn, faildFn) {
+			var self = this;
+			self.model.emit('deleteItem', {
+				itemID : self.model.get('eventID'),
+				successFn : function (res) {
+					successFn(res);
+				},
+				faildFn : function (res) {
+					faildFn(res);
+				}
+			})
 		}
 	});
 

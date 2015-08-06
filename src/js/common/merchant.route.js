@@ -144,10 +144,65 @@
 			name : "shopInfo", path : "/#shop/{id}/info", reg : /shop\/(.*)\/info$/, bodyClz : "",
 			PageInitiator : "Hualala.Shop.BaseInfoMgrInit", parentName : "shop", label : "店铺信息"
 		},
+        // 店铺菜品分类管理
+        {
+            name : "shopCategory", path : "/#shop/{id}/category", reg : /shop\/(.*)\/category$/, bodyClz : "",
+            PageInitiator : "Hualala.Shop.CategoryInit", parentName : "shop", label : "菜品分类"
+        },
 		// 店铺菜单管理
 		{
 			name : "shopMenu", path : "/#shop/{id}/menu", reg : /shop\/(.*)\/menu$/, bodyClz : "",
-			PageInitiator : "Hualala.Shop.FoodMenuMgrInit", parentName : "shop", label : "菜单管理"
+			PageInitiator : "Hualala.Shop.FoodMenuMgrInit", parentName : "shop", label : "菜谱管理"
+		},
+        // 店铺人员管理
+        {
+            name : "shopMember", path : "/#shop/{id}/member", reg : /shop\/(.*)\/member$/, bodyClz : "",
+            PageInitiator : "Hualala.Shop.MemberMgrInit", parentName : "shop", label : "店员管理"
+        },
+        //店铺字典管理
+        {
+			name : "shopRemarks", path : "/#shop/{id}/remarks",reg : /shop\/(.*)\/remarks$/, bodyClz : "",
+			PageInitiator : "Hualala.Shop.remarksInit", parentName : "shop", label : "字典管理"
+		},
+        //店铺桌台管理
+        {
+            name : "shopTable", path : "/#shop/{id}/table", reg :/shop\/(.*)\/table$/, bodyClz: "",
+            PageInitiator : "Hualala.Shop.TableMgrInit", parentName : "shop", label : "桌台管理"
+        },
+        //店铺桌台》区域管理
+        {
+            name : "tableArea", path : "/#shop/{id}/table/area", reg :/shop\/(.*)\/table\/area$/, bodyClz: "",
+            PageInitiator : "Hualala.Shop.TableAreaMgrInit", parentName : "shopTable", label : "区域管理"
+        },
+        //店铺促销
+        {
+            name : "shopPromotion", path : "/#shop/{id}/promotion", reg : /shop\/(.*)\/promotion$/, bodyClz : "",
+            PageInitiator : "Hualala.Shop.PromotionInit", parentName : "shop", label : "店铺促销"
+        },
+        //打印机区域设置
+        {
+            name : "shopPrinterAreaSetting", path : "/#shop/{id}/prtAreaSet", reg : /shop\/(.*)\/prtAreaSet$/, bodyClz : "",
+            PageInitiator : "Hualala.Shop.PrinterAreaInit", parentName : "shop", label : "打印设置"
+        },
+        //打印机设置
+        {
+            name : "shopPrinterSetting", path : "/#shop/{id}/prtAreaSet/printer", reg : /shop\/(.*)\/prtAreaSet\/printer$/, bodyClz : "",
+            PageInitiator : "Hualala.Shop.PrinterInit", parentName : "shopPrinterAreaSetting", label : "打印机设置"
+        },
+        //店内促销管理
+        {
+            name : "shopDiscountManage", path : "/#shop/{id}/discountManage", reg : /shop\/(.*)\/discountManage$/, bodyClz : "",
+            PageInitiator : "Hualala.Shop.DiscountManageInit", parentName : "shop", label : "收银折扣"
+        },
+        //时段管理
+        {
+            name : "ShopTimeManage", path : "/#shop/{id}/timeManage", reg : /shop\/(.*)\/timeManage$/, bodyClz : "",
+            PageInitiator : "Hualala.Shop.TimeManageInit", parentName : "shop", label : "时段管理"
+        },
+		//参数及站点
+		{
+			name : "shopSaasParams", path : "/#shop/{id}/saasParams", reg : /shop\/(.*)\/saasParams/, bodyClz : "",
+			PageInitiator : "Hualala.Shop.SaasParamsInit", parentName: 'shop', label: "参数及站点"
 		},
 
 		// 店铺功能设置页面
@@ -165,6 +220,11 @@
 		{
 			name : "accountDetail", path : "/#account/{id}/detail", reg : /account\/(.*)\/detail$/, bodyClz : "",
 			PageInitiator : "Hualala.Account.AccountMgrInit", parentName : "account", label : "账户明细"
+		},
+		// 结算报表查询页面
+		{
+			name : "accountDailyReport", path : "/#account/{id}/dailyreport", reg : /account\/(.*)\/dailyreport$/, bodyClz : "",
+			PageInitiator : "Hualala.Account.AccountDailyReportInit", parentName : "account", label : "汇总报表"
 		},
 
 		// 用户管理页面
@@ -193,8 +253,8 @@
 
 		 */
 		{
-			name : "orderQuery", path : "/#order/query/b{begin}/e{end}/c{cityID}/n{shopID}/s{status}/m{mobile}/o{orderKey}/i{minAmount}/a{maxAmount}", 
-			reg : /order\/query\/b(.*)\/e(.*)\/c(.*)\/n(.*)\/s(.*)\/m(.*)\/o(.*)\/i(.*)\/a(.*)$/,
+			name : "orderQuery", path : "/#order/query/b{begin}/e{end}/c{cityID}/n{shopID}/s{status}/m{mobile}/o{orderKey}/i{minAmount}/a{maxAmount}/v{vipOrder}", 
+			reg : /order\/query\/b(.*)\/e(.*)\/c(.*)\/n(.*)\/s(.*)\/m(.*)\/o(.*)\/i(.*)\/a(.*)\/v(.*)$/,
 			bodyClz : "", PageInitiator : "Hualala.Order.QueryOrderInit", parentName : "main", label : "订单查询"
 		},
 
@@ -233,10 +293,11 @@
 			c : city ID
 			n : shopID
 			s : foodCategoryName
+			g : grouping
 		 */
 		{
-			name : "orderDishesHot", path : "/#order/dishes/hot/b{begin}/e{end}/c{cityID}/n{shopID}/s{foodCategoryName}",
-			reg : /order\/dishes\/hot\/b(.*)\/e(.*)\/c(.*)\/n(.*)\/s(.*)/, bodyClz : "",
+			name : "orderDishesHot", path : "/#order/dishes/hot/b{begin}/e{end}/c{cityID}/n{shopID}/s{foodCategoryName}/g{grouping}",
+			reg : /order\/dishes\/hot\/b(.*)\/e(.*)\/c(.*)\/n(.*)\/s(.*)\/g(.*)/, bodyClz : "",
 			PageInitiator : "Hualala.Order.QueryOrderDishesHotInit", parentName : "main", label : "菜品销量排行"
 		},
 
@@ -289,7 +350,7 @@
 		{
 			name : "crm", path : "/#crm",
 			reg : /crm$/, bodyClz : "",
-			PageInitiator : "Hualala.CRM.CRMHomePageInit", parentName : "main", label : "会员管理"
+			PageInitiator : "Hualala.CRM.CRMHomePageInit", parentName : "main", label : "会员概况"
 		},
 		{
 			name : "crmMemberSchema", path : "/#crm/member/schema",
@@ -327,6 +388,11 @@
 			PageInitiator : "Hualala.CRM.RechargeReconciliationInit", parentName : "crm", label : "储值对账"
 		},
 		{
+			name : "memberQueryDay", path : "/#crm/deal/memberQueryDay",
+			reg : /crm\/deal\/memberQueryDay/, bodyClz : "",
+			PageInitiator : "Hualala.CRM.memberQueryDayInit", parentName : "crm", label : "会员日报表"
+		},
+		{
 			name : "crmParameter", path : "/#crm/settings/params",
 			reg : /crm\/settings\/params$/, bodyClz : "",
 			PageInitiator : "Hualala.CRM.CRMSettingsParamsInit", parentName : "crm", label : "会员系统参数"
@@ -353,6 +419,11 @@
 			reg : /weixin$/, bodyClz : "",
 			PageInitiator : "Hualala.Weixin.homeInit", parentName : "main", label : "微信管理"
 		},
+        {
+			name : "wxAccounts", path : "/#weixin/admin/accounts",
+			reg : /weixin\/admin\/accounts$/, bodyClz : "wx-accounts",
+			PageInitiator : "Hualala.Weixin.accountsInit", parentName : "weixin", label : "公众账号"
+		},
 		{
 			name : "wxReply", path : "/#weixin/admin/reply",
 			reg : /weixin\/admin\/reply$/, bodyClz : "wx-reply",
@@ -368,11 +439,11 @@
 			reg : /weixin\/admin\/menu$/, bodyClz : "wx-menu",
 			PageInitiator : "Hualala.Weixin.menuInit", parentName : "weixin", label : "自定义菜单"
 		},
-        {
-			name : "wxQrCode", path : "/#weixin/admin/qrcode",
+        /*{
+			name : "wxQrcode", path : "/#weixin/admin/qrcode",
 			reg : /weixin\/admin\/qrcode$/, bodyClz : "wx-qrcode",
-			PageInitiator : "Hualala.Weixin.qrCodeInit", parentName : "weixin", label : "二维码维护"
-		},
+			PageInitiator : "Hualala.Weixin.qrcodeInit", parentName : "weixin", label : "二维码管理"
+		},*/
 		{
 			name : "wxAdvertorial", path : "/#weixin/material/advertorial",
 			reg : /weixin\/material\/advertorial$/, bodyClz : "wx-advertorial",
@@ -418,6 +489,45 @@
 			name : "contact", path : "/#contact", reg : /contact$/, bodyClz : "",
 			PageInitiator : "Hualala.Common.ContactInit", parentName : "main", label : "联系我们"
 		},
+
+        //saas功能模块
+		{
+			name : "saas", path : "/#saas", reg : /saas$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.SaasInit", parentName : "main", label : "收银软件"
+		},
+        {
+			name : "saasReceivables", path : "/#saas/admin/receivables",
+			reg : /saas\/admin\/receivables$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.receivableInit", parentName : "saas", label : "收款科目"
+		},
+		{
+			name : "saasDepartment", path : "/#saas/admin/department",
+			reg : /saas\/admin\/department$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.departmentInit", parentName : "saas", label : "部门"
+		},
+		{
+			name : "saasRemarks", path : "/#saas/admin/remarks",
+			reg : /saas\/admin\/remarks$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.remarksInit", parentName : "saas", label : "字典"
+		},
+		{
+			name : "saasCategories", path : "/#saas/admin/categories",
+			reg : /saas\/admin\/categories$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.categoriesInit", parentName : "saas", label : "商品分类"
+		},
+		{
+			name : "saasCommodity", path : "/#saas/admin/commodity",
+			reg : /saas\/admin\/commodity$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.GoodsInit", parentName : "saas", label : "商品"
+		},
+		{
+			name : "saasChannel", path : "/#saas/admin/channel",
+			reg : /saas\/admin\/channel$/, bodyClz : "",
+			PageInitiator : "Hualala.Saas.channelInit", parentName : "saas", label : "渠道"
+		},
+
+
+
 		// 上面的path都匹配不到，需要自动跳转home
 		{
 			name : "index", path : "", reg : /(.*)$/, bodyClz : "",

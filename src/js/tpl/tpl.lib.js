@@ -238,25 +238,25 @@
 								'<!-- Text input-->',
 								'<div class="form-group">',
 									'<div class="col-md-offset-1 col-md-10">',
-										'<input id="group_name" name="group_name" type="text" placeholder="请输入主账号" class="form-control input-md" tabIndex="1">',
+										'<input id="group_name" name="group_name" type="text" placeholder="请输入主账号" autocomplete="off" class="form-control input-md" tabIndex="1">',
 									'</div>',
 								'</div>',
 								'<!-- Text input-->',
 								'<div class="form-group">',
 									'<div class="col-md-offset-1 col-md-10">',
-										'<input id="group_subname" name="group_subname" type="text" placeholder="请输入子账号" class="form-control input-md" tabIndex="2" >',
+										'<input id="group_subname" name="group_subname" type="text" placeholder="请输入子账号" autocomplete="off" class="form-control input-md" tabIndex="2" >',
 									'</div>',
 								'</div>',
 								'<!-- Password input-->',
 								'<div class="form-group">',
 									'<div class="col-md-offset-1 col-md-10">',
-										'<input id="login_pwd" name="login_pwd" type="password" placeholder="请输入登录密码" class="form-control input-md" tabIndex="3" >',
+										'<input id="login_pwd" name="login_pwd" type="password" placeholder="请输入登录密码" autocomplete="off" class="form-control input-md" tabIndex="3" >',
 									'</div>',
 								'</div>',
 								'<!-- Auth code input-->',
 								'<div class="form-group">',
 									'<div class="col-md-offset-1 col-xs-8 col-sm-8 col-md-7 col-lg-7">',
-										'<input id="login_auth" name="login_auth" type="text" placeholder="请输入验证码" class="form-control input-md" tabIndex="4" >',
+										'<input id="login_auth" name="login_auth" type="text" placeholder="请输入验证码" autocomplete="off" class="form-control input-md" tabIndex="4" >',
 									'</div>',
 									'<div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">',
 										'<div class="ix-authcode">',
@@ -298,19 +298,19 @@
 								'<!-- Text input-->',
 								'<div class="form-group">',
 									'<div class="col-md-offset-1 col-md-10">',
-										'<input id="group_name" name="group_name" type="text" placeholder="请输入主账号" class="form-control input-md" tabIndex="1">',
+										'<input id="group_name" name="group_name" type="text" placeholder="请输入主账号" autocomplete="off" class="form-control input-md" tabIndex="1">',
 									'</div>',
 								'</div>',
 								'<!-- Text input-->',
 								'<div class="form-group">',
 									'<div class="col-md-offset-1 col-md-10">',
-										'<input id="group_mobile" name="group_mobile" type="text" placeholder="请输入子账号绑定的手机号" class="form-control input-md" tabIndex="2" >',
+										'<input id="group_mobile" name="group_mobile" type="text" placeholder="请输入子账号绑定的手机号" autocomplete="off" class="form-control input-md" tabIndex="2" >',
 									'</div>',
 								'</div>',
 								'<!-- Text input-->',
 								'<div class="form-group">',
 									'<div class="col-md-offset-1 col-xs-7 col-md-6 col-lg-6">',
-										'<input id="mobile_pwd" name="mobile_pwd" type="text" placeholder="请输入短信动态密码" class="form-control input-md" tabIndex="2" >',
+										'<input id="mobile_pwd" name="mobile_pwd" type="text" placeholder="请输入短信动态密码" autocomplete="off" class="form-control input-md" tabIndex="2" >',
 									'</div>',
 									'<div class="col-xs-4 col-md-4 col-lg-4">',
 										'<button class="btn btn-warning  btn-mobile-pwd" data-loading-text="发送中...">获取动态密码</button>',
@@ -343,9 +343,10 @@
 
 	// 首页
 	var tpl_site_homepage = [
-        '<div id="brandLogo">',
+        '<div id="brandLogo" class="clearfix">',
             '<img src="" alt="" width="64" height="64" />',
             '<a href="javascript:;" class="btn btn-link">编辑logo图片</a>',
+            '<a href="{{agentPath}}" class="btn btn-success btn-lg m-t mr-6 foreward pull-right">下载代理程序</a>',
         '</div>',
 		'<div class="home-page home-brick">',
 			'{{#each bricks}}',
@@ -448,6 +449,11 @@
 										'{{/chkColType}}',
 										'{{#chkColType type type="text"}}',
 											'<p data-value="{{value}}" title="{{title}}">{{{text}}}</p>',
+										'{{/chkColType}}',
+										'{{#chkColType type type="checkbox"}}',
+											'{{#each btns}}',
+											'<input type="checkbox" class="{{clz}}"name={{name}} data-id="{{id}}" data-value="{{value}}" data-key="{{key}}" data-type="{{type}}"/>',
+											'{{/each}}',
 										'{{/chkColType}}',
 									'</td>',
 								'{{/each}}',
@@ -636,7 +642,44 @@
 	].join('');
 	TemplateList.register('tpl_client_download', tpl_client_download);
 	
+    // 下载老板通
+	var tpl_boss_download = [
+		'<div class="ix-body boss">',
+			'<div class="banner">',
+				'<div class="jumbotron ">',
+					'<div class="container nowrap">',
+						'<img src="{{logo}}" class="v-t boss-logo" />',
+                        '<div class="d-ib v-t boss-title">',
+                            '<h1>饮食老板通</h1>',
+                            '<h2 class="mt-10">一切尽在掌握</h2>',
+                        '</div>',
+                        '<div class="qr-boss d-ib t-c">',
+                            '<img src="{{qrcode}}" />',
+                            '<span class="d-b">扫码下载饮食老板通手机APP</span>',
+                        '</div>',
+                        '<img src="{{dragon}}" class="v-t dragon" />',
+                        '<img src="{{starfish}}" class="starfish" />',
+					'</div>',
+				'</div>',
+			'</div>',
+			'<div class="container desc">',
+				'<h3 class="c-6 m-b">“饮食老板通”手机APP',
+                    '<span class="d-ib c-6 fs-18">(目前支持平台：IOS、Android)</span>',
+                '</h3>',
+				'<p class="fs-14">',
+					'“随时随地掌握餐厅实时营业状况”<br/>',
+                    '做为一个餐饮老板，我希望：“无论我身处何处都能随时掌握店内的实时营业状况，即便有多个品牌、多个城市、众多门店我也能够一目了然的掌握我最关心的核心营业指标数据，例如：当前客流、订单数、流水、实收、人均、单均、会员消费占比、外卖占比、收款占比等，并能进行日、周、月、季不同周期的切换，查看各核心指标的近期走势。”<br/>',
+                    '饮食通老板通一切尽在掌握！',
+				'</p>',
+			'</div>',
+		'</div>'
+	].join('');
+	TemplateList.register('tpl_boss_download', tpl_boss_download);
 
+    var tpl_loading = [
+        '<div class="loading-tip"></div>'
+    ].join('');
+    TemplateList.register('tpl_loading', tpl_loading);
 
 
 	var TplLib = function () {

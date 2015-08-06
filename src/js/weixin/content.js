@@ -83,6 +83,7 @@
                 : !resItem.imgPath ? '请上传当前图文的图片！' 
                 : type == 0 && !resItem.digest ? '请输入图文摘要！'
                 : !resItem.resType ? '请选择当前图文的链接类型！'
+                : resItem.resType == 2 && !W.createLinkSelector.groupDomainNameYN ? '集团信息为空'
                 : noLinkCont ? '请选择或输入当前图文的链接内容！' : '';
             
             if(!ret) topTip({msg: msg});
@@ -95,7 +96,7 @@
                 resType = cont.resType,
                 resArr = $.parseJSON(cont.resContent).resources,
                 activeRes = resArr[0],
-                $resEdit = $(resEditTpl(activeRes)),
+                $resEdit = $(resEditTpl(IX.inherit({}, activeRes, {isSingle: resType == 0}))),
                 $resWrap = $resEdit.filter('.res-wrap'),
                 $resForm = $resEdit.filter('.res-form'),
                 $resTitle = $resForm.find('.res-title'),
@@ -153,7 +154,9 @@
                     $resWrap.find('.res-mask').eq(1).click();
                     if(!checkResItem(activeRes, resType, $contentWrap)) return;
                 }
-                
+                if (activeRes.resTypeContent.resType == 2) {
+                    activeRes.resTypeContent.urlOrCity = W.createLinkSelector.groupDomainNameYN + '-' + activeRes.resTypeContent.urlOrCity;
+                }
                 var submitFunc = itemID ? updateCont : createCont,
                     _cont = $.extend({}, cont),
                     _resArr = JSON.parse(JSON.stringify(resArr)),

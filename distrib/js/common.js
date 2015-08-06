@@ -3420,7 +3420,7 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 			fileName = path.slice(lastSlash + 1),
 			suffix = '',
 			path = path.slice(0, lastSlash);
-		suffix = fileName.replace(/^(.*)\.(jpg|jpeg|png|gif|ico)/i, '$2').toLowerCase();
+		suffix = fileName.replace(/^(.*)\.(jpg|jpeg|png|gif|ico)/i, '$2');
 		fileName = fileName.replace(/^(.*)\.(jpg|jpeg|png|gif|ico)/i, '$1');
 
 		var w = $XP(settings, 'width', null), h = $XP(settings, 'height', null),
@@ -4020,7 +4020,25 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
         return df.promise();
     }
     Hualala.Common.loadData = loadData;
-    
+
+    /*
+    处理textarea空行问题
+    参数：string
+    返回 string
+    */
+    //编码textarea的内容
+    function encodeTextEnter(text) {
+        if (!text || typeof text != 'string') return text;
+        return text.trim().replace(/[\n]/g, '<br/>');
+    }
+    Hualala.Common.encodeTextEnter = encodeTextEnter;
+    //解码textarea的内容
+    function decodeTextEnter(text) {
+        if (!text) return text;
+        return text.replace(/<br\/>/g, '\n');
+    }
+    Hualala.Common.decodeTextEnter = decodeTextEnter;
+
 })(jQuery);
 
 
@@ -4060,21 +4078,29 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 				{name : "mcmEventMgr", label : "活动管理", type : "link", src : ""}
 			]
 		},
-		{name : 'weixin', label : '微信', type:"subnav",
+		//saas
+		{name : 'saas', label : '收银软件', type:"link"},
+		{name : 'weixin', label : '微信', type: "subnav",
 			subnavs : [
-				{name : "wxReply", label : "微信管理", type : "link", src : "WeixinAdminSubNavType"},
+				{name : "wxAccounts", label : "微信管理", type : "link", src : "WeixinAdminSubNavType"},
 				{name : "wxAdvertorial", label : "素材管理", type : "link", src : "WeixinMaterialSubNavType"}
 			]
 		},
-		{name : 'user', label : '权限', type:"link"}
+        {name : 'more', label : '更多', type: "subnav",
+			subnavs : [
+				{name : "agent", label : "代理程序", type : "link"},
+				{name : "user", label : "权限", type : "link"}
+			]
+		}
         
 	];
     
     Hualala.TypeDef.WeixinAdminSubNavType = [
-		{name : "wxReply", label : "自动回复"},
+		{name : "wxAccounts", label : "公众账号"},
+        {name : "wxReply", label : "自动回复"},
 		{name : "wxSubscribe", label : "关注自动回复"},
 		{name : "wxMenu", label : "自定义菜单"}//,
-        //{name : "wxQrCode", label : "二维码维护"}
+        //{name : "wxQrCode", label : "二维码管理"}
 	];
     Hualala.TypeDef.WeixinMaterialSubNavType = [
         {name : "wxAdvertorial", label : "软文管理"},
@@ -4090,7 +4116,8 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 	Hualala.TypeDef.CRMDealSubNavType = [
 		{name : "crmDealSummary", label : "储值消费汇总", pkeys : []},
 		{name : "crmDealDetail", label : "交易明细", pkeys : []},
-		{name : "crmRechargeReconciliation", label : "储值对账", pkeys : []}
+		{name : "crmRechargeReconciliation", label : "储值对账", pkeys : []},
+		{name : "memberQueryDay", label : "会员日报表", pkeys : []}
 	];
 	Hualala.TypeDef.CRMParamsSubNavType = [
 		{name : "crmParameter", label : "会员系统参数", pkeys : []},
@@ -4104,11 +4131,22 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 	Hualala.TypeDef.OrderSubNavType = [
 		// Note：先屏蔽，第二版本开放
 		// {name : 'order', label : '概览', pkeys : []},
-		{name : 'orderQuery', label : '订单查询', pkeys : ['startDate','endDate','cityID','shopID','orderStatus','userMobile','orderID','s_orderTotal','e_orderTotal']},
-		{name : 'orderQueryDay', label : '订单日汇总', pkeys : ['startDate','endDate','cityID','shopID','orderStatus']},
-		{name : 'orderQueryDuring', label : '订单期间汇总', pkeys : ['startDate','endDate','cityID','shopID','orderStatus']},
+		{name : 'orderQuery', label : '订单查询', pkeys : ['startDate','endDate','cityID','shopID','queryStatus','userMobile','orderID','s_orderTotal','e_orderTotal','vipOrder']},
+		{name : 'orderQueryDay', label : '订单日汇总', pkeys : ['startDate','endDate','cityID','shopID','queryStatus']},
+		{name : 'orderQueryDuring', label : '订单期间汇总', pkeys : ['startDate','endDate','cityID','shopID','queryStatus']},
 		{name : 'orderDishesHot', label : '菜品销量排行', pkeys : ['startDate','endDate','cityID','shopID','foodCategoryName']},
 		{name : 'orderQueryCustomer', label : '顾客统计', pkeys : ['startDate','endDate','cityID','shopID','userLoginMobile','userName']}
+	];
+
+	/*saas*/
+	Hualala.TypeDef.SaasSubNavType = [
+		{name : 'saasReceivables', label : '收款项目', pkeys : []},
+		{name : 'saasDepartment', label : '部门', pkeys : []},
+		//{name : 'saasRemarks', label : '字典', pkeys : []},
+		// {name : 'saasCategories', label : '商品分类', pkeys : []},
+		// {name : 'saasCommodity', label : '商品', pkeys : []},
+		{name : 'saasChannel', label : '渠道', pkeys : []}
+		
 	];
 
 	Hualala.TypeDef.GENDER = [
@@ -4167,16 +4205,24 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		{value : 9, label : "已关闭"}
 	];
 
+	/** 
+	 *查询订单的状态
+	 *BUG #5570 【Dohko-dianpu】订单查询不能显示待消费订单且导出订单也无此数据
+	 */
+	Hualala.TypeDef.queryStatus = [
+		{value : '2', label : "已消费"},
+		{value : '1', label : "待消费"},			
+		{value : '3', label : "已退款"}
+	]
 	/**
 	 * 订单状态
 	 * @type {Array}
 	 */
 	Hualala.TypeDef.OrderStatus = [
-		{value : '', label : "全部"},
 		// {value : '0', label : "已取消"},
 		// {value : '10', label : "未完成"},
 		// {value : '15', label : "已确认"},
-		{value : '20', label : "待消费(已付款)"},
+		{value : '20', label : "待消费"},
 		{value : '30', label : "已退单"},
 		{value : '40', label : "已消费"}
 		// {value : '50', label : "已完成 "},
@@ -4210,13 +4256,29 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		},
 		HASIMAGE : 1
 	};
+
+    Hualala.TypeDef.FoodAttrSelect = {
+        TakeawayType: [{name: '堂食外送均可', value: '1'}, {name: '仅堂食', value: '0'}, {name: '仅外送', value: '2'}],
+        HotTag: [{name: '不辣', value: '0'}, {name: '微辣', value: '1'}, {name: '中辣', value: '2'}, {name: '重辣', value: '3'}]
+    };
+    Hualala.TypeDef.FoodSettings = [
+        {name: 'IsNeedConfirmFoodNumber', text: '需要确定数量'},
+        {name: 'isAutoAdd', text: '默认自动加入'}
+        //{name: 'isComments', text: '允许点评'}暂时屏蔽掉
+    ];
+    Hualala.TypeDef.FoodAttrSNewR = [
+        {name: 'isSpecialty', text: '招牌菜'},
+        {name: 'isNew', text: '新菜'},
+        {name: 'isRecommend', text: '推荐菜'}
+    ];
 	/**
 	 * 交易类型 
 	 * 101：网上订餐消费（卖出）+ 102：账户充值+ 199：账户资金调加+ 201：订餐消费后退款（退款）- 202：平台预付款- 203：提现- 204：支付平台服务费- 205：支付平台广告费- 206：支付平台信息费- 299：账户资金调减-
 	 */
 	Hualala.TypeDef.FSMTransType = [
 		{value : '', label : "全部"},
-		{value : 101, label : "网上订餐", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		{value :511,label : "用户自助订餐/结帐", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		//{value : 101, label : "网上订餐", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
 		//{value : 102, label : "账户充值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
 		//{value : 103, label : "网上订餐用券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
 		//{value : 104, label : "到店消费验券", tpl : "tpl_chktick_detail", queryCall : null, queryKeys : null},
@@ -4224,13 +4286,13 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		//{value : 199, label : "账户资金调加"},
 		{value : 201, label : "订单退款", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
 		//{value : 202, label : "平台预付款"},
-		{value : 203, label : "提现", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
+		{value : 203, label : "提现", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"}
 		// {value : 204, label : "支付平台服务费"},
 		// {value : 205, label : "支付平台广告费"},
 		// {value : 206, label : "支付平台信息费"},
 		//{value : 207, label : "订餐消费后退券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
 		//{value : 299, label : "账户资金调减"},
-		{value : 410, label : "店内自助点菜结账", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"}
+		//{value : 410, label : "店内自助点菜结账", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"}
 	];
 	/**
 	 * 交易状态
@@ -4278,6 +4340,69 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		{value : 1, label : "快餐"},
 		{value : 2, label : "美食广场"}
 	];
+	Hualala.TypeDef.ShopPrinterDataSet = {
+		/* 打印机状态
+		 * 0：未知 1：正常 2:打印机出错 3:打印机无法连接 4:打印机脱机 
+		 * 5:上盖打开 6:切刀出错 7:纸将尽 8:缺纸
+		 */
+		currPrinterStatusData : [
+			{value : "0", label : "未知"},
+			{value : "1", label : "正常"},
+			{value : "2", label : "打印机出错"},
+			{value : "3", label : "打印机无法连接"},
+			{value : "4", label : "打印机脱机"},
+			{value : "5", label : "上盖打开"},
+			{value : "6", label : "切刀出错"},
+			{value : "7", label : "纸将尽"},
+			{value : "8", label : "缺纸"}
+		],
+		/*打印机端口类型 : 0：未知 1：串口 2：并口 3：USB口 4：网口*/
+		printerPortTypes : [
+			{value : "0", label : "未知"},
+			{value : "1", label : "串口"},
+			{value : "2", label : "并口"},
+			{value : "3", label : "USB口"},
+			{value : "4", label : "网口"}
+		],
+		//打印机纸张宽度 80，76，58
+		printerPaperSizeTypes :[
+			{value: "58", label:"58毫米"},
+			{value: "76", label:"76毫米"},
+			{value: "80", label:"80毫米"}
+		]
+	};
+	Hualala.TypeDef.ShopPromotionDataSet = {
+		/* 促销或送适用的业务类型
+		 * 0:预订（常规预订+闪吃预订） 1：外送/自提 2：全部 3:店内自助
+		 */
+		supportOrderTypes : [
+			{value : 2, label : "全部"},
+			{value : 0, label : "预订"},
+			{value : 1, label : "外送"},
+			{value : 3, label : "店内自助"}
+		],
+		/*tag : 标签（0无，1券，2返，3送，4赠，5惠）*/
+		tagTypes : [
+			{value : "0", label : "无"},
+			{value : "1", label : "券"},
+			{value : "2", label : "返"},
+			{value : "3", label : "送"},
+			{value : "4", label : "赠"},
+			{value : "5", label : "惠"}
+						],
+		//促销规则
+		stageTypes :[
+			{value: "0", label:"下单就有优惠"},
+			{value: "1", label:"消费每满一定金额就有优惠"},
+			{value: "1", label:"消费一定金额就有优惠"}
+		],
+		//返券规则 1：不限制 2：用券不返券 3现金部分返券
+		returnVoucherTypes:[
+			{value:"1",label:"不限制"},
+			{value:"2",label:"用券不返券"},
+			{value:"3",label:"现金部分返券"}
+		]
+	};
 
 	/**
 	 * 店铺业务类型
@@ -4307,42 +4432,45 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 	 * checkSpotOrder: 顾客可通过手机结账 int 0: 不支持；1:支持
 	 * payBeforeCommit: 支付完成后才能下单 int 0：不支持（不支持）；1：支持
 	 * fetchFoodMode : 取餐模式 int 0：流水号模式（默认）；1：牌号模式；2：收银台直接出餐
-	 * 
+	 * commitSafeLevel：下单验证 int  1：不验证（默认） ； 2：在餐厅一定范围外需验证 ；3:必须验证
+     * foodUITemplate ：菜品展示模式 int 1：列表模式（默认）；2：大图模式 ； 3：瀑布流模式
+     * adsID ：软文介绍  int 0 未设置（默认）
+     *
 	 */
 	Hualala.TypeDef.ShopBusiness = [
 		{id : 41, label : "店内自助", name : "spot_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setSpotOrderParams',
 			// formKeys : 'fetchFoodMode,payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
-			formKeys : 'fetchFoodMode,checkSpotOrder,payBeforeCommit,supportCommitToSoftware',
+			//formKeys : 'foodUITemplate,checkSpotOrder,commitSafeLevel,payBeforeCommit,supportCommitToSoftware',
 			operationMode : {
 				// 正餐
 				// 0 : 'payMethodAtShop,payBeforeCommit,supportCommitToSoftware',
 				// @Note for 1.1 delete supportCommitToSoftware(#4105)
-				0 : 'payBeforeCommit',
+				0 : 'foodUITemplate,payBeforeCommit,commitSafeLevel,adsID',
 				// 快餐
 				// @Note for 1.1 delete supportCommitToSoftware(#4105)
-				1 : 'fetchFoodMode',
-				2 : 'payBeforeCommit'
+				1 : 'foodUITemplate,fetchFoodMode',
+				2 : 'foodUITemplate,payBeforeCommit,commitSafeLevel,adsID'
 			}
 		},
 		{
 			id : 10, label : "订座点菜", name : "commonreserve_order", businessIsSupported : true, 
 			callServer : 'Hualala.Global.setCommonReserveParams',
-			formKeys : 'advanceTime,noticeTime,minAmount,reserveTableTime,reserveTableDesc,payMethod'
+			formKeys : 'foodUITemplate,advanceTime,noticeTime,minAmount,reserveTableTime,reserveTableDesc,payMethod,adsID'
 		},
 		{id : 11, label : "闪吃", name : "justeat_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setJustEatParams',
-			formKeys : 'advanceTime,noticeTime,minAmount,holidayFlag,servicePeriods,reserveTableTime,reserveTableDesc,payMethod'
+			formKeys : 'foodUITemplate,advanceTime,noticeTime,minAmount,holidayFlag,servicePeriods,reserveTableTime,reserveTableDesc,payMethod,adsID'
 		},
 		{id : 20, label : "外送", name : "takeaway_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setTakeAwayParams',
 			// formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,servicePeriods,takeawayDeliveryAgent,takeawayDeliveryTime,takeawayScope,takeawayScopeDesc,payMethod'
-			formKeys : 'noticeTime,servicePeriods,holidayFlag,takeawayDeliveryTime,minAmount,serviceAmount,freeServiceAmount,takeawayScope,payMethod'
+			formKeys : 'foodUITemplate,holidayFlag,servicePeriods,servicePeriods2,advanceTime,noticeTime,takeawayDeliveryTime,minAmount,serviceAmount,freeServiceAmount,takeawayScope,payMethod,adsID'
 		},
 		{id : 21, label : "自提", name : "takeout_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setTakeOutParams',
 			// formKeys : 'advanceTime,freeServiceAmount,holidayFlag,minAmount,serviceAmount,servicePeriods,noticeTime,payMethod'
-			formKeys : 'noticeTime,servicePeriods,holidayFlag,advanceTime,minAmount,payMethod'
+			formKeys : 'foodUITemplate,holidayFlag,servicePeriods,servicePeriods2,noticeTime,advanceTime,minAmount,payMethod,adsID'
 		},
 		{id : 1000, label : "会员卡", name : "crm", businessIsSupported : true, callServer : null, formKeys : null},
 		{id : 2000, label : "老板通", name : "bi", businessIsSupported : true, callServer : null, formKeys : null}
@@ -4408,7 +4536,7 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 	Hualala.TypeDef.PayMethodOptions = [
 		{value : 0, label : "仅支持在线支付"},
 		{value : 1, label : "仅支持线下支付"},
-		{value : 2, label : "均支持"},
+		{value : 2, label : "线上及线下支付均支持"},
 	];
 
 	Hualala.TypeDef.PayMethodAtShopOptions = [
@@ -4425,16 +4553,34 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 	];
 
 	Hualala.TypeDef.HolidayFlagOptions = [
-		{value : 0, label : "包含节假日"},
-		{value : 1, label : "只能在节假日"},
-		{value : 2, label : "不包含节假日"}
+		{value : 0, label : "工作日及节假日均开放"},
+		{value : 1, label : "仅节假日开放"},
+		{value : 2, label : "仅工作日开放"}
 	];
 
 	Hualala.TypeDef.PayBeforeCommitOptions = [
-		{value : 1, label : "餐前结账"},
-		{value : 0, label : "餐后结账"}
+		{value : 0, label : "餐后结账"},
+		{value : 1, label : "餐前结账"}
+		
 	];
-
+	//菜品展示模式
+	Hualala.TypeDef.foodUITemplateOptions = [
+		{value : 1, label : "列表模式"},
+		{value : 2, label : "大图模式"},
+		{value : 3, label : "瀑布流模式"}
+	];
+    //下单安全级别设置
+    Hualala.TypeDef.CommitSafeLevelOptions = [
+    	{value : 1, label : "不验证"},
+    	{value : 2, label : "在餐厅一定范围外需验证"},
+    	{value : 3, label : "必须验证"}
+    ];
+    //软文设置
+    Hualala.TypeDef.adsIDOptions = [
+    	{value : 0, label : "未设置" }
+    	
+    	
+    ];
 	/**
 	 * 获取一天(默认)的时间间隔选项数据
 	 * 1小时内，时间间隔15分钟
@@ -4475,7 +4621,6 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		}
 		return list;
 	};
-
 	/*银行代码列表*/
 	Hualala.TypeDef.BankOptions = [
 		{
@@ -4540,7 +4685,7 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		},
 		{
 			value: "Other",
-			label: "其他"
+			label: "其它"
 		}
 	];
 
@@ -4694,8 +4839,8 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 
 		],
 		EventCardLevels : [
-			{value : "-1", label : "所有顾客参与（含非会员）"},
-			{value : "0", label : "仅会员"}
+			// {value : "-1", label : "所有顾客参与（含非会员）"},
+			{value : "0", label : "全部会员"}
 		],
 		EventCountCycleDays : [
 			{value : 0, label : "不限次数"},
@@ -4713,7 +4858,7 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
 		JoinTypes : [
 			{value : '', label : "不限"},
 			{value : '0', label : "未入围"},
-			{value : '0', label : "已入围"}
+			{value : '1', label : "已入围"}
 		]
 
 	};
@@ -4786,7 +4931,7 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
         giftStatus: { '1': '未使用', '2': '已使用', '3': '已过期', '4': '已退订' },
         //会员卡日志类型
         logType: {
-            '0': '其他', 
+            '0': '其它', 
             '10': '挂失', 
             '11': '解除挂失', 
             '20': '冻结', 
@@ -4800,8 +4945,64 @@ IX.SCRIPT_ROOT = path.substring(0, path.indexOf("lib/ixutils.js"));
             '60': '升级', 
             '61': '降级'
         }
-    }
-
+    };
+    /**
+	 * 是否内置渠道
+	 * 0：内置渠道 1：不是内置渠道
+	 * 
+	 */
+	Hualala.TypeDef.ChannelStatus = [
+		{value : 0, label : "是"},
+		{value : 1, label : "否"}
+	];
+	/**
+	 * 部门类型
+	 * 0：未知 1：出品部门 2：领料部门 3：出品及领料部门
+	 * 
+	 */
+	Hualala.TypeDef.SaasDepartmentType = [
+		{value : 0, label : "未知"},
+		{value : 1, label : "出品部门"},
+		{value : 2, label : "领料部门"},
+		{value : 3, label : "出品及领料部门"}
+	];
+	/**
+	 * 打印类型
+	 * 0：不打印 1：一菜一单 2：多菜一单
+	 * 
+	 */
+	Hualala.TypeDef.SaasPrintType = [
+		{value : 0, title : "不打印"},
+		{value : 1, title : "一菜一单"},
+		{value : 2, title : "多菜一单"}
+	];
+	/**
+	 *saas备注类型
+	 *10：点单备注 20：作法 30：口味 40：退菜原因 50：增菜原因
+	 *60：改价原因 70：改单原因  80：预订退订原因  90：外卖退单原因
+	 */
+	Hualala.TypeDef.SaasNotesType =[
+		{value : "10",  label: "点单备注" },
+		{value : "20",  label: "作法" },
+		{value : "30",  label: "口味" },
+		{value : "40",  label: "退菜原因" },
+		{value : "50",  label: "增菜原因" },
+		{value : "60",  label: "改价原因" },
+		{value : "70",  label: "改单原因" },
+		{value : "80",  label: "预订退订原因" },
+		{value : "90",  label: "外卖退单原因" }
+	];
+	/**
+	 *saas备注加价方式
+	 *0：不加价 1：固定加价 2：按数量加价 3：按人数加价 
+	 *
+	 */
+	Hualala.TypeDef.SaasaddPriceType =[
+		{value : 0,  label: "不加价" },
+		{value : 1,  label: "固定加价" },
+		{value : 2,  label: "按数量加价" },
+		{value : 3,  label: "按人数加价" }
+	]
 
 })(jQuery);
 
@@ -5405,6 +5606,98 @@ var Pymatch=(function(){
 
   return constructor;
 }());
+;/*!
+Math.uuid.js (v1.4)
+http://www.broofa.com
+mailto:robert@broofa.com
+
+Copyright (c) 2010 Robert Kieffer
+Dual licensed under the MIT and GPL licenses.
+*/
+
+/*
+ * Generate a random uuid.
+ *
+ * USAGE: Math.uuid(length, radix)
+ *   length - the desired number of characters
+ *   radix  - the number of allowable values for each character.
+ *
+ * EXAMPLES:
+ *   // No arguments  - returns RFC4122, version 4 ID
+ *   >>> Math.uuid()
+ *   "92329D39-6F5C-4520-ABFC-AAB64544E172"
+ *
+ *   // One argument - returns ID of the specified length
+ *   >>> Math.uuid(15)     // 15 character ID (default base=62)
+ *   "VcydxgltxrVZSTV"
+ *
+ *   // Two arguments - returns ID of the specified length, and radix. (Radix must be <= 62)
+ *   >>> Math.uuid(8, 2)  // 8 character ID (base=2)
+ *   "01001010"
+ *   >>> Math.uuid(8, 10) // 8 character ID (base=10)
+ *   "47473046"
+ *   >>> Math.uuid(8, 16) // 8 character ID (base=16)
+ *   "098F4D35"
+ */
+(function() {
+  // Private array of chars to use
+  var CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('');
+
+  Math.uuid = function (len, radix) {
+    var chars = CHARS, uuid = [], i;
+    radix = radix || chars.length;
+
+    if (len) {
+      // Compact form
+      for (i = 0; i < len; i++) uuid[i] = chars[0 | Math.random()*radix];
+    } else {
+      // rfc4122, version 4 form
+      var r;
+
+      // rfc4122 requires these characters
+      uuid[8] = uuid[13] = uuid[18] = uuid[23] = '-';
+      uuid[14] = '4';
+
+      // Fill in random data.  At i==19 set the high bits of clock sequence as
+      // per rfc4122, sec. 4.1.5
+      for (i = 0; i < 36; i++) {
+        if (!uuid[i]) {
+          r = 0 | Math.random()*16;
+          uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+        }
+      }
+    }
+
+    return uuid.join('');
+  };
+
+  // A more performant, but slightly bulkier, RFC4122v4 solution.  We boost performance
+  // by minimizing calls to random()
+  Math.uuidFast = function() {
+    var chars = CHARS, uuid = new Array(36), rnd=0, r;
+    for (var i = 0; i < 36; i++) {
+      if (i==8 || i==13 ||  i==18 || i==23) {
+        uuid[i] = '-';
+      } else if (i==14) {
+        uuid[i] = '4';
+      } else {
+        if (rnd <= 0x02) rnd = 0x2000000 + (Math.random()*0x1000000)|0;
+        r = rnd & 0xf;
+        rnd = rnd >> 4;
+        uuid[i] = chars[(i == 19) ? (r & 0x3) | 0x8 : r];
+      }
+    }
+    return uuid.join('');
+  };
+
+  // A more compact, but less performant, RFC4122v4 solution:
+  Math.uuidCompact = function() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+    });
+  };
+})();
 ;// Hualala.Matcher
 (function(){
 	IX.ns("Hualala");

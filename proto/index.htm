@@ -114,7 +114,7 @@
 
 
 
-    
+
     <!--jQuery (necessary for Bootstrap's JavaScript plugins and merchant project)-->
     <script src="../src/js/dep/jquery/jquery-1.11.1.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -154,6 +154,9 @@
     <!-- Include ixutils.js -->
     <script src="../src/js/common/ixutils.js"></script>
 
+    <!--include insertAtCaret.js-->
+    <script src="../src/js/common/jquery.insertAtCaret.js"></script>
+
     <!-- Include commonFn.js -->
     <script src="../src/js/common/commonFn.js"></script>
     <!-- Include Constants Defined (datatype.js,typedef.js) -->
@@ -166,7 +169,10 @@
     <!-- Include PYMather -->
     <script src="../src/js/pymatch/pymatch.js"></script>
     <script src="../src/js/common/matcher.js"></script>
-    
+
+    <!-- Include uuid -->
+    <script src="../src/js/uuid/Math.uuid.js"></script>
+
     <!-- 百度地图API -->
     <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.3"></script>
     
@@ -187,6 +193,8 @@
     <script src="../src/js/tpl/tpl.weixin.js"></script>
     <script src="../src/js/tpl/tpl.mcm.js"></script>
     <script src="../src/js/tpl/tpl.agent.js"></script>
+    <script src="../src/js/tpl/tpl.saas.js"></script>
+    <script src="../src/js/tpl/tpl.channel.js"></script>
     <!-- Include IXUI js -->
     <script src="../src/js/ui/ixui.js"></script>
     <script src="../src/js/ui/pager.js"></script>
@@ -214,12 +222,43 @@
     <script src="../src/js/shop/shop.list.controler.js"></script>
     <script src="../src/js/shop/shop.init.js"></script>
 
+    <!-- Include Hualala Shop Member -->
+    <script src="../src/js/shop/shop.member.js"></script>
+    <!-- Include Hualala Shop Table -->
+    <script src="../src/js/shop/shop.table.js"></script>
+    <script src="../src/js/shop/shop.table.area.js"></script>
+
     <!-- Include Hualala Shop Create -->
     <script src="../src/js/shop/shop.create.js"></script>
     <!-- Include Hualala Shop Info -->
     <script src="../src/js/shop/shop.info.js"></script>
     <!-- Include Hualala Shop Menu -->
     <script src="../src/js/shop/shop.menu.js"></script>
+    <!-- Include Hualala Shop Food -->
+    <script src="../src/js/shop/food.create.js"></script>
+    <!-- Include Hualala Shop promation -->
+    <script src="../src/js/shop/shop.promotion.model.js"></script>
+    <script src="../src/js/shop/shop.promotion.view.js"></script>
+    <script src="../src/js/shop/shop.promotion.controller.js"></script>
+    <script src="../src/js/shop/shop.mgrWizard.view.js"></script>
+    <script src="../src/js/shop/shop.promotion.way.view.js"></script>
+    <script src="../src/js/shop/shop.promotion.rule.view.js"></script>
+    <script src="../src/js/shop/shop.promotion.time.view.js"></script>
+    <script src="../src/js/shop/shop.refshop.bind.js"></script>
+    <script src="../src/js/shop/shop.refshop.model.js"></script>
+    <script src="../src/js/shop/shop.refshop.view.js"></script>
+    <script src="../src/js/shop/shop.refshop.controller.js"></script>
+
+    
+    
+    <!-- Include Hualala Shop printer -->
+    <script src="../src/js/shop/shop.printer.js"></script>
+    <!-- Include Hualala Shop printerArea -->
+    <script src="../src/js/shop/shop.printerArea.js"></script>
+    <!-- Include Hualala Shop Discount -->
+    <script src="../src/js/shop/shop.discountManage.js"></script>
+    <!-- Include Hualala Shop TimeMange -->
+    <script src="../src/js/shop/shop.timeManage.js"></script>
 
     <!-- Include Hualala Setting module -->
     <script src="../src/js/setting/setting.mgr.js"></script>
@@ -232,6 +271,9 @@
     <script src="../src/js/account/account.mgr.controler.js"></script>
     <script src="../src/js/account/account.mgr.view.js"></script>
     <script src="../src/js/account/account.init.js"></script>
+
+    <!--Include Hualala shop params -->
+    <script src="../src/js/shop/shop.saasParams.js"></script>
 
 
   <!-- Include Hualala Order module -->
@@ -260,16 +302,18 @@
     <script src="../src/js/crm/crm.params.js"></script>
     <script src="../src/js/crm/crm.card.levels.js"></script>
     <script src="../src/js/crm/crm.recharge.js"></script>
+    <script src="../src/js/crm/crm.recharge.gift.js"></script>
     <script src="../src/js/crm/crm.query.js"></script>
     <script src="../src/js/crm/crm.detail.js"></script>
     <script src="../src/js/crm/crm.preferential.js"></script>
     <script src="../src/js/crm/crm.report.js"></script>
     
     <!-- Include Hualala Weixin module -->
+    <script src="../src/js/weixin/accounts.js"></script>
     <script src="../src/js/weixin/reply.js"></script>
     <script src="../src/js/weixin/subscribe.js"></script>
     <script src="../src/js/weixin/menu.js"></script>
-    <script src="../src/js/weixin/qrcode.js"></script>
+    <!-- <script src="../src/js/weixin/qrcode.js"></script> -->
     <script src="../src/js/weixin/advertorial.js"></script>
     <script src="../src/js/weixin/content.js"></script>
     <script src="../src/js/weixin/text.js"></script>
@@ -307,6 +351,16 @@
     <!-- Include Hualala Agent module -->
     <script type="text/javascript" src="../src/js/agent/agent.js"></script>
 
+    <!-- Include Hualala saas -->
+    <script type="text/javascript" src="../src/js/saas/saas.init.js"></script>
+    <script type="text/javascript" src="../src/js/saas/saas.category.js"></script>
+    <script type="text/javascript" src="../src/js/saas/saas.channel.js"></script>
+    <script type="text/javascript" src="../src/js/saas/saas.department.js"></script>
+    <script src="../src/js/saas/saas.list.controller.js"></script>
+    <script src="../src/js/saas/saas.list.model.js"></script>
+    <script src="../src/js/saas/saas.list.view.js"></script>
+    <script src="../src/js/saas/saas.subject.js"></script>
+    <script src="../src/js/saas/saas.remarks.js"></script>
     <!-- Include Hualala init -->
     
     <script src="../src/js/common/merchant.layout.js"></script>

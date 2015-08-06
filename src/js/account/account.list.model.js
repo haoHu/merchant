@@ -274,13 +274,17 @@
 	});
 	AccountTransListModel.proto({
 		init : function (params) {
+			var now = new Date(),
+				curDateStamp = IX.Date.getDateByFormat(new Hualala.Date(now.getTime() / 1000).toText(), 'yyyyMMddHHmmss'),
+				lastMonth = new Date(now.getFullYear(),now.getMonth()-1,now.getDate()),
+				lastMonthDateStamp =IX.Date.getDateByFormat(new Hualala.Date(lastMonth.getTime() / 1000).toText(), 'yyyyMMddHHmmss');
 			this.set({
 				pageCount : 0,
 				totalSize : 0,
 				pageNo : $XP(params, 'pageNo', 1),
 				pageSize : $XP(params, 'pageSize', 15),
-				transCreateBeginTime : $XP(params, 'transCreateBeginTime', ''),
-				transCreateEndTime : $XP(params, 'transCreateEndTime', ''),
+				transCreateBeginTime : $XP(params, 'transCreateBeginTime',lastMonthDateStamp),
+				transCreateEndTime : $XP(params, 'transCreateEndTime',curDateStamp),
 				settleUnitID : $XP(params, 'settleUnitID', ''),
 				transStatus : $XP(params, 'transStatus', ''),
 				transType : $XP(params, 'transType', ''),
@@ -313,7 +317,10 @@
 		load : function (params, cbFn) {
 			var self = this;
 			self.updatePagerParams(params);
-			self.callServer(self.getPagerParams(), function (res) {
+            var queryParams =self.getPagerParams();
+            // var queryFlag =(queryParams.transCreateBeginTime.length!=0)||(queryParams.transCreateEndTime.length!=0)||(queryParams.transStatus.length!=0)||(queryParams.transType.length!=0)||(queryParams.minTransAmount.length!=0)||(queryParams.maxTransAmount.length!=0);
+            //     queryParams.pageNo =queryFlag?1:queryParams.pageNo;
+            self.callServer(queryParams, function (res) {
 				if (res.resultcode == '000') {
 					self.updateDataStore($XP(res, 'data.records', []), $XP(res, 'data.page.pageNo'));
 					self.updatePagerParams(IX.inherit($XP(res, 'data', {}), $XP(res, 'data.page', {})));
@@ -427,16 +434,106 @@
 	});
 
 	Hualala.Account.AccountQueryShopResultModel = AccountQueryShopResultModel;
+	//结算日报表
+	var AccountDailyReportModel = AccountListModel.subclass({
+		constructor : function () {
+			//报表调用服务
+			this.callServer = Hualala.Global.queryAccountDailyReport;
+		}
+	});
+	AccountDailyReportModel.proto({
+		init : function (params) {
+			var now = new Date(),
+				curDateStamp = IX.Date.getDateByFormat(new Hualala.Date(now.getTime() / 1000).toText(), 'yyyyMMddHH'),
+				lastMonth = new Date(now.getFullYear(),now.getMonth()-1,now.getDate()),
+				lastMonthDateStamp =IX.Date.getDateByFormat(new Hualala.Date(lastMonth.getTime() / 1000).toText(), 'yyyyMMddHH');
+			this.set({
+				pageCount : 0,
+				totalSize : 0,
+				pageNo : $XP(params, 'pageNo', 1),
+				pageSize : $XP(params, 'pageSize', 15),
+				transCreateBeginTime : $XP(params, 'transCreateBeginTime',lastMonthDateStamp ),
+				transCreateEndTime : $XP(params, 'transCreateEndTime', curDateStamp),
+				settleUnitID : $XP(params, 'settleUnitID', ''),
+				ds_dates : new IX.IListManager(),
+				ds_page : new IX.IListManager(),
+				DailyReportSummarize : null
+			});
+		},
+		updatePagerParams : function (params) {
+			var self = this;
+			var pagerParamkeys = 'pageCount,totalSize,pageNo,pageSize,transCreateBeginTime,transCreateEndTime,settleUnitID';
+			_.each(params, function (v, k, l) {
+				if (pagerParamkeys.indexOf(k) > -1) {
+					self.set(k, v);
+				}
+			});
+		},
+		getPagerParams : function () {
+			return {
+				pageNo : this.get('pageNo'),
+				pageSize : this.get('pageSize'),
+				settleUnitID : this.get('settleUnitID'),
+				transCreateBeginTime : this.get('transCreateBeginTime'),
+				transCreateEndTime : this.get('transCreateEndTime')
+				
+			};
+		},
+		updateDataStore : function (data, pageNo) {
+			var self = this,
+				datesHT = self.get('ds_dates'),
+				pageHT = self.get('ds_page');
+			var datesIDs = _.map(data.records, function (dates, i, l) {
+				var datesID = $XP(dates, 'dt'),
+					mTrans = new BaseTransactionModel(dates);
+				datesHT.register(datesID, mTrans);
+				return datesID;
+			});
+			pageHT.register(pageNo, datesIDs);
+			//获取总计内容
+			var	summarize = $XP(data, 'datasets.sumData.data.records', []),
+				dailyReport = $XP(data, 'records', []);
+			self.set('DailyReportSummarize', summarize);
+		},
+		resetDataStore : function () {
+			var self = this,
+				datesHT = self.get('ds_trans'),
+				pageHT = self.get('ds_page');
+			datesHT.clear();
+			pageHT.clear();
+		},
+		load : function (params, cbFn) {
+			var self = this;
+			self.updatePagerParams(params);
+            var queryParams =self.getPagerParams();
+            // var pageCountFlag = 0;
+            //     queryParams.pageNo =(queryParams.transCreateBeginTime.length==0&&queryParams.transCreateEndTime.length==0)?queryParams.pageNo:1;
+			self.callServer(queryParams, function (res) {
+				if (res.resultcode == '000') {
+					self.updateDataStore($XP(res, 'data', []), $XP(res, 'data.page.pageNo'));
+					self.updatePagerParams(IX.inherit($XP(res, 'data', {}), $XP(res, 'data.page', {})));
+				} else {
+					toptip({
+						msg : $XP(res, 'resultmsg', ''),
+						type : 'danger'
+					});
+				}
+				cbFn(self);
+			});
+		},
+		getDataByPageNo : function (pageNo) {
+			var self = this,
+				datesHT = self.get('ds_dates'),
+				pageHT = self.get('ds_page');
+			var ret = _.map(datesHT.getByKeys(pageHT.get(pageNo)), function (mTrans) {
+				return mTrans.getAll();
+			});
+			IX.Debug.info("DEBUG: Account DailyReport  Model PageData :");
+			IX.Debug.info(ret);
+			return ret;
+		}
+	});
 
-
-
-
-
-
-
-
-
-
-
+	Hualala.Account.AccountDailyReportModel = AccountDailyReportModel;
 
 })(jQuery, window);

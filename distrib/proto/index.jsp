@@ -15,52 +15,52 @@
 
 		<link href="./asset/css/bootstrap.min.css?t=66a4cda9" rel="stylesheet" />
 		<!-- datetimepicker.css, timepicker.css, validator.css -->
-		<link href="./asset/css/deplib.min.css?t=0bd5b796" rel="stylesheet" />
+		<link href="./asset/css/deplib.min.css?t=78c75f63" rel="stylesheet" />
 		
-		<link href="./asset/css/core.min.css?t=cf3c9dac" rel="stylesheet" />
+		<link href="./asset/css/core.min.css?t=e01e6ea6" rel="stylesheet" />
 		<!--[if lt IE 9]>
 			<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-			<script src="./asset/js/dep/respond.matchmedia.addListener.min.js?t=047b456d"></script>
+			<script src="./asset/js/dep/respond.matchmedia.addListener.min.js?t=0589bf59"></script>
 		<![endif]-->
 	</head>
 	<body >
 		<s:if test='@com.dld.platform.base.common.AppEnv@getInstance().getSystemProp("ENV_JSMIN").equals("true")'>
-			<script src="./asset/js/dep/jquery.min.js?t=7cbd71fe"></script>
-			<script src="./asset/js/dep/bootstrap.min.js?t=f05b5235"></script>
+			<script src="./asset/js/dep/jquery.min.js?t=cb0c8872"></script>
+			<script src="./asset/js/dep/bootstrap.min.js?t=23909a04"></script>
 	
 			<!-- Include dependance file :underscore.js, handlebars.js datetimepicker.js, datetimepicker.zh-Cn.js, timepicker.js, validator.js, validator.zh-CN.js -->
-			<script src="./asset/js/dep/deplib.min.js?t=adb72ca9"></script>
+			<script src="./asset/js/dep/deplib.min.js?t=a5c611de"></script>
 			<!-- Include Common Lib Files for Hualala Shop Site -->
-			<script src="./asset/js/common.min.js?t=09f5b5ec"></script>
+			<script src="./asset/js/common.min.js?t=f8d28c88"></script>
 			<!-- 百度地图API -->
 			<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.3"></script>
 			<!-- Include Global Const and call server api -->
-			<script src="./asset/js/api.min.js?t=c2c84a83"></script>
+			<script src="./asset/js/api.min.js?t=217c4240"></script>
 			<!-- Include Template File -->
-			<script src="./asset/js/tpl.min.js?t=83711207"></script>
+			<script src="./asset/js/tpl.min.js?t=e93415b8"></script>
 			<!-- Include UI Lib -->
-			<script src="./asset/js/ui.min.js?t=b546b489"></script>
+			<script src="./asset/js/ui.min.js?t=04275742"></script>
 			<!-- Include Page : entry.init.js, shop.query.model.js, shop.query.view.js, shop.query.controler.js, shop.list.model.js, shop.list.view.js, shop.list.controler.js, shop.init.js, setting.mgr.js, setting.init.js, merchant.layout.js, merchant.init.js, merchant.route.js -->
-			<script src="./asset/js/pages.min.js?t=ce6e2997"></script>
+			<script src="./asset/js/pages.min.js?t=766c45aa"></script>
 		</s:if>
 		<s:else>
 			<script src="./asset/js/dep/jquery.js?t=0180778f"></script>
 			<script src="./asset/js/dep/bootstrap.js?t=28f230bc"></script>
 	
 			<!-- Include dependance file :underscore.js, handlebars.js datetimepicker.js, datetimepicker.zh-Cn.js, timepicker.js, validator.js, validator.zh-CN.js -->
-			<script src="./asset/js/dep/deplib.js?t=70f5b63c"></script>
+			<script src="./asset/js/dep/deplib.js?t=6705fe51"></script>
 			<!-- Include Common Lib Files for Hualala Shop Site -->
-			<script src="./asset/js/common.js?t=094c1598"></script>
+			<script src="./asset/js/common.js?t=605c6465"></script>
 			<!-- 百度地图API -->
 			<script type="text/javascript" src="http://api.map.baidu.com/api?v=1.3"></script>
 			<!-- Include Global Const and call server api -->
-			<script src="./asset/js/api.js?t=37819515"></script>
+			<script src="./asset/js/api.js?t=d3b449a7"></script>
 			<!-- Include Template File -->
-			<script src="./asset/js/tpl.js?t=9658eed0"></script>
+			<script src="./asset/js/tpl.js?t=24ec3013"></script>
 			<!-- Include UI Lib -->
-			<script src="./asset/js/ui.js?t=7f4b1bed"></script>
+			<script src="./asset/js/ui.js?t=858c8cd2"></script>
 			<!-- Include Page : entry.init.js, shop.query.model.js, shop.query.view.js, shop.query.controler.js, shop.list.model.js, shop.list.view.js, shop.list.controler.js, shop.init.js, setting.mgr.js, setting.init.js, merchant.layout.js, merchant.init.js, merchant.route.js -->
-			<script src="./asset/js/pages.js?t=387f9a17"></script>
+			<script src="./asset/js/pages.js?t=53cbc794"></script>
 		</s:else>
 		
 		<script type="text/javascript">

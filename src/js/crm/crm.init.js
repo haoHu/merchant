@@ -88,6 +88,15 @@
         });
         Hualala.CRM.initDetail($body, ctx.params[0]);
 	};
+	/*会员日报表*/
+	function initMemberQueryDay () {
+		var ctx = Hualala.PageRoute.getPageContextByPath(),
+			$body = $('#ix_wrapper > .ix-body > .container');
+		initCRMPageLayout(Hualala.TypeDef.CRMDealSubNavType);
+		var $pageBody = $body.find('.crm-body'),
+			queryKeys = $XP(_.findWhere(Hualala.TypeDef.CRMDealSubNavType, {name : $XP(ctx, 'name')}), 'pkeys');
+        Hualala.CRM.initMemberDailyreport($pageBody);
+	}
 
 
 
@@ -178,12 +187,14 @@
         Hualala.CRM.initPreferential($pageBody);
 	};
 
+
 	Hualala.CRM.CRMPageLayoutInit = initCRMPageLayout;
 	Hualala.CRM.CRMHomePageInit = initCRMHomePage;
 	Hualala.CRM.MemberSchemaInit = initMemberSchema;
 	Hualala.CRM.QueryMemberInit = initQueryMember;
 	Hualala.CRM.MemberDetailInit = initMemberDetail;
 	Hualala.CRM.CardStatisticInit = initCardStatistic;
+	Hualala.CRM.memberQueryDayInit =initMemberQueryDay;
 	Hualala.CRM.DealSummaryInit = initDealSummary;
 	Hualala.CRM.DealDetailInit = initDealDetail;
 	Hualala.CRM.RechargeReconciliationInit = initRechargeReconciliation;

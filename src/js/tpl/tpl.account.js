@@ -103,7 +103,8 @@
 					'</div>',
 				'</div>',
 			'</div>',
-		'</form>'
+		'</form>',
+		'{{{noticeAcctountText}}}',
 	].join('');
 	TplLib.register('tpl_withdraw_form', tpl_withdraw_form);
 
@@ -135,6 +136,8 @@
 		'</nav>',
 		'<section class="account-schema-box">',
 		'</section>',
+		  '<div class="navbar navbar-default account-tab">',
+		  '</div>',
 		'<section class="account-detail-box">',
 		'</section>'
 	].join('');
@@ -158,7 +161,6 @@
 
 	var tpl_account_detail = [
 		'<div class="account-detail">',
-			'<h4>查看交易明细</h4>',
 			'<div class="well well-sm query-form">',
 				'{{#with query}}',
 					'{{> transaQueryForm}}',
@@ -235,7 +237,7 @@
 								'</div>',
 							'{{/checkFormElementType}}',
 							'{{#checkFormElementType type type="button"}}',
-								'<button type="button" class="btn {{clz}}">{{{label}}}</button>',
+								'<button type="button" name="{{name}}" class="btn {{clz}}">{{{label}}}</button>',
 							'{{/checkFormElementType}}',
 						'{{/each}}',
 					'</div>',
@@ -249,11 +251,13 @@
 		'<div class="table-responsive">',
 			'<table class="table {{clz}}">',
 				'<thead>',
-					'<tr>',
-						'{{#each thead}}',
-							'<th class="{{clz}}">{{label}}</th>',
-						'{{/each}}',
-					'</tr>',
+					'{{#each thead}}',
+						'<tr class="{{clz}}">',
+							'{{#each cols}}',
+								'<th class="{{clz}}" colspan="{{colspan}}" rowspan="{{rowspan}}">{{{label}}}</th>',
+							'{{/each}}',
+						'</tr>',
+					'{{/each}}',
 				'</thead>',
 				'{{#if isEmpty}}',
 					'<tbody>',
@@ -279,6 +283,17 @@
 						'{{/each}}',
 					'</tbody>',
 				'{{/if}}',
+				'<tfoot>',
+					'{{#each tfoot}}',
+						'<tr class="{{clz}}">',
+							'{{#each cols}}',
+								'<th class="{{clz}}" colspan="{{colspan}}" rowspan="{{rowspan}}">',
+									'<p data-value="{{value}}" >{{{text}}}</p>',
+								'</th>',
+							'{{/each}}',
+						'</tr>',
+					'{{/each}}',
+				'</tfoot>',
 			'</table>',
 		'</div>'
 	].join('');
@@ -403,7 +418,7 @@
 										'</tr>',
 										'{{#each rows}}',
 											'<tr>',
-												'<td>{{foodName}}</td>',
+												'<td class="{{Indent}}">{{foodName}}</td>',
 												'<td>{{foodUnit}}</td>',
 												'<td>{{foodPrice}}</td>',
 												'<td>{{foodAmount}}</td>',

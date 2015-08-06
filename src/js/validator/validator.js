@@ -6604,14 +6604,68 @@
                 throw 'startTimeField can not be found!';
             if(!validator.isValidField($startTimeField))
                 return { valid: false, message: '请先输入有效的开始时间' };
-            var startTime = $startTimeField.val().split(':'),
+            /*取消营销时间的不等式校验*/
+            /*var startTime = $startTimeField.val().split(':'),
                 startVal = parseInt(startTime[0], 10) * 60 + parseInt(startTime[1], 10),
                 endVal = parseInt(times[0], 10) * 60 + parseInt(times[1], 10);
             if(endVal <= startVal)
-                return { valid: false, message: '结束时间不能小于或等于开始时间' };
+                return { valid: false, message: '结束时间不能小于或等于开始时间' };*/
+            
             return true;
             
         }
     };
 }(window.jQuery));
+// 本工程私有的ajaxValid
+;(function($) {
+    $.fn.bootstrapValidator.i18n.ajaxValid = $.extend($.fn.bootstrapValidator.i18n.ajaxValid || {}, {
+        'default': 'Please enter a valid value'
+    });
 
+    $.fn.bootstrapValidator.validators.ajaxValid = {
+        html5Attributes: {
+            message: 'message',
+            url: 'url',
+            name: 'name'
+        },
+
+        /**
+         * Request a remote server to check the input value
+         *
+         * @param {BootstrapValidator} validator Plugin instance
+         * @param {jQuery} $field Field element
+         * @param {Object} options Can consist of the following keys:
+         * - api {String}
+         * - cbFn {Function}
+         * - data {Object|Function} [optional]: By default, it will take the value
+         *  {
+         *      <fieldName>: <fieldValue>
+         *  }
+         * - name {String} [optional]: Override the field name for the request.
+         * - message: The invalid message
+         * @returns {Boolean|Deferred}
+         */
+        validate : function (validator, $field, options) {
+            var value = $field.val();
+            if (value === '') {
+                return true;
+            }
+            var name = $field.attr('data-bv-field'),
+                data = options.data || {},
+                api = options.api,
+                cbFn = options.cbFn;
+            var callServer = Hualala.Global[api];
+            data[options.name || name] = value;
+            var dfd = new $.Deferred();
+            callServer(data, function (res) {
+                if (res.resultcode == '000') {
+                    $.isFunction(cbFn) && cbFn(res, $field);
+                }
+                dfd.resolve($field, 'ajaxValid', res.resultcode === '000', res.resultmsg ? res.resultmsg : null);
+            });
+
+            return dfd;
+        }
+        
+    };
+}(window.jQuery));

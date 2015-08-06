@@ -31,12 +31,36 @@
 }
 
 .crm-params {
+    h4 {&.page-header {margin-top: 5px;}}
+
     .form-control-static
     {
         .glyphicon { font-size: 18px; top: -1px }
         .glyphicon-ok { color: #390 }
         .glyphicon-minus { color: @x-font-color-lightGray }
     }
+    
+    .vip-card-wrap
+    { border-bottom: 1px solid #887B72; width: 294px; margin-left: 3px;
+      margin-bottom: 12px; padding: 0 10px; position: relative;
+    }
+    
+    .vip-card-wrap:before, .vip-card-wrap:after
+    { content: ''; display: inline-block; width: 6px; height: 6px;
+      border-radius: 50%; background-color: #887B72;
+      position: absolute; bottom: -3px;
+    }
+    .vip-card-wrap:before { left: -3px }
+    .vip-card-wrap:after { right: -3px }
+    
+    .vip-card-wrap div
+    { border-radius: 6px 6px 0px 0px; height: 90px; line-height: 90px;
+      position: relative; background: #900; color: #fc0;
+    }
+    
+    .vip-card-wrap span { position: absolute; top: 12px; right: 12px; line-height: 1; }
+    
+    .vip-card-wrap img { max-height: 50px; max-width: 140px; vertical-align: middle; margin-left: 20px; }
     
     .vip-card
     { background: #900; background-size: 300px 188px;
@@ -88,9 +112,11 @@
 .glyphicon.ok { color: #390; margin-left: 8px;}
 .glyphicon.no { color: @x-font-color-lightGray; margin-left: 8px;}
 
-.crm-query-table, .crm-detail { th, td{ .t-c; } }
-    
-.crm-query-table 
+.crm-query-table, .crm-detail , .saas-category-table{ th, td{ .t-c; } }
+
+.saas-category-table{ tbody {tr{td {.x-vm;}}} }
+
+.crm-query-table
 {
     td:nth-child(7), td:nth-child(8), 
     td:nth-child(9), td:nth-child(10)
@@ -116,7 +142,7 @@
     
     #transDetail, #cardLog 
     { 
-        th:last-child { width: 300px; } 
+        th:last-child { width: 260px; }
         td:last-child { .t-l; }
     }
     
@@ -149,6 +175,9 @@
     .form-group > div > div { margin-top: 6px; }
 }
 
+.crm-report-table:before{
+    content: "";
+}
 .crm-report-table
 {
     thead th { .t-c; }
@@ -177,7 +206,7 @@
         [name=transShopID] { max-width: 125px }
     }
     
-    thead th:nth-child(9) { width: 160px; }
+    thead th:nth-child(11) { width: 160px; }
 }
 .modal-trans-detail .modal-dialog 
 {
@@ -186,11 +215,55 @@
     .modal-body { width: 225px; margin: 0 auto; }
 }
 
+.recharge-wizard {
+    .wizard-content {
+        .base-set {
+            .fwc {
+                input {
+                    width: 125px;
+                    display: inline-block;
+                }
+            }
+        }
+        margin-top: 20px;
+        .form-group {
+            &.has-feedback {
+                .form-control-feedback {
+                    right: -12px;
+                }
+            }
+            .recharge-gift-switch { margin-left: -50px; }
+        }
+    }
+    .wizard-ctrl {
+        text-align: right;
+    }
+}
 
+.recharge-modal {
+    overflow-y: auto;
+    .modal-backdrop {
+        position: fixed;
+    }
+}
 
+#crm_preferential {
+    .col-md-4[data-type="month"],
+    .col-md-4[data-type="day"],
+    .col-md-4[data-type="week"] {
+        padding: 0;
+    }
+}
 
-
-
-
-
-
+.crm-basic-modal {
+    .form-group {
+        select {
+            &[name="year"] {
+                width: 28%;
+            }
+            width: 22%;
+            margin-right: 15px;
+            display: inline-block;
+        }
+    }
+}

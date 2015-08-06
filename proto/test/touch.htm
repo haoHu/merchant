@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+	<head>
+		<meta charset="utf8" />
+		<!--IE=edge表示强制使用IE最新内核,
+			chrome=1表示当遇到chrome浏览器安装了针对IE6,7,8等的插件，就使用chrome内核来进行渲染
+		-->
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<!--针对360浏览器这种双核浏览器，我们通过meta标签设置，让浏览器强制以webkit内核进行渲染-->
+		<meta name="renderer" content="webkit">
+		<!--针对移动设备触摸屏设置-->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>哗啦啦商户管理系统</title>
+
+		<!--bootstrap 样式主文件-->
+		<link href="../../src/js/dep/bootstrap/css/bootstrap.css" rel="stylesheet">
+
+	<!-- Include DatePicker Stylesheet -->
+	<link href="../../src/js/datepicker/css/datetimepicker.css" rel="stylesheet">
+
+	
+
+	<!-- Include Site Stylesheet -->
+	<link href="../../src/css/core.less" rel="stylesheet/less" type="text/css" />
+	<script src="../../tool/less-1.4.2.min.js"></script>
+
+
+		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+		<!--[if lt IE 9]>
+			<script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="../../src/js/dep/Respond/respond.matchmedia.addListener.src.js"></script>
+		<![endif]-->
+	<style type="text/css">
+	
+	body {display: relative;}
+	.showText  {z-index: 2;}
+	#container {position:absolute; left : 0; top : 0; right : 0; bottom : 0; padding-top: 8em; overflow: auto; box-sizing:border-box;}
+	.box {height : 100px;}
+	</style>
+	</head>
+	<body>
+		<h1  class="showText">Touchstart Event</h1>
+		<div class="showText" id="touchStart"></div>
+		<h1 class="showText">Touchend Event</h1>
+		<div class="showText" id="touchEnd"></div>
+		<h1 class="showText">TouchMove Event</h1>
+		<div class="showText" id="touchMove"></div>
+		<h1 class="showText">Scroll Event</h1>
+		<div class="showText" id="scroll"></div>
+		<div class="showText" style = "color:#f00;margin-bottom:20px;">
+			计时器：<span id = "timeInter">0</span>
+		</div>
+		<div id="container">
+			<div class="box">box1</div>
+			<div class="box">box2</div>
+			<div class="box">box3</div>
+			<div class="box">box4</div>
+			<div class="box">box5</div>
+			<div class="box">box6</div>
+			<div class="box">box7</div>
+			<div class="box">box8</div>
+			<div class="box">box9</div>
+			<div class="box">box10</div>
+			<div class="box">box11</div>
+			<div class="box">box12</div>
+			<div class="box">box13</div>
+			<div class="box">box14</div>
+			<div class="box">box15</div>
+			<div class="box">box16</div>
+			<div class="box">box17</div>
+		</div>
+		
+		<!--jQuery (necessary for Bootstrap's JavaScript plugins and merchant project)-->
+		<script src="../../src/js/dep/jquery/jquery-1.11.1.js"></script>
+		<!-- Include all compiled plugins (below), or include individual files as needed -->
+		<script src="../../src/js/dep/bootstrap/js/bootstrap.js"></script>
+
+	<!-- Include underscore lib -->
+	<script src="../../src/js/dep/underscore/underscore.js"></script>
+	<!-- Include handlebars -->
+	<script src="../../src/js/dep/handlebars/handlebars-v1.3.0.js"></script>
+
+	<script type="text/javascript">
+	$(document).ready(function () {
+		var i = 0;
+		setInterval(function () {
+			$('#timeInter').html(++i);
+		}, 1000);
+		$('#container').on("touchstart", function (e) {
+			console.info("touchstart");
+			console.info(e);
+			$('#touchStart').append("touchStart");
+		}).on("touchend", function (e) {
+			console.info("touchend");
+			console.info(e);
+			$('#touchEnd').append("touchEnd");
+		}).on('touchmove', function (e) {
+			console.info("touchmove");
+			console.info(e);
+			$('#touchMove').append("touchMove");
+		}).on('scroll', function (e) {
+			console.info("scroll");
+			console.info(e);
+			$('#scroll').append("scroll");
+		});;
+	});
+	</script>
+	</body>
+</html>

@@ -78,6 +78,7 @@
 			this.modal = null;
 			this.$body = null;
 			this.model = ShopQueryModel;
+			this.model.clearChosenData();
 			this.modalTitle = $XP(cfg, 'modalTitle', '');
 			this.modalClz = $XP(cfg, 'modalClz', '');
 			this.chosenShopIDs = $XP(cfg, 'chosenShopIDs', []);
@@ -213,9 +214,14 @@
 						self.model.clearChosenData();
 						break;
 					case 'delete_items':
-						$comboRight.find('option:not(:selected)').each(function (i, el) {
-							shopIDs.push($(el).attr('value'));
-						});
+						var $unchosenOpts = $comboRight.find('option:not(:selected)');
+						if ($unchosenOpts.length == 0) {
+							self.model.clearChosenData();
+						} else {
+							$unchosenOpts.each(function (i, el) {
+								shopIDs.push($(el).attr('value'));
+							});
+						}
 						break;
 				}
 				self.model.initChosenData(shopIDs);

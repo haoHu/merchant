@@ -94,6 +94,7 @@
 					return ;
 				}
 				initMainPage(function () {
+                    Hualala.UI.clearEditors();
 					Hualala.Common.initPageLayout({}, pageName);
 					if (hasNoNavPages.indexOf(pageName) < 0) {
 						Hualala.Common.initSiteNavBar(pageName);

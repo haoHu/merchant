@@ -2,6 +2,7 @@
 	IX.ns("Hualala.Setting");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
+
 	var ServiceFormElsCfg = {
 		advanceTime : {
 			type : 'combo',
@@ -9,12 +10,26 @@
 			defaultVal : 0,
 			// prefix : '$',
 			// surfix : '元',
-			options : Hualala.TypeDef.MinuteIntervalOptions(),
+			options : _.each(Hualala.TypeDef.MinuteIntervalOptions(), function (el){	
+				if(($XP(el, 'value'))==1440){ el.label="隔天订"; }
+			}),
 			validCfg : {
 				validators : {
 					notEmpty : {
 						message : "请输入用户提前预订时间"
-					}
+					},
+					callback:{
+					    message : '',
+                        callback : function (value, validator, $field) {
+                        	var takeawayDeliveryTime =$('input[name=takeawayDeliveryTime]').val(),
+                        		forVal = parseInt(value),
+                        		takeVal =  parseInt(takeawayDeliveryTime);
+                        	if(forVal<takeVal){
+                        		return { valid: false, message: '用户提前预定时间必须要长于预计送餐时间' }
+                        	}
+                        	return true;
+                        }
+	                }
 				}
 			}
 		},
@@ -133,6 +148,52 @@
 			min : {
 				type : 'timepicker',
 				surfix : '<span class="glyphicon glyphicon-time"></span>',
+				defaultVal : '10:30',
+				validCfg : {
+					group : '.min-input',
+					validators : {
+						notEmpty : {
+							message : "请输入起始时间"
+						}
+					}
+				}
+			},
+			max : {
+				type : 'timepicker',
+				surfix : '<span class="glyphicon glyphicon-time"></span>',
+				defaultVal : '21:30',
+				validCfg : {
+					group : '.max-input',
+					validators : {
+						notEmpty : {
+							message : "请输入结束时间"
+						},
+						callback:{
+						    message : '',
+	                        callback : function (value, validator, $field) {
+	                        	var	$startTimeField = validator.$form.find(':text[name^=servicePeriods_min]'),
+	                        		startTime = $startTimeField.val().split(':'),
+	                        		endTime = $field.val().split(':'),
+				                	startVal = parseInt(startTime[0], 10) * 60 + parseInt(startTime[1], 10),
+				               		endVal = parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10);
+				            	if(endVal == startVal)
+				               		 return { valid: false, message: '结束时间不能等于开始时间' }
+				               	if(Math.abs(endVal - startVal)<30)
+				               		return { valid: false, message: '结束时间和开始时间间隔要大于30分钟' }
+	                            return true;
+	                        }
+						}
+					}
+				}
+			}
+		},
+		servicePeriods2 : {
+			type : 'section',
+			label : '开放时段2',
+			choice : '<input type="checkbox" class="servicePeriodsChoice" value="1" data name="servicePeriodsChoice">',
+			min : {
+				type : 'timepicker',
+				surfix : '<span class="glyphicon glyphicon-time"></span>',
 				defaultVal : '',
 				validCfg : {
 					group : '.min-input',
@@ -152,6 +213,64 @@
 					validators : {
 						notEmpty : {
 							message : "请输入结束时间"
+						},
+						callback:{
+						    message : '',
+	                        callback : function (value, validator, $field) {
+	                        	var	$startTimeField2 = validator.$form.find(':text[name^=servicePeriods2_min]'),
+	                        		$startTimeField = validator.$form.find(':text[name^=servicePeriods_min]'),
+	                        		$endTimeField = validator.$form.find(':text[name^=servicePeriods_max]'),
+	                        		startTime = $startTimeField.val().split(':'),
+	                        		startTime2 = $startTimeField2.val().split(':'),
+	                        		endTime2 = $field.val().split(':'),
+	                        		endTime = $endTimeField.val().split(':'),
+	                        		startVal = parseInt(startTime[0], 10) * 60 + parseInt(startTime[1], 10),
+	                        		endVal = parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10),
+				                	startVal2 = parseInt(startTime2[0], 10) * 60 + parseInt(startTime2[1], 10),
+				               		endVal2 = parseInt(endTime2[0], 10) * 60 + parseInt(endTime2[1], 10);
+				            	if(endVal2 == startVal2)
+				               		 return { valid: false, message: '结束时间不能等于开始时间' }
+				               	if(Math.abs(endVal2 - startVal2)<30)
+				               		return { valid: false, message: '结束时间和开始时间间隔要大于30分钟' }
+	              				//结束时间大于开始时间,正序从大到小
+				               	if(endVal>startVal){
+			               			//第二时段也是开始时间小于结束时间
+			               			if(endVal2>=startVal2){
+			               				if(startVal2>=endVal||endVal2<=startVal){
+			               					return true;
+			               				}
+			               				else{
+			               					return { valid: false, message: '开放时段和开放时段2有重叠，请重新选择时段' }
+			               				}
+			               			}
+			               			//第二时段开始时间大于结束时间(即第二时段结束时间是跨天的)
+			               			else{
+			               				if(endVal<=startVal2&&endVal2<=startVal){
+			               					return true;
+			               				}
+			               				else{
+			               					return { valid: false, message: '开放时段和开放时段2有重叠，请重新选择时段' }
+			               				}
+
+			               			}
+			               		}
+			               		//结束时间小于开始时间，(开始时段1是跨天的)倒序从小到大
+			               		else{
+			               			//第二时间段，开始时间小于结束时间
+			               			if(endVal2>=startVal2){
+			               				if(endVal2>=startVal||startVal2>=endVal){
+			               					return true;
+			               				}
+			               				else{
+			               					return { valid: false, message: '开放时段和开放时段2有重叠，请重新选择时段' }
+			               				}
+			               			}
+			               			else{
+			               				return { valid: false, message: '开放时段和开放时段2有重叠，请重新选择时段' }
+			               			}
+			               		}               						            
+                            	return true;
+	                        }
 						}
 					}
 				}
@@ -273,6 +392,19 @@
 				}
 			}
 		},
+		promotionScope :{
+			type : 'combo',
+			label : '店铺促销优惠支持',
+			defaultVal : 0,
+			options : Hualala.TypeDef.PromotionScopeOptions,
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "请选择店铺促销优惠支持方式"
+					}
+				}
+			}
+		},
 		needInputTableName : {
 			type : 'switcher',
 			label : '下单时输入桌号',
@@ -358,12 +490,47 @@
 			defaultVal : 0,
 			options : Hualala.TypeDef.FetchFoodModeOptions,
 			validCfg : {
+				validators : {}
+			}
+		},
+		foodUITemplate : {
+			type : 'combo',
+			label : '菜品展示模式',
+			defaultVal : 1,
+			options : Hualala.TypeDef.foodUITemplateOptions,
+			validCfg : {
 				validators : {
 					notEmpty : {
-						message : "下单后出餐模式不能为空"
+						message : "菜品展示模式不能为空"
 					}
 				}
 				
+			}
+		},
+		commitSafeLevel : {
+			type :'combo',
+			label :'下单验证',
+			defaultVal : 1,
+			options :  Hualala.TypeDef.CommitSafeLevelOptions,
+			validCfg : {
+				validators : {
+					notEmpty :{
+						message : "下单验证不能为空"
+					}
+				}
+			}
+		},
+		adsID :{
+			type : 'combo',
+			label : '软文介绍',
+			defaultVal : 0,
+			options :"",
+			validCfg : {
+				validators : {
+					notEmpty :{
+						message : "软文介绍不能为空"
+					}
+				}
 			}
 		}
 	};
@@ -372,7 +539,8 @@
 		var type = $XP(el, 'type');
 		var labelClz = 'col-sm-offset-1 col-sm-3 control-label';
 		if (type == 'section') {
-			var id = minID = k + '_min_' + IX.id(), maxID = k + '_max_' + IX.id(),
+			var id = k + '_' + IX.id(),
+				minID = k + '_min_' + IX.id(), maxID = k + '_max_' + IX.id(),
 				minName = k + '_min', maxName = k + '_max',
 				min = IX.inherit($XP(el, 'min', {}), {
 					id : minID, name : minName, clz : 'col-sm-3',
@@ -468,6 +636,7 @@
 				afterRemove : function () {
 
 				}
+				
 			});
 		},
 		initSwitcher : function (selector) {
@@ -495,6 +664,78 @@
 				showInputs : false
 			});
 		},
+		initAdsID : function (){
+			var self=this;
+		    var ads = [],ad,current_group;
+		    Hualala.Global.getAdvertorials({},function (rsp){
+	   	    	if(rsp.resultcode != '000'){
+	                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+	                return;
+	            }
+            	ads = rsp.data.records || [];
+            	_.each(ads, function(record){ record.time = Hualala.Common.formatDateStr(record.actionTime, 8); });
+ 				groupID = $XP(Hualala.getSessionSite(), 'groupID', '');
+ 				//获取当前集团的软文id
+             	current_group= _.where(ads,{groupID:groupID});
+             	self.serviceInfo = self.getServiceInfo('id', self.serviceID);
+             	var revParamJson = self.model.get('revParamJson') || null,
+					takeawayParamJson = self.model.get('takeawayParamJson') || null,
+			        revParamJson = !revParamJson ? {} : JSON.parse(revParamJson);
+			        takeawayParamJson = !takeawayParamJson ? {} : JSON.parse(takeawayParamJson);
+             	var adsID='0';
+             	if(self.serviceID=='20'||self.serviceID=='21'){
+             		if(takeawayParamJson[self.serviceID]!=null&&takeawayParamJson[self.serviceID].adsID!=null){
+             				adsID = takeawayParamJson[self.serviceID].adsID
+             			}
+             			else{
+             				adsID ='0';          				
+             			}
+             	}else{
+             		if(revParamJson[self.serviceID]!=null&&revParamJson[self.serviceID].adsID!=null){
+             			adsID = revParamJson[self.serviceID].adsID            			
+             		}else{
+             			adsID ='0';             			
+             		}
+             	}
+             	$adsID=$('select[name=adsID]'),
+             	//select填充
+				// Hualala.UI.fillSelect($adsID,current_group,'itemID','title', false).prepend('<option value="0">未设置</option>').val('0');
+                //拼音匹配的chosen以及选中状态
+
+                Hualala.UI.createChosen($adsID,current_group,'itemID','title',{width : '100%'}, { itemID: '0', title: '未设置' },adsID);
+		        // //selected选中的状态
+		        // current_group=_.map(current_group,function (current_group){
+		        //     return _.extend(current_group,{selected:current_group.value==adsID ? 'selected' : ''});
+		        // })
+              /*为Select插入一个Option(第一个位置)
+              	$adsID.prepend("<option value='0'>未设置</option>");
+				$.each(current_group, function(i, value) {
+				$adsID.append($("<option/>", {
+					value:value.itemID,
+					text:value.title
+					}));
+				})*/
+       		});
+		},
+		initUIComponents : function(){
+			var self = this;
+			//暂时处理当前model拿到后台数据为店内自助的服务
+			self.serviceInfo = self.getServiceInfo('id', self.serviceID);
+             	var revParamJson = self.model.get('revParamJson') || null,
+					takeawayParamJson = self.model.get('takeawayParamJson') || null,
+			        revParamJson = !revParamJson ? {} : JSON.parse(revParamJson);
+			        takeawayParamJson = !takeawayParamJson ? {} : JSON.parse(takeawayParamJson);
+				$commitSafeLevel = $('select[name=commitSafeLevel]'),
+				$inputGrp = $commitSafeLevel.parents('.form-group');
+			if(revParamJson[self.serviceID]!=null&&revParamJson[self.serviceID].payBeforeCommit!=null){
+				payBeforeCommit = revParamJson[self.serviceID].payBeforeCommit;
+				$inputGrp[payBeforeCommit == 1 ? 'addClass' : 'removeClass']('hidden');
+			}
+			else{
+				payBeforeCommit= 1;
+				$inputGrp[payBeforeCommit == 1 ? 'addClass' : 'removeClass']('hidden');
+			}  
+		},
 		getServiceInfo : function (key, val) {
 			var self = this;
 			var operationMode = self.model.get('operationMode');
@@ -520,6 +761,41 @@
 					this.modal.hide();
 				}
 			});
+			//判断餐后结账显示下单验证
+			self.modal._.dialog.find('form').on('change', 'select[name=payBeforeCommit]', function (e) {
+				var $select = $(this),
+					val = $select.val(),
+					$commitSafeLevel =$('select[name=commitSafeLevel]'),	
+					$inputGrp = $commitSafeLevel.parents('.form-group');
+				$inputGrp[val == 1 ? 'addClass' : 'removeClass']('hidden');
+
+			});
+			self.modal._.dialog.find('form').on('change', ':text[name=servicePeriods_max]',function (e) {
+				self.modal._.dialog.find('form').bootstrapValidator('revalidateField', 'servicePeriods_max');
+			});
+			self.modal._.dialog.find('form').on('change',':text[name=servicePeriods2_max]',function (e) {
+				self.modal._.dialog.find('form').bootstrapValidator('revalidateField', 'servicePeriods2_max');
+			});
+			self.modal._.dialog.find('form').on('change',':text[name=takeawayDeliveryTime]',function (e) {
+				self.modal._.dialog.find('form').bootstrapValidator('revalidateField', 'takeawayDeliveryTime');
+				self.modal._.dialog.find('form').bootstrapValidator('revalidateField', 'advanceTime');
+			});
+			//判断勾选第二时段
+			self.modal._.dialog.find('form').on('change', ':checkbox[name=servicePeriodsChoice]', function (e) {
+				var $input = $(this),
+					$servicePeriods2_min = $(':text[name=servicePeriods2_min]'),
+					$servicePeriods2_max = $(':text[name=servicePeriods2_max]'),
+					val = $('.servicePeriodsChoice:checked').length? 1 : 0;
+					if(val==1){
+						$servicePeriods2_min.prop("disabled",false);
+						$servicePeriods2_max.prop("disabled",false);
+					}
+					else{
+						$servicePeriods2_min.prop("disabled",true);
+						$servicePeriods2_max.prop("disabled",true);
+					}
+			});
+
 			self.modal._.dialog.find('.btn').on('click', function (e) {
 				var $btn = $(this),
 					act = $btn.attr('name');
@@ -574,7 +850,8 @@
 					var elCfg = ServiceFormElsHT.get(key),
 						type = $XP(elCfg, 'type');
 					if (type == 'section' && key == 'servicePeriods') {
-						var v = $XP(self.formParams, key, '').split(',');
+						var v0 = $XP(self.formParams, key, '').split(';');
+						var v = (v0[0]!=undefined && v0[0].length!=0) ? v0[0].split(','):[];
 						v = _.map(v, function (t) {
 							return self.decodeTimeStr(t);
 						});
@@ -586,6 +863,60 @@
 								value : v[1] || $XP(elCfg, 'max.defaultVal')
 							})
 						});
+					} else if (type == 'section' && key == 'servicePeriods2') {
+						var v0 = $XP(self.formParams, 'servicePeriods', '').split(';');
+						var v;
+							if(v0[1]!=undefined && v0[1].length!=0){
+								v= v0[1].split(',');
+								elCfg.choice=elCfg.choice.replace('data', 'checked')
+							}
+							else{
+								v =[];
+								elCfg.choice=elCfg.choice.replace('checked', 'data')	
+							}
+							v = _.map(v, function (t) {
+							return self.decodeTimeStr(t);
+						});
+						//获取时段1的数据，时段1存在
+						var defaultVal,startVal2,endVal2;
+							if(v0[0]!=undefined && v0[0].length!=0){
+								defaultVal= v0[0].split(',');
+								defaultVal = _.map(defaultVal, function (t) {
+								return self.decodeTimeStr(t);
+							});
+								endTime = defaultVal[1].split(':');
+								endVal = parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10)+120;
+								endValb = parseInt(endTime[0], 10) * 60 + parseInt(endTime[1], 10)+180;
+								if(endVal>=1440&&endValb>=1440){
+									endVal = endVal-1440;
+									startVal2 = (parseInt(endVal/60))+":"+(endVal%60);
+									endValb=endValb-1440;
+									endVal2 = (parseInt(endValb/60))+":"+(endValb%60);
+								}
+								else if(endVal<1440&&endValb>=1440){
+									startVal2 = (parseInt(endVal/60))+":"+(endVal%60);
+									endValb=endValb-1440;
+									endVal2 = (parseInt(endValb/60))+":"+(endValb%60);
+								}
+								else if(endVal<1440&&endValb<1440){
+									startVal2 = (parseInt(endVal/60))+":"+(endVal%60);
+									endVal2 = (parseInt(endValb/60))+":"+(endValb%60);
+								}
+							}
+							//时段1不存在,在默认时间上加两个小时
+							else{
+								startVal2 = "23:30";
+								endVal2 = "0:30";
+							}
+						return IX.inherit(elCfg, {
+							min : IX.inherit($XP(elCfg, 'min'), {
+								value : v[0] || startVal2
+							}),
+							max : IX.inherit($XP(elCfg, 'max'), {
+								value : v[1] || endVal2
+							})
+						});
+
 					} else if (type == 'combo') {
 						var v = $XP(self.formParams, key, $XP(elCfg, 'defaultVal')),
 							options = _.map($XP(elCfg, 'options'), function (op) {
@@ -653,10 +984,21 @@
 					{clz : 'btn-warning', name : 'submit', label : '保存'}
 				]
 			}));
+			//通过是否勾选第二时段来决定是否显示
+			if($(':checkbox[name=servicePeriodsChoice]').prop("checked")){
+				$(':text[name=servicePeriods2_min]').prop("disabled",false);
+				$(':text[name=servicePeriods2_max]').prop("disabled",false);
+			}
+			else{
+				$(':text[name=servicePeriods2_min]').prop("disabled",true);
+				$(':text[name=servicePeriods2_max]').prop("disabled",true);
+			}
+			
 
 			self.initSwitcher(':checkbox[data-type=switcher]');
 			self.initTimePicker('[data-type=timepicker]');
-
+			self.initUIComponents();
+			self.initAdsID();
 		},
 		// 获取表单数据
 		serializeForm : function () {
@@ -666,7 +1008,7 @@
 				formEls = _.map(formKeys, function (key) {
 					var elCfg = ServiceFormElsHT.get(key),
 						type = $XP(elCfg, 'type');
-					if (type == 'section' && key == 'servicePeriods') {
+					if (type == 'section' && (key == 'servicePeriods' || key == 'servicePeriods2')) {
 						var min = $('[name=' + key + '_min]').val(),
 							max = $('[name=' + key + '_max]').val();
 						ret[key] = self.encodeTimeStr(min, max);
@@ -677,6 +1019,19 @@
 						ret[key] = $('[name=' + key + ']').val();
 					}
 				});
+				//根据是否勾选第二时段，来保存是否有第二时段
+				servicePeriodsChoice = $('.servicePeriodsChoice:checked').length? 1 : 0;
+				ret.servicePeriods2= servicePeriodsChoice?ret.servicePeriods2: [];
+				if(ret.servicePeriods2.length!=0){
+					ret.servicePeriods=[ret.servicePeriods,ret.servicePeriods2].join(";");	
+					delete ret.servicePeriods2;
+				}
+				//BUG #5443 业务设置，如果为餐前结账，需要把验证设置为不验证
+				if(ret.payBeforeCommit!=undefined){
+					if(ret.payBeforeCommit.length!=0&&ret.payBeforeCommit=="1"){
+						ret.commitSafeLevel="1";
+					}
+				}
 			return ret;
 		},
 		// 获取表单验证配置
@@ -759,6 +1114,7 @@
 			this.on({
 				"show" : function () {
 					self.modal.show();
+					
 				},
 				"hide" : function () {
 					self.modal.hide();

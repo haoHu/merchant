@@ -31,7 +31,7 @@
 	TplLib.register('tpl_order_queryLayout', tpl_order_queryLayout);
 
 	var tpl_order_queryForm = [
-		'<form class="form-horizontal" role="">',
+		'<form class="form-horizontal orderQueryForm" role="">',
 			'<div class="row">',
 				'{{#each cols}}',
 					'<div class="{{colClz}}">',
@@ -110,6 +110,14 @@
 										'{{else}}',
 											'<input type="text" id="{{id}}" name="{{name}}" class="form-control" placeholder="{{placeholder}}" value="{{value}}"  data-type="{{type}}">',
 										'{{/isInputGroup}}',
+									'</div>',
+								'</div>',
+							'{{/checkFormElementType}}',
+							'{{#checkFormElementType type type="checkboxgrp"}}',
+								'<div class="form-group">',
+									'<label for="{{id}}" class="{{labelClz}}">{{label}}</label>',
+									'<div class="{{clz}}">',
+										'<input type="checkbox" id="{{id}}" name="{{name}}"  value="{{value}}"  data-type="{{type}}">',
 									'</div>',
 								'</div>',
 							'{{/checkFormElementType}}',

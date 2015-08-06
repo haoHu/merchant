@@ -1,6 +1,6 @@
 (function ($, window) {
 	IX.ns("Hualala.Weixin");
-    
+
     Hualala.Weixin.initAdvertorial = function($pageBody, mpID)
     {
         var W = Hualala.Weixin,
@@ -8,7 +8,7 @@
             tplLib = Hualala.TplLib,
             U = Hualala.UI,
             topTip = Hualala.UI.TopTip;
-        
+
         var $pageCont = $(tplLib.get('tpl_wx_advertorial')).appendTo($pageBody),
             $ul = $pageBody.find('#adList ul'),
             $loading = $pageBody.find('.ad-loading'),
@@ -21,17 +21,10 @@
             $input = $adCont.find('.ad-title-input'),
             $adSubTitle = $adCont.find('.ad-sub-title'),
             $adPreview = $adCont.find('.ad-preview');
-        
-        UM.delEditor('adEditor');
-        var emotions = W.getEmotions(); dataHolder = {},
-            toolbar = W.extendUM(emotions, dataHolder);
-        
-        var adEditor = UM.getEditor('adEditor', { toolbar: ['source | undo redo | bold italic underline strikethrough | superscript subscript | forecolor backcolor | removeformat |',
-            'insertorderedlist insertunorderedlist | selectall cleardoc paragraph | fontfamily fontsize' ,
-            '| justifyleft justifycenter justifyright justifyjustify |',
-            'wxlink unlink | image video | map',
-            '| horizontal print preview', 'drafts'] });
-        
+
+        var adEditor = U.createEditor('adEditor');
+        Hualala.UI.EditorList.push(adEditor);
+
         var adTpl = Handlebars.compile([
         '{{#each records}}',
         '<li data-id="{{itemID}}">',
@@ -179,7 +172,7 @@
                 saveAction = ad ? updateAd : createAd;
             saveAction($btn, {title: title, body: body, groupName: sGroupName});
         }
-        
+
         function updateAd($btn, _ad)
         {
             _ad.itemID = ad.itemID;

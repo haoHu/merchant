@@ -219,6 +219,7 @@
 			if (act == 'addGift') {
 				// TODO Add Gift
 				var wizardPanel = new Hualala.MCM.MCMWizardModal({
+					wizardType : 'create',
 					parentView : self,
 					mode : 'create',
 					successFn : function () {
@@ -251,6 +252,7 @@
 				self.emit('query', self.getQueryParams());
 			}
 		});
+
 	};
 
 	Hualala.MCM.bundleEventsQueryEvent = function () {
@@ -259,8 +261,70 @@
 			var act = $(this).attr('name');
 			if (act == 'addEvent') {
 				// TODO Add Event
+				initSetRoleModal(self);
+			} else if (act == 'search') {
+				self.emit('query', self.getQueryParams());
+			}
+		});
+		// 活动类型设置窗口
+		function initSetRoleModal(queryController) {
+			var EventTypeModal = new Hualala.UI.ModalDialog({
+				id : "Event_Type_Modal",
+				clz : "Event-modal",
+				title : "选择创建活动类型"
+			});
+			EventTypeModal.show();
+			self.EventTypeModal = EventTypeModal;
+			EventTypeModal._.footer.find('.btn-ok').remove();
+			EventTypeModal._.footer.find('.btn-close').text('关闭');
+			loadingModal(EventTypeModal, queryController);
+		}
+		function loadingModal(modalContainer, queryController){
+			var curPageRight = Hualala.Common.getCurPageUserRight();
+			var disabled = $XP(curPageRight, 'right.disabled', []),
+				enabled = $XP(curPageRight, 'right.enabled', []);
+
+			var listTpl = Handlebars.compile(Hualala.TplLib.get('tpl_gift_card_list')),
+				$modalbody = modalContainer._.body;
+				$modalbody.addClass("clearfix");
+			var eventTypes=_.reject(Hualala.TypeDef.MCMDataSet.EventTypes, function (el) {
+				return IX.isEmpty($XP(el, 'value'));
+			});
+			var ret = _.map(eventTypes, function (eventType, i, l) {
+				return IX.inherit(eventType, {
+					clz : $XP(eventType, 'type', ''),
+					label : $XP(eventType, 'label', ''),
+					value : $XP(eventType, 'value', ''),
+					unit : $XP(eventType, 'unit', '')
+				});
+			});
+			$(listTpl({option: ret})).appendTo($modalbody.empty());
+			_.each(disabled, function (n) {
+				$modalbody.find('[data-btn-name=' + n + ']').attr('disabled', true).addClass('hidden');
+			});
+            _.each(enabled, function (n) {
+				$modalbody.find('[data-btn-name=' + n + ']').attr('disabled', false).removeClass('hidden');
+			});
+            bindmodalEvent(modalContainer, queryController);
+        }
+        function bindmodalEvent(container, queryController){
+			container._.body.find('.choice-eventWay').on('click', function (e) {
+				var eventWay = $(this).attr('data-value');
+				var eventType= _.find(Hualala.TypeDef.MCMDataSet.EventTypes, function (el) {
+						return $XP(el, 'value')== eventWay;
+					}),
+					isSMSEvent = eventWay == 50,
+					stepCfg = isSMSEvent ? Hualala.MCM.EventSmsWizardCfg : Hualala.MCM.EventWizardCfg,
+					stepChange = isSMSEvent ? Hualala.MCM.SMSOnStepChange : Hualala.MCM.onEventWizardStepChange;
+                var baseEventModel = new Hualala.MCM.BaseEventModel(),
+					sessionUser = Hualala.getSessionUser(),
+					createRoleType = $XP(sessionUser, 'role', ['']).join(','),
+					loginName = $XP(sessionUser, 'loginName', '');
+				baseEventModel.set({eventWay: eventWay, createRoleType: createRoleType, loginName: loginName, smsGate: isSMSEvent ? '1' : '0'});
+				container.hide();
 				var wizardPanel = new Hualala.MCM.MCMWizardModal({
-					parentView : self,
+					wizardType : 'create',
+					parentView : queryController,
 					mode : 'create',
 					successFn : function () {
 
@@ -268,31 +332,28 @@
 					failFn : function () {
 
 					},
-					model : new Hualala.MCM.BaseEventModel(),
+					model : baseEventModel,
 					modalClz : 'mcm-event-modal',
 					wizardClz : 'mcm-event-wizard',
-					modalTitle : '创建活动',
+					modalTitle : '创建' + $XP(eventType, 'label', '') + '活动',
 					onWizardInit : function ($cnt, cntID, wizardMode) {
-						Hualala.MCM.initEventBaseInfoStep.call(this, $cnt, cntID, wizardMode);
+						Hualala.MCM.initEventBaseInfo.call(this, $cnt, cntID, wizardMode);
 					},
 					onStepCommit : function (curID) {
 						Hualala.MCM.onEventWizardStepCommit.call(this, curID);
 					},
 					onStepChange : function ($curNav, $navBar, cIdx, nIdx) {
-						Hualala.MCM.onEventWizardStepChange.call(this, $curNav, $navBar, cIdx, nIdx);
+						stepChange.call(this, $curNav, $navBar, cIdx, nIdx);
 					},
 					bundleWizardEvent : function () {
 						Hualala.MCM.bundleEventWizardEvent.call(this);
 					},
-					wizardStepsCfg : Hualala.MCM.EventWizardCfg,
+					wizardStepsCfg : stepCfg,
 					wizardCtrls : Hualala.MCM.WizardCtrls
 
 				});
-
-			} else if (act == 'search') {
-				self.emit('query', self.getQueryParams());
-			}
-		});
+			});
+        }
 	};
 	/**
 	 * 格式化礼品管理页,搜索栏表单元素
@@ -377,7 +438,7 @@
 		var query = {
 			cols : [
 				{
-					colClz : 'col-md-4',
+					colClz : 'col-md-5',
 					items : QueryFormElsHT.getByKeys(['timeRange'])
 				},
 				{
@@ -389,7 +450,7 @@
 					items : QueryFormElsHT.getByKeys(['giftStatus'])
 				},
 				{
-					colClz : 'col-md-2',
+					colClz : 'col-md-1',
 					items : QueryFormElsHT.getByKeys(['search', 'giftItemID'])
 				}
 			]
@@ -405,7 +466,7 @@
 		var query = {
 			cols : [
 				{
-					colClz : 'col-md-4',
+					colClz : 'col-md-5',
 					items : QueryFormElsHT.getByKeys(['timeRange'])
 				},
 				{
@@ -413,7 +474,7 @@
 					items : QueryFormElsHT.getByKeys(['usingShopID'])
 				},
 				{
-					colClz : 'col-md-offset-1 col-md-2',
+					colClz : 'col-md-offset-1 col-md-1',
 					items : QueryFormElsHT.getByKeys(['search', 'giftItemID'])
 				}
 			]
@@ -626,9 +687,10 @@
 			$combo.html(htm);
 		},
 		// 加载礼品类型下拉列表选项
-		initGiftTypeComboOpts : function (curGiftType) {
+		initGiftTypeComboOpts : function (curGiftType, selectedGiftTypes) {
 			var self = this,
-				giftTypes = Hualala.TypeDef.MCMDataSet.GiftTypes;
+                allGiftTypes = Hualala.TypeDef.MCMDataSet.GiftTypes,
+				giftTypes = selectedGiftTypes ? _.select(allGiftTypes, function (giftType) {return _.contains(selectedGiftTypes, giftType.value);}) : allGiftTypes;
 			if (IX.isEmpty(giftTypes)) return;
 			giftTypes = _.map(giftTypes, function (item) {
 				var value = $XP(item, 'value'), label = $XP(item, 'label');

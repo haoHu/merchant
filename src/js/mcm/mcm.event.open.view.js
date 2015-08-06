@@ -53,7 +53,7 @@
 			var self = this;
 			var renderData = self.mapFormElsData.call(self),
 				tpl = self.get('layoutTpl'),
-				htm = tpl(renderData);
+				htm = tpl(IX.inherit({customerRange: '会员等级最低要求'}, renderData));
 			self.container.html(htm);
 		},
 		initUIComponents : function () {
@@ -62,6 +62,10 @@
 		bindEvent : function () {
 
 		},
+        refresh: function() {
+            var self = this;
+            self.renderForm()
+        },
 		submit : function () {
 			var self = this;
 			var eventID = self.model.get('eventID');
@@ -75,8 +79,25 @@
 				},
 				successFn : function () {
 					self.successFn.call(self);
-					self.parentView.parentView.emit('render');
+					// self.parentView.parentView.emit('render');
+					var resultController = self.parentView.parentView.$container.data('resultController');
+					if (resultController) {
+						resultController.emit('load');
+					}
+					
 					self.parentView.modal.hide();
+				}
+			});
+		},
+		delete : function (successFn, faildFn) {
+			var self = this;
+			self.model.emit('deleteItem', {
+				itemID : self.model.get('eventID'),
+				successFn : function (res) {
+					successFn(res);
+				},
+				faildFn : function (res) {
+					faildFn(res);
 				}
 			});
 		}

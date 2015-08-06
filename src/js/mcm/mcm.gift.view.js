@@ -28,6 +28,16 @@
 		var ctx = Hualala.PageRoute.getPageContextByPath(), pageName = $XP(ctx, 'name'),
 			queryKeys = self.model.queryKeys;
 		var r = {value : "", text : ""}, v = $XP(row, colKey, '');
+		var userInfo = $XP(row, 'createBy', {});
+		var operator = $XP(row,'operator',{});
+			try {
+			  //createBy有可能不是合法的JSON字符串，便会产生异常
+			  userInfo = !IX.isEmpty(userInfo) && IX.isString(userInfo) ? JSON.parse(userInfo) : {};
+			  operator = !IX.isEmpty(operator) && IX.isString(operator) ? JSON.parse(operator) : {};
+			} catch (e) {
+			  userInfo = {};
+			  operator ={};
+			}
 		var formatDateTimeValue = Hualala.Common.formatDateTimeValue;
 		switch(colKey) {
 			// 礼品列表各列参数
@@ -59,7 +69,7 @@
 				r.text = (IX.isEmpty(v) || v == 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd HH:mm');
 				break;
 			case "createBy":
-				var userInfo = !IX.isEmpty(v) && IX.isString(v) ? JSON.parse(v) : {};
+				// var userInfo = !IX.isEmpty(v) && IX.isString(v) ? JSON.parse(v) : {};
 				r.value = $XP(userInfo, 'userID', '');
 				r.text = $XP(userInfo, 'userName', '') + '<br/>' + $XP(userInfo, 'userMobile', '');
 				break;
@@ -80,23 +90,66 @@
 					r.rowspan = 1;
 				}
 				break;
+			case "eventName":
+				var eventWay = $XP(row, 'eventWay', ''),
+					status = $XP(row, 'status', ''),
+					settleStatus = $XP(row, 'settleStatus', ''),
+					smsGate = $XP(row, 'smsGate', ''),
+					SmsSendStatusTypes = Hualala.TypeDef.MCMDataSet.SmsSendStatus,
+					SmsSettleStatusTypes = Hualala.TypeDef.MCMDataSet.SmsSettleStatus;
+				if(eventWay==50||smsGate==1){
+					var statusLabel,settleStatusLabel,
+						statusObject =_.find(SmsSendStatusTypes,function(SmsSendStatus){ return SmsSendStatus.value==status; });
+						seetleObject =_.find(SmsSettleStatusTypes,function(SmsSettleStatus){ return SmsSettleStatus.value==settleStatus; });
+					if(statusObject){
+						statusLabel = statusObject.label;
+					}else{
+						statusLabel =SmsSendStatusTypes[3].label;
+					}
+					settleStatusLabel = seetleObject.label;
+					r.text = v+'<br/><br/>'+'结算状态：'+settleStatusLabel+'<br/>'+'发送状态：'+statusLabel;
+				}else{
+					r.value = v;
+					r.text = v;
+				}
+				break;
 			case "eventStartDate":
 				r.value = v;
 				var start = v, end = $XP(row, 'eventEndDate', '');
-				start = (IX.isEmpty(start) || start == 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(start), 'yyyy/MM/dd');
-				end = (IX.isEmpty(end) || end == 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(end), 'yyyy/MM/dd');
-				r.text = IX.isEmpty(start) || IX.isEmpty(end) ? '' : (start + '至' + end);
+				var eventWay = $XP(row, 'eventWay', '');
+				if(eventWay==50){
+					start = (IX.isEmpty(start) || start == 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(start), 'yyyy/MM/dd HH:mm');
+					r.text = IX.isEmpty(start) || IX.isEmpty(end) ? '' : start
+				}
+				else{
+					start = (IX.isEmpty(start) || start == 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(start), 'yyyy/MM/dd');
+					end = (IX.isEmpty(end) || end == 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(end), 'yyyy/MM/dd');
+					r.text = IX.isEmpty(start) || IX.isEmpty(end) ? '' : (start + '至' + end);
+				}
 				break;
 			case "operator":
-				var userInfo = !IX.isEmpty(v) && IX.isString(v) ? JSON.parse(v) : {};
-				r.value = $XP(userInfo, 'userID', '');
-				r.text = $XP(userInfo, 'userName', '') + '<br/>' + $XP(userInfo, 'userMobile', '');
+				// var userInfo = !IX.isEmpty(v) && IX.isString(v) ? JSON.parse(v) : {};
+				r.value = $XP(operator, 'userID', '');
+				r.text = $XP(operator, 'userName', '') + '<br/>' + $XP(operator, 'userMobile', '');
 				break;
 			case "isActive":
-				var eventID = $XP(row, 'eventID', '');
+				var eventID = $XP(row, 'eventID', ''),
+					eventWay = $XP(row,'eventWay',''),
+					status = $XP(row,'status','');
 				r.value = v;
-				r.text = '<input type="checkbox" name="switch_event" data-event-id="' + eventID + '" ' 
-					+ (v != 0 ? 'checked ' : '') + ' data-key="' + $XP(row, '__id__', '') + '" ' + ' />';
+				if(eventWay==50){
+					if(status==1){
+						r.text = '<input type="checkbox" name="switch_event" data-event-id="' + eventID + '" ' 
+						+ (v != 0 ? 'checked ' : '') + ' data-key="' + $XP(row, '__id__', '') + '" ' + ' />';
+					} else{
+						r.text = '<input type="checkbox" disabled  name="switch_event" data-event-id="' + eventID + '" ' 
+						+ (v != 0 ? 'checked ' : '') + ' data-key="' + $XP(row, '__id__', '') + '" ' + ' />';
+					}
+				}
+				else{
+					r.text = '<input type="checkbox" name="switch_event" data-event-id="' + eventID + '" ' 
+						+ (v != 0 ? 'checked ' : '') + ' data-key="' + $XP(row, '__id__', '') + '" ' + ' />';
+				}
 				break;
 			case "rowControl":
 				if (pageName == 'mcmGiftsMgr') {
@@ -301,6 +354,7 @@
 				case 'edit':
 				// TODO edit gift set
 					var wizardPanel = new Hualala.MCM.MCMWizardModal({
+						wizardType : 'edit',
 						parentView : self,
 						mode : 'edit',
 						successFn : function () {
@@ -332,26 +386,34 @@
 					break;
 				case 'delete':
 				// TODO delete gift set
-					self.emit('deleteItem', {
-						id : id,
-						key : giftItemID,
-						successFn : function (res) {
-							toptip({
-								msg : '删除成功',
-								type : 'success'
-							});
-							var $tr = $btn.parents('tr'),
-								$ruleRow = $tr.next('.gift-rule');
-							$tr.remove();
-							$ruleRow.remove();
-						},
-						faildFn : function (res) {
-							toptip({
-								msg : $XP(res, 'resultmsg', ''),
-								type : 'danger'
+					Hualala.UI.Confirm({
+						title : '删除礼品',
+						msg : '是否要删除该礼品？',
+						okLabel : '删除',
+						okFn : function () {
+							self.emit('deleteItem', {
+								id : id,
+								key : giftItemID,
+								successFn : function (res) {
+									toptip({
+										msg : '删除成功',
+										type : 'success'
+									});
+									var $tr = $btn.parents('tr'),
+										$ruleRow = $tr.next('.gift-rule');
+									$tr.remove();
+									$ruleRow.remove();
+								},
+								faildFn : function (res) {
+									toptip({
+										msg : $XP(res, 'resultmsg', ''),
+										type : 'danger'
+									});
+								}
 							});
 						}
 					});
+					
 					break;
 				case 'detail':
 				// TODO preview gift detail
@@ -381,11 +443,18 @@
 				act = $btn.attr('data-type'),
 				eventID = $btn.attr('data-id'),
 				id = $btn.attr('data-key');
-			var eventModel = self.model.getRecordModelByID(id);
+			var eventModel = self.model.getRecordModelByID(id),
+				eventWay = eventModel.getAll().eventWay;
+			var eventType=_.find(Hualala.TypeDef.MCMDataSet.EventTypes, function (el) {
+					return $XP(el, 'value')==eventWay;
+			});
 			switch(act) {
 				case 'edit' :
 				// TODO edit event config set
+					var wizardStepsCfg = eventWay == 50 ? Hualala.MCM.EventSmsWizardCfg : Hualala.MCM.EventWizardCfg,
+						stepChange = eventWay == 50 ? Hualala.MCM.SMSOnStepChange : Hualala.MCM.onEventWizardStepChange;
 					var wizardPanel = new Hualala.MCM.MCMWizardModal({
+						wizardType : 'edit',
 						parentView : self,
 						mode : 'edit',
 						successFn : function () {
@@ -397,41 +466,47 @@
 						model : eventModel,
 						modalClz : 'mcm-event-modal',
 						wizardClz : 'mcm-event-wizard',
-						modalTitle : '创建活动',
+						modalTitle : '修改'+eventType.label,
 						onWizardInit : function ($cnt, cntID, wizardMode) {
-							Hualala.MCM.initEventBaseInfoStep.call(this, $cnt, cntID, wizardMode);
+							Hualala.MCM.initEventBaseInfo.call(this, $cnt, cntID, wizardMode);
 						},
 						onStepCommit : function (curID) {
 							Hualala.MCM.onEventWizardStepCommit.call(this, curID);
 						},
 						onStepChange : function ($curNav, $navBar, cIdx, nIdx) {
-							Hualala.MCM.onEventWizardStepChange.call(this, $curNav, $navBar, cIdx, nIdx);
+							stepChange.call(this, $curNav, $navBar, cIdx, nIdx);
 						},
 						bundleWizardEvent : function () {
 							Hualala.MCM.bundleEventWizardEvent.call(this);
 						},
-						wizardStepsCfg : Hualala.MCM.EventWizardCfg,
+						wizardStepsCfg : wizardStepsCfg,
 						wizardCtrls : Hualala.MCM.WizardCtrls
-
 					});
 					break;
 				case 'delete' :
 				// delete event
-					self.emit('deleteItem', {
-						id : id,
-						key : eventID,
-						successFn : function (res) {
-							toptip({
-								msg : '删除成功',
-								type : 'success'
-							});
-							var $tr = $btn.parents('tr');
-							$tr.remove();
-						},
-						faildFn : function (res) {
-							toptip({
-								msg : $XP(res, 'resultmsg', ''),
-								type : 'danger'
+					Hualala.UI.Confirm({
+						title : '删除活动',
+						msg : '是否要删除该活动？',
+						okLabel : '删除',
+						okFn : function () {
+							self.emit('deleteItem', {
+								id : id,
+								key : eventID,
+								successFn : function (res) {
+									toptip({
+										msg : '删除成功',
+										type : 'success'
+									});
+									var $tr = $btn.parents('tr');
+									$tr.remove();
+								},
+								faildFn : function (res) {
+									toptip({
+										msg : $XP(res, 'resultmsg', ''),
+										type : 'danger'
+									});
+								}
 							});
 						}
 					});
@@ -464,8 +539,12 @@
 		if (pageName == 'mcmEventMgr') {
 			var $checkbox = self.$result.find(':checkbox[name=switch_event]');
 			initEventSwitcher.call(self, $checkbox);
-			
 		}
+
+        if (pageName == 'mcmEventTrack') {
+            var $checkbox = self.$result.find(':checkbox[name=switch_win_status]');
+            initWinSwitcher.call(self, $checkbox);
+        }
 	};
 
 	/**
@@ -504,7 +583,8 @@
 	 */
 	var mapEventDetailRenderData = function (model) {
 		var self = this;
-		var eventWay = model.get('eventWay');
+		var eventWay = model.get('eventWay'),
+			smsGate = model.get('smsGate');
 		var cardLevels = Hualala.TypeDef.MCMDataSet.EventCardLevels;
 		var cardLevels1 = _.filter(model.CardLevelIDSet, function (el) {
 			return $XP(el, 'isActive') == 1;
@@ -527,7 +607,7 @@
 			};
 		};
 		var mapBaseInfoData = function () {
-			var keys = 'eventName,cardLevelLabel,eventRemark,deductPoints,sendPoints,eventRules,viewCount,userCount'.split(',');
+			var keys = 'eventName,cardLevelLabel,eventRemark,deductPoints,sendPoints,eventRules,viewCount,userCount,smsCustomerShopName,smsTemplate,smsPersonNum,smsCount'.split(',');
 			var ret = {};
 			_.each(keys, function (k) {
 				switch (k) {
@@ -548,18 +628,33 @@
 			});
 			if (eventWay == 22) {
 				// 报名活动，列出参与人数
-				var winCount = model.get('winCount') || 0,
+				var winCount = model.get('registerEventPartinPersion') || 0,
 					maxPartInPerson = model.get('maxPartInPerson') || 0,
 					surplusCount = parseInt(maxPartInPerson) - parseInt(winCount);
 				ret = IX.inherit(ret, {
 					'isApplyEvent' : true,
-					'winCount' : parseInt(model.get('winCount') || 0),
+					'winCount' : parseInt(model.get('registerEventPartinPersion') || 0),
 					'surplusCount' : surplusCount
 				});
+			} else if(eventWay == 50){
+				ret = IX.inherit(ret, {
+					'isSmsEvent' : true,
+					'smsPersonNum' : parseInt(model.get('smsPersonNum') || 0),
+					'smsCount' : parseInt(model.get('smsCount') || 0)
+				});
 			}
+			var smsSendTime = model.get('startTime') || 0,
+				startTimeLabel = '';
+			if(eventWay == 50 || smsGate == 1) {
+				startTimeLabel = (IX.isEmpty(smsSendTime) || smsSendTime == 0) ? '任意时间' :
+					IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(smsSendTime), 'yyyy/MM/dd HH:mm')
+			}
+
 			return IX.inherit(ret, {
+				customerRange: eventWay == 50 ? '顾客范围' : '会员等级最低要求',
 				infoLabelClz : 'col-xs-3 col-sm-3',
-				infoTextClz : 'col-xs-8 col-sm-8'
+				infoTextClz : 'col-xs-8 col-sm-8',
+				startTimeLabel: startTimeLabel,
 			});
 		};
 		var mapGiftsData = function () {
@@ -573,6 +668,7 @@
 					giftLevelCount++;
 				}
 			});
+            var giftLevelNames = eventWay == 20 ? HMCM.GiftLevelNames : HMCM.GiftNames;
 			for (var i = 1; i <= giftLevelCount; i++) {
 				var gift = {};
 				var vals = _.map(giftKeys, function (_k) {
@@ -593,16 +689,27 @@
 				});
 				var r = _.object(giftKeys, vals);
 				r = IX.inherit(r, {
-					level : HMCM.GiftLevelNames[i],
+					level : giftLevelNames[i],
 					surplusCount : parseInt($XP(r, 'EGiftTotalCount', 0)) - parseInt($XP(r, 'EGiftSendCount', 0))
 				});
 				gifts.push(r);
 			}
-			gifts = _.filter(gifts, function (el) {return $XP(el, mainKey) != 0;})
+			gifts = _.filter(gifts, function (el) {return $XP(el, mainKey) != 0;});
+            var isDisplayGiftLevel = eventWay == 20 || eventWay == 40 || eventWay == 41;
 			return {
 				colCount : giftKeys.length,
+				hideEGiftOdds : eventWay == 20 ? '' : 'hidden',
+                hideEGiftLevel: isDisplayGiftLevel ? '' : 'hidden',
+                EGiftLevelTh: eventWay == 20 ? '中奖等级' : '礼品',
+                EGiftNameTh: eventWay == 20 ? '奖品名称' : '礼品名称',
+				hideEGfitValidUntilDayCount : '',
+				hiddenGift: (eventWay==50||eventWay==22) ? 'hidden' : '',
+				hiddenSms: eventWay==50 ? '' :'hidden',
+				hiddenEvtRules : eventWay!=50 ? '' :'hidden',
+				hiddenTitle : eventWay!=50 ? true : false,
 				giftItems : gifts,
-				hasGifts : gifts.length > 0 ? true : false
+				hasGifts : gifts.length > 0 ? true : false,
+				hiddenShop: eventWay == 50 ? '' : 'hidden'
 			};
 		};
 		return IX.inherit(mapBaseInfoData(), mapCardData(), mapGiftsData());
@@ -714,12 +821,67 @@
 						$el.bootstrapSwitch('toggleState', true);
 					}
 				});
-				
+
 			});
 		});
 	};
 
-	var QueryResultView = Stapes.subclass({
+    var initWinSwitcher = function ($checkbox) {
+        var self = this;
+        $checkbox.each(function () {
+            var $el = $(this),
+                onLabel = '已入围',
+                offLabel = '未入围';
+            $el.bootstrapSwitch({
+                state: !!$el.data('status'),
+                size : 'normal',
+                onColor : 'primary',
+                offColor : 'default',
+                onText : onLabel,
+                offText : offLabel
+            }).on('switchChange.bootstrapSwitch', function (e, state) {
+                var $el = $(this),
+                    key = $el.attr('data-key'),
+                    actStr = (state == 1 ? "入围" : "取消入围");
+                Hualala.UI.Confirm({
+                    title : "修改用户入围状态",
+                    msg : "你确定要将用户" + actStr + "吗？",
+                    okFn : function () {
+                        self.model.get('ds_record').get(key).emit('switchWin', {
+                            itemID : $(e.target).data('itemid'),
+                            winFlag: state ? 1 : 0,
+                            successFn : function (res) {
+                                toptip({
+                                    msg : '操作成功',
+                                    type : 'success'
+                                });
+                                var $winCount = $('.mcm-detail-info small span').eq(2).find('strong'),
+                                    $failCount = $('.mcm-detail-info small span').eq(3).find('strong'),
+                                    winCount = parseInt($winCount.text()),
+                                    failCount = parseInt($failCount.text());
+                                $winCount.text(state ? (winCount + 1) : (winCount - 1));
+                                $failCount.text(state ? (failCount - 1) : (failCount + 1));
+                            },
+                            faildFn : function (res) {
+                                $el.bootstrapSwitch('toggleState', true);
+                                toptip({
+                                    msg : $XP(res, 'resultmsg', ''),
+                                    type : 'danger'
+                                });
+                            }
+                        });
+
+                    },
+                    cancelFn : function () {
+                        $el.bootstrapSwitch('toggleState', true);
+                    }
+                });
+
+            });
+        });
+    };
+
+    var QueryResultView = Stapes.subclass({
 		/**
 		 * 构造礼品管理列表View层
 		 * 

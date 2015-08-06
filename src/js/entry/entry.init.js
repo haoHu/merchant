@@ -375,6 +375,7 @@
 					self.toggleProgress();
 					self.$subBtn.attr('disabled', false);
 				});
+				$form.find(name=[login_auth]).val("");
 			});
 			self.$formPanel.bootstrapValidator('resetForm');
 			self.$dynamicPWDBtn && self.$dynamicPWDBtn.removeClass('disabled').attr('disabled', false);

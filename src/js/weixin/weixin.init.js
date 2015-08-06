@@ -38,20 +38,15 @@
         var sessionGroupID = Hualala.getSessionSite().groupID,
             U = Hualala.UI,
             $pageBody = $container.find('.page-body');
+            
         if(groupID == sessionGroupID)
         {
             renderData(); return;
         }
 
-        Hualala.Global.getWeixinAccounts({}, function(rsp)
+        Hualala.Common.loadData('getWeixinAccounts', {}).done(function(records)
         {
-            if(rsp.resultcode != '000')
-            {
-                rsp.resultmsg && U.TopTip({msg: rsp.resultmsg, type: 'danger'});
-                return;
-            }
-            
-            accounts = _.map(rsp.data.records || [], function(record) {
+            accounts = _.map(records || [], function(record) {
                 return { mpID: record.mpID, mpName: record.mpName };
             });
             groupID = sessionGroupID;
@@ -62,7 +57,7 @@
         
         function renderData()
         {
-            var $select = $('<div class="bs-callout weixin-brand"><select class="form-control" />微信公共账号</div>').insertAfter('.page-subnav').find('select');
+            var $select = $('<div class="bs-callout weixin-brand"><select class="form-control" />微信公众号</div>').insertAfter('.page-subnav').find('select');
             U.fillSelect($select, accounts, 'mpID', 'mpName', false).val(mpID).on('change', function()
             { 
                 mpID = $(this).val();
@@ -195,6 +190,7 @@
             
         dataHolder = dataHolder || {};
         that.linkTypes = linkTypes;
+        that.groupDomainNameYN = '';
         linkID = linkID || 1;
         linkCont = linkCont || '';
         
@@ -222,6 +218,7 @@
             Hualala.Common.loadData(api, linkInfo.params, data)
             .done(function(records)
             {
+                var copyDataHolder = $.extend(true, {data: {}}, {data: dataHolder[api]}).data || {};
                 records = records || [];
                 if(!records.length)
                 {
@@ -230,20 +227,31 @@
                 }
                 if(!dataHolder[api])
                 {
-                    dataHolder[api] = _.map(records, function(record)
-                    {
-                        return api == 'getCrmEvents' ? {
-                            eventIdWay: record.eventID + '-' + record.eventWay,
-                            eventName: record.eventName,
-                            py: record.py
-                        } : _.pick(record, keys.concat(['py']));
+                    dataHolder[api] = _.map(records, function (record) {
+                        return _.pick(record, keys.concat(['py']));
                     });
+                    copyDataHolder = $.extend(true, {data: {}}, {data: dataHolder[api]}).data;
                 }
-                
-                var firstItem = linkInfo.firstItem || false;
-                U.createChosen($linkContent.find('select'), 
-                dataHolder[api], keys[0], keys[1], { width: '100%' }, firstItem, linkCont)
-                .change();
+
+                copyDataHolder = _.map(copyDataHolder, function(record)
+                {
+                    return (api == 'getCrmEvents' && linkInfo.value == 16) ? {
+                        eventIdWay: record.eventID + '-' + record.eventWay,
+                        eventName: record.eventName,
+                        py: record.py
+                    } : linkInfo.value == 2 ? {
+                        cityID: createLinkSelector.groupDomainNameYN + '-' + record.cityID,
+                        cityName: record.cityName,
+                        py: record.py
+                    } : _.pick(record, keys.concat(['py']));
+                });
+
+                var firstItem = linkInfo.value == 2 ? {
+                    cityID: createLinkSelector.groupDomainNameYN + '-0', cityName: '附近'
+                }: (linkInfo.firstItem || false);
+                U.createChosen($linkContent.find('select'),
+                    copyDataHolder, keys[0], keys[1], { width: '100%' }, firstItem, linkCont)
+                    .change();
                 
             });
         }
@@ -252,8 +260,22 @@
         linkTypes, 'value', 'title', false).val(linkID)
         .on('change', function()
         {
-            that.renderLinkContent(linkTypes[this.value - 1], $contentWrap, dataHolder, linkCont);
-            linkCont = '';
+            var selectedVal = this.value;
+            if (selectedVal == 2) {
+                Hualala.Global.queryGroupStyle({groupID: $XP(Hualala.getSessionSite(), 'groupID', '')}, function (rsp) {
+                    if (rsp.data.records[0].domainNamePY) {
+                        that.groupDomainNameYN = rsp.data.records[0].domainNamePY;
+                        that.renderLinkContent(_.findWhere(linkTypes, {value: selectedVal}), $contentWrap, dataHolder, linkCont);
+                        linkCont = '';
+                    } else{
+                        Hualala.UI.TopTip({msg: '获取集团首页的信息为空！', type: 'warning'});
+                        $contentWrap.html('');
+                    }
+                });
+            } else {
+                that.renderLinkContent(_.findWhere(linkTypes, {value: this.value}), $contentWrap, dataHolder, linkCont);
+                linkCont = '';
+            }
         }).change();
     }
     
@@ -280,13 +302,16 @@
                   chref.indexOf('dohko.dianpu') > -1 ? 'dohko.' : '',
             urlHost = 'http://' + env + 'm.hualala.com/',
             linkTypes = createLinkSelector.linkTypes || WX.getLinkTypes(),
-            urlTpl = Handlebars.compile(linkTypes[linkType - 1].urlTpl),
+            urlTpl = Handlebars.compile(_.findWhere(linkTypes, {value: linkType}).urlTpl),
             args = { arg1: param, g: groupID };
-            
-        if(linkType == 3 || linkType == 5) 
+
+        if(_.contains(['2', '3', '5'], linkType)) {
             args.arg2 = param == 0 ? 't=near' : 'c=' + param;
-        else if(linkType == 16) 
-        {
+            if (linkType == 2) {
+                var _args = param.split('-');
+                args.arg2 = (_args[1] == 0 ? 't=near' : ('c=' + _args[1])) + '&n=' + _args[0];
+            }
+        } else if (_.contains(['16', '24'], linkType)) {
             var _args = param.split('-'),
                 eventID = _args[0],
                 eventWay = _args[1];
@@ -301,7 +326,7 @@
     
     function extendUM(emotions, dataHolder)
     {
-        emotions && UM.registerUI( 'qqemotion', function(name)
+        UM.registerUI( 'qqemotion', function(name)
         {
             var me = this;
             var $btn = $.eduibutton({ icon: 'emotion', title: '表情' });
@@ -349,7 +374,7 @@
             return $btn;
         });
         
-        dataHolder && UM.registerUI( 'wxlink', function(name)
+        UM.registerUI( 'wxlink', function(name)
         {
             var me = this;
                 $btn = $.eduibutton({ icon: 'link', title: '链接' });
@@ -374,7 +399,8 @@
                     }
                     if(linkCont !== undefined && !linkCont)
                     {
-                        U.TopTip({msg: '请选择或输入链接！', type: 'warning'});
+                        var msg = linkType == 2 && !createLinkSelector.groupDomainNameYN ? '集团信息为空' : '请选择或输入链接！';
+                        U.TopTip({msg: msg, type: 'warning'});
                         return;
                     }
                     var url = createWeixinUrl(linkType, linkCont).replace(/^\s+|\s+$/g, '');
@@ -399,6 +425,8 @@
             '| horizontal print preview', 'drafts']; 
     }
     
+    extendUM();
+    
     $.extend(WX, {
         createResourceChosen: createResourceChosen,
         parseEmotions: parseEmotions,
@@ -406,7 +434,15 @@
         createLinkSelector: createLinkSelector,
         extendUM: extendUM,
         //微信首页
-        homeInit: function() { location.href = Hualala.PageRoute.createPath('wxReply')},
+        homeInit: function() { location.href = Hualala.PageRoute.createPath('wxAccounts')},
+        //公众账号页面
+        accountsInit: function()
+        {
+            var pageName = Hualala.PageRoute.getPageContextByPath().name;
+            var $container = $('#ix_wrapper > .ix-body > .container');
+            initWeixinPageLayout(pageName, $container, Hualala.TypeDef.WeixinAdminSubNavType);
+            WX.initAccounts($container.find('.page-body'), accounts);
+        },
         //自动回复页面
         replyInit: function()
         {

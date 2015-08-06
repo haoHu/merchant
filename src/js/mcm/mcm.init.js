@@ -3,7 +3,18 @@
 	var HMCM = Hualala.MCM;
 
 	var MCMHomePageInit = function () {
-		Hualala.PageRoute.jumpPage(Hualala.PageRoute.createPath('mcmGiftsMgr'));
+		//获取当前角色，来找对应的index页面
+		var roleType = Hualala.getSessionData().user.role[0];
+		switch(roleType) {
+			case "manager":
+			case "area-manager":
+				Hualala.PageRoute.jumpPage(Hualala.PageRoute.createPath('mcmEventMgr'));
+				break;
+			case "admin":
+			case "general":
+				Hualala.PageRoute.jumpPage(Hualala.PageRoute.createPath('mcmGiftsMgr'));
+				break;
+		}
 	};
 
 	var MCMGiftsMgrInit = function () {

@@ -24,8 +24,12 @@
 	var MCMQueryGiftUsedHeaderCfg = [
 		{key : "getWay", clz : "text", label : "获得方式"},
 		{key : "createTime", clz : "date", label : "获得时间"},
-		{key : "validUntilDate", clz : "date", label : "使用时间"},
-		{key : "giftStatus", clz : "text", label : "使用店铺"},
+		//代金券的有效日期：validUntilDate
+		//{key : "validUntilDate", clz : "date", label : "有效日期"},
+		//使用时间
+		{key : "usingTime", clz : "date", label : "使用时间"},
+		//{key : "giftStatus", clz : "text", label : "使用状态"},
+		{key : "usingShopName", clz : "text", label: "使用店铺"},
 		{key : "userName", clz : "text", label : "姓名"},
 		{key : "userSex", clz : "text", label : "性别"},
 		{key : "userMobile", clz : "text", label : "手机号"}
@@ -35,15 +39,22 @@
 		var self = this;
 		var r = {value : '', text : ''}, v = $XP(row, colKey, '');
 		var userInfo = $XP(row, 'userInfo', {});
+			// userInfo = !IX.isEmpty(userInfo) && IX.isString(userInfo) ? JSON.parse(userInfo) : {};
+			try {
+			  //userinfo有可能不是合法的JSON字符串，便会产生异常
+			  userInfo = !IX.isEmpty(userInfo) && IX.isString(userInfo) ? JSON.parse(userInfo) : {};
+			} catch (e) {
+			  userInfo = {};
+			}
 		var formatDateTimeValue = Hualala.Common.formatDateTimeValue;
 		switch(colKey) {
 			case "getWay":
 				v = HMCM.getGiftGetWayTypeSet(v);
 				r.value = $XP(v, 'value', '');
 				r.text = $XP(v, 'label', '');
-
 				break;
 			case "createTime":
+			case "usingTime":
 				r.value = v;
 				r.text = IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd HH:mm');
 				break;
@@ -51,13 +62,14 @@
 				r.value = v;
 				r.text = IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd');
 				break;
+
 			case "giftStatus":
 				v = HMCM.getGiftStatusTypeSet(v);
 				r.value = $XP(v, 'value', '');
 				r.text = $XP(v, 'label', '');
 				break;
 			case "userName":
-				r.value = r.text = $XP(userInfo, 'userName', '');
+				r.value = r.text = $XP(userInfo, 'userName')?$XP(userInfo, 'userName',''):$XP(userInfo, 'nickname','');
 				break;
 			case "userSex":
 				v = _.find(Hualala.TypeDef.GENDER, function (el) {
@@ -68,6 +80,9 @@
 				break;
 			case "userMobile":
 				r.value = r.text = $XP(userInfo, 'userMobile', '');
+				break;
+			default :
+				r.value = r.text = v;
 				break;
 		}
 		return r;

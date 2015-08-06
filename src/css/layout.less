@@ -77,6 +77,8 @@
 .gut { margin: 0 6px 0 6px; }
 .fl { float: left; }
 .fr { float: right; }
+.nowrap { white-space: nowrap; }
+.btn-link { cursor: pointer; }
 
 .foreward:after { content: '>'; font-family: simsun; .ml-6; }
 
@@ -262,6 +264,8 @@ body.login {
     .m-b; padding-left: 5px; .m-t;
     img { border-radius: 4px; }
     a { .v-b; }
+    .btn-lg { font-weight: 600; }
+    .btn-lg:after { position: relative; top: 2px; }
 }
 
 #ix_wrapper .ix-body .home-page {
@@ -330,6 +334,7 @@ body.login {
         .icon-weixin {.x-icon-60_weixin();}
         .icon-agent {.x-icon-60_agent();}
         .icon-mcm {.x-icon-60_marketing();}
+        .icon-boss {.x-icon-60_boss();}
 		&.disabled {
 			background-color : #eee!important; cursor : not-allowed;
 			// .x-filter(.5);
@@ -394,6 +399,13 @@ body.login {
 				background: fade(@setting-bg, 80%);
 			}
 		}
+
+        &[data-pagename=saas] {
+          background : @order-bg;
+          &.hover {
+            background: fade(@order-bg, 80%);
+          }
+        }
 	}
 
 	.format {
@@ -487,7 +499,7 @@ body.login {
 			.ad-pic {left : 120px; bottom : 0; .x-area-size(511px, 367px); background : url("../img/contact_us.png") no-repeat 0 0 transparent;}
 		}
 	}
-	.download {
+    .download {
 		.jumbotron {
 			> .container {
 				h1, p {position : absolute; left : 120px; top : 125px; .x-font-size(56px); color : darken(#89552E, 10%);}
@@ -496,12 +508,26 @@ body.login {
 			.ad-pic {right : 40px; bottom : 20px; .x-area-size(511px, 367px); background : url("../img/pc_download.png") no-repeat 0 0 transparent;}
 		}
 	}
+	.boss {
+		.jumbotron {
+            background: url(../img/boss/boss_bg.png);
+			> .container {
+                .boss-logo { margin: 32px 20px 0 0; }
+                .boss-title { color: #fff; margin-top: 30px }
+				h1 { position: static; }
+                .qr-boss { margin: 100px 50px 0 50px; }
+                .qr-boss span { margin-top: 6px; font-size: 15px }
+                .dragon { margin-top: 36px }
+                .starfish { position: absolute; bottom: 20px; left: 70px }
+			}
+		}
+	}
 }
 
 
 /*表单校验样式*/
 .form-feedback-out {
 	.has-feedback .form-control {padding-right : 12px;}
-	.has-feedback .form-control-feedback {right : -17px;}
+	.has-feedback .form-control-feedback {right : -10px;}
 	.has-feedback label ~ .form-control-feedback {top : 0px; right : 15px;}
 }

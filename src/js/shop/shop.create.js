@@ -1,7 +1,8 @@
 (function ($, window) {
-IX.ns('Hualala.Shop');
+    IX.ns('Hualala.Shop');
 var G = Hualala.Global,
     U = Hualala.UI,
+    C = Hualala.Common,
     topTip = U.TopTip;
 // 初始化创建店铺页面
 Hualala.Shop.initCreate = function ($wizard)
@@ -45,79 +46,7 @@ Hualala.Shop.initCreate = function ($wizard)
         showInputs : false
     });
     // 初始化表单验证
-    $step1.bootstrapValidator({
-        excluded: ':disabled',
-        fields: {
-            shopName: {
-                message: '店铺名无效',
-                validators: {
-                    notEmpty: {
-                        message: '店铺名不能为空'
-                    },
-                    stringLength: {
-                        min: 2,
-                        max: 100,
-                        message: '店铺名长度必须在2到100个字符之间'
-                    }
-                }
-            },
-            cityID: {
-                validators: { notEmpty: { message: '请选择店铺所在城市' } }
-            },
-            tel: {
-                validators: {
-                    notEmpty: { message: '店铺电话不能为空' },
-                    telOrMobile: { message: '' }
-                }
-            },
-            address: {
-                validators: {
-                    notEmpty: { message: '店铺地址不能为空' },
-                    stringLength: {
-                        min: 1,
-                        max: 80,
-                        message: '店铺地址不能超过80个字符'
-                    }
-                }
-            },
-            PCCL: {
-                validators: {
-                    notEmpty: { message: '人均消费不能为空' },
-                    numeric: { message: '人均消费必须是金额数字' }
-                }
-            },
-            operationMode: {
-                validators: {
-                    notEmpty: { message: '请选择店铺运营模式' }
-                }
-            },
-            openingHoursStart: {
-                validators: {
-                    notEmpty: { message: '每天营业开始时间不能空' },
-                    time: { message: '' }
-                }
-            },
-            openingHoursEnd: {
-                validators: {
-                    notEmpty: { message: '每天营业结束时间不能空' },
-                    time: {
-                        message: '',
-                        startTimeField: 'openingHoursStart'
-                    }
-                }
-            },
-            areaID: {
-                validators: {
-                    notEmpty: { message: '请选择店铺所在地标' }
-                }
-            },
-            cuisineID1: {
-                validators: {
-                    notEmpty: { message: '请选择菜系1' }
-                }
-            }
-        }
-    });
+    $step1.bootstrapValidator(Hualala.Shop.validators);
     bv = $step1.data('bootstrapValidator');
     
     var $uploadImg = $step1.find('#uploadImg'),
@@ -129,7 +58,7 @@ Hualala.Shop.initCreate = function ($wizard)
         U.uploadImg({
             onSuccess: function (imgPath, $dlg)
             {
-                var src = G.IMAGE_RESOURCE_DOMAIN + '/' + imgPath + '?quality=70';
+                var src = C.getSourceImage(imgPath, {width: 200, height: 200});
                 imagePath = imgPath;
                 $uploadImg.find('img').attr('src', src);
                 $dlg.modal('hide');
@@ -152,7 +81,7 @@ Hualala.Shop.initCreate = function ($wizard)
             //$select.blur();
             if(!bv.validate().isValid()) return;
             // 数据提交前预处理
-            dataStep1 = Hualala.Common.parseForm($step1);
+            dataStep1 = C.parseForm($step1);
             dataStep1.shopID = shopID;
             dataStep1.shopName = dataStep1.shopName.replace('（', '(').replace('）', ')');
             dataStep1.areaName = getSelectText($area);

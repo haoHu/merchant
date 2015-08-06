@@ -1,9 +1,9 @@
 (function ($, window) {
 	IX.ns('Hualala.Weixin');
-    
+
     Hualala.Weixin.getEmotions = getEmotions;
     Hualala.Weixin.getLinkTypes = getLinkTypes;
-    
+
     function getEmotions()
     {
         return [
@@ -114,57 +114,72 @@
             { url : 'CE/wKgCIVNWKIjSNEstAAAIeX2ucII889.gif', title : '右太极'}
         ];
     }
-    
+
     function getLinkTypes()
     {
         return [
-            { value: '1', title: '软文', type: 'select', subTitle: '软文', api: 'getAdvertorials', params: {}, keys: ['itemID', 'title'],
-            urlTpl: 'share/{{arg1}}' },
-            { value: '2', title: '集团首页',
-            urlTpl: 'index.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '3', title: '店铺预定搜索网页', type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: '0', cityName: '附近' },
+            { value: '2', title: '集团首页', type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'],
+            urlTpl: 'shop/group.htm?{{arg2}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '3', title: '预订店铺', type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: '0', cityName: '附近' },
             urlTpl: 'shop/common.htm?{{arg2}}&sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '4', title: '订座点菜具体店铺', type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'],
-            urlTpl: 'shop/shop.htm?t=0&i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '5', title: '店铺外卖搜索网页' , type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: '0', cityName: '附近' },
+            { value: '5', title: '外卖自提' , type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: '0', cityName: '附近' },
             urlTpl: 'shop/takeaway.htm?{{arg2}}&sc=wechat&mpid=${mpID}&g={{g}}&' },
-            { value: '6', title: '外卖自提具体店铺', type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'],
-            urlTpl: 'shop/shop.htm?t=1&i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
             { value: '7', title: '附近店铺',
-            urlTpl: 'shop/near.htm' },
-            { value: '8', title: '(新)成为会员',
+                urlTpl: 'shop/near.htm?g={{g}}' },
+            {value: '0', title: '集团'},
+            { value: '26', title: '订座介绍', type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'],
+                urlTpl: 'shop/home.htm?t=0&i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '4', title: '订座点菜', type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'],
+                urlTpl: 'shop/shop.htm?t=0&i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '27', title: '外卖自提介绍', type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'],
+                urlTpl: 'shop/home.htm?t=1&i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '6', title: '外卖自提', type: 'select', subTitle: '店铺', api: 'queryShop', params: {}, keys: ['shopID', 'shopName'],
+            urlTpl: 'shop/shop.htm?t=1&i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            {value: '0', title: '单店功能'},
+            { value: '8', title: '成为会员',
             urlTpl: 'crm/vip_details.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '9', title: '(新)我的会员卡',
+            { value: '9', title: '我的会员卡',
             urlTpl: 'crm/vip_details.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '10', title: '成为会员',
-            urlTpl: 'vip/register.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '11', title: '我的会员卡',
-            urlTpl: 'vip/main.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '12', title: '我的代金券',
-            urlTpl: 'user/event.htm?sc=wechat&mpid=${mpID}' },
-            { value: '13', title: '我的订单页',
-            urlTpl: 'user/order.htm?sc=wechat&mpid=${mpID}' },
+            { value: '23', title: '会员活动列表',
+                urlTpl: 'crm/events/htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '24', title: '会员具体活动', type: 'select', subTitle: '会员活动', api: 'getMCMEvents', params: { isActive: 1, eventWays: '40,41' }, keys: ['eventID', 'eventName'],
+                urlTpl: 'crm/event.htm?e={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}'},
+            { value: '25', title: '会员充值',
+                urlTpl: 'crm/vip_recharge.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            //{ value: '10', title: '成为会员',
+            //urlTpl: 'vip/register.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            //{ value: '11', title: '我的会员卡',
+            //urlTpl: 'vip/main.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            {value: '0', title: '会员'},
             { value: '14', title: '我的账户',
             urlTpl: 'user/user.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '15', title: '会员活动列表',
-            urlTpl: 'vip/intro.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '16', title: '会员具体活动', type: 'select', subTitle: '会员活动', api: 'getCrmEvents', params: {}, keys: ['eventIdWay', 'eventName'],
-            urlTpl: 'vip/event{{arg3}}.htm?e={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '17', title: '用户活动', type: 'select', subTitle: '用户活动', api: 'getUserEvents', params: { eventStatus: 1 }, keys: ['eventItemID', 'eventSubjects'],
-            urlTpl: 'events/event.htm?i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '13', title: '我的订单',
+                urlTpl: 'user/order.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            { value: '12', title: '我的代金券',
+                urlTpl: 'user/event.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            //{ value: '15', title: '会员活动列表',
+            //urlTpl: 'vip/intro.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            //{ value: '16', title: '会员具体活动1', type: 'select', subTitle: '会员活动', api: 'getCrmEvents', params: {}, keys: ['eventIdWay', 'eventName'],
+            //urlTpl: 'vip/event{{arg3}}.htm?e={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            {value: '0', title: '账户'},
+            { value: '1', title: '软文', type: 'select', subTitle: '软文', api: 'getAdvertorials', params: {}, keys: ['itemID', 'title'],
+                urlTpl: 'share/{{arg1}}?mpid=${mpID}' },
             { value: '18', title: '用户反馈',
             urlTpl: 'user/feedback.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
             { value: '19', title: '代金券交易', type: 'select', subTitle: '城市', api: 'getCities', params: { isActive: 1 }, keys: ['cityID', 'cityName'], firstItem: {cityID: '0', cityName: '附近' },
             urlTpl: 'voucher/list.htm?sc=wechat&mpid=${mpID}&g={{g}}&c={{arg1}}' },
-            { value: '20', title: '排队取号搜索',
-            urlTpl: 'table/near.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
-            { value: '21', title: '报名活动', type: 'select', subTitle: '用户活动', api: 'getUserEvents', params: { eventStatus: 1, gameWay: 20 }, keys: ['eventItemID', 'eventSubjects'],
-            urlTpl: 'events/apply.htm?i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
             { value: '22', title: '自定义链接', type: 'input', subTitle: '内容',
-            urlTpl: '{{arg1}}' }
+                urlTpl: '{{arg1}}' },
+            //{ value: '17', title: '用户活动', type: 'select', subTitle: '用户活动', api: 'getUserEvents', params: { eventStatus: 1 }, keys: ['eventItemID', 'eventSubjects'],
+            //    urlTpl: 'events/event.htm?i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            //{ value: '20', title: '排队取号搜索',
+            //urlTpl: 'table/near.htm?sc=wechat&mpid=${mpID}&g={{g}}' },
+            //{ value: '21', title: '报名活动', type: 'select', subTitle: '用户活动', api: 'getUserEvents', params: { eventStatus: 1, gameWay: 20 }, keys: ['eventItemID', 'eventSubjects'],
+            //urlTpl: 'events/apply.htm?i={{arg1}}&sc=wechat&mpid=${mpID}&g={{g}}' },
+            {value: '0', title: '其它'}
         ];
     }
-    
+
 })(jQuery, window);
 
 

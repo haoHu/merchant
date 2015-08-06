@@ -21,7 +21,7 @@
 				return ;
 			}
 			this.cities = $XP(cfg, 'cities', []);
-			this.statisticKeys = 'count,foodAmount,giftAmountTotal,orderRefundAmount,orderRegAmount,orderTotal,orderAmount,shouldSettlementTotal,total';
+			this.statisticKeys = $XP(cfg, 'statisticKeys', null) || 'count,foodAmount,giftAmountTotal,orderRefundAmount,needPayAmount,shopRefundAmount,orderRegAmount,orderTotal,orderAmount,shouldSettlementTotal,total';
 			this.queryKeys = $XP(cfg, 'queryKeys', []);
 			this.pagerKeys = 'pageCount,totalSize,pageNo,pageSize'.split(',');
 			this.queryParamsKeys = null;

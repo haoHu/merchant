@@ -350,6 +350,10 @@
             }
             var $cont = $contentWrap.find('select, input'),
                 cont = $cont.val();
+            if (val == 2 && !$cont[0]) {
+                topTip({msg: '集团信息为空！', type: 'warning'});
+                return;
+            }
             if($cont[0] && !cont)
             {
                 topTip({msg: '未选择或填写任何链接内容！', type: 'warning'});

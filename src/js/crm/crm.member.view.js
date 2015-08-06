@@ -8,6 +8,7 @@
 		constructor : function () {
 			// View层容器
 			this.$container = null;
+			this.$well =null;
 			// 数据表容器
 			this.$tableBox = null;
 			// 图标容器
@@ -44,6 +45,7 @@
 		initLayout : function () {
 			var self = this, layoutTpl = self.get('layoutTpl');
 			self.$container.html(layoutTpl({charts : self.chartsCfg}));
+			self.$well = self.$container.find('.well');
 			self.$tableBox = self.$container.find('.crm-schema-table');
 			self.$chartBox = self.$container.find('.crm-schema-chart');
 		},
@@ -51,7 +53,8 @@
 			var self = this, memberData = self.model.getMemberByLevelNames(),
 				summary = self.model.get('memberSummarize'),
 				tableHeader = Hualala.CRM.MemberSchemaTableHeaderConfigs,
-				colNames = "cardLevelName,cardCount,levelCardCountRate,sexMaleRate,sexFemaleRate,sexUnknownRate,onLineRate,inShopRate,moneyBalanceSum,pointBalanceSum,consumptionPerOrder";
+				colNames = "cardLevelName,cardCount,levelCardCountRate,sexMaleRate,sexFemaleRate,sexUnknownRate,onLineRate,inShopRate," +
+                    "moneyBalanceSum,giveBalanceSum,pointBalanceSum,consumptionPerOrder";
 			var math = Hualala.Common.Math;
 			var mapColData = function (member) {
 				var cols = _.map(colNames.split(','), function (k) {
@@ -123,7 +126,7 @@
 				cols.unshift({
 					clz : 'title',
 					value : '',
-					text : '总价：'
+					text : '总计：'
 				});
 				return {
 					clz : '',
@@ -208,7 +211,7 @@
 						name : tipTitle,
 						type : 'pie',
 						radius : '55%',
-						center : ['50%', '40%'],
+						center : ['50%', '52%'],
 						data : series
 					}]
 				});
@@ -235,6 +238,26 @@
 			var self = this;
 			self.$tableBox.tooltip({
 				selector : 'p[title]'
+			});
+			self.$well.on('click', '.btn.btn-warning', function (e) {
+				var serviceName,templateName,ExcelfilePath;
+				var	group = $XP(Hualala.getSessionData(),'site',''),
+					groupName = $XP(group,'groupName','');
+					currentNav = Hualala.PageRoute.getPageContextByPath(),
+					currentLabel = $XP(currentNav,'label',''),
+					fileName =groupName+currentLabel+".xls";
+					serviceName = "pay_crmCustomerCardOverViewService";
+					templateName ="crmCustomerCardOverViewReport.xml";
+				var params ={serviceName:serviceName,templateName:templateName,fileName:fileName};
+					Hualala.Global.OrderExport(params, function (rsp) {
+	                    if(rsp.resultcode != '000'){
+	                        rsp.resultmsg && Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+	                        return;
+	                    }
+	                	ExcelfilePath =rsp.data.filePath || [];
+						var dowloadhref=ExcelfilePath;
+						window.open(dowloadhref); 
+	                })
 			});
 		}
 	});

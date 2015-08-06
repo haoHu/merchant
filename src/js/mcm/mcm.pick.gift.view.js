@@ -5,6 +5,7 @@
 		toptip = Hualala.UI.TopTip;
 
 	var MCMGiftListHeaderCfg = [
+		{key : "giftItemID", clz : "hidden", label : ""},
 		{key : "giftType", clz : "", label : "礼品类型"},
 		{key : "giftName", clz : "text", label : "礼品名称"}
 	];
@@ -17,12 +18,19 @@
 		var formatDateTimeValue = Hualala.Common.formatDateTimeValue;
 		switch(colKey) {
 			// 礼品列表各列参数
-			case "giftType":
-				var giftCardTpl = self.get('giftCardTpl'),
-					giftValue = $XP(row, 'giftValue', 0),
-					giftTypes = Hualala.TypeDef.MCMDataSet.GiftTypes,
-					giftType = _.find(giftTypes, function (el) {return $XP(el, 'value') == v;});
+			// case "giftType":
+			// 	var giftCardTpl = self.get('giftCardTpl'),
+			// 		giftValue = $XP(row, 'giftValue', 0),
+			// 		giftItemID = $XP(row, 'giftItemID', ''),
+			// 		giftTypes = Hualala.TypeDef.MCMDataSet.GiftTypes,
+			// 		giftType = _.find(giftTypes, function (el) {return $XP(el, 'value') == v;});
 
+			// 	r.value = giftItemID;
+			// 	r.text = $XP(giftType, 'label', '');
+			// 	break;
+			case "giftType":
+				var giftTypes = Hualala.TypeDef.MCMDataSet.GiftTypes,
+					giftType = _.find(giftTypes, function (el) {return $XP(el, 'value') == v;});
 				r.value = v;
 				r.text = $XP(giftType, 'label', '');
 				break;
@@ -86,8 +94,9 @@
 
 	var initQueryFormEls = function () {
 		var self = this,
-			els = self.model.getQueryParams();
-		self.initGiftTypeComboOpts($XP(els, 'giftType', ''));
+			els = self.model.getQueryParams(),
+            selectGiftType = self.model.getSelectGiftType();
+		self.initGiftTypeComboOpts($XP(els, 'giftType', ''), selectGiftType);
 	};
 
 	/**
@@ -107,6 +116,7 @@
 		constructor : function (cfg) {
 			this.trigger = $XP(cfg, 'trigger');
 			this.selectedFn = $XF(cfg, 'selectedFn');
+            this.selectGiftType = $XP(cfg, 'selectGiftType');
 			this.modal = null;
 			this.$body = null;
 			this.panel = null;
@@ -151,7 +161,8 @@
 					})
 				}),
 				model : new HMCM.QueryModel({
-					queryKeys : Hualala.MCM.QueryFormKeys.GiftMgrQueryKeys
+					queryKeys : Hualala.MCM.QueryFormKeys.GiftMgrQueryKeys,
+                    selectGiftTypes: self.selectGiftType
 				}),
 				view : new HMCM.QueryView({
 					hasAddBtn : false,
@@ -169,7 +180,8 @@
 				var $p = $tr.find('p[data-value]');
 				self.selectedFn({
 					giftItemID : $p.eq(0).attr('data-value'),
-					giftName : $p.eq(1).attr('data-value')
+					giftType : $p.eq(1).attr('data-value'),
+					giftName : $p.eq(2).attr('data-value')
 				}, self.trigger);
 				self.modal.hide();
 			});
