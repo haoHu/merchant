@@ -866,21 +866,10 @@
             parseSwitchStatus($formFood);
             //处理奇葩的单选按钮和复选框
             //允许菜品数量设置小数，小数是0.1 否则 1
-            foodParams.incrementUnit = foodParams.incrementUnit == 1 ? '0.1' : '1';
-            switch (foodParams.foodType) {
-                case '0':
-                    foodParams.isSetFood = '0';
-                    foodParams.isTempFood = '0';
-                    break;
-                case '1':
-                    foodParams.isSetFood = '1';
-                    foodParams.isTempFood = '0';
-                    break;
-                case '2':
-                    foodParams.isSetFood = '0';
-                    foodParams.isTempFood = '1';
-                    break;
-            }
+            foodParams.incrementUnit = $formFood.find('input[name="incrementUnit"]:checkbox').prop('checked') ? '0.1' : '1';
+            var tempOrSetFood = parseInt(foodParams.foodTye).toString(2).split('');
+            foodParams.isTempFood = tempOrSetFood[0] || '0';
+            foodParams.isSetFood = tempOrSetFood[1] || '0';
             foodParams = _.omit(foodParams, 'foodType');
             foodParams = IX.inherit(foodParams, parseUnit(modalDialog));
             if (foodParams.foodID) {

@@ -1563,6 +1563,11 @@
 
     var tpl_Time_add = [
 	'<div class="alert alert-warning t-c Time_operate ">',
+		'{{#if reftimeshop}}',
+		'<p class="controls">',
+			'<span class="controls">该店铺已被其他店铺所套用</span>',
+		'</p>',
+		'{{else}}',
 		'{{#if noRef}}',
 		'<p class="controls">',
 			'<span class="controls">可&nbsp;&nbsp;<a href="javascript:;" class="operate" data-type="refTime">套用</a>&nbsp;&nbsp;其它店铺营业时段</span>',
@@ -1572,7 +1577,7 @@
 			'<span class="controls">本店营业时段套用 {{refTimeShopName}} 不可编辑,您可以<a href="javascript:;" class="operate" data-type="refTime">修改套用</a>或<a href="javascript:;" class="operate" data-type="cancleRefShopTime">取消套用</a></span>',
 		'</p>',
 		'{{/if}}',
-		
+		'{{/if}}',
 	'</div>'
     ].join('');
     Hualala.TplLib.register('tpl_Time_add', tpl_Time_add);

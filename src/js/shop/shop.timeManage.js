@@ -215,11 +215,19 @@
                     cols: mapColsRenderData(row, idx)
                 };
             });
+            var reftimeshop = G.cancleRefShopTime({shopID: shopID}, function (rsp) {
+	                        if (rsp.resultcode != '000') {
+	                            return true;
+	                        }else{
+	                        	return false;	
+	                        }
+		           		});
             if(records.refTimeShopName){
 
             	return {
 	                tblClz: tblClz,
 	                noRef : false,
+	                reftimeshop: reftimeshop,
                		refTimeShopName:records.refTimeShopName,
 	                isEmpty: !records || records.length == 0 ? true : false,
 	                colCount: tblHeaders.length,
@@ -231,6 +239,7 @@
 	        else{
 	        	return {
 	                tblClz: tblClz,
+	                reftimeshop: reftimeshop,
 	                noRef : records && records.refTimeShopName? false :true,
 	                isEmpty: !records || records.length == 0 ? true : false,
 	                colCount: tblHeaders.length,

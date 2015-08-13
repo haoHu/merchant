@@ -329,8 +329,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
                         food.foodDescEditor = foodDescEditor;
                         //绑定规格操作的事件
                         Hualala.Shop.BindOperatorEvent(modalEditFood, food);
-                        var setOrTempFoodVal = (food.isTempFood || '0') + (food.isSetFood || '0'),
-                            $checkedFoodType = $editFood.find('.food-type input[name="foodType"]').eq(parseInt(setOrTempFoodVal, 2));
+                        var tempOrSetFoodVal = (food.isTempFood || '0') + (food.isSetFood || '0'),
+                            $checkedFoodType = $editFood.find('.food-type input[name="foodType"]').eq(parseInt(tempOrSetFoodVal, 2));
                         $checkedFoodType.prop('checked', true).trigger('change');
                     } else {
                         var foodIcos = ['isSpecialty', 'isRecommend', 'isNew'],
