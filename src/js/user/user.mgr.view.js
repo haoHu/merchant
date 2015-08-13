@@ -127,7 +127,7 @@
 		},
 		roleBinding : {
 			type : "roleBindGrp",
-			label : "请选择角色权限",
+			label : "请选择角色",
 			defaultVal : '',
 			validCfg : {
 
@@ -190,8 +190,8 @@
 			BaseUserFormElsHT.register(k, IX.inherit(el, {
 				id : k + '_' + IX.id(),
 				name : k,
-				labelClz : labelClz,
-				clz : 'col-sm-offset-3 col-sm-8'
+				labelClz : labelClz.replace(/3/, '4'),//替换col-sm-3为col-sm-4
+				clz : 'col-sm-8'
 			}));
 		} else if (type == "staticwithbtns") {
 			BaseUserFormElsHT.register(k, IX.inherit(el, {
@@ -613,9 +613,33 @@
 			
 			self.model.emit('queryRoleBinding', {
 				successFn : function () {
-					self.renderForm();
-					self.initUIComponents();
-					self.bindEvent();
+                    var bindingRoleType = _.pluck(self.model.getRoleBindings(), 'type').join(',');
+                    var showRoleView = function() {
+                        self.renderForm();
+                        self.initUIComponents();
+                        self.bindEvent();
+                    };
+                    if(bindingRoleType.indexOf('manager') > -1){
+                        self.model.emit('queryRoleRight', {
+                            successFn: function () {
+                                self.model.emit('queryAccountRight', {
+                                    successFn: function() {
+                                        showRoleView();
+                                    },
+                                    failFn: function() {
+                                        self.closeModal();
+                                    }
+                                })
+                            },
+                            failFn: function() {
+                                self.closeModal();
+                            }
+                        });
+                    } else {
+                        self.model.updateRoleRightStore([]);
+                        self.model.updateAccountRightStore([]);
+                        showRoleView();
+                    }
 				},
 				failFn : function () {
 					self.closeModal();
@@ -624,7 +648,8 @@
 		},
 		loadTemplates : function () {
 			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_base_user_form')),
-				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
+				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns')),
+                rightTpl = Handlebars.compile(Hualala.TplLib.get('tpl_checkboxes'));
 			Handlebars.registerHelper('checkFormElementType', function (conditional, options) {
 				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
 			});
@@ -633,7 +658,8 @@
 			});
 			this.set({
 				layoutTpl : layoutTpl,
-				btnTpl : btnTpl
+				btnTpl : btnTpl,
+                rightTpl: rightTpl
 			});
 		},
 		mapRoleBindingElsData : function () {
@@ -657,6 +683,16 @@
 			});
 			return {items : items};
 		},
+        mapRightElsData : function() {
+            var self = this,
+                rights = self.model.get('rights'),
+                accountRightIDs = self.model.get('accountRightIDs'),
+                roleRight = _.map(rights, function (right) {
+                    return IX.inherit(right,
+                        {checked: _.contains(accountRightIDs, $XP(right, 'itemID', '')) ? 'checked' : ''});
+                });
+            return IX.inherit({roleRight: roleRight});
+        },
 		mapFormElsData : function () {
 			var self = this,
 				formKeys = self.formKeys;
@@ -664,7 +700,7 @@
 				var elCfg = BaseUserFormElsHT.get(key),
 					type = $XP(elCfg, 'type');
 				if (type == 'roleBindGrp') {
-					return IX.inherit(elCfg, self.mapRoleBindingElsData());
+					return IX.inherit(elCfg, self.mapRoleBindingElsData(), self.mapRightElsData());
 				} else {
 					return IX.inherit(elCfg, {
 						value : $XP(self.formParams, key, $XP(elCfg, 'defaultVal', ''))
@@ -695,6 +731,22 @@
 			}
 			
 		},
+        refreshRoleRight: function() {
+            var self = this,
+                $rights = self.$body.find('.role-right');
+            self.model.emit('queryRoleRight', {
+                successFn: function() {
+                    var rights = _.map(self.model.get('rights'), function(right){
+                        return IX.inherit(right,
+                            {checked: _.contains(self.model.get('accountRightIDs'), $XP(right, 'itemID')) ? 'checked' : ''});
+                    });
+                    $rights.empty().append($(self.get('rightTpl')({rights: rights})));
+                },
+                failFn: function() {
+
+                }
+            })
+        },
 		initUIComponents : function () {
 
 		},
@@ -711,7 +763,7 @@
 		},
 		bindEvent : function () {
 			var self = this;
-			self.$body.delegate('input:checkbox', 'change', function (e) {
+			self.$body.delegate('.role-bind-grp input:checkbox', 'change', function (e) {
 				var checked = !this.checked ? false : true,
 					$chk = $(this), roleType = $chk.attr('name');
 				var $btn = $chk.parents('.checkbox').find('.btn[data-role=' + roleType + ']');
@@ -721,8 +773,11 @@
 					$btn.trigger('click');
 				} else {
 					self.model.updateRoleBind(roleType, checked);
-				}
-			});
+                }
+                if(roleType.indexOf('manager') > -1) {
+                    self.refreshRoleRight();
+                }
+            });
 			self.$body.delegate('.btn[data-role]', 'click', function (e) {
 				var $btn = $(this), roleType = $btn.attr('data-role');
 				switch(roleType) {
@@ -752,6 +807,22 @@
 						break;
 				}
 			});
+            self.$body.delegate('.role-right input:checkbox', 'change', function(e){
+                var accountRightIDs = self.model.get('accountRightIDs') || [],
+                    $this = $(this),
+                    isChecked = $this.prop('checked'),
+                    currentRightID = $this.data('key');
+                if(isChecked) {
+                    accountRightIDs.push(currentRightID + '')
+                    self.model.updateAccountRightStore(accountRightIDs);
+                } else{
+                    var updateAccountRightIDs = _.reject(accountRightIDs, function (id) {
+                        return id == currentRightID;
+                    });
+                    self.model.updateAccountRightStore(updateAccountRightIDs);
+                }
+            });
+
 			if (self.mode == 'edit') {
 				self.$footer.delegate('.btn', 'click', function (e) {
 					var $btn = $(this), act = $btn.attr('name');
@@ -759,18 +830,26 @@
 						self.closeModal();
 					} else {
 						$btn.button('loading');
-						self.model.emit('editRole', {
-							successFn : function () {
-								self.$footer.find('.btn[name=submit]').button('reset');
-								self.closeModal();
-								self.successFn(self.model);
-							},
-							failFn : function () {
-								self.$footer.find('.btn[name=submit]').button('reset');
-								self.closeModal();
-								self.failFn(self.model);
-							}
-						});
+                        self.model.emit('editRight', {
+                            successFn: function() {
+                                self.model.emit('editRole', {
+                                    successFn : function () {
+                                        self.$footer.find('.btn[name=submit]').button('reset');
+                                        self.closeModal();
+                                        self.successFn(self.model);
+                                    },
+                                    failFn : function () {
+                                        self.$footer.find('.btn[name=submit]').button('reset');
+                                        self.closeModal();
+                                        self.failFn(self.model);
+                                    }
+                                });
+
+                            },
+                            failFn: function() {
+                                self.$footer.find('.btn[name=submit]').button('reset');
+                            }
+                        })
 					}
 				});
 			}
@@ -955,15 +1034,21 @@
 					self.commitUserInfo(stepView);
 					break;
 				case "user_role_binding":
-					self.model.emit('editRole', {
-						successFn : function () {
-							self.successFn(self.model);
-							self.modal.hide();
-						},
-						failFn : function () {
-							self.failFn(self.model);
-						}
-					});
+                    self.model.emit('editRight', {
+                        successFn: function () {
+                            self.model.emit('editRole', {
+                                successFn: function () {
+                                    self.successFn(self.model);
+                                    self.modal.hide();
+                                },
+                                failFn: function () {
+                                    self.failFn(self.model);
+                                }
+                            });
+                        },
+                        failFn: function () {
+                        }
+                    });
 					break;
 			}
 		},

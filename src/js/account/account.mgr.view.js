@@ -208,14 +208,16 @@
 					return $XP(el, 'act') != 'withdraw';
 				}),
 				accountCard = null;
+			var bankCode = model.get('bankCode'),
+				bankInfo = bankCode==""? Hualala.Common.mapBankInfo('Other'):Hualala.Common.mapBankInfo(bankCode);
 			var settleUnitID = model.get('settleUnitID') || '',
 				hasDefault = model.get('defaultAccount') == 0 ? false : true,
-				bankInfo = Hualala.Common.mapBankInfo(model.get('bankCode')),
 				bankAccountStr = Hualala.Common.codeMask((model.get('bankAccount') || ''), 0, -4),
 				settleBalance = parseFloat(model.get('settleBalance') || 0),
 				settleBalanceStr =  CMath.prettyNumeric(CMath.standardPrice(settleBalance)),
 				shopCount = parseInt(model.get('shopCount') || 0),
 				disableWithdraw = settleBalance <= 0 ? 'disabled' : '';
+
 
 			accountCard = {
 				clz : 'pull-left',

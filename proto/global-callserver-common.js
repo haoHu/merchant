@@ -1080,6 +1080,44 @@
 		}));
 	};
 
+    /*
+    * 查询账号对应的权限
+    * @params  {object} params {roleTypes}、
+    * @params {function} params {cbFn}
+    * return {NULL}
+    *  服务 “/shop/queryShopPageRights.ajax”
+    * */
+    Hualala.Global.queryRoleRight = function(params, cbFn) {
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn(),
+            roleRights = Test.roleRights;
+        fn(roleRights);
+    };
+
+    /*
+    * 查询账号设置的权限
+    * @params {object} params {accountID, roleTypes}
+    * @params {function} cbFn
+     * @return {NULL}
+     * 服务：“/shop/queryShopGroupChildAccountPageRight.ajax”
+    * */
+    Hualala.Global.queryAccountRight = function(params, cbFn) {
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn(),
+            accountRights = Test.accountRights;
+        fn(accountRights)
+    };
+
+    /*
+    * @param params {object} {accountID, pageRight, disabled}
+    * @params cbFn {function}
+    * @return null
+    * 服务：/shop/updateShopGroupChildAccountPageRight.ajax
+    * */
+    Hualala.Global.updateAccountRight = function(params, cbFn) {
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        fn({resultmsg: '', resultcode: '000'});
+    };
+
+
 	/**
 	 * 获取会员概览统计报表数据
 	 * @param  {Object} params {}

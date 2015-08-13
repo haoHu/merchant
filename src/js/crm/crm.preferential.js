@@ -14,8 +14,7 @@
             //pref: {
             //    shopName: '店铺名称', startDate: '开始日期', endDate: '结束日期', discountType: '折扣促销方式', discountRate: '促销折扣率', pointType: '积分促销方式', pointRate: '促销积分系数', actionTime: '修改时间', isActive: '是否启用', action: '操作'
             //},
-            //pref: { shopName: '店铺名称', shopPref: '默认特惠', crmPref: '会员日特惠'},C端暂时没支持会员日特惠 先屏蔽掉
-            pref: { shopName: '店铺名称', shopPref: '默认特惠'},
+            pref: { shopName: '店铺名称', shopPref: '默认特惠', crmPref: '会员日特惠'},
             discountType: { '0': '会员保底折扣率', '1': '折上折' },
             pointType: { '0': '倍数', '1': '叠加' },
             isActive: { '0': '未启用', '1': '已启用' },

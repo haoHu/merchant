@@ -68,6 +68,13 @@
 						r.value = v;
 						r.text =label;
 					break;
+				case "timeID" :
+					var timeIDs = Hualala.TypeDef.ShopPromotionDataSet.timeIDTypes,
+						timeIDFlag = _.find(timeIDs, function (el) {return $XP(el, 'value') == v;}),
+						label = $XP(timeIDFlag, 'label', '');
+						r.value = v;
+						r.text =label;
+					break;
 				case "holidayFlag":
 					var holidayFlags = Hualala.TypeDef.MCMDataSet.GiftIsHolidayUsing,
 						holidayFlag = _.find(holidayFlags, function (el) {return $XP(el, 'value') == v;}),

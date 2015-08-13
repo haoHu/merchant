@@ -535,7 +535,7 @@
 						});
 						return ;
 					}
-					self.bindItems();
+                    self.bindItems();
 					self.emit('hide');
 				}
 			});

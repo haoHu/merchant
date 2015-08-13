@@ -4,20 +4,14 @@
 	var popoverMsg = Hualala.UI.PopoverMsgTip,
 		toptip = Hualala.UI.TopTip;
 	var PromotionSetFormElsHT = HSP.PromotionSetFormElsHT;
-
-	var PromotionRuleFormKeys = 'dateRange,wholeDay,supportOrderType,isHolidaysUsing,time1,time2'.split(',');
-
+	//老店铺需求所需字段
+	var PromotionRuleFormKeys = 'dateRange,supportOrderType,isHolidaysUsing,timeID'.split(',');
+	//新店铺需求的所需字段
+	//var PromotionRuleFormKeys = 'dateRange,wholeDay,supportOrderType,isHolidaysUsing,time1,time2'.split(',');
 	/**
 	 * 整理表单渲染数据
 	 * @return {[type]} [description]
 	 */
-/*	decodeTimeStr : function (t) {
-		if (t.length == 0) return '';
-		return t.substr(0,2) + ':' + t.substr(2);
-	},
-	encodeTimeStr : function (min, max) {
-		return (min + ',' + max).replace(/\:/g, '');
-	},*/
 	var mapEventRuleFormElsData = function () {
 		var self = this,
 			formKeys = self.formKeys;
@@ -38,23 +32,15 @@
 					})
 				});
 			}else if (type == 'section'&& (key == 'time1'||key == 'time2')) {
-				var	v = _.map(v, function (t) {
-						return self.decodeTimeStr(t);
-					});
-					return IX.inherit(elCfg, {
-						min : IX.inherit($XP(elCfg, 'min'), {
-							value : v[0] || $XP(elCfg, 'min.defaultVal')
-						}),
-						max : IX.inherit($XP(elCfg, 'max'), {
-							value : v[1] || $XP(elCfg, 'max.defaultVal')
-						})
-					});
 				var starstr = key+"Start",
 					endstr = key+"End";
 				var starstr = self.model.get(starstr) || '',
 					endstr = self.model.get(endstr) || '';
 				starstr = (IX.isEmpty(starstr) || starstr == 0) ? '' : starstr;
 				endstr = (IX.isEmpty(endstr) || endstr == 0) ? '' : endstr;
+				var	v = _.map(v, function (t) {
+						return self.decodeTimeStr(t);
+					});
 				return IX.inherit(elCfg, {
 					min : IX.inherit($XP(elCfg, 'min'), {
 						value : starstr || $XP(elCfg, 'min.defaultVal')
@@ -68,7 +54,7 @@
 				var v = self.model.get('supportOrderType') || 0,
 					options = _.map($XP(elCfg, 'options'), function (op) {
 						return IX.inherit(op, {
-							checked : v > 0 ? 'checked' : ''
+							checked : v == $XP(op, 'value') ? 'checked' : ''
 						});
 					});
 				return IX.inherit(elCfg, {
@@ -77,20 +63,20 @@
 			}  else if (type == 'radiogrp' && key == 'wholeDay') {
 				var v = self.model.get('wholeDay') || 0,
 					options = _.map($XP(elCfg, 'options'), function (op) {
-					return IX.inherit(op, {
-						checked : v == $XP(op, 'value') ? 'checked' : ''
+						return IX.inherit(op, {
+							checked : v == $XP(op, 'value') ? 'checked' : ''
+						});
 					});
-				});
 				return IX.inherit(elCfg, {
 					options : options
-				}); isHolidaysUsing
+				});
 			} else if (type == 'radiogrp' && key == 'isHolidaysUsing') {
 				var v = self.model.get('holidayFlag') || 0,
 					options = _.map($XP(elCfg, 'options'), function (op) {
-					return IX.inherit(op, {
-						checked : v == $XP(op, 'value') ? 'checked' : ''
+						return IX.inherit(op, {
+							checked : v == $XP(op, 'value') ? 'checked' : ''
+						});
 					});
-				});
 				return IX.inherit(elCfg, {
 					options : options
 				}); 
@@ -116,23 +102,63 @@
 		});
 		return ret;
 	};
-
-	var PromotionTimeStepView = HSP.PromotionBaseInfoStepView.subclass({
-		constructor : HSP.PromotionBaseInfoStepView.prototype.constructor
+	/*促销时间的view层*/
+	var PromotionTimeStepView = Stapes.subclass({
+		constructor : function (cfg) {
+			this.mode = $XP(cfg, 'mode', '');
+			this.container = $XP(cfg, 'container', '');
+			this.parentView = $XP(cfg, 'parentView');
+			this.model = $XP(cfg, 'model');
+			this.successFn = $XF(cfg, 'successFn');
+			this.failFn = $XF(cfg, 'failFn');
+			this.mapFormElsData = $XF(cfg, 'mapFormElsData');
+			if (!this.model || !this.parentView) {
+				throw("Gift Base Info View init faild!");
+			}
+			this.loadTemplates();
+			this.initBaseCfg();
+			this.formParams = this.model.getAll();
+			this.renderForm();
+			this.initUIComponents();
+			this.bindEvent();
+		}
 	});
 	PromotionTimeStepView.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_promotion_base_form')),
+				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
+			Handlebars.registerHelper('checkFormElementType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			Handlebars.registerHelper('isInputGroup', function (prefix, surfix, options) {
+				return (!prefix && !surfix) ? options.inverse(this) : options.fn(this);
+			});
+			this.set({
+				layoutTpl : layoutTpl,
+				btnTpl : btnTpl
+			});
+		},
 		initBaseCfg : function () {
 			this.formKeys = PromotionRuleFormKeys;
 		},
+		renderForm : function () {
+			var self = this,
+				renderData = self.mapFormElsData.call(self),
+				tpl = self.get('layoutTpl'),
+				btnTpl = self.get('btnTpl'),
+				htm = tpl({
+					formClz : 'wizard-step-form form-feedback-out',
+					items : renderData
+				});
+			self.container.html(htm);
+		},
 		initUIComponents : function () {
 			var self = this;
-			var rulesJson=self.model.get('rules');
-				rulesJson = !rulesJson ? {} : JSON.parse(rulesJson);
-			var stageType = rulesJson.stageType;
 			self.initDatePicker();
 			self.initTimePicker();
 			self.setRadioWholeDayLayout(self.container.find(':radio[name=wholeDay]'));
 		},
+		//格式的datetimepicker设置
 		initDatePicker : function () {
 			var self = this;
 			self.container.find('[data-type=datetimepicker]').datetimepicker({
@@ -145,6 +171,7 @@
 				language : 'zh-CN'
 			});
 		},
+		//时间的timepicker设置
 		initTimePicker : function () {
 			var self = this;
 			self.container.find('[data-type=timepicker]').timepicker({
@@ -166,24 +193,27 @@
 					bv = $form.data('bootstrapValidator');
 				self.failFn(self.model);
 			}).on('success.form.bv', function (e, data) {
+				var formParams = self.serializeForm(),
+					isEventDateValid = parseInt(formParams.startDate) > parseInt(formParams.endDate);
+				if(isEventDateValid) {
+					self.parentView.switchWizardCtrlStatus('reset');
+					toptip({msg: '结束日期不能小于开始日期', type: 'danger'});
+					return;
+				}
 				e.preventDefault();
 				var $form = $(e.target),
 					bv = $form.data('bootstrapValidator');
-				var act = self.mode + 'Promotion';
-				var formParams = self.serializeForm();
 				IX.Debug.info("DEBUG: Event Wizard Form Params:");
 				IX.Debug.info(formParams);
-				self.model.emit('editEvent', {
+				self.model.emit('saveCache', {
 					params : formParams,
 					failFn : function () {
 						self.failFn.call(self);
 					},
 					successFn : function () {
 						self.successFn.call(self);
-						self.switchViewMode('edit');
-						// self.parentView.modal.hide();
 					}
-				});
+				})
 			});
 			self.container.find(':radio[name=wholeDay]').on('change', function (e) {
 				self.setRadioWholeDayLayout($(this));
@@ -193,12 +223,6 @@
 					name = $this.attr('name');
 				self.container.find('form').bootstrapValidator('revalidateField', name);
 			});
-		},
-		setSwitcherLayout : function ($chk) {
-			var checked = $chk.is(':checked');
-			var $nextFormGroup = $chk.parents('.form-group').next('.form-group');
-			$nextFormGroup[checked ? 'removeClass' : 'addClass']('hidden');
-			$nextFormGroup.find(':text').attr('disabled', checked ? false : true);
 		},
 		setRadioWholeDayLayout : function ($radio) {
 			var self = this;
@@ -260,9 +284,9 @@
 				return {startDate : start, endDate : end};
 			};
 			var getTimeRange = function (k) {
-				var start =$(':text[name='+k+'Start]', self.container).val(),
-					end = $(':text[name='+k+'End]', self.container).val();
-				if(k="time1"){
+				var start =($(':text[name='+k+'Start]', self.container).val()).replace(/:/,""),
+					end = ($(':text[name='+k+'End]', self.container).val()).replace(/:/,"");
+				if(k=="time1"){
 					return {time1Start : start, time1End : end};
 				}
 				else{
@@ -275,8 +299,8 @@
 				var v = null;
 				switch (key) {
 					case 'dateRange':
-							v = getDateRange();
-							ret = IX.inherit(ret, v);
+						v = getDateRange();
+						ret = IX.inherit(ret, v);
 						break;
 					case 'time1':
 					case 'time2':

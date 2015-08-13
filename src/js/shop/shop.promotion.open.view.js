@@ -1,6 +1,6 @@
 (function ($, window) {
-	IX.ns("Hualala.MCM");
-	var HMCM = Hualala.MCM;
+	IX.ns("Hualala.Shop");
+	var HSP = Hualala.Shop;
 	var popoverMsg = Hualala.UI.PopoverMsgTip,
 		toptip = Hualala.UI.TopTip;
 
@@ -11,13 +11,12 @@
 	var mapEventDetailData = function () {
 		var self = this,
 			model = self.model;
-		var mapFn = HMCM.mapEventDetailRenderData;
+		var mapFn = HSP.mapEventDetailRenderData;
 		var ret = mapFn.call(self, model);
-
 		return ret;
 	};
 
-	var EventOpenStepView = Stapes.subclass({
+	var PromotionOpenStepView = Stapes.subclass({
 		constructor : function (cfg) {
 			var self = this;
 			this.mode = $XP(cfg, 'mode', '');
@@ -38,7 +37,7 @@
 			this.bindEvent();
 		}
 	});
-	EventOpenStepView.proto({
+	PromotionOpenStepView.proto({
 		loadTemplates : function () {
 			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_event_openstep')),
 				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
@@ -68,13 +67,13 @@
         },
 		submit : function () {
 			var self = this;
-			var eventID = self.model.get('eventID');
+			var itemID = self.model.get('itemID');
 			self.model.emit('switchEvent', {
 				post : {
-					eventID : eventID,
-					isActive : 1
+					itemID : itemID,
+					action : 1
 				},
-				faildFn : function () {
+				failFn : function () {
 					self.failFn.call(self);
 				},
 				successFn : function () {
@@ -84,7 +83,6 @@
 					if (resultController) {
 						resultController.emit('load');
 					}
-					
 					self.parentView.modal.hide();
 				}
 			});
@@ -92,7 +90,7 @@
 		delete : function (successFn, faildFn) {
 			var self = this;
 			self.model.emit('deleteItem', {
-				itemID : self.model.get('eventID'),
+				itemID : self.model.get('itemID'),
 				successFn : function (res) {
 					successFn(res);
 				},
@@ -103,8 +101,8 @@
 		}
 	});
 
-	HMCM.EventOpenStepView = EventOpenStepView;
 
+	HSP.PromotionOpenStepView = PromotionOpenStepView;
 	/**
 	 * 创建向导中活动开启步骤
 	 * @param  {[type]} $cnt       [description]
@@ -112,9 +110,9 @@
 	 * @param  {[type]} wizardMode [description]
 	 * @return {[type]}            [description]
 	 */
-	HMCM.initEventOpenStep = function ($cnt, cntID, wizardMode) {
+	HSP.initPromotionOpenStep = function ($cnt, cntID, wizardMode) {
 		var wizardModalView = this,
-			stepView = new HMCM.EventOpenStepView({
+			stepView = new HSP.PromotionOpenStepView({
 				mode : wizardMode,
 				container : $cnt,
 				parentView : wizardModalView,

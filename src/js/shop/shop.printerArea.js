@@ -5,7 +5,8 @@
 		topTip = U.TopTip,
 		parseForm = Hualala.Common.parseForm,
 		//打印类型
-		PrintTypeData = Hualala.TypeDef.SaasPrintType;
+		PrintTypeData = Hualala.TypeDef.SaasPrintType,
+		AreaprintCopies = Hualala.TypeDef.ShopPrinterDataSet.AreaprintCopies;
 	Hualala.Shop.initPrinterAreaSetting = function ($container, shopID){
 		//打印区域设置表头
 		var ShopPrinterHeaderCfg = [
@@ -74,13 +75,6 @@
             $areaKey.html(comboOptsTpl(areaChosenData()));
             $departmentKey.html(comboOptsTpl(departmentChosenData()));
             $printerKey.html(comboOptsTpl(printersChosenData()));
-            if($areaKey.data('chosen')) $areaKey.chosen('destroy');
-            /*Hualala.UI.createChosen($areaKey, Areas, 'areakey', 'areaName',
-                {
-                    noFill: true, noCurrent: true, width: '200px',
-                    placeholder_text: '选择或输入区域',
-                    no_result_text: '抱歉，没有相关区域'
-                }, false);*/
 		}
 		//select内容处理
         function areaChosenData() {
@@ -188,7 +182,6 @@
 						type : 'checkbox',
 						btns : [
 							{
-								
 								link : 'javascript:void(0);',
 								clz : 'operate btn-link edit-printerArea',
 								name : 'operate',
@@ -310,17 +303,34 @@
 	        var areaprinters=_.map(IX.clone(printers),function (areaprinters) {
 	            return _.extend(areaprinters,{selected:''});
 	        });
+	       	AreaprintCopies=_.map(AreaprintCopies,function (AreaprintCopies) {
+	            return _.extend(AreaprintCopies,{selected:''});
+	        });
 	        var dTitle ='制作单打印机设置',
-	        	modalVals = {PrintTypeData:PrintTypeData,areaprinters:areaprinters},
+	        	modalVals = {PrintTypeData:PrintTypeData,AreaprintCopies:AreaprintCopies,areaprinters:areaprinters},
 		        $editSet = $(printerAreaMakeTpl(modalVals));
 		        modalDialog = new U.ModalDialog({
 		            title: dTitle,
 		            backdrop : 'static',
 		            html: $editSet
 		        }).show(); 
+		        createSwitch(modalDialog);
 		        PrinterAreaFormValidate($editSet);
 		        bindModalPrinter(modalDialog,$editSet,shopID);
         }
+        function createSwitch(modal) {
+            var $switchCheckbox = modal._.body.find('.printer-form input.status');
+            _.each($switchCheckbox, function (input) {
+                $(input).bootstrapSwitch({
+                    state: !!$(input).data('status'),
+                    size : 'normal',
+                    onColor : 'success',
+                    offColor : 'default',
+                    onText : '打印',
+                    offText : '不打印'
+                });
+            });
+	    }
         //validator的验证
         function PrinterAreaFormValidate($form){
         	$form.bootstrapValidator({
@@ -342,7 +352,6 @@
 	                        }
 	                    }
 	                },
-
 	                printerKey: {
 	                    validators: {
 	                        notEmpty: { message: '制作单打印机必须选择' }
@@ -352,7 +361,7 @@
 	                    validators: {
 	                        notEmpty: { message: '制作单打印方式必须选择' }
 	                    }
-	                },
+	                }/*,
 	                printCopies: {
 	                    validators: {
 	                    	notEmpty: { message: '制作单打印份数不能为空' },
@@ -364,7 +373,7 @@
 	                            message : "制作单打印份数取值为0~100之间的正整数"
 	                        }
 	                    }
-	                }  
+	                }  */
 	            }
 	        });
         }
@@ -385,7 +394,7 @@
                 }
                 else{
                 	postParams = IX.inherit({areaKeys:areaKeys,departmentKeys:departmentKeys},data);
-                	postParams.isPrintToDispatchBill=postParams.isPrintToDispatchBill==undefined?0:postParams.isPrintToDispatchBill;
+                	postParams.isPrintToDispatchBill=postParams.isPrintToDispatchBill==undefined?0:1;
                 }
                 postParams = IX.inherit({shopID:shopID},postParams);
                 Hualala.Global[postParams.dispatchBillPrinterKey ? 'setAreaPrinter' : 'setDepartmentPrinter'](postParams, function (rsp) {

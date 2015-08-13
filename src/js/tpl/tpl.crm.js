@@ -655,13 +655,13 @@
                     '<button class="btn btn-default m-l">修改</button>',
                 '</div>',
             '</td>',
-            //'<td data-type="pref">',
-            //    '<div class="clearfix">{{memberParams}}</div>',
-            //    '<div class="clearfix">',
-            //        '<input data-status="{{memberDayIsActive}}" type="checkbox">',
-            //        '<button class="btn btn-default m-l">修改</button>',
-            //    '</div>',
-            //'</td>',
+            '<td data-type="pref">',
+                '<div class="clearfix">{{memberParams}}</div>',
+                '<div class="clearfix">',
+                    '<input data-status="{{memberDayIsActive}}" type="checkbox">',
+                    '<button class="btn btn-default m-l">修改</button>',
+                '</div>',
+            '</td>',
         '</tr>'
     ].join('');
     TplLib.register('tpl_crm_pref_tr', tpl_crm_pref_tr);

@@ -679,8 +679,10 @@
 							break;
 						case 'EGiftSendCount':
 						case 'EGiftTotalCount':
-						case 'EGfitValidUntilDayCount':
 							v = IX.isEmpty(v) ? 0 : parseFloat(v);
+							break;
+						case 'EGfitValidUntilDayCount':
+							v = parseFloat(v)==0 ?"无限制":parseFloat(v);
 							break;
 						default :
 							break;

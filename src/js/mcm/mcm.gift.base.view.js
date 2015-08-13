@@ -34,7 +34,7 @@
 			label : "礼品类型",
 			defaultVal : "10",
 			options : _.reject(Hualala.TypeDef.MCMDataSet.GiftTypes, function (el) {
-				return IX.isEmpty($XP(el, 'value'));
+				return IX.isEmpty($XP(el, 'value')) || $XP(el, 'value') == 20;
 			}),
 			validCfg : {
 				validators : {

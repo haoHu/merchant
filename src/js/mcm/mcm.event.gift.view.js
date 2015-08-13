@@ -162,6 +162,7 @@
 		var eventWay = self.model.get('eventWay'),
 			smsGate = self.model.get('smsGate');
 		var hasEGiftOdds = false;
+		var hiddenFlag = false;
 		var giftLevelNames = eventWay == 20 ? GiftLevelNames : GiftNames;
 		var ret = [];
 		for (var i = 1; i <= EventGiftLevelCount; i++) {
@@ -198,10 +199,25 @@
 								selected : $XP(op, 'value') == v ? 'selected' : ''
 							});
 						});
-					return IX.inherit(elCfg, {
-						value : v,
-						options : options
-					});
+					var EGiftNameVal = self.model.get('EGiftName_' + i);
+					if(EGiftNameVal){
+						var EGiftNameFlag=EGiftNameVal.indexOf("会员充值") > -1||EGiftNameVal.indexOf("会员积分") > -1;
+						hiddenFlag = EGiftNameFlag? true:false;	
+					} else{
+						hiddenFlag = false;
+					}
+					if(k=='EGiftEffectTimeHours'){
+						return IX.inherit(elCfg, {
+							value : v,
+							hidden : hiddenFlag ? "hidden" : "",
+							options : options
+						});
+					} else{
+						return IX.inherit(elCfg, {
+							value : v,
+							options : options
+						});
+					}
 				} else if (k == 'EGiftOdds') {
 					v = self.model.get(key) || $XP(elCfg, 'defaultVal');
 					v = isNaN(v) ? 0 : parseFloat(v);
@@ -215,6 +231,19 @@
 					return IX.inherit(elCfg, {
 						value : self.model.get(key) || $XP(elCfg, 'defaultVal'),
 						label : eventWay == 20 ? $XP(elCfg, 'label') : '礼品名称'
+					});
+				} else if(k=='EGfitValidUntilDayCount'){
+					v = self.model.get(key) || $XP(elCfg, 'defaultVal');
+					var EGiftNameVal = self.model.get('EGiftName_' + i);
+					if(EGiftNameVal){
+						var EGiftNameFlag = EGiftNameVal.indexOf("会员充值") > -1||EGiftNameVal.indexOf("会员积分") > -1;
+							hiddenFlag = EGiftNameFlag? true:false;	
+					} else{
+						hiddenFlag = false;
+					}
+					return IX.inherit(elCfg, {
+						value : v,
+						hidden : hiddenFlag ? "hidden" : ""
 					});
 				} else if (k == 'EGiftTotalCount') {
 					return IX.inherit(elCfg, {
@@ -328,7 +357,6 @@
 				var formParams = self.serializeForm();
 				IX.Debug.info("DEBUG: Event Wizard Form Params:");
 				IX.Debug.info(formParams);
-				
 				self.model.emit('editEvent', {
 					params : formParams,
 					failFn : function () {
@@ -359,6 +387,7 @@
 				} else {
 					$els.attr('disabled', true);
 					$fmgrps.addClass('hidden');
+					$txt.parents('.mcm-evtgift-form').find('[name^=EGfitValidUntilDayCount]').val(0);
 				}
 			});
 

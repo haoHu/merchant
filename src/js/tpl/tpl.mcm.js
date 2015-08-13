@@ -401,7 +401,7 @@
 					'</div>',
 				'{{/checkFormElementType}}',
 				'{{#checkFormElementType type type="combo"}}',
-					'<div class="form-group">',
+					'<div class="form-group {{hidden}}">',
 						'<label for="{{id}}" class="{{labelClz}}">{{{label}}}</label>',
 						'<div class="{{clz}}">',
 							'<select id="{{id}}" name="{{name}}" class="form-control" {{disabled}}  data-type="{{type}}">',

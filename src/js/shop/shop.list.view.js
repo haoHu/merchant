@@ -581,7 +581,7 @@
 					open : open,
 					desc : $XP(el, 'desc', ''),
 					serviceFeatures : $XP(shop, 'serviceFeatures', ''),
-					hideBtn : (name == 'bi' || name == 'crm') ? 'disabled hidden' : '',
+					hideBtn : (name == 'bi' || name == 'crm' ||name=="saas") ? 'disabled hidden' : '',
 					hide :(name!='spot_order') ?'disabled hidden':''
 				};
 			});

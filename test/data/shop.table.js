@@ -192,7 +192,7 @@ Test.PromotionData={
                 "actionTime": "20150806164707",
                 "createTime": "20150806164707",
                 "endDate": "20151231",
-                "holidayFlag": "0",
+                "holidayFlag": "1",
                 "itemID": "549",
                 "remark": "只有一档",
                 "rules": "{\"stageType\":2,\"stage\":[{\"minAmount\":100,\"freeAmount\":5,\"discountScale\":\"0.9\",\"discountScope\":\"1\"},{\"minAmount\":200,\"freeAmount\":9,\"discountScale\":\"0.88\",\"discountScope\":\"1\"},{\"minAmount\":300,\"freeAmount\":12,\"discountScale\":\"0.8\",\"discountScope\":\"1\"}]}",
@@ -201,19 +201,19 @@ Test.PromotionData={
                 "startDate": "20151201",
                 "supportOrderType": "0",
                 "tag": "4",
-                "time1End": "",
-                "time1Start": "",
+                "time1End": "2200",
+                "time1Start": "0900",
                 "time2End": "",
                 "time2Start": "",
                 "timeID": "0",
-                "wholeDay": "0"
+                "wholeDay": "1"
             },
             {
                 "action": "1",
                 "actionTime": "20150806164513",
                 "createTime": "20150806164513",
                 "endDate": "20151130",
-                "holidayFlag": "0",
+                "holidayFlag": "1",
                 "itemID": "548",
                 "remark": "只有一档",
                 "rules": "{\"stageType\":2,\"stage\":[{\"minAmount\":100,\"discountScale\":\"0.9\",\"discountScope\":\"1\"},{\"minAmount\":200,\"discountScale\":\"0.85\",\"discountScope\":\"1\"}]}",
@@ -227,7 +227,7 @@ Test.PromotionData={
                 "time2End": "",
                 "time2Start": "",
                 "timeID": "0",
-                "wholeDay": "0"
+                "wholeDay": "1"
             },
             {
                 "action": "0",

@@ -90,10 +90,14 @@
 			var ret = _.map(data, function (account, i, l) {
 				var settleUnitID = $XP(account, 'settleUnitID'),
 					hasDefault = $XP(account, 'defaultAccount', 0) == 0 ? false : true,
-					bankInfo = Hualala.Common.mapBankInfo($XP(account, 'bankCode')),
 					bankAccountStr = Hualala.Common.codeMask($XP(account, 'bankAccount', ''), 0, -4),
 					settleBalance = parseFloat($XP(account, 'settleBalance', 0)),
-					settleBalanceStr = CMath.prettyNumeric(CMath.standardPrice(settleBalance));
+					settleBalanceStr = CMath.prettyNumeric(CMath.standardPrice(settleBalance)),
+					bankInfo = Hualala.Common.mapBankInfo($XP(account, 'bankCode'));
+					if(account.bankCode==""){
+						account.bankCode="Other";
+						bankInfo = Hualala.Common.mapBankInfo($XP(account, 'bankCode'));
+					}
 
 				return {
 					settleUnitID : settleUnitID,

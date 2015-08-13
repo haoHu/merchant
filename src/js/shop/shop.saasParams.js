@@ -68,6 +68,7 @@
                 $shopParams.append($shopForm);
                 renderPrinters($shopParams.find('div[name="printers"]'), $XP(shopParams, 'PrinterKey', ''), 'PrinterKey');
                 createSwitch();
+                registerShopParams();
             });
             G.getSaasDeviceParams({shopID: shopID}, function (rsp) {
                 if(rsp.resultcode != '000') {
@@ -96,6 +97,32 @@
             });
         }
 
+        function registerShopParams() {
+            $shopForm.bootstrapValidator({
+                fields: {
+                    FoodMakeManageQueueCount: {
+                        validators: {
+                            notEmpty: {message: '账单数不能为空'},
+                            between: {message: '必须是6-18之间的值', min: 6, max: 18},
+                            integer: {message: '必须是整数'}
+                        }
+                    },
+                    FoodMakeWarningTimeout: {
+                        validators: {
+                            notEmpty: {message: '警告时间不能为空'},
+                            greaterThan: {message: '必须是大于等于30的值', inclusive: true, value: 30},
+                            numeric: {message: '必须是数值'}
+                        }
+                    },
+                    FoodMakeDangerTimeout: {
+                        validators: {
+                            notEmpty: {message: '严重超时时间不能为空'},
+                            numeric: {message: '必须是数值'}
+                        }
+                    }
+                }
+            });
+        }
         function registerDeviceForm() {
             $deviceForm.bootstrapValidator({
                 fields: {
@@ -142,8 +169,8 @@
                 var $this = $(this),
                     isSave = $this.attr('id').indexOf('save') != -1;
                 var $checkedKitchenList = $shopForm.find('div[name="kitchenPrintBillTypeLst"]').find('input:checked');
-                $this.toggleClass('hidden');
                 if(isSave) {
+                    $this.prop('disabled', true);
                     var formParams = C.parseForm($shopForm),
                         kitchenParams = parseKitchenPrintBillLst($checkedKitchenList),
                         switchParams = parseSwitch(),
@@ -151,11 +178,21 @@
                             IX.inherit({shopID: shopID}, formParams, kitchenParams, switchParams),
                             _.map($checkedKitchenList, function(input){return $(input).attr('name');})
                         );
+                    if(!$shopForm.data('bootstrapValidator').validate().isValid()) {
+                        $this.prop('disabled', false);
+                        return;
+                    }
+                    if(parseInt(formParams.FoodMakeDangerTimeout) < parseInt(formParams.FoodMakeWarningTimeout)) {
+                        topTip({msg: '严重超时时间不能小于警告超时时间', type: 'danger'});
+                        $this.prop('disabled', false);
+                        return;
+                    }
                     postParams.CheckoutBillBottomAddStr = C.encodeTextEnter(postParams.CheckoutBillBottomAddStr);
                     postParams.CheckoutBillTopAddStr = C.encodeTextEnter(postParams.CheckoutBillTopAddStr);
                     G.updateSaasShopParams(postParams, function (rsp) {
                         if(rsp.resultcode != '000'){
                             topTip({msg: rsp.resultmsg, type: 'danger'});
+                            $this.prop('disabled', false);
                             return;
                         }
                         $shopForm.removeClass('edit-mode').addClass('read-mode');
@@ -183,13 +220,24 @@
                                 case 'textarea':
                                     staticText = $editP.val();
                                     break;
+                                case 'input' :
+                                    var unitMap = {
+                                        FoodMakeManageQueueCount: '单',
+                                        FoodMakeWarningTimeout: '秒',
+                                        FoodMakeDangerTimeout: '秒'
+                                    };
+                                    staticText = $editP.val() + $XP(unitMap, $editP.attr('name'), '');
+                                    break;
                             }
                             $staticText.text(staticText);
                         });
+                        $this.prop('disabled', false);
+                        $this.toggleClass('hidden');
                         $this.prev('button').toggleClass('hidden');
                         topTip({msg: '保存成功', type: 'success'});
                     });
                 } else {
+                    $this.toggleClass('hidden');
                     $this.next('button').toggleClass('hidden');
                     $shopForm.removeClass('read-mode').addClass('edit-mode');
                     $switches.bootstrapSwitch('toggleDisabled', false);
@@ -230,6 +278,7 @@
                 //渲染菜品分类 Todo
                 //renderSiteFoodCategories();
 
+                //验证设备参数的form表单
                 registerDeviceForm();
 
                 //绑定模态框德尔保存事件
@@ -365,9 +414,9 @@
                 checkoutBillDetailAmountTypeVal: $XP(_.findWhere(paramsTypeDef.checkoutBillDetailAmountTypes, {value: $XP(record, 'CheckoutBillDetailAmountType', '') + ''}), 'label', ''),
                 revOrderAfterPlayVoiceTypeData: renderSelect(paramsTypeDef.revOrderAfterPlayVoiceTypes, 'RevOrderAfterPlayVoiceType', $XP(record, 'RevOrderAfterPlayVoiceType', '')),
                 revOrderAfterPlayVoiceTypeVal: $XP(_.findWhere(paramsTypeDef.revOrderAfterPlayVoiceTypes, {value: $XP(record, 'RevOrderAfterPlayVoiceType', '') + ''}), 'label', '0'),
-                TTSVoiceSpeedData: renderSelect(paramsTypeDef.TTSVoiceSpeedTypes, 'TTSVoiceSpeed', $XP(record, 'TTSVoiceSpeed', '2')),
-                TTSVoiceSpeedVal: $XP(_.findWhere(paramsTypeDef.TTSVoiceSpeedTypes, {value: $XP(record, 'TTSVoiceSpeed', '2')}), 'label', ''),
-                TTSVoiceNameList: renderSelect(_.map(_.compact($XP(record, 'TTSVoiceNameLst', '').split(',')), function(name){ return {value: name, label: name}}), 'TTSVoiceName', $XP(record, 'TTSVoiceName', ''), {name: '请选择', value: ''}),
+                //TTSVoiceSpeedData: renderSelect(paramsTypeDef.TTSVoiceSpeedTypes, 'TTSVoiceSpeed', $XP(record, 'TTSVoiceSpeed', '2')),
+                //TTSVoiceSpeedVal: $XP(_.findWhere(paramsTypeDef.TTSVoiceSpeedTypes, {value: $XP(record, 'TTSVoiceSpeed', '2')}), 'label', ''),
+                //TTSVoiceNameList: renderSelect(_.map(_.compact($XP(record, 'TTSVoiceNameLst', '').split(',')), function(name){ return {value: name, label: name}}), 'TTSVoiceName', $XP(record, 'TTSVoiceName', ''), {name: '请选择', value: ''}),
                 checkoutBillTopAddStrDecode: C.decodeTextEnter($XP(record, 'CheckoutBillTopAddStr', '')),
                 checkoutBillBottomAddStrDecode: C.decodeTextEnter($XP(record, 'CheckoutBillBottomAddStr', '')),
                 kitchenPrintBillTypeList: _.map(IX.clone(paramsTypeDef.kitchenPrintBillTypeLst), function(kitchenType) {
@@ -380,17 +429,18 @@
         }
 
         function createSwitch() {
+            var labelMap = {
+                printer: {onText: '打印', offText: '不打印'},
+                push: {onText: '推送', offText: '不推送'}
+            };
             $switches = $shopParams.find('input.status[type="checkbox"]');
             _.each($switches, function(input) {
                 var $switch = $(input),
-                    state = $switch.data('status') == 1,
-                    isPrinterSwitch = $switch.data('label') == 'printer',
-                    onLabel = isPrinterSwitch ? '打印' : '启用',
-                    offLabel = isPrinterSwitch ? '不打印' : '不启用';
+                    state = $switch.data('status') == 1;
                 $switch.bootstrapSwitch({
                     state: state,
-                    onText: onLabel,
-                    offText: offLabel,
+                    onText: $XP(labelMap[$switch.data('label')], 'onText', '启用'),
+                    offText: $XP(labelMap[$switch.data('label')], 'offText', '不启用'),
                     onColor: 'success'
                 });
             });

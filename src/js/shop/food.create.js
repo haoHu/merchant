@@ -240,7 +240,7 @@
             var createFoodData = {
                     detailDisplay: 'hidden',
                     setFoodDisplay: 'hidden',
-                    goodUnits: {tableHeads: ['', '规格名称*', '售价(￥)*', '会员价(￥)', '原价(￥)', ''], lessThanFourUnits: true},
+                    goodUnits: {tableHeads: ['', '规格名称*', '售价(￥)*', '会员价(￥)', '原价(￥)', '预估成本(￥)', ''], lessThanFourUnits: true},
                     takeawayTypes: {options: Hualala.TypeDef.FoodAttrSelect.TakeawayType, name: 'takeawayTag'},
                     hotTags: {options: Hualala.TypeDef.FoodAttrSelect.HotTag, name: 'hotTag'},
                     foodSettings: Hualala.TypeDef.FoodSettings,
@@ -272,6 +272,7 @@
             var foodDescEditor = U.createEditor('goodDescEditor');
             bindOperatorEvent(createFoodModal, {foodDescEditor: foodDescEditor});
             createFoodModal._.footer.empty().append($(compileModalFooter(false)));
+            createFoodModal._.body.find('#goodBasicInfo .food-type input').eq(0).prop('checked', true).trigger('change');
         };
 
         //图片上传本地预览
@@ -355,7 +356,7 @@
             //清空所有的units
             var unitKeys = [];
             _.each(foodParams, function (value, key) {
-                var unitKey = /^(unit|price|prePrice|vipPrice)\d$/i.test(key);
+                var unitKey = /^(unit|price|prePrice|vipPrice|foodEstimateCost)\d$/i.test(key);
                 if(unitKey) unitKeys.push(key);
             });
             foodParams = _.omit(foodParams, unitKeys);
@@ -619,46 +620,8 @@
         Hualala.Shop.BindOperatorEvent = bindOperatorEvent;
 
         function bindFormChange(modalDialog) {
-            var unitTrTpl = Handlebars.compile(Hualala.TplLib.get('tpl_good_unit_tr')),
-                modalBody = modalDialog._.body;
-            //“套餐”和“规格”两个属性是互斥的
-            modalBody.on('change', '#goodBasicInfo form input[name="isSetFood"]', function () {
-                //套餐的规格限制一个并且规格名称必须是“套”不可修改
-                var $isTempFood = modalBody.find('input[name="isTempFood"]'),
-                    $unitTable = modalBody.find('#goodBasicInfo .good-unit table'),
-                    isSet = $(this).prop('checked'),
-                    unitData = {},
-                    $isOpen = modalBody.find('input[name="isOpen"]');
-                if(isSet) {
-                    unitData = {disabled: 'disabled', unit: '套'};
-                    $isTempFood.prop('checked', false);
-                    $isOpen.bootstrapSwitch('disabled', false);
-                } else {
-                    unitData = {index: '1*', lessThanFourUnits: true};
-                }
-                $unitTable.find('tbody').empty().append(unitTrTpl(unitData));
-            }).on('change', '#goodBasicInfo form input[name="isTempFood"]', function() {
-                //临时菜的规格限制一个并且规格名称必须是“份”不可修改
-                var $isSetFood = modalBody.find('input[name="isSetFood"]'),
-                    $unitTable = modalBody.find('#goodBasicInfo .good-unit table'),
-                    $this = $(this),
-                    isTemp = $this.prop('checked'),
-                    unitData = {},
-                    $isOpen = modalBody.find('input[name="isOpen"]');
-                if(isTemp) {
-                    unitData = {disabled: 'disabled', unit: '份', price: '0'};
-                    $isSetFood.prop('checked', false);
-                    $isOpen.bootstrapSwitch('state', false);
-                    $isOpen.bootstrapSwitch('disabled', true);
-                    $this.next('span').removeClass('hidden');
-                } else {
-                    unitData = {index: '1*', lessThanFourUnits: true};
-                    $isOpen.bootstrapSwitch('disabled', false);
-                    $isOpen.bootstrapSwitch('state', true);
-                    $this.next('span').addClass('hidden');
-                }
-                $unitTable.find('tbody').empty().append(unitTrTpl(unitData));
-            }).on('change', '#goodDetailInfo form select[name="takeawayTag"]', function () {
+            var modalBody = modalDialog._.body;
+            modalBody.on('change', '#goodDetailInfo form select[name="takeawayTag"]', function () {
                 var $el = $(this),
                     $package = $el.parents('.form-group').next('.form-group.package'),
                     $packageVal = $package.find('input[name="takeoutPackagingFee"]');
@@ -669,7 +632,55 @@
                     $packageVal.val('');
                     $package.removeClass('hidden');
                 }
+            }).on('change', '.food-type input', function() {
+                var $this = $(this),
+                    $parents = $this.parents('.form-group'),
+                    $tempFoodRemind = $parents.find('.temp-food'),
+                    $incrementUnit = $parents.next(),
+                    foodType = $this.val();
+                switch (foodType) {
+                    case '0':
+                        $incrementUnit.removeClass('hidden');
+                        $tempFoodRemind.addClass('hidden');
+                        break;
+                    case '1':
+                        $incrementUnit.prop('checked', false).addClass('hidden');
+                        $tempFoodRemind.addClass('hidden');
+                        break;
+                    case '2':
+                        $incrementUnit.prop('checked', false).addClass('hidden');
+                        $tempFoodRemind.removeClass('hidden');
+                        break;
+                }
+                if(!$this.prop('disabled')) initUnitTable(foodType, $parents);
             });
+        }
+
+        function initUnitTable(foodType, $formGroup) {
+            var unitTrTpl = Handlebars.compile(Hualala.TplLib.get('tpl_good_unit_tr'));
+            var $form = $formGroup.parents('form'),
+                $isOpen = $form.find('.form-group input[name="isOpen"]'),
+                $unitTable = $form.parent().next('.good-unit').find('table'),
+                $unitTbody = $unitTable.find('tbody'),
+                unitData = {index: '1*', lessThanFourUnits: true};
+            switch (foodType) {
+                case '0':
+                    $isOpen.bootstrapSwitch('disabled', false)
+                        .bootstrapSwitch('state', true);
+                    unitData = {index: '1*', lessThanFourUnits: true};
+                    break;
+                case '1':
+                    $isOpen.bootstrapSwitch('disabled', false)
+                        .bootstrapSwitch('state', true);
+                    unitData = {disabled: 'disabled', unit: '套'};
+                    break;
+                case '2':
+                    $isOpen.bootstrapSwitch('state', false)
+                        .bootstrapSwitch('disabled', true);
+                    unitData = {disabled: 'disabled', unit: '份', price: '0'};
+                    break;
+            }
+            $unitTbody.empty().append(unitTrTpl(unitData));
         }
 
         function bindSave(modalDialog, food) {
@@ -677,15 +688,15 @@
             modalDialog._.footer.on('click', 'button[name="save-food"]', function () {
                 if (!isFoodBasicInfoValid(modalDialog)) return;
                 saveFood(modalDialog, function (records) {
-                    var $isSetFood = modalBody.find('input[name="isSetFood"]'),
-                        $isTempFood = modalBody.find('input[name="isTempFood"]'),
+                    var $foodType = modalBody.find('.food-type input'),
                         $IsNeedConfirmFoodNumberLabel = modalBody.find('input[name="IsNeedConfirmFoodNumber"]').parents('label');
                     //显示其它标签页
-                    var setFood = foodParams.isSetFood ? '' : '.setFood';
+                    var setFood = foodParams.isSetFood == 1 ? '' : '.setFood';
                     modalBody.find('ul.nav-tabs li:not('+setFood+')').removeClass('hidden');
-                    //套餐和临时菜的属性不可修改
-                    $isSetFood.prop('disabled', true);
-                    $isTempFood.prop('disabled', true);
+                    //菜品类型不可修改
+                    _.each($foodType, function (input) {
+                        $(input).prop('disabled', true);
+                    });
                     var $goodUnit = modalBody.find('.good-unit table tbody');
                     if (records && records.length > 0) {
                         var updateFood = records[0];
@@ -800,8 +811,20 @@
                 });
                 isValid = _.uniq(itemIDS).length == itemIDS.length;
                 if(!isValid) Hualala.UI.TopTip({msg: '菜品不能重复添加', type: 'danger'});
+                var   type="^[1-9][0-9]*$"; 
+                var   re   =   new   RegExp(type); 
+                var ss =$table.find('td input[name="number"]')
+                if(ss.val().match(re)==null) 
+                        { 
+                         Hualala.UI.TopTip({msg: '请输入正整数', type: 'danger'})
+                        return;
+                        } 
             }
-            return isValid;
+            
+
+
+
+        return isValid;
         }
 
         function parseSetFoodDetail($setFoodTable) {
@@ -818,6 +841,7 @@
                             foodName: $(food).find('td.foodName').text(),
                             price: priceUnit[0],
                             unit: priceUnit[1],
+                            foodEstimateCost: $(food).data('foodEstimateCost') || '0',
                             number: $(food).find('td input[name="number"]').val() || '0',
                             addPrice: $(food).find('td input[name="addPrice"]').val() || '0',
                             selected: +$(food).find('td input[name="selected"]').prop('checked')
@@ -828,10 +852,6 @@
         }
 
         function parseSwitchStatus($form) {
-            var $checkbox = $form.find('input[name="isSetFood"], input[name="isTempFood"]');
-            _.each($checkbox, function (input) {
-                foodParams[$(input).attr('name')] = $(input).prop('checked') ? 1 : 0;
-            });
             _.each($form.find('input.status'), function (input) {
                 foodParams[$(input).attr('name')] = $(input).bootstrapSwitch('state') ? 1 : 0;
             });
@@ -844,6 +864,24 @@
                 $formTaste = modalDialog._.body.find('form.form-taste');
             _.extend(foodParams, C.parseForm($formFood));
             parseSwitchStatus($formFood);
+            //处理奇葩的单选按钮和复选框
+            //允许菜品数量设置小数，小数是0.1 否则 1
+            foodParams.incrementUnit = foodParams.incrementUnit == 1 ? '0.1' : '1';
+            switch (foodParams.foodType) {
+                case '0':
+                    foodParams.isSetFood = '0';
+                    foodParams.isTempFood = '0';
+                    break;
+                case '1':
+                    foodParams.isSetFood = '1';
+                    foodParams.isTempFood = '0';
+                    break;
+                case '2':
+                    foodParams.isSetFood = '0';
+                    foodParams.isTempFood = '1';
+                    break;
+            }
+            foodParams = _.omit(foodParams, 'foodType');
             foodParams = IX.inherit(foodParams, parseUnit(modalDialog));
             if (foodParams.foodID) {
                 //解析详细信息的数据
@@ -876,14 +914,6 @@
 
         }
 
-        function displaySuccess($input) {
-            var $formGroup = $input.parents('.form-group'),
-                $status_i = $formGroup.find('i.form-control-feedback'),
-                $smallMessage = $formGroup.find('small[name="foodNameExist"]');
-            $formGroup.removeClass('has-error').addClass('has-success');
-            $status_i.removeClass('glyphicon-remove').addClass('glyphicon-ok');
-            if ($smallMessage) $smallMessage.css('display', 'none');
-        }
         //保存菜品信息
         function saveFood(modalDialog, cbFn) {
             parseFoodParams(modalDialog);
@@ -922,27 +952,29 @@
 
         var checkUnitValid = function(modal) {
             var units = modal._.body.find('.good-unit table tbody tr'),
-                isValid = true;
+                isValid = true,
+                isPriceValid = function(price) {
+                    return $.isNumeric(price || 0) && parseFloat(price || 0) >= 0;
+                };
             _.each(units, function (unit, index) {
                 var unitName = $.trim($(unit).find('td input[name="unit"]').val()),
                     unitPrice = $(unit).find('td input[name="price"]').val(),
                     unitVipPrice = $(unit).find('td input[name="vipPrice"]').val(),
-                    unitPrePrice = $(unit).find('td input[name="prePrice"]').val();
+                    unitPrePrice = $(unit).find('td input[name="prePrice"]').val(),
+                    unitEstimatePrice = $(unit).find('td input[name="foodEstimateCost"]').val();
                 if (!unitName) {
                     topTip({msg: '规格'+(index+1)+'的名称不能为空', type: 'danger'});
                     isValid = false;
                     return;
-                } else if(!$.isNumeric(unitPrice || 0) || parseFloat(unitPrice) < 0 ||
-                    !$.isNumeric(unitVipPrice || 0) || parseFloat(unitVipPrice) < 0 ||
-                    !$.isNumeric(unitPrePrice || 0) || parseFloat(unitPrePrice) < 0) {
-                    topTip({msg: '价格必须为不小于0的数字', type: 'danger'});
-                    isValid = false;
-                    return;
-                } else if (!unitPrice) {
+                }  else if (!unitPrice) {
                     topTip({msg: '规格'+(index+1)+'的售价不能为空', type: 'danger'});
                     isValid = false;
                     return;
-                } else if (unitVipPrice && parseFloat(unitPrice) < parseFloat(unitVipPrice)) {
+                } else if(!isPriceValid(unitPrice) || !isPriceValid(unitVipPrice) || !isPriceValid(unitPrePrice) || !isPriceValid(unitEstimatePrice)) {
+                    topTip({msg: '价格必须为不小于0的数字', type: 'danger'});
+                    isValid = false;
+                    return;
+                }else if (unitVipPrice && parseFloat(unitPrice) < parseFloat(unitVipPrice)) {
                     topTip({msg: '规格'+(index+1)+'会员价不能大于售价', type: 'danger'});
                     isValid = false;
                     return;

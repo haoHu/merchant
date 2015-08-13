@@ -96,51 +96,51 @@
 	.x-icon-64_youzheng();
 }
 // 中国光大银行
-.x-get-icon-pos (@size, @name) when (@name = CEBB) and (@size = 16) {
+.x-get-icon-pos (@size, @name) when (@name = CEB) and (@size = 16) {
 	.x-icon-16_guangda();
 }
-.x-get-icon-pos (@size, @name) when (@name = CEBB) and (@size = 32) {
+.x-get-icon-pos (@size, @name) when (@name = CEB) and (@size = 32) {
 	.x-icon-32_guangda();
 }
-.x-get-icon-pos (@size, @name) when (@name = CEBB) and (@size = 48) {
+.x-get-icon-pos (@size, @name) when (@name = CEB) and (@size = 48) {
 	.x-icon-48_guangda();
 }
 .x-get-icon-pos (@size, @name) when (@name = CEBB) and (@size = 64) {
 	.x-icon-64_guangda();
 }
-.x-get-icon-pos (@size, @name) when (@name = CEBB) and (@size = 80) {
+.x-get-icon-pos (@size, @name) when (@name = CEB) and (@size = 80) {
 	.x-icon-64_guangda();
 }
 // 广发银行
-.x-get-icon-pos (@size, @name) when (@name = CGB) and (@size = 16) {
+.x-get-icon-pos (@size, @name) when (@name = GDB) and (@size = 16) {
 	.x-icon-16_guangfa();
 }
-.x-get-icon-pos (@size, @name) when (@name = CGB) and (@size = 32) {
+.x-get-icon-pos (@size, @name) when (@name = GDB) and (@size = 32) {
 	.x-icon-32_guangfa();
 }
-.x-get-icon-pos (@size, @name) when (@name = CGB) and (@size = 48) {
+.x-get-icon-pos (@size, @name) when (@name = GDB) and (@size = 48) {
 	.x-icon-48_guangfa();
 }
-.x-get-icon-pos (@size, @name) when (@name = CGB) and (@size = 64) {
+.x-get-icon-pos (@size, @name) when (@name = GDB) and (@size = 64) {
 	.x-icon-64_guangfa();
 }
-.x-get-icon-pos (@size, @name) when (@name = CGB) and (@size = 80) {
+.x-get-icon-pos (@size, @name) when (@name = GDB) and (@size = 80) {
 	.x-icon-64_guangfa();
 }
 // 民生银行
-.x-get-icon-pos (@size, @name) when (@name = CMBC) and (@size = 16) {
+.x-get-icon-pos (@size, @name) when (@name = CMSB) and (@size = 16) {
 	.x-icon-16_minsheng();
 }
-.x-get-icon-pos (@size, @name) when (@name = CMBC) and (@size = 32) {
+.x-get-icon-pos (@size, @name) when (@name = CMSB) and (@size = 32) {
 	.x-icon-32_minsheng();
 }
-.x-get-icon-pos (@size, @name) when (@name = CMBC) and (@size = 48) {
+.x-get-icon-pos (@size, @name) when (@name = CMSB) and (@size = 48) {
 	.x-icon-48_minsheng();
 }
-.x-get-icon-pos (@size, @name) when (@name = CMBC) and (@size = 64) {
+.x-get-icon-pos (@size, @name) when (@name = CMSB) and (@size = 64) {
 	.x-icon-64_minsheng();
 }
-.x-get-icon-pos (@size, @name) when (@name = CMBC) and (@size = 80) {
+.x-get-icon-pos (@size, @name) when (@name = CMSB) and (@size = 80) {
 	.x-icon-64_minsheng();
 }
 // CDB国家开发银行
@@ -239,6 +239,22 @@
 .x-get-icon-pos (@size, @name) when (@name = HSBC) and (@size = 80) {
 	.x-icon-64_huifeng();
 }
+// 中信银行
+.x-get-icon-pos (@size, @name) when (@name = CCB) and (@size = 16) {
+	.x-icon-16_zhongxin();
+}
+.x-get-icon-pos (@size, @name) when (@name = CCB) and (@size = 32) {
+	.x-icon-32_zhongxin();
+}
+.x-get-icon-pos (@size, @name) when (@name = CCB) and (@size = 48) {
+	.x-icon-48_zhongxin();
+}
+.x-get-icon-pos (@size, @name) when (@name = CCB) and (@size = 64) {
+	.x-icon-64_zhongxin();
+}
+.x-get-icon-pos (@size, @name) when (@name = CCB) and (@size = 80) {
+	.x-icon-64_zhongxin();
+}
 // 其它银行
 .x-get-icon-pos (@size, @name) when (@name = Other) and (@size = 16) {
 	.x-icon-16_qita();
@@ -279,14 +295,15 @@
 .loop-bank-icons(@x-bank-icons, ABC);
 .loop-bank-icons(@x-bank-icons, ICBC);
 .loop-bank-icons(@x-bank-icons, PSBC);
-.loop-bank-icons(@x-bank-icons, CEBB);
-.loop-bank-icons(@x-bank-icons, CGB);
-.loop-bank-icons(@x-bank-icons, CMBC);
+.loop-bank-icons(@x-bank-icons, CEB);
+.loop-bank-icons(@x-bank-icons, GDB);
+.loop-bank-icons(@x-bank-icons, CMSB);
 .loop-bank-icons(@x-bank-icons, CDB);
 .loop-bank-icons(@x-bank-icons, CIB);
 .loop-bank-icons(@x-bank-icons, BCM);
 .loop-bank-icons(@x-bank-icons, HXB);
 .loop-bank-icons(@x-bank-icons, SPDB);
 .loop-bank-icons(@x-bank-icons, HSBC);
+.loop-bank-icons(@x-bank-icons, CCB);
 .loop-bank-icons(@x-bank-icons, Other);
 

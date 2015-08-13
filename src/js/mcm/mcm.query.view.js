@@ -689,7 +689,7 @@
 		// 加载礼品类型下拉列表选项
 		initGiftTypeComboOpts : function (curGiftType, selectedGiftTypes) {
 			var self = this,
-                allGiftTypes = Hualala.TypeDef.MCMDataSet.GiftTypes,
+                allGiftTypes = _.reject(Hualala.TypeDef.MCMDataSet.GiftTypes, function(giftType) {return giftType.value == 20;}),//去掉菜品优惠券
 				giftTypes = selectedGiftTypes ? _.select(allGiftTypes, function (giftType) {return _.contains(selectedGiftTypes, giftType.value);}) : allGiftTypes;
 			if (IX.isEmpty(giftTypes)) return;
 			giftTypes = _.map(giftTypes, function (item) {

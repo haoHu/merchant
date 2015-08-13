@@ -155,5 +155,96 @@
 		});
 		return roles;
 	};
-	
+
+    Test.roleRights = {
+        "data": {
+            "page": {
+                "pageCount": 0,
+                "pageNo": 0,
+                "pageSize": 0,
+                "totalSize": 0
+            },
+            "records": [
+                {
+                    "isActive": "1",
+                    "itemID": "4",
+                    "rightDescription": "活动页面",
+                    "pageRight": "mcmEventMgr",
+                    "rightName": "摇奖活动",
+                    "rightType": "lucky-joy"
+                },
+                {
+                    "isActive": "1",
+                    "itemID": "5",
+                    "rightDescription": "活动页面",
+                    "pageRight": "mcmEventMgr",
+                    "rightName": "免费领取",
+                    "rightType": "free-get"
+                },
+                {
+                    "isActive": "1",
+                    "itemID": "6",
+                    "rightDescription": "活动页面",
+                    "pageRight": "mcmEventMgr",
+                    "rightName": "报名活动",
+                    "rightType": "apply-evt"
+                },
+                {
+                    "isActive": "1",
+                    "itemID": "7",
+                    "rightDescription": "活动页面",
+                    "pageRight": "mcmEventMgr",
+                    "rightName": "积分兑换",
+                    "rightType": "credit-exchange"
+                },
+                {
+                    "isActive": "1",
+                    "itemID": "8",
+                    "rightDescription": "活动页面",
+                    "pageRight": "mcmEventMgr",
+                    "rightName": "营销红包",
+                    "rightType": "marketing-redenvelope"
+                },
+                {
+                    "isActive": "1",
+                    "itemID": "9",
+                    "rightDescription": "活动页面",
+                    "pageRight": "mcmEventMgr",
+                    "rightName": "消费红包",
+                    "rightType": "consume-redenvelope"
+                },
+                {
+                    "isActive": "1",
+                    "itemID": "10",
+                    "rightDescription": "活动页面",
+                    "pageRight": "mcmEventMgr",
+                    "rightName": "群发短信",
+                    "rightType": "mass-texting"
+                }
+            ]
+        },
+        "resultcode": "000",
+        "resultmsg": ""
+    };
+    Test.accountRights = {
+        "data": {
+            "page": {
+                "pageCount": 0,
+                "pageNo": 0,
+                "pageSize": 0,
+                "totalSize": 0
+            },
+            "records": [
+                {
+                    "accountID": "247",
+                    "disabled": "2,3,4",
+                    "disabledName": "credit-exchange,apply-evt,free-get",
+                    "pageRight": "mcmEventMgr",
+                    "roleType": "manager"
+                }
+            ]
+        },
+        "resultcode": "000",
+        "resultmsg": ""
+    };
 })();

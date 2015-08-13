@@ -83,6 +83,20 @@
 				}
 			}
 		},
+		//促销的时段
+		timeID  : {
+			type : 'radiogrp',
+			label : '时段限制',
+			defaultVal : "0",
+			options : Hualala.TypeDef.ShopPromotionDataSet.timeIDTypes,
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "促销的时段限制不能为空"
+					}
+				}
+			}
+		},
 		time1: {
 			type : 'section',
 			label : '时段限制1',
@@ -191,7 +205,7 @@
 				id : k + '_' + IX.id(),
 				options : ops,
 				labelClz : labelClz,
-				clz : k=='supportOrderType'?'col-sm-8':'col-sm-7'
+				clz : k=='supportOrderType'||'timeID'?'col-sm-8':'col-sm-7'
 			}));
 		} else if (type == 'radioDiv') {
 			var ops = _.map($XP(el, 'options'), function (op) {
@@ -257,7 +271,7 @@
 		});
 		return ret;
 	};
-
+    /*促销方式view层*/
 	var PromotionBaseInfoStepView = Stapes.subclass({
 		constructor : function (cfg) {
 			this.mode = $XP(cfg, 'mode', '');
@@ -269,9 +283,8 @@
 
 			this.mapFormElsData = $XF(cfg, 'mapFormElsData');
 			if (!this.model || !this.parentView) {
-				throw("Gift Base Info View init faild!");
+				throw("promotion Base Info View init faild!");
 			}
-
 			this.loadTemplates();
 			this.initBaseCfg();
 			this.formParams = this.model.getAll();
@@ -425,7 +438,7 @@
 			'initPromotionBaseInfoStep',
 			'initPromotionRuleStep',
 			'initPromotionTimeStep',
-			'initEventOpenStep'
+			'initPromotionOpenStep'
 		];
 		if (cIdx == -1 && nIdx == 0) return true;
 		if (!nextView) {

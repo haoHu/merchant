@@ -51,6 +51,7 @@
             defaultAvatar = G.IMAGE_ROOT + '/dino80.png';
         
         var params = {cardID: cardID},
+            customerDetail = {},
             $tpl = $(tplLib.get('tpl_crm_detail')).appendTo($container),
             $basicInfo = $tpl.filter('.basic-info'),
             $trans = $tpl.find('#transDetail'),
@@ -70,8 +71,9 @@
         getData(params, 'getCrmCardLogs', renderCrmCardLogs);
         renderCrmAccountChange();
         renderCrmSendGift();
+        bindBasicUpdate();
 
-        function bindBasicUpdate(data) {
+        function bindBasicUpdate() {
             var bindSaveBasicInfo = function(modalDialog) {
                 modalDialog._.footer.on('click', '.btn.btn-ok', function() {
                     var $this = $(this),
@@ -79,6 +81,7 @@
                         formParams = C.parseForm($form),
                         birthday = _.toArray(_.pick(formParams, 'year', 'month', 'day')).join('-'),
                         postParams = IX.inherit(params, {customerBirthday: birthday}, _.omit(formParams, 'year', 'month', 'day'));
+                    if(!$form.data('bootstrapValidator').validate().isValid()) return;
                     G.updateCrmBasicInfo(postParams, function(rsp){
                         if(rsp.resultcode != '000') {
                             topTip({msg: rsp.resultmsg, type: 'danger'});
@@ -108,18 +111,16 @@
                     yearSelect = getDigitalSelectData('year', '年', 1949, (new Date()).getFullYear() - 1949 + 1),
                     monthSelect = getDigitalSelectData('month', '月', 1, 12),
                     daySelect = getDigitalSelectData('day', '日', 1, 31),
-                    customerBirthday = $XP(data, 'customerBirthday', '') && $XP(data, 'customerBirthday', '').split('-');
-                if(customerBirthday.length > 0) {
-                    _.findWhere(yearSelect.options, {value: customerBirthday[0]}).selected = 'selected';
-                    _.findWhere(monthSelect.options, {value: customerBirthday[1]}).selected = 'selected';
-                    _.findWhere(daySelect.options, {value: customerBirthday[2]}).selected = 'selected';
-                }
-                if(data.customerSex) _.findWhere(radioData.inputs, {value: data.customerSex}).checked = 'checked';
+                    customerBirthday = ($XP(customerDetail, 'customerBirthday', '') || '1990-01-01').split('-');
+                _.findWhere(yearSelect.options, {value: customerBirthday[0]}).selected = 'selected';
+                _.findWhere(monthSelect.options, {value: customerBirthday[1]}).selected = 'selected';
+                _.findWhere(daySelect.options, {value: customerBirthday[2]}).selected = 'selected';
+                _.findWhere(radioData.inputs, {value: customerDetail.customerSex || '2'}).checked = 'checked';
                 var editBasicInfoTpl = Handlebars.compile(tplLib.get('tpl_crm_basic_info')),
                     modalDialog = new Hualala.UI.ModalDialog({
                         title: '修改会员基本信息',
                         hideCloseButton: false,
-                        html: $(editBasicInfoTpl(IX.inherit(data, {years: yearSelect, months: monthSelect, days: daySelect, sexRadio: radioData}))),
+                        html: $(editBasicInfoTpl(IX.inherit(customerDetail, {years: yearSelect, months: monthSelect, days: daySelect, sexRadio: radioData}))),
                         backdrop: 'static'
                     }).show(),
                     modalBody = modalDialog._.body;
@@ -168,7 +169,6 @@
                 $div.append($ul);
             }
             $basicInfo.append($div);
-            bindBasicUpdate(data);
         }
         
         function renderCrmTransDetail(records)
@@ -504,7 +504,9 @@
                     rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
                     return;
                 }
-                var data = callServer == 'getCrmDetail' ? rsp.data : rsp.data.records || [];
+                var isGetCrmDetail = callServer == 'getCrmDetail',
+                    data = isGetCrmDetail ? rsp.data : rsp.data.records || [];
+                if(isGetCrmDetail) customerDetail = data;
                 cbFn(data);
             });
         }

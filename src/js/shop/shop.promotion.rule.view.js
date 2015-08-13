@@ -5,7 +5,7 @@
 		toptip = Hualala.UI.TopTip;
 
 	var PromotionRulesSetHT = new IX.IListManager();
-	var PromotionRulesSetFormKeys = "discountScope,discountScale,discountRange,remark,chkPresentInfo,presentInfo,chkVoucher,voucherItemID,voucherValue,voucherDesc,voucherNum,validityDays,voucherType".split(',');
+	var PromotionRulesSetFormKeys = "discountScope,discountScale,discountRange,remark,chkFreeAmount,freeAmount,chkPresentInfo,presentInfo,chkVoucher,voucherItemID,voucherValue,voucherDesc,voucherNum,validityDays,voucherType".split(',');
 	var PromotionLevelCount = 3;
 	var PromotionLevelNames = ["", "档次一","档次二","档次三"];
 	HSP.PromotionLevelNames = PromotionLevelNames;
@@ -51,6 +51,32 @@
 			defaultVal : "",
 			validCfg : {
 				validators : {
+				}
+			}
+		},
+		//减免freeAmount
+		chkFreeAmount :{
+			type : "checkboxgrp",
+			label : "",
+			defaultVal : "",
+			options : [{
+				value : 1, label : '减免'
+			}],
+			validCfg : {
+				validators : {}
+			}
+		},
+		freeAmount: {
+			type : "text",
+			label : "减免金额",
+			prefix : '￥',
+  			surfix : '元',
+			defaultVal : "",
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "减免金额不能为空"
+					}
 				}
 			}
 		},
@@ -231,55 +257,133 @@
 			ret = [];
 		//当stageType为2的时候,即有档次的选择的时候
 		if(stageType==2){
-			if(rulesJson.stage){
-				for (var i = 1; i <= rulesJson.stage.length; i++) {
-					var promotionLevelName = promotionLevelNames[i],
-						panelClz = 'mcm-evtgift-panel ';
-					var stage = rulesJson.stage[i-1];
-					if ((stage != 0 && !IX.isEmpty(stage)) || i == 1) {
-						panelClz += ' isActive ';
-					}
-					var addbtn = {clz : 'btn-warning btn-add', name : 'addGift', label : '添加新档'},
-						delbtn = {clz : 'btn-default btn-del', name : 'deleteGift', label : '删除' + promotionLevelName};
-					var giftSet = {
-						promotionLevelName : promotionLevelName,
-						clz : panelClz,
-						btns : i == 1 ? [addbtn] : (i == PromotionLevelCount ? [delbtn] : [delbtn,addbtn])
-					};
-					var form = _.map(formKeys, function (k) {
-						var key = k + '_' + i,
-							elCfg = PromotionRulesSetHT.get(key),
-							type = $XP(elCfg, 'type');
-						var v = null;
-						if (type == 'checkboxgrp' && k == 'discountScope') {
-							rulesJson
-							var v = self.model.get('discountScope') || 0,
+			for (var i = 1; i <= PromotionLevelCount; i++) {
+				var promotionLevelName = promotionLevelNames[i],
+					panelClz = 'mcm-evtgift-panel ';
+				var stage = rulesJson.stage;
+				if ((stage != undefined && !IX.isEmpty(stage)) || i == 1) {
+					panelClz += ' isActive ';
+				}
+				var addbtn = {clz : 'btn-warning btn-add', name : 'addGift', label : '添加新档'},
+					delbtn = {clz : 'btn-default btn-del', name : 'deleteGift', label : '删除' + promotionLevelName};
+				var giftSet = {
+					promotionLevelName : promotionLevelName,
+					clz : panelClz,
+					btns : i == 1 ? [addbtn] : (i == PromotionLevelCount ? [delbtn] : [delbtn,addbtn])
+				};
+				var form = _.map(formKeys, function (k) {
+					var key = k + '_' + i,
+						elCfg = PromotionRulesSetHT.get(key),
+						type = $XP(elCfg, 'type');
+					var v = null;
+					if (type == 'checkboxgrp') {
+						switch(k) {
+							//折扣勾选项
+	                        case "discountScope":
+	                        	var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1][k]:0,
+	                        		options = _.map($XP(elCfg, 'options'), function (op) {
+									return IX.inherit(op, {
+										checked : v > 0 ? 'checked' : ''
+									});
+								});
+								return IX.inherit(elCfg, {
+									options : options
+								});
+	                            break;
+	                        //减免金额勾选项
+	                        case "chkFreeAmount" :
+	                        	var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1].freeAmount:0,
 								options = _.map($XP(elCfg, 'options'), function (op) {
 									return IX.inherit(op, {
 										checked : v > 0 ? 'checked' : ''
 									});
 								});
+								return IX.inherit(elCfg, {
+									options : options
+								});
+	                            break;
+	                        //赠送备注勾选
+	                        case "chkPresentInfo":
+	                        	var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1].presentInfo:0,
+								options = _.map($XP(elCfg, 'options'), function (op) {
+									return IX.inherit(op, {
+										checked : v > 0 ? 'checked' : ''
+									});
+								});
+								return IX.inherit(elCfg, {
+									options : options
+								});
+	                            break;
+	                        //返券勾选
+	                        case "chkVoucher" :
+	                        	var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1].voucherDesc:0,
+								options = _.map($XP(elCfg, 'options'), function (op) {
+									return IX.inherit(op, {
+										checked : v > 0 ? 'checked' : ''
+									});
+								});
+								return IX.inherit(elCfg, {
+									options : options
+								});
+	                            break;
+                    	}
+					} else if(type == 'textarea') {
+						var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1].remark:0;
+						return IX.inherit(elCfg, {
+			                value : Hualala.Common.decodeTextEnter(v || '') || $XP(elCfg, 'dafaultVal')
+			            });
+					} else if(type=='radiogrp') {
+						if(k=='discountRange'){
+							var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1].remark:0,
+								options = _.map($XP(elCfg, 'options'), function (op) {
+									return IX.inherit(op, {
+										checked : v > 0 ?'' :'checked'
+									});
+								});
 							return IX.inherit(elCfg, {
 								options : options
 							});
-						} else {
-							return IX.inherit(elCfg, {
-								value : self.model.get(key) || $XP(elCfg, 'defaultVal')
-							});
 						}
-					});
-					ret.push(IX.inherit(giftSet, {
-						isDivForm : true,
-						formClz : 'mcm-evtgift-form',
-						items : form
-					}));
-				}	
+					} else if(type=='text'){
+						switch(k) {
+	                        case "discountScale":
+	                       	var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1][k]:0,
+	                       		label = parseFloat(v.toString().movePoint(1)).toString();
+	                        	return IX.inherit(elCfg, {
+									value : label || $XP(elCfg, 'defaultVal'),
+									hidden: v==0 ? "hidden": ""
+								});
+	                            break;
+	                        case "freeAmount" :
+	                        case "presentInfo":
+	                        case "voucherNum" :
+	                        case "voucherDesc" :
+	                        	var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1][k]:0;
+	                        	return IX.inherit(elCfg, {
+									value : v || $XP(elCfg, 'defaultVal'),
+									hidden: v==0 ? "hidden": ""
+								});
+	                            break;
+                    	}
+					} else {
+						var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1][k]:0;
+						return IX.inherit(elCfg, {
+							value : v || $XP(elCfg, 'defaultVal')
+						});
+					}
+				});
+				ret.push(IX.inherit(giftSet, {
+					isDivForm : true,
+					formClz : 'mcm-evtgift-form',
+					items : form
+				}));
 			}
-			//当没有数据的形式下
-			else{
-
-			}
-
+			return {
+				hideTip :'hidden',
+				giftSetTitle :stageType == 2 ? '档次设置' :'促销规则设置',
+				hidden : "",
+				gifts : ret
+			};	
 		}
 		//当只有stageType为0和1的时候。没有档次选择
 		else{
@@ -287,15 +391,27 @@
 				panelClz += ' singlegift ';
 			}
 		}
-		return {
-			hideTip :'hidden',
-			giftSetTitle :stageType == 2 ? '档次设置' :'促销规则设置',
-			hidden : "",
-			gifts : ret
-		};
+
 	};
-	var PromotionRuleStepView = HSP.PromotionBaseInfoStepView.subclass({
-		constructor : HSP.PromotionBaseInfoStepView.prototype.constructor
+	var PromotionRuleStepView = Stapes.subclass({
+		constructor : function (cfg) {
+			this.mode = $XP(cfg, 'mode', '');
+			this.container = $XP(cfg, 'container', '');
+			this.parentView = $XP(cfg, 'parentView');
+			this.model = $XP(cfg, 'model');
+			this.successFn = $XF(cfg, 'successFn');
+			this.failFn = $XF(cfg, 'failFn');
+			this.mapFormElsData = $XF(cfg, 'mapFormElsData');
+			if (!this.model || !this.parentView) {
+				throw("Gift Base Info View init faild!");
+			}
+			this.loadTemplates();
+			this.initBaseCfg();
+			this.formParams = this.model.getAll();
+			this.renderForm();
+			this.initUIComponents();
+			this.bindEvent();
+		}
 	});
 	PromotionRuleStepView.proto({
 		loadTemplates : function () {
@@ -361,7 +477,7 @@
 				IX.Debug.info("DEBUG: 促销规则 Form Params:");
 				IX.Debug.info(formParams);
 				
-				self.model.emit('editEvent', {
+				self.model.emit('saveCache', {
 					params : formParams,
 					failFn : function () {
 						self.failFn.call(self);
@@ -370,7 +486,7 @@
 						self.successFn.call(self);
 
 					}
-				});
+				})
 			});
 			self.container.on('change', ':text[name^=EGiftName]', function (e) {
 				var $txt = $(this),
@@ -492,6 +608,12 @@
 			}
 			return ret;
 		},
+		refresh : function () {
+			var self = this;
+			self.renderForm();
+			/*this.formParams = this.model.getAll();
+			self.initUIComponents();*/
+		},
 		delete : function (successFn, faildFn) {
 			var self = this;
 			self.model.emit('deleteItem', {
@@ -507,7 +629,6 @@
 	});
 
 	HSP.PromotionRuleStepView = PromotionRuleStepView;
-
 
 	/**
 	 * 创建向导中活动奖品步骤

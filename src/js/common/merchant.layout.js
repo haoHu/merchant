@@ -12,8 +12,8 @@
 		{name : 'crm', title : '会员', label : '概览•报表•参数•营销', brickClz : 'home-brick-md-1', itemClz : 'brick-item', icon : 'icon-crm'},
 		{name : 'mcm', title : '营销', label : '礼品•营销活动', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-mcm'},
         
-        {brickClz : 'home-brick-md-3'},
-        {name : 'saas', title : '收银软件', label : '商品', brickClz : 'home-brick-md-1', itemClz : 'brick-item brick-item-low'},
+        {brickClz : 'home-brick-md-2'},
+        {name : 'saas', title : '云餐饮管理系统', label : '商品', brickClz : 'home-brick-md-2', itemClz : 'brick-item brick-item-low'},
         {name : 'boss', title : '老板通', label : '下载', brickClz : 'home-brick-md-2', itemClz : 'brick-item brick-item-low', icon : 'icon-boss'}
     ];
 	function isSupportedBrowser () {

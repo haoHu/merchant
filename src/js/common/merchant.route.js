@@ -493,7 +493,7 @@
         //saas功能模块
 		{
 			name : "saas", path : "/#saas", reg : /saas$/, bodyClz : "",
-			PageInitiator : "Hualala.Saas.SaasInit", parentName : "main", label : "收银软件"
+			PageInitiator : "Hualala.Saas.SaasInit", parentName : "main", label : "云餐厅管理"
 		},
         {
 			name : "saasReceivables", path : "/#saas/admin/receivables",

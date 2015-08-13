@@ -161,7 +161,7 @@
 
 })(jQuery, window);
 (function ($, window) {
-	IX.ns("Hualala.User");
+	IX.ns("Hualala.Shop");
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
 

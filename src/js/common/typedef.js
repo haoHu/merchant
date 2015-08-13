@@ -40,7 +40,7 @@
         {name : 'more', label : '更多', type: "subnav",
 			subnavs : [
 				//saas
-				{name : 'saas', label : '收银软件', type:"link"},
+				{name : 'saas', label : '云餐厅管理', type:"link"},
 				{name : "agent", label : "代理程序", type : "link"},
 				{name : "user", label : "权限", type : "link"}
 			]
@@ -326,11 +326,16 @@
 			{value : "4", label : "USB"},
 			{value : "5", label : "蓝牙"}
 		],
-		//打印机纸张宽度 80，76，58
+		//打印机纸张宽度 80,58
 		printerPaperSizeTypes :[
 			{value: "58", label:"58毫米"},
-			{value: "76", label:"76毫米"},
+			//{value: "76", label:"76毫米"},
 			{value: "80", label:"80毫米"}
+		],
+		AreaprintCopies :[
+			{value : "1", label : "一份"},
+			{value : "2", label : "两份"},
+			{value : "3", label : "三份"},
 		]
 	};
 	Hualala.TypeDef.ShopPromotionDataSet = {
@@ -343,6 +348,16 @@
 			{value : 1, label : "外送/自提"},
 			{value : 3, label : "店内自助"}
 		],
+		//时段限制早餐1午餐2下午茶3晚餐4夜宵5
+		timeIDTypes :[
+			{value : "0", label : "不限制"},
+			{value : "1", label : "早餐"},
+			{value : "2", label : "午餐"},
+			{value : "3", label : "下午茶"},
+			{value : "4", label : "晚餐"},
+			{value : "5", label : "夜宵"}
+		],
+
 		/*tag : 标签（0无，1券，2减，3送，4折，5惠）*/
 		tagTypes : [
 			{value : "0", label : "无"},
@@ -417,24 +432,26 @@
 		{
 			id : 10, label : "订座点菜", name : "commonreserve_order", businessIsSupported : true, 
 			callServer : 'Hualala.Global.setCommonReserveParams',
-			formKeys : 'foodUITemplate,advanceTime,noticeTime,minAmount,reserveTableTime,reserveTableDesc,payMethod,adsID'
+			formKeys : 'foodUITemplate,advanceTime,noticeTime,minAmount,reserveTableTime,reserveTableDesc,payMethod,promotionScope,adsID'
 		},
 		{id : 11, label : "闪吃", name : "justeat_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setJustEatParams',
-			formKeys : 'foodUITemplate,advanceTime,noticeTime,minAmount,holidayFlag,servicePeriods,reserveTableTime,reserveTableDesc,payMethod,adsID'
+			formKeys : 'foodUITemplate,advanceTime,noticeTime,minAmount,holidayFlag,servicePeriods,reserveTableTime,reserveTableDesc,payMethod,promotionScope,adsID'
 		},
 		{id : 20, label : "外送", name : "takeaway_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setTakeAwayParams',
 			// formKeys : 'advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,holidayFlag,servicePeriods,takeawayDeliveryAgent,takeawayDeliveryTime,takeawayScope,takeawayScopeDesc,payMethod'
-			formKeys : 'foodUITemplate,holidayFlag,servicePeriods,servicePeriods2,takeawayDeliveryTime,advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,takeawayScope,payMethod,adsID'
+			formKeys : 'foodUITemplate,holidayFlag,servicePeriods,servicePeriods2,takeawayDeliveryTime,advanceTime,noticeTime,minAmount,serviceAmount,freeServiceAmount,takeawayScope,payMethod,promotionScope,adsID'
 		},
 		{id : 21, label : "自提", name : "takeout_order", businessIsSupported : true,
 			callServer : 'Hualala.Global.setTakeOutParams',
 			// formKeys : 'advanceTime,freeServiceAmount,holidayFlag,minAmount,serviceAmount,servicePeriods,noticeTime,payMethod'
-			formKeys : 'foodUITemplate,holidayFlag,servicePeriods,servicePeriods2,noticeTime,advanceTime,minAmount,payMethod,adsID'
+			formKeys : 'foodUITemplate,holidayFlag,servicePeriods,servicePeriods2,noticeTime,advanceTime,minAmount,payMethod,promotionScope,adsID'
 		},
 		{id : 1000, label : "会员卡", name : "crm", businessIsSupported : true, callServer : null, formKeys : null},
-		{id : 2000, label : "老板通", name : "bi", businessIsSupported : true, callServer : null, formKeys : null}
+		{id : 2000, label : "老板通", name : "bi", businessIsSupported : true, callServer : null, formKeys : null},
+		{id : 3000, label : "云餐厅", name : "saas", businessIsSupported : true, callServer : null, formKeys : null}
+
 		// {id : 42, label : "店内买单", name : "spot_pay"}
 	];
 
@@ -491,6 +508,12 @@
 			desc : "开启此功能后餐厅老板即可通过《哗啦啦-饮食老板通》APP随时随地掌握本店营业实况、运营趋势等重要经营数据", 
 			switchOn : "开启此功能需要店内餐饮软件与哗啦啦接口打通，并已在店内安装了哗啦啦代理程序否则将无法使用此功能！", 
 			switchOff : "关闭此功能将导致老板在《哗啦啦-饮食老板通》APP中无法查到本店数据信息！"
+		},
+		{
+			id : 3000, name : "saas", title : "收银系统", 
+			desc : "开启此功能，将可以使用线上线下一体化的餐饮O2O系统", 
+			switchOn : "开启此功能，将可以使用线上线下一体化的餐饮O2O系统", 
+			switchOff : "关闭此功能后，门店将不能在进行点单收银接单操作"
 		}
 	];
 
@@ -499,11 +522,11 @@
 		{value : 1, label : "仅支持线下支付"},
 		{value : 2, label : "线上及线下支付均支持"},
 	];
-	/*店铺促销优惠支持0,只支持网上支付促销;1,只支持到店付款;2,网上及到店付均支持*/
+	/*店铺促销优惠支持0,只支持网上支付促销;1,只支持到店付款;2,网上及到店付均支持
+	 *BUG #6102 【Dohko-dianpu】店铺优惠支付业务取消只对到付的支持*/
 	Hualala.TypeDef.PromotionScopeOptions = [
-		{value : 0, label : "只支持网上支付"},
-		{value : 1, label : "只支持到店付款"},
-		{value : 2, label : "网上及到店付均支持"},
+		{value : 0, label : "只支持网上促销"},
+		{value : 2, label : "网上及到店付促销均支持"},
 	];
 
 	Hualala.TypeDef.PayMethodAtShopOptions = [
@@ -611,11 +634,11 @@
 			label: "中国邮政储蓄"
 		},
 		{
-			value: "CEBB",
+			value: "CEB",
 			label: "中国光大银行"
 		},
 		{
-			value: "CGB",
+			value: "GDB",
 			label: "广发银行"
 		},
 		{
@@ -623,7 +646,7 @@
 			label: "招商银行"
 		},
 		{
-			value: "CMBC",
+			value: "CMSB",
 			label: "民生银行"
 		},
 		{
@@ -649,6 +672,10 @@
 		{
 			value: "HSBC",
 			label: "汇丰银行"
+		},
+		{
+			value: "CCB",
+			label: "中信银行"
 		},
 		{
 			value: "Other",
@@ -1066,7 +1093,7 @@
 			{value: 'CJD', label: '催叫单'},
 			{value: 'TCD', label: '退菜单'},
 			{value: 'HTD', label: '换台单'},
-			{value: 'ZCD', label: '转菜单'}
+			{value: 'CHT', label: '转菜单'}
 		],
 		//站点业态模式
 		siteBizModelTypes: [

@@ -150,6 +150,9 @@
 		["updateRoleBinding", "/shop/addOrUpdateChildAccount.ajax", "", "POST"],
 		["queryRoleBinding", "/shop/queryChildAccount.ajax", "", "POST"],
 		["bindMobileInShopGroupChildAccount", "/shop/boundMobile.ajax", "", "POST"],
+        ["queryRoleRight", "/shop/queryShopPageRights.ajax", "", "POST"],
+        ["queryAccountRight", "/shop/queryShopGroupChildAccountPageRight.ajax", "", "POST"],
+        ["updateAccountRight", "/shop/updateShopGroupChildAccountPageRight.ajax", "", "POST"],
 
         /*CRM Module*/
 		["queryCrmMemberSchema", "/crm/cardOverView.ajax", "", "POST"],
@@ -341,6 +344,7 @@
 		"unbindMobileInShopGroupChildAccount", "resetPWDInShopGroupChildAccount", 
 		"updateShopGroupChildAccount", "addShopGroupChildAccount",
 		"updateRoleBinding", "queryRoleBinding", "bindMobileInShopGroupChildAccount",
+        "queryRoleRight", "queryAccountRight", "updateAccountRight",
 		"queryCrmMemberSchema",
 
         "getCrmParams", "setCrmParams", "getCrmRechargeSets", "switchCrmRechargeSetState", "addCrmRechargeSet", "updateCrmRechargeSet", "getVipLevels",
@@ -771,8 +775,18 @@
 	Hualala.Global.bindMobileInShopGroupChildAccount = function (params, cbFn) {
 		Hualala.Global.commonCallServer("bindMobileInShopGroupChildAccount", params, cbFn);
 	};
-	
-	/*CRM module*/
+    Hualala.Global.queryRoleRight = function (params, cbFn) {
+        Hualala.Global.commonCallServer("queryRoleRight", params, cbFn);
+    };
+    Hualala.Global.queryAccountRight = function (params, cbFn) {
+        Hualala.Global.commonCallServer("queryAccountRight", params, cbFn);
+    };
+    Hualala.Global.updateAccountRight = function (params, cbFn) {
+        Hualala.Global.commonCallServer("updateAccountRight", params, cbFn);
+    };
+
+
+    /*CRM module*/
 	Hualala.Global.queryCrmMemberSchema = function (params, cbFn) {
 		Hualala.Global.commonCallServer("queryCrmMemberSchema", params, cbFn);
 	};

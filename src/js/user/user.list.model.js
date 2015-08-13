@@ -121,7 +121,10 @@
 			this.unbindMobileCallServer = Hualala.Global.unbindMobileInShopGroupChildAccount;
 			this.bindMobileCallServer = Hualala.Global.bindMobileInShopGroupChildAccount;
 			this.updateRoleBindingCallServer = Hualala.Global.updateRoleBinding;
+			this.updateAccountRightCallServer = Hualala.Global.updateAccountRight;
 			this.queryRoleBindingCallServer = Hualala.Global.queryRoleBinding;
+			this.queryRoleRightCallServer = Hualala.Global.queryRoleRight;
+			this.queryAccountRightCallServer = Hualala.Global.queryAccountRight;
 			this.set("ds_role", new IX.IListManager());
 			if (!IX.isEmpty(user)) {
 				this.updateUserModel(user);
@@ -139,8 +142,7 @@
 		updateRoleStore : function (roleCfg) {
 			var self = this, roleHT = self.get('ds_role'),
 				roleTypes = IX.isEmpty(roleCfg) ? (',' + this.get('roleType') + ',') : roleCfg,
-				siteRoleType = Hualala.TypeDef.SiteRoleType,
-				roleHT = self.get('ds_role');
+				siteRoleType = Hualala.TypeDef.SiteRoleType;
 			roleHT.clear();
 			var roles = _.map(siteRoleType, function (role) {
 					var roleType = $XP(role, 'roleType');
@@ -164,6 +166,14 @@
 			
 			self.set('roles', roles);
 		},
+        updateAccountRightStore: function(accountRightIDs) {
+            var self = this;
+            self.set('accountRightIDs', accountRightIDs);
+        },
+        updateRoleRightStore: function(rights) {
+            var self = this;
+            self.set('rights', rights);
+        },
 		getRoleInfoByType : function (roleType) {
 			var self = this, roleHT = self.get('ds_role');
 			return roleHT.get(roleType);
@@ -178,7 +188,7 @@
 			var self = this;
 			var role = self.getRoleInfoByType(roleType);
 			role.binded = !binded ? false : true;
-		},
+        },
 		// mapUserRoles : function () {
 		// 	var roleType = (this.get('roleType') + ',') || '';
 		// 	var siteRoleType = Hualala.TypeDef.SiteRoleType;
@@ -319,6 +329,36 @@
 						}
 					});
 				},
+                "editRight" : function(params) {
+                    var successFn = $XF(params, 'successFn'),
+                        failFn = $XF(params, 'failFn'),
+                        selectRightIDs = self.get('accountRightIDs') || [];
+                    var selectRight = _.select(self.get('rights'), function(right){
+                            return _.contains(selectRightIDs, $XP(right, 'itemID', ''));
+                        }),
+                        pageRight = _.uniq(_.pluck(selectRight, 'pageRight')),
+                        bindingRoleTypes = _.pluck(self.getRoleBindings(), 'type'),
+                        rightParams = _.map(_.select(bindingRoleTypes, function(bindingType){return bindingType.indexOf('manager') > -1;}),
+                            function(type){
+                                return IX.inherit({
+                                    roleType: type,
+                                    pageRight: pageRight.join(','),
+                                    disabled: selectRightIDs.join(',')
+                                });
+                            }),
+                        postData = {
+                            accountID: self.get('accountID'),
+                            rolePageRight: JSON.stringify(rightParams)
+                        };
+                    self.updateAccountRightCallServer(postData, function(rsp) {
+                        if(rsp.resultcode != '000') {
+                            toptip({msg: rsp.resultmsg, type: 'danger'});
+                            failFn();
+                        } else{
+                            successFn();
+                        }
+                    });
+                },
 				"unbindMobile" : function (params) {
 					// 解绑定手机号
 					var successFn = $XF(params, 'successFn');
@@ -385,7 +425,48 @@
 							successFn();
 						}
 					});
-				}
+				},
+                "queryAccountRight": function(params) {
+                    var successFn = $XF(params, 'successFn'),
+                        failFn = $XF(params, 'failFn'),
+                        bindingRoleTypes = _.compact(_.pluck(self.getRoleBindings(), 'type')),
+                        roleTypes = _.select(bindingRoleTypes, function(type){return type.indexOf('manager') > -1;}).join(',');
+                    if(roleTypes.length) {
+                        self.queryAccountRightCallServer({accountID: self.get('accountID'), roleTypes: roleTypes}, function (rsp) {
+                            if(rsp.resultcode != '000') {
+                                toptip({msg: $XP(rsp, 'resultmsg', ''), type: 'danger'});
+                                failFn();
+                            } else {
+                                self.updateAccountRightStore(_.compact($XP(($XP(rsp, 'data.records', [])[0]), 'disabled', '').split(',')));
+                                successFn();
+                            }
+                        });
+                    } else {
+                        successFn();
+                    }
+                },
+                "queryRoleRight": function(params) {
+                    var successFn = $XF(params, 'successFn'),
+                        failFn = $XF(params, 'failFn'),
+                        bindingRoleTypes = _.compact(_.pluck(self.getRoleBindings(), 'type')),
+                        roleTypes = _.select(bindingRoleTypes, function(type){return type.indexOf('manager') > -1;}).join(',');
+                    if(roleTypes.length) {
+                        self.queryRoleRightCallServer({
+                            roleType: roleTypes
+                        }, function(rsp) {
+                            if(rsp.resultcode != '000') {
+                                toptip({msg: rsp.resultmsg, type: 'danger'});
+                                failFn();
+                            } else {
+                                self.updateRoleRightStore($XP(rsp, 'data.records', []));
+                                successFn();
+                            }
+                        });
+                    } else {
+                        self.updateRoleRightStore([]);
+                        successFn();
+                    }
+                }
 			});
 		}
 	});

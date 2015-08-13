@@ -162,12 +162,14 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
                 var price = (unit.prePrice == -1 || unit.price == unit.prePrice) ? unit.price : unit.prePrice,//price是售价
                     vipPrice = (unit.vipPrice == -1 || parseFloat(unit.vipPrice) >= parseFloat(price)) ? '' : unit.vipPrice,
                     prePrice = (unit.prePrice == -1 || unit.price == unit.prePrice) ? '' : unit.price,//prePrice原价
+                    estimatePrice = !unit.foodEstimateCost ? '' : unit.foodEstimateCost,//prePrice原价
                     tr = ['<tr data-itemid="'+(unit.itemID || '')+'">',
                         '<td><span>规格'+ (index + 1) + (index == 0 ? '*' : '') + '</span></td>',
                         '<td><input type="text" placeholder="'+(index == 0 ? '例：份、锅' : '')+'" name="unit" value="'+unit.unit+'"/></td>',
                         '<td><input type="text" placeholder="'+(index == 0 ? '10.00' : '')+'" name="price" value="'+prettyPrice(price)+'"/></td>',
                         '<td><input type="text" name="vipPrice" value="'+prettyPrice(vipPrice)+'"/></td>',
-                        '<td><input type="text" name="prePrice" value="'+prettyPrice(prePrice)+'"/></td>'
+                        '<td><input type="text" name="prePrice" value="'+prettyPrice(prePrice)+'"/></td>',
+                        '<td><input type="text" name="foodEstimateCost" value="'+prettyPrice(estimatePrice)+'"/></td>'
                     ].join(''),
                     operateTd = '<td></td>';
                 if(units.length == 1) {
@@ -245,7 +247,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
                                 //unit.prePrice为-1时，price是售价，unit.prePrice不为-1时prePrice是售价
                                 var price = (unit.prePrice == -1 || unit.prePrice == unit.price) ? unit.price : unit.prePrice,//price是售价
                                     vipPrice = (unit.vipPrice == -1 || parseFloat(unit.vipPrice) >= parseFloat(price)) ? '' : unit.vipPrice,
-                                    prePrice = (unit.prePrice == -1 || unit.prePrice == unit.price) ? '' : unit.price;//prePrice原价
+                                    prePrice = (unit.prePrice == -1 || unit.prePrice == unit.price) ? '' : unit.price,//prePrice原价
+                                    foodEstimateCost = unit.foodEstimateCost;
 
                                 return IX.inherit(unit, {
                                     index: (index + 1) + (index == 0 ? '*' : '' ),
@@ -253,7 +256,8 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
                                     customLast: unitsLength > 1 && index == unitsLength - 1,
                                     price: price ? C.Math.prettyPrice(price) : '',
                                     prePrice: prePrice ? C.Math.prettyPrice(prePrice) : '',
-                                    vipPrice: vipPrice ? C.Math.prettyPrice(vipPrice) : ''
+                                    vipPrice: vipPrice ? C.Math.prettyPrice(vipPrice) : '',
+                                    foodEstimateCost: foodEstimateCost ? C.Math.prettyPrice(foodEstimateCost) : ''
                                 });
                             }),
                             setFoodUnits = _.map(IX.clone(extendUnits), function (unit) {
@@ -283,7 +287,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
                             editFoodData = {
                                 detailDisplay: '',
                                 setFoodDisplay: food.isSetFood == 1 ? '' : 'hidden',
-                                goodUnits: {tableHeads: ['', '规格名称*', '售价(￥)*', '会员价(￥)', '原价(￥)', ''], lessThanFourUnits: true},
+                                goodUnits: {tableHeads: ['', '规格名称*', '售价(￥)*', '会员价(￥)', '原价(￥)', '预估成本价(￥)', ''], lessThanFourUnits: true},
                                 takeawayTypes: {options: takeawayOptions, name: 'takeawayTag'},
                                 packageHidden: food.takeawayTag == 0 ? 'hidden' : '',
                                 hotTags: {options: hotTagOptions, name: 'hotTag'},
@@ -292,12 +296,13 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
                                 food: IX.inherit({}, food,
                                     {
                                         takeoutPackagingFee: C.Math.prettyPrice(food.takeoutPackagingFee),
-                                        units: food.isSetFood == 1 ? setFoodUnits : extendUnits, description: C.decodeTextEnter(food.description),
+                                        units: (food.isSetFood == 1 || food.isTempFood == 1) ? setFoodUnits : extendUnits,
+                                        description: C.decodeTextEnter(food.description),
                                         isOpenDisabled: food.isTempFood == 1 ? 'disabled' : ''
                                     }),
                                 category: categoryTH,
-                                setFoodChecked: food.isSetFood == 1 ? 'checked' :'',
-                                tempChecked: food.isTempFood == 1 ? 'checked' :'',
+                                typeDisabled: 'disabled',
+                                checkedIncrementUnit: food.incrementUnit == 0.1 ? 'checked' : ''
                             },
                             $editFood = $(editFoodTpl(editFoodData));
                         //弹出对话框
@@ -324,6 +329,9 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
                         food.foodDescEditor = foodDescEditor;
                         //绑定规格操作的事件
                         Hualala.Shop.BindOperatorEvent(modalEditFood, food);
+                        var setOrTempFoodVal = (food.isTempFood || '0') + (food.isSetFood || '0'),
+                            $checkedFoodType = $editFood.find('.food-type input[name="foodType"]').eq(parseInt(setOrTempFoodVal, 2));
+                        $checkedFoodType.prop('checked', true).trigger('change');
                     } else {
                         var foodIcos = ['isSpecialty', 'isRecommend', 'isNew'],
                             editFoodTpl = Handlebars.compile(Hualala.TplLib.get('tpl_edit_food'));
