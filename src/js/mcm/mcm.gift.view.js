@@ -97,7 +97,7 @@
 					smsGate = $XP(row, 'smsGate', ''),
 					SmsSendStatusTypes = Hualala.TypeDef.MCMDataSet.SmsSendStatus,
 					SmsSettleStatusTypes = Hualala.TypeDef.MCMDataSet.SmsSettleStatus;
-				if(eventWay==50||smsGate==1){
+				if(eventWay==50){
 					var statusLabel,settleStatusLabel,
 						statusObject =_.find(SmsSendStatusTypes,function(SmsSendStatus){ return SmsSendStatus.value==status; });
 						seetleObject =_.find(SmsSettleStatusTypes,function(SmsSettleStatus){ return SmsSettleStatus.value==settleStatus; });
@@ -107,7 +107,8 @@
 						statusLabel =SmsSendStatusTypes[3].label;
 					}
 					settleStatusLabel = seetleObject.label;
-					r.text = v+'<br/><br/>'+'结算状态：'+settleStatusLabel+'<br/>'+'发送状态：'+statusLabel;
+					//r.text = v+'<br/><br/>'+'结算状态：'+settleStatusLabel+'<br/>'+'发送状态：'+statusLabel;
+					r.text = v+'<br/><br/>'+'发送状态：'+statusLabel+'<br/>'+'结算状态：'+settleStatusLabel;
 				}else{
 					r.value = v;
 					r.text = v;
@@ -451,8 +452,12 @@
 			switch(act) {
 				case 'edit' :
 				// TODO edit event config set
-					var wizardStepsCfg = eventWay == 50 ? Hualala.MCM.EventSmsWizardCfg : Hualala.MCM.EventWizardCfg,
-						stepChange = eventWay == 50 ? Hualala.MCM.SMSOnStepChange : Hualala.MCM.onEventWizardStepChange;
+                    var wizardStepChangeMap = {
+                            '50': Hualala.MCM.SMSOnStepChange,
+                            '51': Hualala.MCM.BirthdayEventStepChange
+                        },
+                        wizardStepsCfg = HMCM.EventWizardCfgBy(eventWay),
+						stepChange = wizardStepChangeMap[eventWay + ''] || HMCM.onEventWizardStepChange;
 					var wizardPanel = new Hualala.MCM.MCMWizardModal({
 						wizardType : 'edit',
 						parentView : self,
@@ -466,7 +471,7 @@
 						model : eventModel,
 						modalClz : 'mcm-event-modal',
 						wizardClz : 'mcm-event-wizard',
-						modalTitle : '修改'+eventType.label,
+						modalTitle : '修改'+eventType.label + '活动',
 						onWizardInit : function ($cnt, cntID, wizardMode) {
 							Hualala.MCM.initEventBaseInfo.call(this, $cnt, cntID, wizardMode);
 						},
@@ -607,7 +612,7 @@
 			};
 		};
 		var mapBaseInfoData = function () {
-			var keys = 'eventName,cardLevelLabel,eventRemark,deductPoints,sendPoints,eventRules,viewCount,userCount,smsCustomerShopName,smsTemplate,smsPersonNum,smsCount'.split(',');
+			var keys = 'eventName,cardLevelLabel,eventRemark,deductPoints,sendPoints,eventRules,viewCount,userCount,smsCustomerShopName,lastTransShopName,smsTemplate,smsPersonNum,smsCount'.split(',');
 			var ret = {};
 			_.each(keys, function (k) {
 				switch (k) {
@@ -646,15 +651,24 @@
 			var smsSendTime = model.get('startTime') || 0,
 				startTimeLabel = '';
 			if(eventWay == 50 || smsGate == 1) {
-				startTimeLabel = (IX.isEmpty(smsSendTime) || smsSendTime == 0) ? '任意时间' :
-					IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(smsSendTime), 'yyyy/MM/dd HH:mm')
+                startTimeLabel = eventWay == 51 ? (model.get('giftAdvanceDays') || 0) + '天' : ((IX.isEmpty(smsSendTime) || smsSendTime == 0) ? '任意时间' :
+                    IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(smsSendTime), 'yyyy/MM/dd HH:mm'));
 			}
+            var data = model.getAll(),
+                lastTransTimeFilter = $XP(data, 'lastTransTimeFilter', '0') || '0',
+                lastTransTimeFilterLabel = $XP(_.findWhere(Hualala.TypeDef.MCMDataSet.TransTimeFilter, {value: lastTransTimeFilter + ''}), 'name', '不限'),
+                lastTransTime = $XP(data, 'lastTransTime', '') || '',
+                lastTransTimeFormat = IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(lastTransTime), 'yyyy/MM/dd');
 
 			return IX.inherit(ret, {
 				customerRange: eventWay == 50 ? '顾客范围' : '会员等级最低要求',
 				infoLabelClz : 'col-xs-3 col-sm-3',
 				infoTextClz : 'col-xs-8 col-sm-8',
+                smsStartLabel: eventWay == 51 ? '提前返券天数' : '短信开始发送时间',
 				startTimeLabel: startTimeLabel,
+                hiddenShop: eventWay == 50 ? '' : 'hidden',
+                lastTransTime: lastTransTimeFilterLabel + (lastTransTimeFilter == 0 ? '' : ' ' + lastTransTimeFormat),
+                smsAlert: eventWay == 50 ? '短信活动一旦开始不得停止' : ''
 			});
 		};
 		var mapGiftsData = function () {
@@ -704,14 +718,18 @@
                 hideEGiftLevel: isDisplayGiftLevel ? '' : 'hidden',
                 EGiftLevelTh: eventWay == 20 ? '中奖等级' : '礼品',
                 EGiftNameTh: eventWay == 20 ? '奖品名称' : '礼品名称',
+                EGiftTotalCountTh: eventWay == 51 ? '礼品个数' : '总数',
+                hideSurplusCount: eventWay == 51 ? 'hidden' : '',
 				hideEGfitValidUntilDayCount : '',
 				hiddenGift: (eventWay==50||eventWay==22) ? 'hidden' : '',
-				hiddenSms: eventWay==50 ? '' :'hidden',
-				hiddenEvtRules : eventWay!=50 ? '' :'hidden',
+				hiddenSms: (eventWay==50 || eventWay == 51) ? '' :'hidden',
+                hiddenCustomerRange: eventWay == 51 ? 'hidden' : '',
+				hiddenEvtRules : (eventWay == 50 || eventWay == 51) ? 'hidden' :'',
 				hiddenTitle : eventWay!=50 ? true : false,
 				giftItems : gifts,
 				hasGifts : gifts.length > 0 ? true : false,
-				hiddenShop: eventWay == 50 ? '' : 'hidden'
+                //暂时屏蔽短信发送情况 fixbug#6035
+                isSmsEvent : false,
 			};
 		};
 		return IX.inherit(mapBaseInfoData(), mapCardData(), mapGiftsData());

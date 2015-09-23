@@ -24,6 +24,7 @@ Test.SaasShopParams =
         "IsRevMsgFormAPIHost": "1",
         "IsRevNetOrderAfterPrn": "0",
         "KitchenPrintActive": "0",
+        "KitchenTableNameBigFont":"0",
         "KitchenPrintBillTypeLst": "LTD|ZZD|CCD|CJD|TCD|HTD|CHT",
         "OffLineCreateCardCheckMobile": "0",
         "PrinterKey": "4e085727-7e6c-44b5-b530-b0198c4f7d05",

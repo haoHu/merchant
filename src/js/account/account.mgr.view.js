@@ -96,12 +96,16 @@
 			var self = this,
 				$tab =self.$tab,
 			settleUnitID = self.model.get('settleUnitID'),
+			isOutcomeAcount = self.model.get('isOutcomeAcount'),
 			currentPageName = Hualala.PageRoute.getPageContextByPath().name;
 			$tab.empty();
-			var tabFuncs = ['accountDailyReport', 'accountDetail'],
+			var tabFuncs = ['accountDailyReport', 'accountDetail','accountRechargeOrder'],
 		        R = Hualala.PageRoute,
 		        $ul = $('<ul class="nav navbar-nav"></ul>');
-		    
+		    //当不是结算类账户的时候，不显示充值查询的tab页    
+		    if(isOutcomeAcount==0){
+		    	tabFuncs.pop();
+		    }
 		    for(i = 0, l = tabFuncs.length; i < l; i++)
 		    {
 		        var tabFunc = tabFuncs[i],
@@ -110,8 +114,7 @@
 		            label = R.getPageLabelByName(tabFunc);
 		        $('<li></li>').toggleClass('active', isActive).append($('<a></a>').attr('href', path).text(label)).appendTo($ul);
 		    }
-		return $tab.append($ul);
-
+			return $tab.append($ul);
 		},
 		loadTemplates : function () {
 			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_accountMgr_layout')),
@@ -130,7 +133,9 @@
 			self.$schema.on('click', '.btn.withdraw', function (e) {
 				if ($(this).hasClass('disabled')) return;
 				self.withdraw($(this));
-			});
+			}).on('click', '.btn.settle-account', function(e) {
+                self.settleRecharge($(this));
+            });
 			self.$schema.on('click', '[data-act]', function (e) {
 				var $btn = $(this);
 				var act = $btn.attr('data-act');
@@ -175,6 +180,13 @@
 				parentView : self
 			});
 		},
+        settleRecharge : function($btn) {
+            //充值操作
+            var self = this,
+                settleUnitID = $btn.parents('.bank-card').attr('data-id'),
+                settleOrderModel = new Hualala.Account.SettleOrderModel({settleUnitID: settleUnitID});
+            var wizardPanel = Hualala.Account.RechargeWizardView.call(self, settleOrderModel, self.model);
+        },
 		queryShops : function ($trigger) {
 			var self = this;
 			var modal = new Hualala.Account.AccountQueryShopModal({
@@ -225,7 +237,8 @@
 				hasDefault : hasDefault,
 				settleUnitName : model.get('settleUnitName') || '',
 				disableWithdraw : disableWithdraw,
-				settleBalance : settleBalanceStr,
+                hiddenSettleAccount: model.get('isOutcomeAcount') == 1 ? '' : 'hidden',
+                settleBalance : settleBalanceStr,
 				bankIcon : $XP(bankInfo, 'icon_16', ''),
 				bankComName : $XP(bankInfo, 'name', ''),
 				bankAccountStr : $XP(bankAccountStr, 'val', '').replace(/([\w|*]{4})/g, '$1 ').replace(/([*])/g, '<span>$1</span>'),
@@ -1172,7 +1185,7 @@
 						callparams=_.extend({hisData:0,orderKey:Params.orderKey});
 					Hualala.Global.queryOrderInfoByKey(callparams, function(rsp){
 			            if(rsp.resultcode != '000'){
-			                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+			                rsp.resultmsg && toptip({msg: rsp.resultmsg, type: 'danger'});
 			                return;
 			            }
 			            else{

@@ -14,6 +14,7 @@
             //pref: {
             //    shopName: '店铺名称', startDate: '开始日期', endDate: '结束日期', discountType: '折扣促销方式', discountRate: '促销折扣率', pointType: '积分促销方式', pointRate: '促销积分系数', actionTime: '修改时间', isActive: '是否启用', action: '操作'
             //},
+            //pref: { shopName: '店铺名称', shopPref: '默认特惠', crmPref: '会员日特惠', birthdayPref: '会员生日特惠'},todo 生日支持双倍积分后台完成在上
             pref: { shopName: '店铺名称', shopPref: '默认特惠', crmPref: '会员日特惠'},
             discountType: { '0': '会员保底折扣率', '1': '折上折' },
             pointType: { '0': '倍数', '1': '叠加' },
@@ -37,7 +38,7 @@
         Handlebars.registerPartial('customSelect', tplLib.get('tpl_select'));
 
         for(var key in pref) {
-            var clz = 'col-md-4';
+            var clz = 'col-md-3';
             if(key == 'shopName') clz = 'col-md-2';
             ths.push($('<th class="' + clz + '">').text(pref[key]));
         }
@@ -66,18 +67,19 @@
                 prefType = $this.parents('td').data('type'),
                 id = $tr.data('itemid');
             cpref = findPref(id) || {};
-            var formData = IX.clone(cpref),
-                modalTitle = '默认特惠';
+            var modalTitleMap = {shop: '默认特惠', pref: '会员日特惠', birthday: '会员生日特惠'},
+                formData = IX.clone(cpref);
             if (prefType == 'shop') {
                 listShopPrefData(formData);
             } else if (prefType == 'pref') {
-                modalTitle = '会员特惠';
                 listMemberPrefData(formData);
+            } else if(prefType == 'birthday') {
+                listBirthdayPrefData(formData);
             }
             $ctr = $this.parents('tr');
             modal = new U.ModalDialog({
                 id: 'crm_preferential',
-                title: modalTitle + '参数设置',
+                title: modalTitleMap[prefType] + '参数设置',
                 html: $form,
                 backdrop: 'static'
             }).show();
@@ -86,6 +88,7 @@
             bindFormEvent();
             $form.find('[type="radio"][name="discountType"]:checked, [type="radio"][name$="DiscountType"]:checked').trigger('change');
             $form.find('[type="radio"][name="pointType"]:checked, [type="radio"][name$="PointType"]:checked').trigger('change');
+            if(formData.memberDayCycle == 1 || formData.memberDayCycle == 2) $form.find('select[name="month"]').trigger('change');
             bv = $form.data('bootstrapValidator');
             modal._.footer.find('.btn-ok').on('click', submitPref);
         });
@@ -96,7 +99,16 @@
             formData.isShopPref = true;
             formData.startDate = formatDateStr(startDate);
             formData.endDate = formatDateStr(endDate);
-            $form = $(tplForm(formData));
+            $form = $(tplForm(IX.inherit(formData,
+                {
+                    discountTypeName: 'discountType',
+                    discountRateName: 'discountRate',
+                    discountRateVal: $XP(formData, 'discountRate', ''),
+                    pointTypeName: 'pointType',
+                    pointRateName: 'pointRate',
+                    pointRateVal: $XP(formData, 'pointRate', '')
+                }
+            )));
             $form.find('[name="discountType"]').eq(+formData.discountType).prop('checked', true);
             $form.find('[name="pointType"]').eq(+formData.pointType).prop('checked', true);
             $form.find('[name=startDate],[name=endDate]').datetimepicker({
@@ -117,16 +129,20 @@
             var month = 0, day = 0, week = 0, cycleType = formData.memberDayCycle, cycleDay = formData.memberDay;
             switch (cycleType) {
                 case '1':
+                    //周期为年
                     month = parseInt(cycleDay.substr(0, 2));
                     day = parseInt(cycleDay.substr(2));
                     week = 0;
+
                     break;
                 case '2':
+                    //周期为月
                     month = 0;
                     day = parseInt(cycleDay);
                     week = 0;
                     break;
                 case '3':
+                    //周期为周
                     month = 0;
                     day = 0;
                     week = parseInt(cycleDay);
@@ -159,11 +175,14 @@
                 });
             formData.isCrmPref = true;
             formData.cycleRadioData = {
-                label: '周期长度', name: 'memberDayCycle',
-                inputs: _.times(3, function(idx) {
-                    var type = (idx + 1) + '';
-                    return {checked: cycleType == type ? 'checked' : '', value: type, text: typeMap[idx]};
-                })
+                options: _.times(3, function (idx) {
+                    var type = idx + 1;
+                    return {
+                        name: typeMap[idx],
+                        value: type + '',
+                        selected: type == cycleType ? 'selected' : ''
+                    };
+                }), name: 'memberDayCycle'
             };
             formData.cycleSelectData = _.map(selectData, function (data, idx) {
                 var cycleName = $XP(data, 'name', ''),
@@ -172,9 +191,52 @@
                         (cycleType == 3 && (cycleName == 'month' || cycleName == 'day'));
                 return {selectData: data, hidden: isHidden ? 'hidden' : '', cycleType: cycleName, cycleLabel: selectLabelMap[idx]};
             });
-            $form = $(tplForm(formData));
+            $form = $(tplForm(IX.inherit(formData,
+                {
+                    discountTypeName: 'memberDayDiscountType',
+                    discountRateName: 'memberDayDiscountRate',
+                    discountRateVal: $XP(formData, 'memberDayDiscountRate', ''),
+                    pointTypeName: 'memberDayPointType',
+                    pointRateName: 'memberDayPointRate',
+                    pointRateVal: $XP(formData, 'memberDayPointRate', '')
+                })));
             $form.find('[name=memberDayDiscountType]').eq(+(formData.memberDayDiscountType || 0)).prop('checked', true);
             $form.find('[name="memberDayPointType"]').eq(+(formData.memberDayPointType || 0)).prop('checked', true);
+        }
+
+        function listBirthdayPrefData(formData) {
+            Handlebars.registerHelper('checkFormElementType', function(conditional, options){
+                return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+            });
+            Handlebars.registerHelper('isInputGroup', function (prefix, surfix, options) {
+                return (!prefix && !surfix) ? options.inverse(this) : options.fn(this);
+            });
+            var baseFormTpl = Handlebars.compile(Hualala.TplLib.get('tpl_mcm_base_form')),
+                data = {
+                    formClz: 'form-feedback-out',
+                    items: [
+                        {
+                            type: 'combo',
+                            labelClz: 'control-label col-sm-3',
+                            label: '特惠生效日期',
+                            clz: 'col-md-4',
+                            name: 'birthdayPointType',
+                            options: [
+                                { value: '0', label: '当日', selected: $XP(formData, 'birthdayPointType', '') == 0 ? 'selected' : '' },
+                                { value: '1', label: '当月', selected: $XP(formData, 'birthdayPointType', '') == 1 ? 'selected' : '' }
+                            ]
+                        },
+                        {
+                            type: 'text',
+                            labelClz: 'control-label col-sm-3',
+                            label: '促销积分倍数',
+                            clz: 'col-md-4',
+                            name: 'birthdayPointRate',
+                            value: $XP(formData, 'birthdayPointRate')
+                        }
+                    ]
+                };
+            $form = $(baseFormTpl(data));
         }
 
         function bindFormEvent() {
@@ -212,30 +274,54 @@
                         var betweenValidators = $form.data('bootstrapValidator').options.fields[validatorFieldName].validators.between;
                         betweenValidators.message = message;
                     }
-                }).on('change', '[type="radio"][name="memberDayCycle"]', function (e) {
+                }).on('change', 'select[name="memberDayCycle"]', function (e) {
                 var $this = $(this),
                     $monthSet = $form.find('div[data-type="month"]'),
                     $daySet = $form.find('div[data-type="day"]'),
                     $weekSet = $form.find('div[data-type="week"]'),
-                    cycleType = $this.val();
+                    cycleType = $this.val(),
+                    yearType = '1',
+                    monthType = '2',
+                    dayType = '3';
                 switch (cycleType) {
-                    case '1':
+                    case yearType:
                         $monthSet.removeClass('hidden');
                         $daySet.removeClass('hidden');
                         $weekSet.addClass('hidden');
+                        $monthSet.find('select').val('1').trigger('change');
                         break;
-                    case '2':
+                    case monthType:
                         $daySet.removeClass('hidden');
                         $monthSet.addClass('hidden');
                         $weekSet.addClass('hidden');
+                        $monthSet.find('select').val('1').trigger('change');
                         break;
-                    case '3':
+                    case dayType:
                         $daySet.addClass('hidden');
                         $monthSet.addClass('hidden');
                         $weekSet.removeClass('hidden');
                         break;
                 }
-            });
+            }).on('change', 'select[name="month"]', function(e) {
+                    var selectTpl = Handlebars.compile(tplLib.get('tpl_select')),
+                        $monthSelect = $(this),
+                        $monthSet = $monthSelect.parents('[data-type="month"]'),
+                        $daySet = $monthSet.nextAll('[data-type="day"]'),
+                        month = parseInt($monthSelect.val()),
+                        isBigMonth = (month < 8 && month % 2 != 0) || (month >= 8 && month % 2 == 0),
+                        dayCount = month == 2 ? 29 : isBigMonth ? 31 : 30,
+                        dayData = {name: 'day', options: []},
+                        day = $daySet.find('select').val();
+                    dayData.options = _.times(dayCount, function (idx) {
+                        return {
+                            name: (idx + 1),
+                            value: idx + 1,
+                            selected: (idx + 1) == (dayCount < day ? '1' : day) ? 'selected' : ''
+                        }
+                    });
+                    $daySet.find('select').remove();
+                    $daySet.prepend(selectTpl(dayData));
+                });
         }
 
         function registerFormValidate() {
@@ -287,6 +373,14 @@
                             notEmpty: { message: '促销积分系数不能为空' },
                             between: { message: '促销积分系数必须在1-5之间', min: 1, max: 5, inclusive: true },
                             numeric: {message: '促销积分系数必须是数值'},
+                            stringLength: {message: '长度不能超过10', min: 1, max: 11}
+                        }
+                    },
+                    birthdayPointRate: {
+                        validators: {
+                            notEmpty: { message: '积分倍数不能为空'},
+                            greaterThan: {message: '积分倍数必须大于0', inclusive: false},
+                            integer: {message: '积分倍数必须是整数'},
                             stringLength: {message: '长度不能超过10', min: 1, max: 11}
                         }
                     }
@@ -369,10 +463,11 @@
                 });
             });
             $switchCheckbox.on('switchChange.bootstrapSwitch', function (el, state) {
-                var $this = $(this),
+                var prefTypeMap = {shop: 'isActive', pref: 'memberDayIsActive', birthday: 'birthdayPointIsActive'},
+                    $this = $(this),
                     $td = $this.parents('td'),
                     $tr = $td.parents('tr'),
-                    stateName = $td.data('type') == 'shop' ? 'isActive' : 'memberDayIsActive',
+                    stateName = prefTypeMap[$td.data('type')],
                     itemID = $tr.data('itemid'),
                     currentPref = findPref(itemID),
                     successMsg = state ? '开启' : '关闭',

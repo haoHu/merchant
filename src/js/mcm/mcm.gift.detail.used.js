@@ -56,13 +56,14 @@
 			case "createTime":
 			case "usingTime":
 				r.value = v;
-				r.text = IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd HH:mm');
+				r.text=(IX.isEmpty(v) || v== 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd HH:mm');
+				//r.text = IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd HH:mm');
 				break;
 			case "validUntilDate":
 				r.value = v;
-				r.text = IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd');
+				r.text=(IX.isEmpty(v) || v== 0) ? '' : IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd');
+				//r.text = IX.Date.getDateByFormat(formatDateTimeValue(v), 'yyyy/MM/dd');
 				break;
-
 			case "giftStatus":
 				v = HMCM.getGiftStatusTypeSet(v);
 				r.value = $XP(v, 'value', '');

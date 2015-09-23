@@ -7,7 +7,7 @@
 		var navTpl = Handlebars.compile(Hualala.TplLib.get('tpl_order_subnav'));
 		Handlebars.registerPartial("toggle", Hualala.TplLib.get('tpl_site_navbarToggle'));
 		$body.empty();
-		$body.html('<div class="crm-subnav clearfix" /><div class="crm-body table-responsive" ><div class="crm-query-box"></div><div class="crm-result-box"></div></div>');
+		$body.html('<div class="crm-subnav clearfix" /><div class="crm-body" ><div class="crm-query-box"></div><div class="crm-result-box"></div></div>');
 		var mapNavRenderData = function () {
 			var navs = _.map(subNavCfg, function (v) {
 				var params = _.map($XP(v, 'pkeys', []), function (v) {
@@ -187,6 +187,26 @@
         Hualala.CRM.initPreferential($pageBody);
 	};
 
+	/*反馈管理*/
+	function initFeedback () {
+		var ctx = Hualala.PageRoute.getPageContextByPath(),
+			$body = $('#ix_wrapper > .ix-body > .container');
+		initCRMPageLayout(Hualala.TypeDef.CustomerFeedbackSubNavType);
+		var $pageBody = $body.find('.crm-body');
+		//$pageBody.html('<h1>反馈管理</h1>');
+        Hualala.CRM.initFeedback($pageBody);
+	};
+
+	/*点评管理*/
+	function initAssessment () {
+		var ctx = Hualala.PageRoute.getPageContextByPath(),
+			$body = $('#ix_wrapper > .ix-body > .container');
+		initCRMPageLayout(Hualala.TypeDef.CustomerFeedbackSubNavType);
+		var $pageBody = $body.find('.crm-body');
+		//$pageBody.html('<h1>点评管理</h1>');
+        Hualala.CRM.initAssessment($pageBody);
+	};
+
 
 	Hualala.CRM.CRMPageLayoutInit = initCRMPageLayout;
 	Hualala.CRM.CRMHomePageInit = initCRMHomePage;
@@ -202,5 +222,7 @@
     Hualala.CRM.CRMSettingsLevelsInit = initCRMSettingsLevels;
 	Hualala.CRM.RechargePackageBusinessInit = initRechargePackageBusiness;
 	Hualala.CRM.ShopSpecialPriceInit = initShopSpecialPrice;
+	Hualala.CRM.FeedBackInit = initFeedback;
+	Hualala.CRM.AssessmentInit = initAssessment;
 
 })(jQuery, window);

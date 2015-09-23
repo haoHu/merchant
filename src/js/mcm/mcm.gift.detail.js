@@ -218,9 +218,27 @@
 			var ret = {};
 			var card = {
 				clz : $XP(giftTypeSet, 'type', ''),
-				label : $XP(giftData, 'giftValue', ''),
+				label : Hualala.Common.Math.prettyPrice($XP(giftData, 'giftValue', '0')),
 				unit : $XP(giftTypeSet, 'unit', '')
 			};
+			var shopNames = $XP(data, 'shopNames', []);
+			/*var	shopNames = [],
+				shopIDs = [];
+				Hualala.Global.getMCMGiftShopUsed({giftItemID:self.giftItemID}, function(rsp){
+	                if(rsp.resultcode != '000'){
+	                    rsp.resultmsg && toptip({msg: rsp.resultmsg, type: 'danger'});
+	                    return;
+	                } else {
+	                	if(rsp.data.records){
+                			shopNames = _.map(rsp.data.records, function (shop) {
+	                        	return shop.shopName;
+	                    	}).join(';');
+	                    	shopIDs = _.map(rsp.data.records, function (shop) {
+	                        	return shop.shopID;
+	                    	}).join(';');
+	                    }
+	                }
+	            });*/
 			createTime = (IX.isEmpty(createTime) || createTime == 0) ? '' : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(createTime), 'yyyy/MM/dd HH:mm');
 			ret = IX.inherit(giftData, {
 				card : card,
@@ -228,6 +246,7 @@
 				giftTypeUnit : $XP(giftTypeSet, 'unit', ''),
 				giftValue : Hualala.Common.Math.prettyPrice(giftValue),
 				createTime : createTime,
+				shopNames :shopNames==""?"不限":shopNames,
 				infoLabelClz : 'col-sm-3',
 				infoTextClz : 'col-sm-7',
 				navs : self.mapTabNavData(navs),

@@ -574,7 +574,7 @@
             cfg = $.extend({}, defaults, options);
 
         var $_form = $('#' + cfg.formId);
-        var $form = $_form[0] ? $_form : 
+        var $form = $_form[0] ? $_form :
                 $('<form method="post" enctype="multipart/form-data"></form>')
                 .attr('id', cfg.formId)
                 .attr('action', cfg.action);
@@ -778,7 +778,7 @@
     function clearEditors() {
         Hualala.UI.EditorList = _.uniq(Hualala.UI.EditorList);
         _.each(Hualala.UI.EditorList, function (editor) {
-            editor.destroy();
+            if(editor.$container) editor.destroy();
         });
         Hualala.UI.EditorList = [];
     }

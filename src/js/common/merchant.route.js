@@ -226,6 +226,11 @@
 			name : "accountDailyReport", path : "/#account/{id}/dailyreport", reg : /account\/(.*)\/dailyreport$/, bodyClz : "",
 			PageInitiator : "Hualala.Account.AccountDailyReportInit", parentName : "account", label : "汇总报表"
 		},
+		//充值查询页面
+		{
+			name : "accountRechargeOrder", path : "/#account/{id}/rechargeOrder", reg : /account\/(.*)\/rechargeOrder$/, bodyClz : "",
+			PageInitiator : "Hualala.Account.RechargeOrderInit", parentName : "account", label : "充值查询"
+		},
 
 		// 用户管理页面
 		{
@@ -412,6 +417,17 @@
 			reg : /crm\/settings\/ssp/, bodyClz : "",
 			PageInitiator : "Hualala.CRM.ShopSpecialPriceInit", parentName : "crm", label : "店铺特惠"
 		},
+		//顾客反馈
+		{
+			name : "FeedBack", path : "/#crm/member/feedback",
+			reg : /crm\/member\/feedback$/, bodyClz : "",
+			PageInitiator : "Hualala.CRM.FeedBackInit", parentName : "crm", label : "反馈管理"
+		},
+		{
+			name : "Assessment", path : "/#crm/member/assessment",
+			reg : /crm\/member\/assessment$/, bodyClz : "",
+			PageInitiator : "Hualala.CRM.AssessmentInit", parentName : "crm", label : "点评管理"
+		},
         
         // 微信系统管理
 		{
@@ -524,6 +540,11 @@
 			name : "saasChannel", path : "/#saas/admin/channel",
 			reg : /saas\/admin\/channel$/, bodyClz : "",
 			PageInitiator : "Hualala.Saas.channelInit", parentName : "saas", label : "渠道"
+		},
+		/*版本更新*/
+		{
+			name : "versionInfo", path : "/#versionupdate", reg : /versionupdate$/, bodyClz : "",
+			PageInitiator : "Hualala.Version.versionInfoInit", parentName : "main", label : "版本更新"
 		},
 
 

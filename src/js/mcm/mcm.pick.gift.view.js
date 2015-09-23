@@ -7,7 +7,8 @@
 	var MCMGiftListHeaderCfg = [
 		{key : "giftItemID", clz : "hidden", label : ""},
 		{key : "giftType", clz : "", label : "礼品类型"},
-		{key : "giftName", clz : "text", label : "礼品名称"}
+		{key : "giftName", clz : "text", label : "礼品名称"},
+		{key : "giftValue", clz : "hidden", label : ""}
 	];
 
 	var mapColItemRenderData = function (row, rowIdx, colKey) {
@@ -181,7 +182,8 @@
 				self.selectedFn({
 					giftItemID : $p.eq(0).attr('data-value'),
 					giftType : $p.eq(1).attr('data-value'),
-					giftName : $p.eq(2).attr('data-value')
+					giftName : $p.eq(2).attr('data-value'),
+					giftValue: $p.eq(3).attr('data-value')
 				}, self.trigger);
 				self.modal.hide();
 			});

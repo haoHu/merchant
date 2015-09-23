@@ -74,7 +74,7 @@
 		}
 	}
 	.icon-commonreserve_order, .icon-justeat_order, .icon-spot_order,
-	.icon-takeaway_order, .icon-takeout_order, .icon-crm, .icon-bi {.x-inlineblock(); .x-icon-size(32px); vertical-align: middle; margin-right:18px;}
+	.icon-takeaway_order, .icon-takeout_order, .icon-crm, .icon-bi,.icon-saas{.x-inlineblock(); .x-icon-size(32px); vertical-align: middle; margin-right:18px;}
 	.icon-commonreserve_order {.x-icon-32_dingzuo();}
 	.icon-justeat_order {.x-icon-32_shanchi();}
 	.icon-spot_order {.x-icon-32_helpself();}
@@ -82,6 +82,7 @@
 	.icon-takeout_order {.x-icon-32_ziti();}
 	.icon-crm {.x-icon-32_huiyuan();}
 	.icon-bi {.x-icon-32_laobantong();}
+    .icon-saas {.x-icon-32_saas();}
 }
 
 // 店铺列表
@@ -183,12 +184,12 @@ form.read-mode, .form.read-mode
 	{ display: none!important; }
 	.control-label:after { content: ' :'; }
     .control-label.no-require.card-text-label { width: 19%;}
-    .btn-save { display: none }
+    .btn-save,#remarkMap{ display: none }
 }
 form.edit-mode, .form.edit-mode
 {
 	.form-control-static { display: none }
-    .form-control-static.no-hidden { display: block }
+    .form-control-static.no-hidden,#remarkMap { display: block }
 	.control-label:before { content: '* '; }
 	.control-label.no-require:before { display: none }
     .control-label.card-text-label.no-require { width: 19%;}
@@ -516,8 +517,11 @@ form.edit-mode, .form.edit-mode
     div
     {
       position: relative;
-      span
-      { display: none; position: absolute; bottom: 50%;
+      span {
+        display: none;
+        position: absolute;
+        bottom: 50%;
+        left: 60%;
       }
     }
     &.loading
@@ -714,6 +718,12 @@ form.edit-mode, .form.edit-mode
     }
 }
 .promotion_operate{
+    p{
+        .beused{
+            color : #8a6d3b;
+            margin: 0 15px;
+        }
+    }
     span{
         margin-right:15px;
     }
@@ -749,6 +759,23 @@ form.edit-mode, .form.edit-mode
 }
 .refPromotionRules{
     text-align: center;
+}
+.promotion_TimeCheck{
+    .oldPromotion{
+        margin-bottom:15px;
+        p{
+            padding-left:10px;
+            padding-bottom: 5px;
+        }
+
+    }
+    .newPromotion{
+        
+        p{
+            padding-left:10px;
+            color: #c00;
+        }
+    }
 }
 .printer-form ,.discount-form{
     .has-feedback{
@@ -923,7 +950,7 @@ form.edit-mode, .form.edit-mode
     margin:10px 0 15px;
 }
 
-.loading-tip {
+.loading-menu {
 	margin-top: -20px;
 	background: url('../img/loading.gif') no-repeat center;
 	background-size: 40px;
@@ -959,6 +986,21 @@ form.edit-mode, .form.edit-mode
         display: none;
         margin-top: 7px;
       }
+      .shop-params-logo {
+        label {
+          &.btn-link {
+            display: none;
+          }
+        }
+        .warning {
+          display: none;
+        }
+      }
+      .shop-params-images {
+        .add-sub-res {
+          display: none;
+        }
+      }
 	}
 	.edit-mode {
 	  div[name="kitchenPrintBillTypeLst"] {
@@ -968,12 +1010,59 @@ form.edit-mode, .form.edit-mode
           margin-top: 0;
         }
       }
-	}
+      .shop-params-logo {
+        &.loading {
+          span {display: block;}
+          .btn-link {display: none;}
+        }
+        .warning {
+          display: block;
+        }}
+      .shop-params-images {
+        .image-list {
+          &:hover {
+            button {
+              display: block;
+            }
+          }
+        }
+        &.loading {
+          .add-sub-res {
+            p {display: block;}
+            .btn-link {display: none;}
+          }
+        }
+      }
+    }
 	.make-status {
 	  .col-md-2 {
 		width: 13%;
 	  }
 	}
+
+    .shop-params-images {
+      .image-list {
+        position: relative;
+        button {
+          position: absolute;
+          display: none;
+          right: 25px;
+          background-color: transparent;
+          font-size: 15px;
+        }
+      }
+      .add-sub-res {
+        i { font-size: 20px; }
+        .t-c;
+        border: 3px dotted #b8b8b8;
+        padding-top: 10px;
+        padding-bottom: 10px;
+      }
+    }
+    .shop-params-logo {span {display: none;}}
+    .shop-params-images {
+      p {display: none;}
+    }
   }
 
   #device_params {
@@ -981,5 +1070,24 @@ form.edit-mode, .form.edit-mode
 	.page-header {
 	  margin-top: 10px;
 	}
+  }
+}
+
+.file-upload {
+  margin-top: 12px; text-align: right; position: relative;
+  div
+  {
+    position: relative;
+    span
+    { display: none; position: absolute;
+      width: 100%; text-align: center; color: #fff;
+    }
+  }
+  &.loading
+  {
+    div { background: #999; }
+    img { filter: alpha(opacity=50); opacity: 0.5; }
+    span { display: block; }
+    label { &.btn-link {display: none;} }
   }
 }

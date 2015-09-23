@@ -5,9 +5,9 @@
 		toptip = Hualala.UI.TopTip;
 	var PromotionSetFormElsHT = HSP.PromotionSetFormElsHT;
 	//老店铺需求所需字段
-	var PromotionRuleFormKeys = 'dateRange,supportOrderType,isHolidaysUsing,timeID'.split(',');
+	var PromotionRuleFormKeys = 'dateRange,supportOrderType,holidayFlag,timeID'.split(',');
 	//新店铺需求的所需字段
-	//var PromotionRuleFormKeys = 'dateRange,wholeDay,supportOrderType,isHolidaysUsing,time1,time2'.split(',');
+	//var PromotionRuleFormKeys = 'dateRange,wholeDay,supportOrderType,holidayFlag,time1,time2'.split(',');
 	/**
 	 * 整理表单渲染数据
 	 * @return {[type]} [description]
@@ -18,69 +18,71 @@
 		var ret = _.map(formKeys, function (key) {
 			var elCfg = PromotionSetFormElsHT.get(key),
 				type = $XP(elCfg, 'type');
-			if (type == 'section'&& key == 'dateRange') {
-				var startDate = self.model.get('startDate') || '',
-					endDate = self.model.get('endDate') || '';
-				startDate = (IX.isEmpty(startDate) || startDate == 0) ? '' : startDate;
-				endDate = (IX.isEmpty(endDate) || endDate == 0) ? '' : endDate;
-				return IX.inherit(elCfg, {
-					min : IX.inherit($XP(elCfg, 'min'), {
-						value : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(startDate), 'yyyy/MM/dd')
-					}),
-					max : IX.inherit($XP(elCfg, 'max'), {
-						value : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(endDate), 'yyyy/MM/dd')
-					})
-				});
-			}else if (type == 'section'&& (key == 'time1'||key == 'time2')) {
-				var starstr = key+"Start",
-					endstr = key+"End";
-				var starstr = self.model.get(starstr) || '',
-					endstr = self.model.get(endstr) || '';
-				starstr = (IX.isEmpty(starstr) || starstr == 0) ? '' : starstr;
-				endstr = (IX.isEmpty(endstr) || endstr == 0) ? '' : endstr;
-				var	v = _.map(v, function (t) {
-						return self.decodeTimeStr(t);
-					});
-				return IX.inherit(elCfg, {
-					min : IX.inherit($XP(elCfg, 'min'), {
-						value : starstr || $XP(elCfg, 'min.defaultVal')
-					}),
-					max : IX.inherit($XP(elCfg, 'max'), {
-						value : endstr || $XP(elCfg, 'max.defaultVal')
-					})
-				});
-			}
-			else if (type == 'radiogrp' && key == 'supportOrderType') {
-				var v = self.model.get('supportOrderType') || 0,
-					options = _.map($XP(elCfg, 'options'), function (op) {
-						return IX.inherit(op, {
-							checked : v == $XP(op, 'value') ? 'checked' : ''
+			if (type == 'section') {
+				switch(key){
+					case 'dateRange':
+						var startDate = self.model.get('startDate') || '',
+							endDate = self.model.get('endDate') || '';
+						startDate = (IX.isEmpty(startDate) || startDate == 0) ? '' : startDate;
+						endDate = (IX.isEmpty(endDate) || endDate == 0) ? '' : endDate;
+						return IX.inherit(elCfg, {
+							min : IX.inherit($XP(elCfg, 'min'), {
+								value : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(startDate), 'yyyy/MM/dd')
+							}),
+							max : IX.inherit($XP(elCfg, 'max'), {
+								value : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(endDate), 'yyyy/MM/dd')
+							})
 						});
-					});
-				return IX.inherit(elCfg, {
-					options : options
-				});
-			}  else if (type == 'radiogrp' && key == 'wholeDay') {
-				var v = self.model.get('wholeDay') || 0,
-					options = _.map($XP(elCfg, 'options'), function (op) {
-						return IX.inherit(op, {
-							checked : v == $XP(op, 'value') ? 'checked' : ''
+					break;
+					case 'time1':
+					case 'time2':
+						var starstr = key+"Start",
+							endstr = key+"End";
+						var starstr = self.model.get(starstr) || '',
+							endstr = self.model.get(endstr) || '';
+						starstr = (IX.isEmpty(starstr) || starstr == 0) ? '' : starstr;
+						endstr = (IX.isEmpty(endstr) || endstr == 0) ? '' : endstr;
+						var	v = _.map(v, function (t) {
+								return self.decodeTimeStr(t);
+							});
+						return IX.inherit(elCfg, {
+							min : IX.inherit($XP(elCfg, 'min'), {
+								value : starstr || $XP(elCfg, 'min.defaultVal')
+							}),
+							max : IX.inherit($XP(elCfg, 'max'), {
+								value : endstr || $XP(elCfg, 'max.defaultVal')
+							})
 						});
-					});
-				return IX.inherit(elCfg, {
-					options : options
-				});
-			} else if (type == 'radiogrp' && key == 'isHolidaysUsing') {
-				var v = self.model.get('holidayFlag') || 0,
-					options = _.map($XP(elCfg, 'options'), function (op) {
-						return IX.inherit(op, {
-							checked : v == $XP(op, 'value') ? 'checked' : ''
+					break;
+				}
+			} else if (type == 'radiogrp') {
+				switch(key) {
+					case 'supportOrderType':
+					case 'wholeDay':
+					case 'timeID':
+						var v = self.model.get(key) || $XP(elCfg, 'defaultVal'),
+							options = _.map($XP(elCfg, 'options'), function (op) {
+								return IX.inherit(op, {
+									checked : v == $XP(op, 'value') ? 'checked' : ''
+								});
+							});
+						return IX.inherit(elCfg, {
+							options : options
 						});
-					});
-				return IX.inherit(elCfg, {
-					options : options
-				}); 
-			} else if (type == 'radiogrp' || type == 'checkboxgrp') {
+					break;
+					case 'holidayFlag':
+						var v = self.model.get('holidayFlag') || 0,
+						options = _.map($XP(elCfg, 'options'), function (op) {
+							return IX.inherit(op, {
+								checked : v == $XP(op, 'value') ? 'checked' : ''
+							});
+						});
+						return IX.inherit(elCfg, {
+							options : options
+						}); 
+					break;
+				}
+			} /*else if (type == 'radiogrp' || type == 'checkboxgrp') {
 				var v = self.model.get(key) || $XP(elCfg, 'defaultVal');
 				if (type == 'checkboxgrp') {
 					v = v.split(',');
@@ -94,7 +96,7 @@
 				return IX.inherit(elCfg, {
 					options : options
 				});
-			} else {
+			}*/ else {
 				return IX.inherit(elCfg, {
 					value : self.model.get(key) || $XP(elCfg, 'defaultVal')
 				});
@@ -211,10 +213,82 @@
 						self.failFn.call(self);
 					},
 					successFn : function () {
-						self.successFn.call(self);
+						self.parentView.switchWizardCtrlStatus('reset');
+						self.model.emit('promotionTimeCheck', {
+							params : self.model.getAll(),
+							failFn : function (res) {
+								if(res.resultcode == 'SP00002') {
+									toptip({msg: res.resultmsg, type: 'danger'});
+								}
+								self.failFn.call(self);
+							},
+							successFn : function (rsp) {
+								var promotionTimeCheckModal = new Hualala.UI.ModalDialog({
+									id : "Event_Type_Modal",
+									clz : "Event-modal",
+									title : "设置促销时间确认"
+								});
+								promotionTimeCheckModal.show();
+								self.promotionTimeCheckModal = promotionTimeCheckModal;
+								promotionTimeCheckModal._.footer.find('.btn-ok').text('确认');
+								var datasets =rsp.datasets;
+								var listTpl = Handlebars.compile(Hualala.TplLib.get('tpl_promotion_TimeCheck'))
+								$modalbody = promotionTimeCheckModal._.body;
+								$modalbody.addClass("clearfix");
+								var newPromotionDs = rsp.datasets.newPromotionDs.data.records,
+									oldPromotionDs = rsp.datasets.oldPromotionDs.data.records,
+									ret = {};
+									ret.newPromotionDs=[];
+									ret.oldPromotionDs =[];
+								var supportOrderTypes = Hualala.TypeDef.ShopPromotionDataSet.supportOrderTypes,
+									holidayFlags = Hualala.TypeDef.MCMDataSet.GiftIsHolidayUsing,
+									timeIDs = Hualala.TypeDef.ShopPromotionDataSet.timeIDTypes,
+									formatDateTimeValue = Hualala.Common.formatDateTimeValue;
+									if(newPromotionDs){
+										ret.newPromotionDs = IX.clone(newPromotionDs);
+								        for(var i = newPromotionDs.length - 1, newPromotionD; newPromotionD = ret.newPromotionDs[i--];){
+								        	var supportOrderType = _.find(supportOrderTypes, function (el) {return $XP(el, 'value') == newPromotionD.supportOrderType;}),
+								        		holidayFlag = _.find(holidayFlags, function (el) {return $XP(el, 'value') == newPromotionD.holidayFlag;}),
+								        		timeIDFlag = _.find(timeIDs, function (el) {return $XP(el, 'value') == newPromotionD.timeID;});
+								            newPromotionD.startDate = IX.Date.getDateByFormat(formatDateTimeValue(newPromotionD.startDate), 'yyyy-MM-dd');
+								            newPromotionD.endDate = IX.Date.getDateByFormat(formatDateTimeValue(newPromotionD.endDate), 'yyyy-MM-dd');
+											newPromotionD.supportOrderType = $XP(supportOrderType, 'label', '');
+											newPromotionD.holidayFlag =  $XP(holidayFlag, 'label', '');
+											newPromotionD.timeID = $XP(timeIDFlag, 'label', '');
+								        }
+									}
+									if(oldPromotionDs){
+										ret.oldPromotionDs = IX.clone(oldPromotionDs);
+								        for(var i = oldPromotionDs.length - 1, oldPromotionD; oldPromotionD = ret.oldPromotionDs[i--];){
+								        	var supportOrderType = _.find(supportOrderTypes, function (el) {return $XP(el, 'value') == oldPromotionD.supportOrderType;}),
+								        		holidayFlag = _.find(holidayFlags, function (el) {return $XP(el, 'value') == oldPromotionD.holidayFlag;}),
+								        		timeIDFlag = _.find(timeIDs, function (el) {return $XP(el, 'value') == oldPromotionD.timeID;});
+								            oldPromotionD.startDate = IX.Date.getDateByFormat(formatDateTimeValue(oldPromotionD.startDate), 'yyyy-MM-dd');
+								            oldPromotionD.endDate = IX.Date.getDateByFormat(formatDateTimeValue(oldPromotionD.endDate), 'yyyy-MM-dd');
+											oldPromotionD.supportOrderType = $XP(supportOrderType, 'label', '');
+											oldPromotionD.holidayFlag =  $XP(holidayFlag, 'label', '');
+											oldPromotionD.timeID = $XP(timeIDFlag, 'label', '');
+								        }
+								    }
+								$(listTpl({option: ret})).appendTo($modalbody.empty());
+								promotionTimeCheckModal._.footer.find('.btn-ok').on('click', function (e) {
+									promotionTimeCheckModal.hide();
+									self.model.emit('promotionRulesToString', {
+										params : {rules:self.model.get("rules")},
+										failFn : function () {
+											self.failFn.call(self);
+										},
+										successFn : function () {
+											self.successFn.call(self);
+										}
+									});
+								});
+							}
+						});
 					}
-				})
+				});
 			});
+			
 			self.container.find(':radio[name=wholeDay]').on('change', function (e) {
 				self.setRadioWholeDayLayout($(this));
 			});
@@ -314,7 +388,8 @@
 						break;*/
 					case 'supportOrderType':
 					case 'wholeDay':
-					case 'isHolidaysUsing':
+					case 'holidayFlag':
+					case 'timeID' :
 						v = self.getRadiboxVal(key);
 						ret[key] = v;
 						break;

@@ -488,6 +488,31 @@
 		fn(IX.inherit(res, Test.AccountDailyReportData));
 	};
 
+    /*
+    * 账户充值：生成订单
+    * @params {object} params 参数 {groupID, groupName, settleUnitID, orderType, orderTotal, interfaceTransWay}
+    * @params {function} cbFn
+    * return NULL
+    * 服务：/fsm/settleOrderCreate.ajax
+    * */
+    Hualala.Global.rechargeCreateOrder = function(params, cbFn) {
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        fn(Test.RechargeOrder);
+    };
+    /*
+    * 充值查询订单
+    * @params {object} params 参数 {groupID, settleOrderID}
+    * @params {function} cbFn
+    * return NULL
+    * 服务：/fsm/settleOrderQuery.ajax
+    * */
+    Hualala.Global.queryAccountOrder = function (params, cbFn) {
+		IX.Debug.info(params);
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(IX.inherit(res, Test.AccountOrderData));
+    };
+
      /**
 	  * 获取已启用城市
 	  * @param {Object} params 参数{isActive: 1}
@@ -1291,9 +1316,9 @@
 	  */
 	Hualala.Global.getVipLevels = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
-        IX.Net.loadJsFiles(['/test/data/crm_vip_levels.js'], function(){
+        IX.Net.loadJsFiles(['../test/data/crm_vip_levels.js'], function(){
             fn(Test.crmVipLevels);
-        });
+        })
 	};
     
     /**
@@ -1424,7 +1449,7 @@
 	  */
 	Hualala.Global.getCrmPreferential = function (params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
-        IX.Net.loadJsFiles(['/test/data/crm_preferential.js'], function(){
+        IX.Net.loadJsFiles(['../test/data/crm_preferential.js'], function(){
             var srcRecords = Test.crmPreferential.data.records;
             var startIndex = (params.pageNo - 1) * params.pageSize;
             Test.crmPreferential.data.page.pageNo = params.pageNo;
@@ -1461,7 +1486,7 @@
 	 */
 	Hualala.Global.getCrmShopPreferential = function(params, cbFn) {
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
-		IX.Net.loadJsFiles(['/test/data/crm_preferential.js'], function(){
+		IX.Net.loadJsFiles(['../test/data/crm_preferential.js'], function(){
 			var srcRecords = Test.crmShopPreferential.data.records;
 			var startIndex = (params.pageNo - 1) * params.pageSize;
 			Test.crmShopPreferential.data.page.pageNo = params.pageNo;
@@ -1631,6 +1656,18 @@
             fn(rsp);
         });
 	};
+	/**
+      * 获取预授权码
+      * @param {Object} params 参数{}
+	  * @param {Function} cbFn   回调函数{resultcode, resultmsg, data}
+	  * @return {NULL}
+      * 服务调用 URL: /wechat/createPreauthCode.ajax
+	  */ 
+	Hualala.Global.getWeChatPreauthCode = function(params,cbFn){
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var rsp =Test.getpreAuthCode;
+		fn(rsp);
+    };
     
     /**
       * 获取微信自动回复信息列表
@@ -2167,7 +2204,17 @@
     	setTimeout(function () {
     		fn(res);
     	}, 200);
-    };   
+    }; 
+    /**获取礼品的可使用店铺
+     * @param  {[type]} params {giftItemID}
+     * @param  {[type]} cbFn   [description]
+     * @return {[type]}        [description]
+     */
+    Hualala.Global.getMCMGiftShopUsed = function(params, cbFn){       
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(IX.inherit(res, Test.GiftUsedShopData));
+    };  
 
     /**
      * 获取活动列表数据
@@ -2234,6 +2281,21 @@
 		}, 1000);
     };
 
+    /*
+    * 检测是否已有生日赠送活动
+    * @params {object} params {}
+    * @params {Function} cbFn
+    * @return null
+    * 服务：/saas/isCheckBirthdayEvent.ajax
+    * */
+    Hualala.Global.checkBirthdayEventExist = function (params, cbFn) {
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        fn({
+            data: {birthdayGiftFlag: '0'},
+            resultmsg: '',
+            resultcode: '000'
+        });
+    };
 
     /**
      * 创建活动
@@ -2448,6 +2510,20 @@
 
     };
 
+    /*
+    * 报名活动》活动跟踪》群发短信
+    * @params {object} params {}
+    * @params {function} cbFn
+    * @return NULL
+    * 服务： /crm/crm_baomingEventSendSms.ajax
+    * */
+    Hualala.Global.applyEventSendSMS = function(params, cbFn) {
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn;
+        fn({
+            resultcode: '000',
+            resultmsg: ''
+        });
+    };
 
     /**
       * 查询集团信息
@@ -2704,7 +2780,7 @@
         var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
         var rsp = {
             "processTime": "20141111112531495",
-            "resultcode": "001",
+            "resultcode": "000",
             "resultmsg": ""
         };
         fn(rsp);
@@ -3441,6 +3517,40 @@
     };
 
     /*
+     * 桌台排序>>移到顶部
+     * 参数：{object} params {shopID, areaID, tableID}
+     *
+     * 服务 /shop/topTableSort.ajax
+     * */
+    Hualala.Global.shopTableSortTop = function(params, cbFn) {
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn(),
+            rsp = {resultcode: '000', resultmsg: ''};
+        fn(rsp);
+    };
+
+    /*
+     * 桌台排序 >>上移或下移
+     * 参数 {object} params {shopID areaID tableID sortIndex tableID2 sortIndex2}
+     * 服务 /shop/shiftTableSort.ajax
+     * */
+    Hualala.Global.shopTableSortUpOrDown = function(params, cbFn) {
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn(),
+            rsp = {resultcode: '000', resultmsg: ''};
+        fn(rsp);
+    };
+
+    /*
+     * 桌台排序 >>移到底部
+     * 参数 {object} params {shopID tableID areaID}
+     * 服务 /shop/lowTableSort.ajax
+     * */
+    Hualala.Global.shopTableSortBottom = function(params, cbFn) {
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn(),
+            rsp = {resultcode: '000', resultmsg: ''};
+        fn(rsp);
+    };
+
+    /*
      * 检查桌台名称是否重复
      * @params {object} params 参数{shopID, tableID, tableName}
      * @params {Function} cbFn 回调函参数数 {rsp}
@@ -3524,6 +3634,40 @@
         fn(rsp);
     };
 
+    /*
+     * 区域排序>>移到顶部
+     * 参数：{object} params {shopID, areaID}
+     *
+     * 服务 /shop/topAreaSort.ajax
+     * */
+    Hualala.Global.tableAreaSortTop = function(params, cbFn) {
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn(),
+            rsp = {resultcode: '000', resultmsg: ''};
+        fn(rsp);
+    };
+
+    /*
+     * 区域排序 >>上移或下移
+     * 参数 {object} params {shopID areaID sortIndex areaID2 sortIndex2}
+     * 服务 /shop/shiftAreaSort.ajax
+     * */
+    Hualala.Global.tableAreaSortUpOrDown = function(params, cbFn) {
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn(),
+            rsp = {resultcode: '000', resultmsg: ''};
+        fn(rsp);
+    };
+
+    /*
+     * 区域排序 >>移到底部
+     * 参数 {object} params {shopID areaID}
+     * 服务 /shop/lowAreaSort.ajax
+     * */
+    Hualala.Global.tableAreaSortBottom = function(params, cbFn) {
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn(),
+            rsp = {resultcode: '000', resultmsg: ''};
+        fn(rsp);
+    };
+
     /**
      * 查询店铺促销信息
      * @param  {Object} params 参数{shopID}
@@ -3538,13 +3682,26 @@
 		fn(IX.inherit(res, Test.PromotionData));
     };
     /**
-     * 添加更新店铺促销信息
-     * @param  {Object} params 参数{shopID,startDate,endDate,holidayFlag,supportOrderType,time1Start,time1End,time2Start,time2End,wholeDay,rules,remark}
+     * 添加店铺促销信息
+     * @param  {Object} params 参数{itemID,shopID,startDate,endDate,holidayFlag,supportOrderType,time1Start,time1End,time2Start,time2End,wholeDay,rules,remark}
+     * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+     * @return {NULL}
+     */
+    Hualala.Global.createShopPromotion = function (params, cbFn){
+        IX.Debug.info("DEBUG: 添加促销信息");
+		IX.Debug.info(params);
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var res = {resultcode : '000', resultmsg : ''};
+		fn(res);
+    };
+    /**
+     * 更新店铺促销信息
+     * @param  {Object} params 参数{itemID,shopID,startDate,endDate,holidayFlag,supportOrderType,time1Start,time1End,time2Start,time2End,wholeDay,rules,remark}
      * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
      * @return {NULL}
      */
     Hualala.Global.updateShopPromotion =function (params, cbFn) {
-        IX.Debug.info("DEBUG: 添加和更新促销信息");
+        IX.Debug.info("DEBUG: 更新促销信息");
 		IX.Debug.info(params);
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		var res = {resultcode : '000', resultmsg : ''};
@@ -3574,7 +3731,7 @@
 		IX.Debug.info(params);
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
 		var res = {resultcode : '000', resultmsg : ''};
-		fn(res);
+		fn(IX.inherit(res, Test.PromotionTimeCheckData));
     };
 
 	/*
@@ -3647,8 +3804,27 @@
         IX.Debug.info("DEBUG: 促销信息预览");
 		IX.Debug.info(params);
 		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
-		var res = {resultcode : '000', resultmsg : ''};
-		fn(res);
+		var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		setTimeout(function () {
+			fn({
+				resultcode : '000',
+				// resultcode : '111',
+				resultmsg : '',
+			    data: {
+			        page: {
+			            pageCount: 0,
+			            pageNo: 0,
+			            pageSize: 0,
+			            totalSize: 0
+			        },
+			        records: [
+			            {
+			                promotionDesc: "满100元9折 减免5元且赠送消费一定金额就有优惠;满100元9折 减免5元"
+			            }
+			        ]
+			    }
+			});
+		}, 20);
     };
     /** 查询可套用店铺
      * @param  {Object} params 参数{shopID}
@@ -4096,13 +4272,136 @@
 		var res = {resultcode : '000', resultmsg : ''};
 		fn(res);
     };
+    /**
+	 * 获取反馈列表
+	 * @param  {Object} params 参数{feedbackType,responseStatus,startTime,endTime}
+	 * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 * 服务调用/crm/customerFeedbackQuery.ajax
+	 */
+    Hualala.Global.getFeedBack = function(params, cbFn){
+       	var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var rsp =Test.feedBackData;
+		fn(rsp);
+    };
+    /**
+	 * 反馈增加
+	 * @param  {Object} params 参数{itemID,responseStatus,responseContent}
+	 * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 * 服务调用/crm/customerFeedbackAddResponseContent.ajax
+	 */
+    Hualala.Global.AddFeedBackContent = function(params, cbFn){
+        IX.Debug.info(params);
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+    };
+    /**
+	 * 反馈处理
+	 * @param  {Object} params 参数{itemID,responseStatus,responseContent}
+	 * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 * 服务调用pay_customerFeedbackUpdate
+	 */
+    Hualala.Global.updateFeedBackContent = function (params, cbFn){
+        IX.Debug.info(params);
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+    };
+    /**
+     *版本更新查询
+     * @param  {Object} params 参数{groupID,clientType}
+	 * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 * 服务调用/saas/querySysClientAppVersionInfo.ajax
+	 */
+    Hualala.Global.getVersionUpdate =function(params,cbFn){
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var rsp =Test.getversionInfo;
+		fn(rsp);
+    };
+    /**
+     *点评查询列表
+     * @param  {Object} params 参数{shopName,userNickName,content,beginTime,endTime}
+	 * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 * 服务调用/crm/queryShopAssessmentDetail.ajax
+	 */
+    Hualala.Global.getAssessment = function (params, cbFn){
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+		var rsp =Test.AssessmentData;
+		fn(rsp);
+    };
+    /**
+     *点评回复
+     * @param  {Object} params 参数{ADItemID,userNickName,returnUserID,returnUserNickname,returnImage,returnContent}
+	 * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 * 服务调用/crm/addShopAssessmentReturn.ajax
+	 */
+    Hualala.Global.AddAssessmentReturn = function(params, cbFn){
+        IX.Debug.info(params);
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+    };
+    /**
+     *点评修改
+     * @param  {Object} params 参数{ItemID,userNickName,returnUserID,returnUserNickname,returnImage,returnContent}
+	 * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 * 服务调用/crm/updateShopAssessmentReturn.ajax
+	 */
+    Hualala.Global.updateAssessmentReturn = function(params, cbFn){
+        IX.Debug.info(params);
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+    };
+    /**
+     *点评置顶
+     * @param  {Object} params 参数{ItemID,setTop}
+	 * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 * 服务调用/crm/updateSetTopAssessMent.ajax
+	 */
+    Hualala.Global.SetAssessmentTop = function(params, cbFn){
+        IX.Debug.info(params);
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+    };
+    /**
+     *点评置顶
+     * @param  {Object} params 参数{ItemID}
+	 * @param  {Function} cbFn 回调函数{resultcode, resultmsg}
+	 * @return {NULL}
+	 * 服务调用/crm/deleteShopAssessmentReturn.ajax
+	 */
+    Hualala.Global.deleteAssessmentReturn = function(params, cbFn){
+        IX.Debug.info(params);
+        var fn = IX.isFn(cbFn) ? cbFn : IX.emptyFn();
+        var rsp = {
+                resultcode: '000', 
+                resultmsg: ''
+            };
+		fn(rsp);
+    };
 })();
-
-
-
-
-
-
-
-
-

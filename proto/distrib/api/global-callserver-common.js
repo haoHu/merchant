@@ -2,40 +2,40 @@
 	IX.ns("Hualala.Global");
 	var ajaxEngine = Hualala.ajaxEngine;
 	ajaxEngine.mappingUrls([
-		/*Login Moudle*/
-		["genAuthCode", "/getCheckCode.ajax", "", "POST"],
-		["loginCallServer", "/login.ajax", "", "POST"],
-		/*Dynamic Login*/
-		["getMobileDynamicPWD", "/getDynamicCode.action", "", "POST"],
-		["dynamicLoginCallServer", "/dynamicLogin.ajax", "", "POST"],
-		/*Session Data*/
-		["loadAppData", "/getUserInfo.ajax", "", "POST"],
-		/*Shop Moudle and Shop Setting Moudle*/
-		["checkSaasOpen", "/saas/shop/canBeSaas.ajax", "", "POST"],
-		["getCities", "/shop/queryCity.ajax", "", "POST"],
-		["getAreas", "/shop/queryArea.ajax", "", "POST"],
-		["getCuisines", "/shop/queryCuisine.ajax", "", "POST"],
-		["createShop", "/shop/create.ajax", "", "POST"],
-		["updateShopBaseInfo", "/shop/updateShopBaseInfo.ajax", "", "POST"],
-		["setShopMap", "/shop/updateMap.ajax", "", "POST"],
-		["setShopClientPwd", "/shop/resetPWDforClient.ajax", "", "POST"],
-		["getShopInfo", "/shop/queryShopInfo.ajax", "", "POST"],
-		["getShopMenu", "/shop/queryShopFoodMenu.ajax", "", "POST"],
-		["updateFood", "/shop/updateFoodNetAttribute.ajax", "", "POST"],
-		["updateFoodBasic", "/shop/updateFoodDetail.ajax", "", "POST"],
-		["getQRcode",  "/zipTblQrCode.action", "", "POST"],
-		["getShopQuerySchema", "/shop/schema.ajax", "", "POST"],
-		["queryShop", "/shop/query.ajax", "", "POST"],
-		["switchShopStatus", "/shop/status.ajax", "", "POST"],
-		["switchShopServiceFeatureStatus", "/shop/controlServiceFeatures.ajax", "", "POST"],
-		["setJustEatParams", "/shop/justEatParam.ajax", "", "POST"],
-		["setSpotOrderParams", "/shop/spotParam.ajax", "", "POST"],
-		["setTakeAwayParams", "/shop/takeawayParam.ajax", "", "POST"],
-		["setTakeOutParams", "/shop/takeoutParam.ajax", "", "POST"],
-		["setCommonReserveParams", "/shop/commonreserveParam.ajax", "", "POST"],
-		["bindSettleUnitByShopID", "/shop/updateSettleUnitByshopID.ajax", "", "POST"],
-		["updateSetFoodDetail", "/shop/setFoodDetailList.ajax", "", "POST"],
-		["searchFood", "/shop/queryFoodUnitList.ajax", "", "POST"],
+	/*Login Moudle*/
+	["genAuthCode", "/getCheckCode.ajax", "", "POST"],
+	["loginCallServer", "/login.ajax", "", "POST"],
+	/*Dynamic Login*/
+	["getMobileDynamicPWD", "/getDynamicCode.action", "", "POST"],
+	["dynamicLoginCallServer", "/dynamicLogin.ajax", "", "POST"],
+	/*Session Data*/
+	["loadAppData", "/getUserInfo.ajax", "", "POST"],
+	/*Shop Moudle and Shop Setting Moudle*/
+	["checkSaasOpen", "/saas/shop/canBeSaas.ajax", "", "POST"],
+	["getCities", "/shop/queryCity.ajax", "", "POST"],
+	["getAreas", "/shop/queryArea.ajax", "", "POST"],
+	["getCuisines", "/shop/queryCuisine.ajax", "", "POST"],
+	["createShop", "/shop/create.ajax", "", "POST"],
+	["updateShopBaseInfo", "/shop/updateShopBaseInfo.ajax", "", "POST"],
+	["setShopMap", "/shop/updateMap.ajax", "", "POST"],
+	["setShopClientPwd", "/shop/resetPWDforClient.ajax", "", "POST"],
+	["getShopInfo", "/shop/queryShopInfo.ajax", "", "POST"],
+	["getShopMenu", "/shop/queryShopFoodMenu.ajax", "", "POST"],
+	["updateFood", "/shop/updateFoodNetAttribute.ajax", "", "POST"],
+	["updateFoodBasic", "/shop/updateFoodDetail.ajax", "", "POST"],
+	["getQRcode",  "/zipTblQrCode.action", "", "POST"],
+	["getShopQuerySchema", "/shop/schema.ajax", "", "POST"],
+	["queryShop", "/shop/query.ajax", "", "POST"],
+	["switchShopStatus", "/shop/status.ajax", "", "POST"],
+	["switchShopServiceFeatureStatus", "/shop/controlServiceFeatures.ajax", "", "POST"],
+	["setJustEatParams", "/shop/justEatParam.ajax", "", "POST"],
+	["setSpotOrderParams", "/shop/spotParam.ajax", "", "POST"],
+	["setTakeAwayParams", "/shop/takeawayParam.ajax", "", "POST"],
+	["setTakeOutParams", "/shop/takeoutParam.ajax", "", "POST"],
+	["setCommonReserveParams", "/shop/commonreserveParam.ajax", "", "POST"],
+	["bindSettleUnitByShopID", "/shop/updateSettleUnitByshopID.ajax", "", "POST"],
+	["updateSetFoodDetail", "/shop/setFoodDetailList.ajax", "", "POST"],
+	["searchFood", "/shop/queryFoodUnitList.ajax", "", "POST"],
         //shop menu food sort
         ["sortFoodTop", "/shop/topFoodSort.ajax", "", "POST"],
         ["sortFoodPrevOrNext", "/shop/shiftFoodSort.ajax", "", "POST"],
@@ -65,6 +65,12 @@
         ["addTableArea", "/saas/base/addArea.ajax", "POST"],
         ["updateTableArea", "/saas/base/updateArea.ajax", "POST"],
         ["setAreaCategory", "/saas/base/setAreaFoodCategoryCodeLst.ajax", "POST"],
+        ["shopTableSortTop", "/shop/topTableSort.ajax", "POST"],
+        ["shopTableSortUpOrDown", "/shop/shiftTableSort.ajax", "POST"],
+        ["shopTableSortBottom", "/shop/lowTableSort.ajax", "POST"],
+        ["tableAreaSortTop", "/shop/topAreaSort.ajax", "POST"],
+        ["tableAreaSortUpOrDown", "/shop/shiftAreaSort.ajax", "POST"],
+        ["tableAreaSortBottom", "/shop/lowAreaSort.ajax", "POST"],
         /*shop printer setting*/
         ["addShopPrinter","/saas/base/printerInsert.ajax", "","POST"],
         ["deleteShopPrinter","/saas/base/printerDelete.ajax","","POST"],
@@ -73,6 +79,7 @@
         ["checkPrinterNameExist","/saas/base/printerNameExist.ajax","","POST"],
         /*shop promotion*/
         ["getShopPromotion", "/shop/queryShopPromotionAndRef.ajax", "", "POST"],
+        ["createShopPromotion","/shop/addShopPromotionRules.ajax", "", "POST"],
         ["updateShopPromotion","/shop/updateShopPromotionRules.ajax", "", "POST"],
         ["deleteShopPromotion", "/shop/deleteShopPromotion.ajax", "", "POST"],
         ["promotionTimeCheck","/shop/setShopPromotionTimeCheck.ajax", "", "POST"],
@@ -118,38 +125,41 @@
         ["updateSaasShopParams","/saas/base/updateShopParams.ajax","", "POST"],
         ["updateSaasDeviceParams","/saas/base/updateDeviceInfo.ajax","", "POST"],
 
-		// ["setJustEatParams", "/shop/shopParam.ajax", "", "POST"],
-		// ["setSpotOrderParams", "/shop/shopParam.ajax", "", "POST"],
+	// ["setJustEatParams", "/shop/shopParam.ajax", "", "POST"],
+	// ["setSpotOrderParams", "/shop/shopParam.ajax", "", "POST"],
 
-		/*Account Moudle*/
-		["queryAccount", "/fsm/queryFsmSettleUnit.ajax", "", "POST"],
-		["withdrawCash", "/fsm/Withdraw.ajax", "", "POST"],
-		["deleteAccount", "/fsm/deleteFsmSettleUnit.ajax", "", "POST"],
-		["editAccount", "/fsm/updateSettleUnit.ajax", "", "POST"],
-		["addAccount", "/fsm/addSettleUnit.ajax", "", "POST"],
-		["getAccountQueryShop", "/fsm/settlementShopDetail.ajax", "", "POST"],
-		["queryAccountTransDetail", "/fsm/queryFsmAccountTransDetail.ajax", "", "POST"],
-                ["queryOrderInfoByKey","/order/queryOrderInfoByKey.ajax", "", "POST"],
-		["queryAccountOrderPayDetail", "/order/queryOrderPayDetail.ajax", "", "POST"],
-		["queryAccountFsmCustomerDetail", "/fsm/queryFsmCustomerDetail.ajax", "", "POST"],
-                ["queryAccountDailyReport", "/report/settle/settleDayReport.ajax", "","POST"],
-		/*Order Moudle*/
-		["queryOrderDetail", "/shop/queryOrderDetail.ajax", "", "POST"],
-                ["OrderExport", "/report/export/xls.ajax", "", "POST"],
-		["queryOrderDayDetail", "/shop/queryDayOfReconciliation.ajax", "", "POST"],
-		["queryOrderDuringDetail", "/shop/queryDuringTheBill.ajax", "", "POST"],
-		["queryOrderDishesHot", "/shop/foodStatistic.ajax", "", "POST"],
-		["queryUserOrderStatistic", "/shop/UserOrderStatistic.ajax", "", "POST"],
-		/*User Moudle*/
-		["queryShopGroupChildAccount", "/shop/queryShopAccount.ajax", "", "POST"],
-		["removeShopGroupChildAccount", "/shop/removeShopAccount.ajax", "", "POST"],
-		["unbindMobileInShopGroupChildAccount", "/shop/unboundMobile.ajax", "", "POST"],
-		["resetPWDInShopGroupChildAccount", "/shop/groupChildAccountResetPwd.ajax", "", "POST"],
-		["updateShopGroupChildAccount", "/shop/updateShopAccount.ajax", "", "POST"],
-		["addShopGroupChildAccount", "/shop/addShopAccount.ajax", "", "POST"],
-		["updateRoleBinding", "/shop/addOrUpdateChildAccount.ajax", "", "POST"],
-		["queryRoleBinding", "/shop/queryChildAccount.ajax", "", "POST"],
-		["bindMobileInShopGroupChildAccount", "/shop/boundMobile.ajax", "", "POST"],
+	/*Account Moudle*/
+	["queryAccount", "/fsm/queryFsmSettleUnit.ajax", "", "POST"],
+	["withdrawCash", "/fsm/Withdraw.ajax", "", "POST"],
+	["deleteAccount", "/fsm/deleteFsmSettleUnit.ajax", "", "POST"],
+	["editAccount", "/fsm/updateSettleUnit.ajax", "", "POST"],
+	["addAccount", "/fsm/addSettleUnit.ajax", "", "POST"],
+	["getAccountQueryShop", "/fsm/settlementShopDetail.ajax", "", "POST"],
+	["queryAccountTransDetail", "/fsm/queryFsmAccountTransDetail.ajax", "", "POST"],
+        ["queryOrderInfoByKey","/order/queryOrderInfoByKey.ajax", "", "POST"],
+	["queryAccountOrderPayDetail", "/order/queryOrderPayDetail.ajax", "", "POST"],
+	["queryAccountFsmCustomerDetail", "/fsm/queryFsmCustomerDetail.ajax", "", "POST"],
+        ["queryAccountDailyReport", "/report/settle/settleDayReport.ajax", "","POST"],
+        ["rechargeCreateOrder", " /fsm/settleOrderCreate.ajax", "","POST"],
+        ["queryAccountOrder","/fsm/settleOrderQuery.ajax", "","POST"],
+
+	/*Order Moudle*/
+	["queryOrderDetail", "/shop/queryOrderDetail.ajax", "", "POST"],
+        ["OrderExport", "/report/export/xls.ajax", "", "POST"],
+	["queryOrderDayDetail", "/shop/queryDayOfReconciliation.ajax", "", "POST"],
+	["queryOrderDuringDetail", "/shop/queryDuringTheBill.ajax", "", "POST"],
+	["queryOrderDishesHot", "/shop/foodStatistic.ajax", "", "POST"],
+	["queryUserOrderStatistic", "/shop/UserOrderStatistic.ajax", "", "POST"],
+	/*User Moudle*/
+	["queryShopGroupChildAccount", "/shop/queryShopAccount.ajax", "", "POST"],
+	["removeShopGroupChildAccount", "/shop/removeShopAccount.ajax", "", "POST"],
+	["unbindMobileInShopGroupChildAccount", "/shop/unboundMobile.ajax", "", "POST"],
+	["resetPWDInShopGroupChildAccount", "/shop/groupChildAccountResetPwd.ajax", "", "POST"],
+	["updateShopGroupChildAccount", "/shop/updateShopAccount.ajax", "", "POST"],
+	["addShopGroupChildAccount", "/shop/addShopAccount.ajax", "", "POST"],
+	["updateRoleBinding", "/shop/addOrUpdateChildAccount.ajax", "", "POST"],
+	["queryRoleBinding", "/shop/queryChildAccount.ajax", "", "POST"],
+	["bindMobileInShopGroupChildAccount", "/shop/boundMobile.ajax", "", "POST"],
         ["queryRoleRight", "/shop/queryShopPageRights.ajax", "", "POST"],
         ["queryAccountRight", "/shop/queryShopGroupChildAccountPageRight.ajax", "", "POST"],
         ["updateAccountRight", "/shop/updateShopGroupChildAccountPageRight.ajax", "", "POST"],
@@ -182,6 +192,15 @@
         ["getCrmMemberDailyreport", "/report/customer/customerDayReport.ajax", "", "POST"],
         ["crmAccountChange", "/saas/crm/manualAdjustBalance.ajax", "", "POST"],
         ["crmSendGift", "/shop/crm/cardGiftCharge.ajax", "", "POST"],
+        ["getFeedBack","/crm/customerFeedbackQuery.ajax", "", "POST"],
+        ["AddFeedBackContent","/crm/customerFeedbackAddResponseContent.ajax", "", "POST"],
+        ["updateFeedBackContent","/crm/customerFeedbackUpdate.ajax", "", "POST"],
+
+        ["getAssessment", "/crm/queryShopAssessmentDetail.ajax", "", "POST"],
+        ["AddAssessmentReturn", "/crm/addShopAssessmentReturn.ajax", "", "POST"],
+        ["updateAssessmentReturn", "/crm/updateShopAssessmentReturn.ajax", "", "POST"],
+        ["SetAssessmentTop", "/crm/updateSetTopAssessMent.ajax", "", "POST"],
+        ["deleteAssessmentReturn", "/crm/deleteShopAssessmentReturn.ajax", "", "POST"],
 
         /*Weixin Module*/
         ["getWeixinAccounts", "/wechat/wechatListMp.ajax", "", "POST"],
@@ -217,30 +236,34 @@
         ["getCrmEvents", "/pay/queryCrmCustomerEvent.ajax", "", "POST"],
         
         ["getUserEvents", "/sysbase/querySysEventItemList.ajax", "", "POST"],
+        ["getWeChatPreauthCode","/wechat/createPreauthCode.ajax", "", "POST"],
 
         /*MCM Module*/
-		["getMCMGifts", "/sysbase/sysEventGiftDetailList.ajax", "", "POST"],
-		["deleteMCMGift", "/sysbase/deleteSysGift.ajax", "", "POST"],
-		["createMCMGift", "/sysbase/insertSysEventGiftDetail.ajax", "", "POST"],
-		["editMCMGift", "/sysbase/updateSysEventGiftDetail.ajax", "", "POST"],
-		["getMCMEvents", "/crm/queryCrmCustomerEvent.ajax", "", "POST"],
-		["deleteMCMEvent", "/crm/deleteCrmEvent.ajax", "", "POST"],
-		["switchMCMEvent", "/crm/switchCrmEvent.ajax", "", "POST"],
-		["getMCMEventByID", "/crm/crmCustomerEventById.ajax", "", "POST"],
-		["createEvent", "/crm/insertCrmEvent.ajax", "", "POST"],
-		["editEvent", "/crm/updateCrmEvent.ajax", "", "POST"],
-		["getMCMGiftDetail", "/sysbase/sysEventGiftDetailInfoById.ajax", "", "POST"],
-		["queryMCMGiftDetailGetWayInfo", "/sysbase/queryPayUderGiftDetailGetWayInfo.ajax", "", "POST"],
-		["queryMCMGiftDetailUsedInfo", "/sysbase/queryPayUderGiftDetailUsingInfo.ajax", "", "POST"],
-		["queryUserBaseInfoByMobile", "/sysbase/queryUserBaseInfoByRegMobile.ajax", "", "POST"],
-		["sendSMS", "/shop/sendSms.ajax", "", "POST"],
-		["giftDetailDonateGift", "/shop/donateGift.ajax", "", "POST"],
-		["giftDetailPayGiftOnline", "/sysbase/insertPayShopVoucherTrans.ajax", "", "POST"],
-		["getMCMEventTrack", "/crm/crmUserQuery.ajax", "", "POST"],
-		["switchMCMTrackItem", "/crm/crmRegisterPartin.ajax", "", "POST"],
+	["getMCMGifts", "/sysbase/sysEventGiftDetailList.ajax", "", "POST"],
+	["deleteMCMGift", "/sysbase/deleteSysGift.ajax", "", "POST"],
+	["createMCMGift", "/sysbase/insertSysEventGiftDetail.ajax", "", "POST"],
+	["editMCMGift", "/sysbase/updateSysEventGiftDetail.ajax", "", "POST"],
+        ["getMCMGiftShopUsed","/pay/queryPayUserGiftDetailShop.ajax", "", "POST"],
+	["getMCMEvents", "/crm/queryCrmCustomerEvent.ajax", "", "POST"],
+	["deleteMCMEvent", "/crm/deleteCrmEvent.ajax", "", "POST"],
+	["switchMCMEvent", "/crm/switchCrmEvent.ajax", "", "POST"],
+	["getMCMEventByID", "/crm/crmCustomerEventById.ajax", "", "POST"],
+	["checkBirthdayEventExist", "/saas/isCheckBirthdayEvent.ajax", "", "POST"],
+	["createEvent", "/crm/insertCrmEvent.ajax", "", "POST"],
+	["editEvent", "/crm/updateCrmEvent.ajax", "", "POST"],
+	["getMCMGiftDetail", "/sysbase/sysEventGiftDetailInfoById.ajax", "", "POST"],
+	["queryMCMGiftDetailGetWayInfo", "/sysbase/queryPayUderGiftDetailGetWayInfo.ajax", "", "POST"],
+	["queryMCMGiftDetailUsedInfo", "/sysbase/queryPayUderGiftDetailUsingInfo.ajax", "", "POST"],
+	["queryUserBaseInfoByMobile", "/sysbase/queryUserBaseInfoByRegMobile.ajax", "", "POST"],
+	["sendSMS", "/shop/sendSms.ajax", "", "POST"],
+	["giftDetailDonateGift", "/shop/donateGift.ajax", "", "POST"],
+	["giftDetailPayGiftOnline", "/sysbase/insertPayShopVoucherTrans.ajax", "", "POST"],
+	["getMCMEventTrack", "/crm/crmUserQuery.ajax", "", "POST"],
+	["applyEventSendSMS", "/crm/crm_baomingEventSendSms.ajax", "", "POST"],
+	["switchMCMTrackItem", "/crm/crmRegisterPartin.ajax", "", "POST"],
         /*sms event module*/
-		["editSMSTemplate", "/crm/setSmsTemplate.ajax", "", "POST"],
-		["getSMSShops", "shop/queryShopByRoleType.ajax", "", "POST"],
+	["editSMSTemplate", "/crm/setSmsTemplate.ajax", "", "POST"],
+	["getSMSShops", "shop/queryShopByRoleType.ajax", "", "POST"],
 
         ["getGroupInfo", "/shop/queryGroupInfoByID.ajax", "", "POST"],
         ["queryGroupStyle", "/shop/queryShopGroupStyleInfo.ajax", "", "POST"],
@@ -297,7 +320,10 @@
         ["deleteSaasRemark", "/saas/base/orderNotesDelete.ajax ", "", "POST"],
         ["editSaasRemark", "/saas/base/orderNotesUpdate.ajax ", "", "POST"],
         ["querySaasRemark", "/saas/base/orderNotesQuery.ajax ", "", "POST"],
-        ["checckRemarkNameIsExist", "/saas/base/orderNotesNameIsExist.ajax", "", "POST"]
+        ["checckRemarkNameIsExist", "/saas/base/orderNotesNameIsExist.ajax", "", "POST"],
+
+        /*version Update*/
+        ["getVersionUpdate","/saas/querySysClientAppVersionInfo.ajax", "", "POST"]
         
 
 
@@ -316,6 +342,7 @@
         'resetMemberPassword', 'switchMember',
         'getShopTable', 'addShopTable', 'updateShopTable', 'deleteShopTable', 'switchShopTable', 'checkTableExist', 'getTableArea',
         'switchTableArea', 'checkAreaNameExist', 'deleteTableArea', 'updateTableArea', 'addTableArea', 'setAreaCategory',
+        "shopTableSortTop", "shopTableSortUpOrDown", "shopTableSortBottom", "tableAreaSortTop", "tableAreaSortUpOrDown", "tableAreaSortBottom",
         'getSaasShopParams', 'getSaasDeviceParams', 'updateSaasShopParams', 'updateSaasDeviceParams',
 		{
 			name : "loadAppData", 
@@ -324,7 +351,7 @@
 			}
 		},
                 'addShopPrinter', 'deleteShopPrinter','updateShopPrinter','getShopPrinter','checkPrinterNameExist',
-                'getShopPromotion','updateShopPromotion','deleteShopPromotion','getAllowRefPromotionShop','updatePromotShop',
+                'getShopPromotion','createShopPromotion','updateShopPromotion','deleteShopPromotion','getAllowRefPromotionShop','updatePromotShop',
                 'promotionTimeCheck','queryGiftDetail','promotionRulesToString','cancelRefPromotionRules','switchShopPromotion',
                 //'queryPrinterArea', 'checkprinterAreaName', 'updatePrinterArea', 'updatePrinterSet',
                 //'deletePrinterSet',"addPrintSet","queryPrintDepartment",
@@ -335,8 +362,8 @@
 
 		"queryAccount", "withdrawCash", "deleteAccount", "editAccount",
 		"addAccount", "getAccountQueryShop", "queryAccountTransDetail","queryOrderInfoByKey",
-		"queryAccountOrderPayDetail", "queryAccountFsmCustomerDetail","queryAccountDailyReport",
-
+		"queryAccountOrderPayDetail", "queryAccountFsmCustomerDetail","queryAccountDailyReport", "rechargeCreateOrder",
+                "queryAccountOrder",
 		"queryOrderDetail", "queryOrderDayDetail", "queryOrderDuringDetail",
 		"queryOrderDishesHot", "queryUserOrderStatistic","OrderExport",
 
@@ -352,7 +379,9 @@
         "getCrmUserEvents", "getCrmUserGifts", "getCrmCardLogs",
         "getCrmPreferential", "updateCrmPreferential", "getCrmShopPreferential", "updateCrmShopPreferential", "switchPreferential",
         "getCrmTransSum", "getCrmCardSum", "getCrmRechargeSum","getCrmMemberDailyreport", "crmAccountChange", "crmSendGift",
-        
+        "getFeedBack", "AddFeedBackContent","updateFeedBackContent",
+        "getAssessment", "AddAssessmentReturn", "updateAssessmentReturn","SetAssessmentTop","deleteAssessmentReturn",
+
         "getWeixinAccounts", "getWeixinAutoReplyList", 
         "deleteWeixinAutoReplyRole", "getWeixinResources",
         "updateWeixinAutoReplyRole", "addWeixinAutoReplyRole",
@@ -371,12 +400,12 @@
         
         "getCrmEvents",
         
-        "getUserEvents",
+        "getUserEvents","getWeChatPreauthCode",
 
-        "getMCMGifts", "deleteMCMGift", "createMCMGift", "editMCMGift", "getMCMEvents", "deleteMCMEvent", "switchMCMEvent",
-		"getMCMEventByID", "createEvent", "editEvent", "getMCMGiftDetail", "queryMCMGiftDetailGetWayInfo", "queryMCMGiftDetailUsedInfo",
+        "getMCMGifts", "deleteMCMGift", "createMCMGift", "editMCMGift","getMCMGiftShopUsed","getMCMEvents", "deleteMCMEvent", "switchMCMEvent",
+		"getMCMEventByID", "checkBirthdayEventExist", "createEvent", "editEvent", "getMCMGiftDetail", "queryMCMGiftDetailGetWayInfo", "queryMCMGiftDetailUsedInfo",
 		"queryUserBaseInfoByMobile", "sendSMS",
-		"giftDetailDonateGift", "giftDetailPayGiftOnline", "getMCMEventTrack", "switchMCMTrackItem",
+		"giftDetailDonateGift", "giftDetailPayGiftOnline", "getMCMEventTrack", "applyEventSendSMS", "switchMCMTrackItem",
 
         "editSMSTemplate", "getSMSShops",
         
@@ -394,7 +423,9 @@
         "addSaasSubject", "deleteSaasSubject", "updateSaasSubject", "querySaasSubject", "queryTreeSubject", "checkSubjectlName", "switchSaasSubjectstate",
 
         "addSaasRemark", "deleteSaasRemark", "editSaasRemark", "querySaasRemark","checckRemarkNameIsExist",
-	]);
+	
+        "getVersionUpdate",
+        ]);
 
 	/*Login CallServer*/
 	Hualala.Global.genAuthCode = function (params, cbFn) {
@@ -536,6 +567,25 @@
     Hualala.Global.setAreaCategory = function (params, cbFn) {
         Hualala.Global.commonCallServer("setAreaCategory", params, cbFn);
     };
+    Hualala.Global.shopTableSortTop = function(params, cbFn) {
+        Hualala.Global.commonCallServer("shopTableSortTop", params, cbFn);
+    };
+    Hualala.Global.shopTableSortUpOrDown = function(params, cbFn) {
+        Hualala.Global.commonCallServer("shopTableSortUpOrDown", params, cbFn);
+    };
+    Hualala.Global.shopTableSortBottom = function(params, cbFn) {
+        Hualala.Global.commonCallServer("shopTableSortBottom", params, cbFn);
+    };
+    Hualala.Global.tableAreaSortTop = function(params, cbFn) {
+        Hualala.Global.commonCallServer("tableAreaSortTop", params, cbFn);
+    };
+    Hualala.Global.tableAreaSortUpOrDown = function(params, cbFn) {
+        Hualala.Global.commonCallServer("tableAreaSortUpOrDown", params, cbFn);
+    };
+    Hualala.Global.tableAreaSortBottom = function(params, cbFn) {
+        Hualala.Global.commonCallServer("tableAreaSortBottom", params, cbFn);
+    };
+
     Hualala.Global.addShopPrinter = function (params, cbFn){
         Hualala.Global.commonCallServer("addShopPrinter", params, cbFn);
     };
@@ -634,6 +684,9 @@
     Hualala.Global.updateShopPromotion =function (params, cbFn) {
         Hualala.Global.commonCallServer("updateShopPromotion", params,cbFn);
     };
+    Hualala.Global.createShopPromotion = function (params, cbFn){
+        Hualala.Global.commonCallServer("createShopPromotion", params ,cbFn);
+    };
     Hualala.Global.deleteShopPromotion= function (params, cbFn) {
         Hualala.Global.commonCallServer("deleteShopPromotion", params, cbFn);
     };
@@ -725,6 +778,12 @@
 	};
         Hualala.Global.queryAccountDailyReport = function (params, cbFn) {
                 Hualala.Global.commonCallServer("queryAccountDailyReport", params, cbFn);
+        };
+        Hualala.Global.rechargeCreateOrder = function(params, cbFn) {
+                Hualala.Global.commonCallServer("rechargeCreateOrder", params, cbFn);
+        };
+        Hualala.Global.queryAccountOrder = function (params, cbFn) {
+                Hualala.Global.commonCallServer("queryAccountOrder", params, cbFn);
         };
 
 	/*Order Moudle CallServer*/
@@ -887,6 +946,30 @@
     Hualala.Global.crmSendGift = function(params, cbFn) {
         Hualala.Global.commonCallServer('crmSendGift', params, cbFn);
     };
+    Hualala.Global.getFeedBack = function(params, cbFn){
+        Hualala.Global.commonCallServer("getFeedBack",params, cbFn);
+    };
+    Hualala.Global.AddFeedBackContent = function(params, cbFn){
+        Hualala.Global.commonCallServer("AddFeedBackContent", params, cbFn);
+    };
+    Hualala.Global.updateFeedBackContent = function (params, cbFn){
+        Hualala.Global.commonCallServer("updateFeedBackContent", params,cbFn);
+    };
+    Hualala.Global.getAssessment = function (params, cbFn){
+        Hualala.Global.commonCallServer("getAssessment", params, cbFn);
+    };
+    Hualala.Global.AddAssessmentReturn = function(params, cbFn){
+        Hualala.Global.commonCallServer("AddAssessmentReturn", params, cbFn);
+    };
+    Hualala.Global.updateAssessmentReturn = function(params, cbFn){
+        Hualala.Global.commonCallServer("updateAssessmentReturn", params, cbFn);
+    };
+    Hualala.Global.SetAssessmentTop = function(params, cbFn){
+        Hualala.Global.commonCallServer("SetAssessmentTop", params, cbFn);
+    };
+    Hualala.Global.deleteAssessmentReturn = function(params, cbFn){
+        Hualala.Global.commonCallServer("deleteAssessmentReturn", params, cbFn);
+    };
 
     //΢��ģ��
 	Hualala.Global.getWeixinAccounts = function (params, cbFn) {
@@ -992,6 +1075,9 @@
 	Hualala.Global.getUserEvents = function (params, cbFn) {
 		Hualala.Global.commonCallServer("getUserEvents", params, cbFn);
 	};
+        Hualala.Global.getWeChatPreauthCode = function(params,cbFn){
+                Hualala.Global.commonCallServer("getWeChatPreauthCode", params, cbFn);
+        };
 	
 
 	/*MCM Module*/
@@ -1009,7 +1095,10 @@
 
 	Hualala.Global.editMCMGift = function (params, cbFn) {
 		Hualala.Global.commonCallServer("editMCMGift", params, cbFn);
-	};	
+	};
+        Hualala.Global.getMCMGiftShopUsed = function(params, cbFn){
+                Hualala.Global.commonCallServer("getMCMGiftShopUsed",params, cbFn);
+        };
 
 	Hualala.Global.getMCMEvents = function (params, cbFn) {
 		Hualala.Global.commonCallServer("getMCMEvents", params, cbFn);
@@ -1030,7 +1119,9 @@
 	Hualala.Global.createEvent = function (params, cbFn) {
 		Hualala.Global.commonCallServer("createEvent", params, cbFn);
 	};
-
+    Hualala.Global.checkBirthdayEventExist = function (params, cbFn) {
+        Hualala.Global.commonCallServer("checkBirthdayEventExist", params, cbFn);
+    };
 	Hualala.Global.editEvent = function (params, cbFn) {
 		Hualala.Global.commonCallServer("editEvent", params, cbFn);
 	};
@@ -1067,6 +1158,10 @@
 	Hualala.Global.getMCMEventTrack = function (params, cbFn) {
 		Hualala.Global.commonCallServer("getMCMEventTrack", params, cbFn);
 	};
+
+    Hualala.Global.applyEventSendSMS = function (params, cbFn) {
+        Hualala.Global.commonCallServer("applyEventSendSMS", params, cbFn);
+    };
 
     Hualala.Global.switchMCMTrackItem = function (params, cbFn) {
         Hualala.Global.commonCallServer("switchMCMTrackItem", params, cbFn);
@@ -1246,6 +1341,9 @@
     },
     Hualala.Global.querySaasRemark = function(params, cbFn) {
     	Hualala.Global.commonCallServer("querySaasRemark", params, cbFn);
+    },
+    Hualala.Global.getVersionUpdate =function(params,cbFn){
+        Hualala.Global.commonCallServer("getVersionUpdate",params,cbFn);
     }
 
 })();

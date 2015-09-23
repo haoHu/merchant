@@ -1514,7 +1514,7 @@ function unlockChannel(channel){
 		el.parentNode.removeChild(el);
 	//console.log ("unlock channel: " + channel);
 }
-function AjaxCaller(routes, _ajaxFn, urlFac, chkRes){
+function AjaxCaller(routes, _ajaxFn, urlFac, chkRes, postParamsFn){
 	var _callerHT = createRouteHT(routes, true);
 	var c = function(_name, params, cbFn, failFn){
 		var _caller = _callerHT[_name];
@@ -1525,7 +1525,9 @@ function AjaxCaller(routes, _ajaxFn, urlFac, chkRes){
 		if (!$XP(params, '_t')) {
 			params = IX.inherit(params, {_t : ''});
 		}
-
+        if(IX.isFn(postParamsFn) && postParamsFn()) {
+            params = IX.inherit(params, postParamsFn());
+        }
 		if (!tryLockChannel(channel)){
 			_caller.onfail({
 				code : 0,
@@ -1620,10 +1622,10 @@ function UrlEngine(ifAjax){
 		 * 	}]	
 		 * return : function(name, params, cbFn, failFn){}
 		 */
-		createCaller: function(routes, chkRes){
+		createCaller: function(routes, chkRes, postParamsFn){
 			return new AjaxCaller(routes, function(ajaxParam){
 				if (IX.isFn(_ajaxFn)) _ajaxFn(ajaxParam);
-			}, _urlFac, chkRes);
+			}, _urlFac, chkRes, postParamsFn);
 		}
 	} : {});
 }

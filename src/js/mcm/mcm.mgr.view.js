@@ -14,29 +14,35 @@
 		{id : "gift_rule", label : "使用规则"}
 	];
 
-	/**
-	 * 创建活动向导步骤设置
-	 * @type {Array}
-	 */
-	//HMCM.EventWizardCfg = [
-	//	{id : "event_base_info", label : "基本信息"},
-	//	{id : "event_rule", label : "活动规则"},
-	//	{id : "event_gift", label : "设置礼品、奖品"},
-	//	{id : "event_on", label : "预览并启用"}
-	//];
+    /**
+     * 创建活动向导步骤设置
+     * @type {Array}
+     */
+        //HMCM.EventWizardCfg = [
+        //	{id : "event_base_info", label : "基本信息"},
+        //	{id : "event_rule", label : "活动规则"},
+        //	{id : "event_gift", label : "设置礼品、奖品"},
+        //	{id : "event_on", label : "预览并启用"}
+        //];
+
+    HMCM.EventWizardStepCfg = [
+        {eventWay: '20', excludeCfgIDs: ['event_sms_template']},
+        {eventWay: '21', excludeCfgIDs: ['event_sms_template']},
+        {eventWay: '22', excludeCfgIDs: ['event_sms_template']},
+        {eventWay: '30', excludeCfgIDs: ['event_sms_template']},
+        {eventWay: '40', excludeCfgIDs: ['event_sms_template']},
+        {eventWay: '41', excludeCfgIDs: ['event_sms_template']},
+        {eventWay: '50', excludeCfgIDs: ['event_rule', 'event_gift']},
+        {eventWay: '51', excludeCfgIDs: ['event_customer_range', 'event_rule']}
+    ];
+
 	HMCM.EventWizardCfg = [
 		{id : "event_base_info", label : "基本信息"},
 		{id : "event_customer_range", label : "设置群体"},
 		{id : "event_rule", label : "设置规则"},
-		{id : "event_gift", label : "设置奖品"},
-		{id : "event_on", label : "预览并启用"}
-	];
-
-	HMCM.EventSmsWizardCfg = [
-		{id : "event_base_info", label : "基本信息"},
-		{id : "event_customer_range", label : "群体"},
-		{id : "event_sms_template", label : "设置短信模版"},
-		{id : "event_on", label : "预览并启用"}
+        {id : "event_gift", label : "设置奖品"},
+        {id : "event_sms_template", label : "设置短信模版"},
+        {id : "event_on", label : "预览并启用"}
 	];
 
 	/**
@@ -49,6 +55,17 @@
 		{clz : 'btn-default btn-next', name : 'next', label : '下一步', loadingText : '请稍候...'},
 		{clz : 'btn-default btn-finish', name : 'finish', label : '启用', loadingText : '提交中...'}
 	];
+
+    function eventWizardCfgBy(eventWay) {
+        var wizardCfg = $XP(_.findWhere(HMCM.EventWizardStepCfg, {eventWay: eventWay + ''}), 'excludeCfgIDs', []),
+            eventWizardCfg = _.reject(HMCM.EventWizardCfg, function(cfg){ return _.contains(wizardCfg, cfg.id);}),
+            eventGiftStep = _.findWhere(eventWizardCfg, {id: 'event_gift'});
+        if(eventGiftStep) {
+            eventGiftStep.label = eventWay == 51 ? '礼品设置' : eventGiftStep.label;
+        }
+        return eventWizardCfg;
+    }
+    HMCM.EventWizardCfgBy = eventWizardCfgBy;
 
 	var MCMWizardModal = Stapes.subclass({
 		/**
@@ -77,6 +94,7 @@
 			this.parentView = $XP(cfg, 'parentView');
 			this.wizardType = $XP(cfg, 'wizardType', 'create');
 			this.mode = $XP(cfg, 'mode', 'create');
+            this.hideCloseBtn = $XP(cfg, 'hideCloseBtn', true);
 			this.successFn = $XF(cfg, 'successFn');
 			this.faildFn = $XF(cfg, 'faildFn');
 			this.modal = null;
@@ -87,6 +105,7 @@
 			this.wizardStepsCfg = $XP(cfg, 'wizardStepsCfg', []);
 			this.wizardCtrls = $XP(cfg, 'wizardCtrls', []);
 			this.model = $XP(cfg, 'model', null);
+			this.orderModel = $XP(cfg, 'orderModel', null);
 			this.modalClz = $XP(cfg, 'modalClz', '');
 			this.modalTitle = $XP(cfg, 'modalTitle', '');
 			this.stepViewHT = new IX.IListManager();
@@ -125,11 +144,18 @@
 				id : "mcm_wizard_modal",
 				clz : self.modalClz,
 				title : self.modalTitle,
-				hideCloseBtn : true,
+				hideCloseBtn : self.hideCloseBtn,
 				backdrop : 'static',
 				showFooter : false,
 				afterHide : function () {
-
+                    if(self.modalTitle == '结算账户充值') {
+                        /*
+                        * 结算账户充值复用了活动里封装的wizardModal
+                        * 只有在结算账户充值时 需要调用afterHide结束付款页面的账单查询的轮询事件
+                        * */
+                        var intervalView = self.getStepView('scan_pay');
+                        if(intervalView) intervalView.emit('stopIntervalCheckOrder');
+                    }
 				}
 			});
 			self.$body = self.modal._.body;
@@ -147,13 +173,13 @@
 					idx : (i + 1)
 				});
 			});
-			return {
-				id : self.wizardID,
-				clz : self.wizardClz,
-				stepNavs : stepNavs,
-				steps : steps,
-				btns : self.wizardCtrls
-			}
+            return {
+                id: self.wizardID,
+                clz: self.wizardClz,
+                stepNavs: stepNavs,
+                steps: steps,
+                btns: self.wizardCtrls
+            };
 		},
 		renderWizardLayout : function () {
 			var self = this;
@@ -249,9 +275,9 @@
 		switchWizardCtrlStatus : function (status) {
 			var self = this;
 			// self.$wizard.find('.wizard-ctrl .btn').button(status);
-			self.$wizard.find('.wizard-ctrl .btn').each(function () {
-				$(this).button(status);
-			})
+            self.$wizard.find('.wizard-ctrl .btn').each(function () {
+                $(this).button(status);
+            });
 		},
 		getNextStep : function () {
 			var self = this;

@@ -34,7 +34,7 @@
 			label : "礼品类型",
 			defaultVal : "10",
 			options : _.reject(Hualala.TypeDef.MCMDataSet.GiftTypes, function (el) {
-				return IX.isEmpty($XP(el, 'value')) || $XP(el, 'value') == 20;
+				return IX.isEmpty($XP(el, 'value'));
 			}),
 			validCfg : {
 				validators : {
@@ -70,6 +70,7 @@
 			type : "text",
 			label : "礼品名称",
 			defaultVal : "",
+            prefix: '集团名称',
 			validCfg : {
 				validators : {
 					notEmpty : {
@@ -78,6 +79,19 @@
 				}
 			}
 		},
+        foodNameList: {
+            type: 'text',
+            label: '可抵扣菜品',
+            defaultVal:'',
+            placeholder: '菜品名称之间用逗号隔开',
+            hidden: 'hidden',
+            validCfg: {
+                validators: {
+                    notEmpty: {message: '必须选择菜品'},
+                    stringLength: {message: '字符串长度不能超过500个字符', value: 500}
+                }
+            }
+        },
 		giftRemark : {
 			type : "textarea",
 			label : "礼品描述",
@@ -284,7 +298,7 @@
 			var elCfg = GiftSetFormElsHT.get(key),
 				type = $XP(elCfg, 'type');
 			if (type == 'combo') {
-				var v = self.model.get(key) || $XP(elCfg, 'dafaultVal'),
+				var v = self.model.get(key) || $XP(elCfg, 'defaultVal'),
 					options = _.map($XP(elCfg, 'options'), function (op) {
 						return IX.inherit(op, {
 							selected : $XP(op, 'value') == v ? 'selected' : ''
@@ -299,32 +313,44 @@
 				var v = self.model.get(key) || $XP(elCfg, 'defaultVal', ''),
 					groupName = $XP(Hualala.getSessionSite(), 'groupName', ''),
 					giftType = self.model.get('giftType') || $XP(GiftSetFormElsHT.get('giftType'), 'defaultVal'),
-					giftLabel = $XP(getGiftTypeSet(giftType), 'label');
+                    giftTypeSet = getGiftTypeSet(giftType),
+                    unit = $XP(giftTypeSet, 'unit'),
+                    isFoodTicket = giftType == 20,
+                    isEdit = self.mode == 'edit',
+					giftLabel = $XP(getGiftTypeSet(giftType), 'label'),
+                    prefix = isEdit ? {prefix: ''} : (isFoodTicket ? {prefix: groupName + v + (v.length == 0 ? '' : unit)} : {prefixHidden: 'hidden'});
 				return IX.inherit(elCfg, {
-					value : v.length == 0 ? (groupName + giftLabel) : v,
-					disabled : 'disabled'
-				});
+					value : isEdit ? v : (isFoodTicket ? '' : (groupName + giftLabel)),
+					disabled : (isEdit || !isFoodTicket) ? 'disabled' : '',
+				}, prefix);
 			} if (type == 'text' && key == 'giftValue') {
+                var giftType = self.model.get('giftType') || $XP(GiftSetFormElsHT.get('giftType'), 'defaultVal');
 				return IX.inherit(elCfg, {
-					value : self.model.get(key) || $XP(elCfg, 'dafaultVal'),
-					disabled : (self.mode == 'edit') ? 'disabled' : ''
+                    label: giftType == 42 ? '积分点数' : (giftType == 20 ? '可抵扣金额' : '礼品价值'),
+					value : self.model.get(key) || $XP(elCfg, 'defaultVal'),
+					disabled : (self.mode == 'edit') ? 'disabled' : '',
+                    surfix: $XP(getGiftTypeSet(giftType), 'unit')
 				});
-			} if(type == 'textarea') {
+			} if(type == 'text' && key == 'foodNameList'){
+                var giftType = self.model.get('giftType') || $XP(GiftSetFormElsHT.get('giftType'), 'defaultVal'),
+                    val = self.model.get(key) || $XP(elCfg, 'defaultVal', '');
+                return IX.inherit(elCfg, {hidden: giftType == 20 ? '' : 'hidden', value: val});
+            }if(type == 'textarea') {
                 return IX.inherit(elCfg, {
-                    value : Hualala.Common.decodeTextEnter(self.model.get(key) || '') || $XP(elCfg, 'dafaultVal')
+                    value : Hualala.Common.decodeTextEnter(self.model.get(key) || '') || $XP(elCfg, 'defaultVal')
                 });
             } if(type == 'uploadImage'){
 				return IX.inherit(elCfg, {hiddenGiftImage: self.model.get('giftType') == 30 ? '' : 'hidden', giftImagePath: self.getGiftImageUrl()});
 			} else {
 				return IX.inherit(elCfg, {
-					value : self.model.get(key) || $XP(elCfg, 'dafaultVal')
+					value : self.model.get(key) || $XP(elCfg, 'defaultVal')
 				});
 			}
 		});
 		return ret;
 	};
 
-	var GiftBaseInfoFormKeys = 'giftItemID,giftType,giftValue,giftName,giftRemark,giftImagePath'.split(',');
+	var GiftBaseInfoFormKeys = 'giftItemID,giftType,giftValue,giftName,foodNameList,giftRemark,giftImagePath'.split(',');
 
 	var GiftBaseInfoStepView = Stapes.subclass({
 		constructor : function (cfg) {
@@ -436,17 +462,25 @@
 				var $giftValueLabel = $giftValue.parents('.form-group').find('> label'),
 					$giftValueSurfix = $giftValue.parents('.form-group').find('.input-group-addon:last'),
 					$giftName = self.container.find(':text[name=giftName]'),
-					$giftImage = self.container.find('form .gift-pic');
+					$giftImage = self.container.find('form .gift-pic'),
+                    $foodNameListInput = self.container.find(':text[name="foodNameList"]'),
+                    $foodNameList = $foodNameListInput.parents('.form-group');
 				if(giftType == 30) {
 					$giftImage.removeClass('hidden');
-					$giftName.val('')
-				} else {
+                    $foodNameList.addClass('hidden');
+                    $giftName.val('');
+				} else if(giftType == 20){
 					$giftImage.addClass('hidden');
-				}
-				$giftValueLabel.text(giftType == 42 ? '积分点数' : '礼品价值');
+                    $foodNameList.removeClass('hidden');
+                    $foodNameListInput.removeClass('hidden');
+                    $giftName.val('');
+                } else {
+                    $foodNameList.addClass('hidden');
+                    $giftImage.addClass('hidden');
+                }
+				$giftValueLabel.text(giftType == 42 ? '积分点数' : (giftType == 20 ? '可抵扣金额' : '礼品价值'));
 				$giftValueSurfix.text(giftType == 42 ? '点' : '元');
 				$giftName.trigger('change');
-
 			});
 			self.container.on('change', ':text[name=giftValue]', function (e) {
 				var $txt = $(this),
@@ -456,18 +490,27 @@
 				!isNaN(val) && self.container.find(':text[name=giftName]').trigger('change');				
 			});
 			self.container.on('change', ':text[name=giftName]', function (e) {
-				var $txt = $(this),
-					giftValue = $(':text[name=giftValue]', self.container).val(),
-					giftType = $('select[name=giftType]', self.container).val(),
-					giftTypeSet = getGiftTypeSet(giftType),
-					groupName = $XP(Hualala.getSessionSite(), 'groupName', ''),
-					val = giftType == 30 ? $txt.val() : (groupName + giftValue
-						+ (IX.isEmpty(giftValue) ? '' : $XP(giftTypeSet, 'unit'))
-						+ $XP(giftTypeSet, 'label', ''));
+                var $txt = $(this),
+                    giftValue = $(':text[name=giftValue]', self.container).val(),
+                    giftType = $('select[name=giftType]', self.container).val(),
+                    giftTypeSet = getGiftTypeSet(giftType),
+                    groupName = $XP(Hualala.getSessionSite(), 'groupName', ''),
+                    val = $txt.val();
 				if(giftType == 30){
 					$txt.removeAttr('disabled');
-				} else {
+                    $txt.prev('span').addClass('hidden');
+				} else if(giftType == 20){
+                    $txt.removeAttr('disabled');
+                    $txt.prev('span').removeClass('hidden').text(
+                        groupName + giftValue
+                        + (IX.isEmpty(giftValue) ? '' : $XP(giftTypeSet, 'unit'))
+                    );
+                } else {
+                    val = groupName + giftValue
+                        + (IX.isEmpty(giftValue) ? '' : $XP(giftTypeSet, 'unit'))
+                        + $XP(giftTypeSet, 'label', '');
 					$txt.prop('disabled', true);
+                    $txt.prev('span').addClass('hidden');
 				}
 				$txt.val(val);
 			});
@@ -489,12 +532,18 @@
 				ret = {},
 				formEls = _.map(formKeys, function (key) {
 					var elCfg = GiftSetFormElsHT.get(key),
-						type = $XP(elCfg, 'type');
-					ret[key] = $('[name=' + key + ']', self.container).val();
+						type = $XP(elCfg, 'type'),
+                        value = $('[name=' + key + ']', self.container).val();
+					ret[key] = key == 'foodNameList' ? Hualala.Common.replaceZhComma(value) : value;
 				});
 			if(ret.giftType != 30) {
 				ret = _.omit(ret, 'giftImagePath');
 				self.model.remove('giftImagePath');
+                if(ret.giftType == 20) {
+                    var $giftName = $('[name="giftName"]', self.container),
+                        $giftNamPrefix = $giftName.prev('span');
+                    ret.giftName = $giftNamPrefix.text() + $giftName.val();
+                }
 			} else {
                 ret.giftImagePath = self.model.get('giftImagePath');
             }

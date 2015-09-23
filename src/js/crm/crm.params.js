@@ -39,7 +39,7 @@
             crmParams.onlineSaveMoneyRate = +crmParams.onlineSaveMoneyRate * 100 + '%';
             crmParams.isPointCanPay = crmParams.isPointCanPay == 0 ? 'minus' : 'ok';
             crmParams.vipServiceRemark = C.decodeTextEnter(crmParams.vipServiceRemark);
-            renderCrmGift(crmParams);
+            listCrmGiftData(crmParams);
             $form = $(Handlebars.compile(Hualala.TplLib.get('tpl_crm_params'))(crmParams)).appendTo($crm);
             if(crmParams.openCardGiftEffectHours == 0) $('.form-group [name="effect_hour"] p').text('立即生效');
             createGiftSetSwitch();
@@ -189,10 +189,10 @@
 
                 var data = C.parseForm($form),
                     omitKeys = ['birthdayGift', 'openCardGift', 'birthdayGiftType', 'openCardGiftType'];
-                if(data.birthdayGiftID != 0 && parseFloat(data.birthdayGiftAdvanceDays) > parseInt(data.birthdayGiftValidDays)){
-                    topTip({msg: '生日返券有效天数不能小于提前返券天数', type: 'danger'});
-                    return;
-                }
+                //if(data.birthdayGiftID != 0 && parseFloat(data.birthdayGiftAdvanceDays) > parseInt(data.birthdayGiftValidDays)){
+                //    topTip({msg: '生日返券有效天数不能小于提前返券天数', type: 'danger'});
+                //    return;
+                //} 生日赠送已移到活动管理
                 data.itemID = itemID;
                 data.logoImage = logo;
                 data.cardBackgroundImage = bgImg;
@@ -202,7 +202,7 @@
                 data.birthdayGiftSMS = Hualala.Common.encodeTextEnter(data.birthdayGiftSMS);
                 var defaultZeroItems = ['openCardGiftNum', 'openCardGiftValidDays', 'birthdayGiftAdvanceDays', 'birthdayGiftNum', 'birthdayGiftValidDays'];
                 _.each(defaultZeroItems, function (key) {
-                    data[key] = data[key] || '0';
+                    data[key] = data[key] || '0';//todo 默认礼品个数和有效天数都是不能为零的，需要优化
                 });
                 
                 G.setCrmParams(_.omit(data, omitKeys), function(rsp)
@@ -262,7 +262,7 @@
             return dateStr.length == 8 ? dateStr.substr(0, 4) + '年' + parseInt(dateStr.substr(4, 2)) + '月' + parseInt(dateStr.substr(6)) + '日' : parseInt(dateStr.substr(0, 2)) + '月' + parseInt(dateStr.substr(2)) + '日';
         }
 
-        function renderCrmGift(data) {
+        function listCrmGiftData(data) {
             Handlebars.registerPartial('giftTpl', Hualala.TplLib.get('tpl_crm_gift_set'));
             Handlebars.registerPartial('customSelect', Hualala.TplLib.get('tpl_select'));
             var cardItems = packageSetData('openCardGift', data),

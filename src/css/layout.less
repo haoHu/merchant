@@ -303,6 +303,7 @@ body.login {
 
 	@shop-bg : rgb(0, 142, 176);
 	@order-bg : rgb(252, 181, 65);
+	@saas-bg : rgb(241,88,42);
 	@account-bg : rgb(241, 89, 42);
 	@setting-bg : rgb(0, 66, 90);
 	@user-bg : rgb(132, 82, 51);
@@ -335,6 +336,7 @@ body.login {
         .icon-agent {.x-icon-60_agent();}
         .icon-mcm {.x-icon-60_marketing();}
         .icon-boss {.x-icon-60_boss();}
+        .icon-saas {.x-icon-60_saas();}
 		&.disabled {
 			background-color : #eee!important; cursor : not-allowed;
 			// .x-filter(.5);
@@ -401,9 +403,9 @@ body.login {
 		}
 
         &[data-pagename=saas] {
-          background : @order-bg;
+          background : @saas-bg;
           &.hover {
-            background: fade(@order-bg, 80%);
+            background: fade(@saas-bg, 80%);
           }
         }
 	}

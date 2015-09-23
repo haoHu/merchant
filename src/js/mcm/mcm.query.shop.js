@@ -53,6 +53,7 @@
 		mapChosenDataOptions : function () {
 			var self = this,
 				chosenShops = self.chosenShops;
+				chosenShops = _.filter(chosenShops, function(chosenShop){ return chosenShop != null;});
 			var _chosneShops = _.groupBy(chosenShops, 'cityID');
 			var ret = [];
 			_.each(_chosneShops, function (_shops, cityID) {

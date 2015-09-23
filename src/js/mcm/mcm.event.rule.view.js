@@ -7,12 +7,12 @@
 	var EventSetFormElsHT = HMCM.EventSetFormElsHT;
 
 	var EventRuleFormKeys = 'chkDeductPoints,deductPoints,chkSendPoints,sendPoints,radioCountCycleDays,partInTimes,maxPartInPerson'.split(','),
-		EventCustomerRangeKeys = 'cardLevelID,isVipBirthdayMonth,smsCustomerShopID'.split(','),
+		EventCustomerRangeKeys = 'cardLevelID,isVipBirthdayMonth'.split(','),
         EventSMSTemplateKeys = 'eventID,smsTemplate'.split(','),
         smsDefaultAttr = {
 			receiverName: 'XXX', receiverSex: '先生', cardName: '金卡', cardLastFourNumber: '8888',
 			giftName: '50元代金券', cardCount: 1,
-			cardValidDate: currentDate + '到' + currentDate
+			cardValidDate: currentDate
 		};
 
 	/**
@@ -435,6 +435,7 @@
 			this.initBaseCfg();
 			this.loadTemplate();
 			this.renderForm(function() {
+                self.initUIComponents();
 				self.bindEvent();
 			});
 		}
@@ -442,12 +443,34 @@
 	SMSCustomerRangeView.proto({
 		initBaseCfg: function() {
 			var self = this,
-				formKeys = self.model.get('eventWay') == 50 ? EventCustomerRangeKeys : _.without(EventCustomerRangeKeys, 'smsCustomerShopID');
+                eventWay = self.model.get('eventWay'),
+				formKeys = IX.clone(EventCustomerRangeKeys);
+            if(eventWay == 50) {
+                formKeys.push('smsCustomerShopID');
+                formKeys.push('lastTransShopID');
+                formKeys.push('lastTransTimeFilter');
+                formKeys.push('lastTransTime');
+            }
 			self.formKeys = formKeys;
 		},
+        initUIComponents: function() {
+            var self = this,
+                currentDate = new Date();
+            currentDate.setFullYear(currentDate.getFullYear() - 5, 0, 1);//最早的日期设在五年前
+            self.container.find('form [data-type=datetimepicker]').datetimepicker({
+                format: 'yyyy/mm/dd',
+                startDate: IX.Date.getDateByFormat(currentDate, 'yyyy/MM/dd'),
+                autoclose: true,
+                minView: 'month',
+                todayBtn: true,
+                todayHighlight: true,
+                language: 'zh-CN'
+            });
+        },
 		loadTemplate: function () {
 			var self = this,
 				layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_customer_range'));
+            Handlebars.registerPartial('customSelect', Hualala.TplLib.get('tpl_select'));
 			self.set({layoutTpl: layoutTpl});
 		},
 		renderForm: function (cbFn) {
@@ -467,8 +490,18 @@
 				$select.append($(customSelectTpl(selectData)));
 			};
 			var self = this,
-				isSMSEvent = self.model.get('eventWay') == 50;
-			self.container.html(self.get('layoutTpl')({isSMSEvent: isSMSEvent}));
+				isSMSEvent = self.model.get('eventWay') == 50,
+                consumeTimeFilter = isSMSEvent ? {
+                    consumeTimeFilterData: {
+                        options: Hualala.TypeDef.MCMDataSet.TransTimeFilter,
+                        name: 'lastTransTimeFilter'
+                    }
+                } : {},
+                lastTransTime = self.model.get('lastTransTime'),
+                timeFormat = Hualala.Common.formatDateTimeValue((lastTransTime == 0 || !lastTransTime) ? '' : lastTransTime + '');
+			self.container.html(self.get('layoutTpl')(IX.inherit({isSMSEvent: isSMSEvent},
+                consumeTimeFilter,
+                {lastTransTime: IX.Date.getDateByFormat(timeFormat, 'yyyy/MM/dd')})));
             self.container.find('form input[name="isVipBirthdayMonth"]')
                 .eq(self.model.get('isVipBirthdayMonth') || '0')
                 .prop('checked', true);
@@ -476,7 +509,8 @@
 
 			var $form = self.container.find('form'),
 				$cardLevelSelect = $form.find('[name="vip_list"]'),
-				$shopSelect = $form.find('[name="card_shop"]');
+				$shopSelect1 = $form.find('[name="card_shop"]'),
+				$shopSelect2 = $form.find('[name="consume_shop"]');
 			self.model.emit("loadCardLevelIDs", {
 				successFn : function (res) {
                     var cardLevels = $XP(res, 'data.records', []),
@@ -489,11 +523,15 @@
 				}
 			});
 			if(isSMSEvent) {
+                self.container.find('form select[name="lastTransTimeFilter"]').val(self.model.get('lastTransTimeFilter') || '0').trigger('change');
 				self.model.emit('loadSMSShops', {
 					successFn: function (res) {
 						var shops = $XP(res, 'data.records', []),
-							selectedSMSShopID = $XP(self.model.getAll(), 'smsCustomerShopID', '0')
-						renderSelect($shopSelect, shops, 'shopName', 'shopID', 'smsCustomerShopID', selectedSMSShopID);
+							selectedCardShopID = self.model.get('smsCustomerShopID') || 0,
+                            selectedTransShopID = self.model.get('lastTransShopID') || 0,
+                            defaultShop = {name: '不限', value: '0'};
+						renderSelect($shopSelect1, shops, 'shopName', 'shopID', 'smsCustomerShopID', selectedCardShopID,defaultShop );
+						renderSelect($shopSelect2, shops, 'shopName', 'shopID', 'lastTransShopID', selectedTransShopID, defaultShop);
 					},
 					faildFn: function () {
 						renderSelect([]);
@@ -505,6 +543,19 @@
 			var self = this,
 				fvOpts = self.initValidFieldOpts(),
 				$form = self.container.find('form');
+            $form.on('change', '[data-type="datetimepicker"]', function (e) {
+                var $this = $(this),
+                    name = $this.attr('name');
+                $form.bootstrapValidator('revalidateField', name);
+            }).on('change', 'select[name="lastTransTimeFilter"]', function(e) {
+                var $this = $(e.target),
+                    $datetimepicker = $this.parents('.time-filter').next();
+                if($this.val() == 0) {
+                    $datetimepicker.addClass('hidden');
+                } else {
+                    $datetimepicker.removeClass('hidden');
+                }
+            });
 			$form.bootstrapValidator({
 				trigger: 'blur',
 				fields: fvOpts
@@ -544,12 +595,15 @@
 			_.each(formKeys, function(key) {
                 if(key == 'isVipBirthdayMonth') {
                     ret[key] = $form.find('[name="' + key + '"]:checked').val();
+                } else if(key == 'lastTransTime') {
+                    ret[key] = IX.Date.getDateByFormat($form.find('[name="' + key + '"]').val(), 'yyyyMMdd') || 0;
                 } else {
                     ret[key] = $form.find('[name="' + key + '"]').val();
+                    if(key == 'smsCustomerShopID' || key == 'lastTransShopID') {
+                        var shopMap = {smsCustomerShopID: 'smsCustomerShopName', lastTransShopID: 'lastTransShopName'};
+                        ret[shopMap[key]]= $form.find('[name="' + key + '"]').find('option:selected').text();
+                    }
                 }
-				if(key == 'smsCustomerShopID') {
-					ret.smsCustomerShopName = $form.find('[name="' + key + '"]').find('option:selected').text();
-				}
 			});
 			return ret;
 		},
@@ -628,12 +682,18 @@
 			var self = this,
 				eventWay = self.model.get('eventWay'),
 				smsBaseAttr = [{label: '会员姓名'}, {label: '先生/女士'}, {label: '卡名称'}, {label: '卡号后四位'}],
-				smsExtendAttr = eventWay == 50 ? [] : [{label: '奖品名称'}, {label: '奖品数量'}, {label: '有效期'}],
+                smsExtendAttrLabels = ['奖品名称', '奖品数量', '有效期'],
+				smsExtendAttr = eventWay == 51 ? _.times(9, function(idx) {
+                    var index1 = idx % 3,
+                        index2 = idx < 3 ? 0 : (idx < 6 ? 1 : 2);
+                    return {label: smsExtendAttrLabels[index2] + (index1 + 1)};
+                }) : [],
 				smsGate = self.model.get('smsGate'),
 				tplData = IX.inherit(self.model.getAll(), {
 					smsAttr: smsBaseAttr.concat(smsExtendAttr),
 					hideSMS: smsGate == 1 ? '' : 'hidden',
-					hideSMSTip: smsGate == 1 ? 'hidden' : ''
+					hideSMSTip: smsGate == 1 ? 'hidden' : '',
+                    smsTextCount: (self.model.get('smsTemplate') || '').length
 				}),
 				$smsTemplate = $(self.get('layoutTpl')(tplData));
 			self.container.append($smsTemplate);
@@ -667,24 +727,28 @@
 				}
 			});
 			$form.off('click', '[name="smsAttr"] a').on('click', '[name="smsAttr"] a', function() {
-                $('textarea[name="smsTemplate"]').insertAtCaret('[' + $(this).text() + ']');
+                var $textArea = $('textarea[name="smsTemplate"]');
+                $textArea.insertAtCaret('[' + $(this).text() + ']');
+                $textArea.trigger('keydown');
 			});
             self.container.off('click', 'a[name="preview"]').on('click', 'a[name="preview"]', function(){
                 var $this = $(this),
                     $preview = $this.next('p'),
                     $textarea = $form.find('textarea'),
-                    $estimateSMSCount = self.container.find('span[name="estimateSMSCount"]'),
                     textareaVal = $textarea.val(),
                     previewText = textareaVal.replace(/[\[【]会员姓名[\]】]/g, smsDefaultAttr.receiverName)
                     .replace(/[\[【]先生\/女士[\]】]/g, smsDefaultAttr.receiverSex)
                     .replace(/[\[【]卡名称[\]】]/g, smsDefaultAttr.cardName)
                     .replace(/[\[【]卡号后四位[\]】]/g, smsDefaultAttr.cardLastFourNumber)
-                    .replace(/[\[【]奖品名称[\]】]/g, smsDefaultAttr.giftName)
-                    .replace(/[\[【]奖品数量[\]】]/g, smsDefaultAttr.cardCount)
-                    .replace(/[\[【]有效期[\]】]/g, smsDefaultAttr.cardValidDate);
+                    .replace(/[\[【]奖品名称\d*[\]】]/g, smsDefaultAttr.giftName)
+                    .replace(/[\[【]奖品数量\d*[\]】]/g, smsDefaultAttr.cardCount)
+                    .replace(/[\[【]有效期\d*[\]】]/g, smsDefaultAttr.cardValidDate);
                 $preview.text(previewText);
-                $estimateSMSCount.text(previewText.length);
-			});
+                $textarea.trigger('keydown');
+			}).on('keydown', 'textarea[name="smsTemplate"]', function(e) {
+                var $estimateSMSCount = self.container.find('span[name="estimateSMSCount"]');
+                    $estimateSMSCount.text($(this).val().length);
+            });
 		},
 		initValidFieldOpts: function() {
             var self = this,
@@ -755,131 +819,4 @@
 			});
 		wizardView.registerStepView(cntID, stepView);
     };
-
-
-    var SMSOpenPreview = Stapes.subclass({
-        constructor : function (cfg) {
-            var self = this;
-            this.mode = $XP(cfg, 'mode', '');
-            this.container = $XP(cfg, 'container', '');
-            this.parentView = $XP(cfg, 'parentView');
-            this.model = $XP(cfg, 'model');
-            this.successFn = $XF(cfg, 'successFn');
-            this.faildFn = $XF(cfg, 'faildFn');
-
-            this.mapFormElsData = $XF(cfg, 'mapFormElsData');
-            if (!this.model || !this.parentView) {
-                throw("Event Base Info View init faild!");
-            }
-
-            this.loadTemplate();
-            this.renderForm(function() {
-                self.bindEvent();
-            });
-        }
-    });
-    SMSOpenPreview.proto({
-        loadTemplate: function () {
-            var self = this,
-                layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_event_openstep'));
-            Handlebars.registerPartial('evtdetail', Hualala.TplLib.get('tpl_event_detail'));
-            Handlebars.registerPartial('card', Hualala.TplLib.get('tpl_event_card'));
-            self.set({layoutTpl: layoutTpl})
-        },
-        renderForm: function() {
-            var self = this,
-                cardLevels = self.model.CardLevelIDSet,
-                renderData = self.model.getAll(),
-                formatDateTimeValue = Hualala.Common.formatDateTimeValue,
-				start = self.model.get('startTime') || 0,
-                classAttr = {
-                    infoLabelClz : 'col-xs-3 col-sm-3',
-                    infoTextClz : 'col-xs-8 col-sm-8'
-                },
-                hiddenClass = {
-                    hiddenEvtRules: 'hidden',
-                    //暂时屏蔽短信发送情况 fixbug#6035
-                    //isSmsEvent: true, //显示短信发送情况
-                    isSmsEvent : false,
-                    hiddenGift: 'hidden'
-                },
-                customerRange = {
-                    cardLevelLabel: $XP(_.findWhere(cardLevels, {cardLevelID: $XP(renderData, 'cardLevelID', '0')}), 'cardLevelName', '全部会员'),
-                    levelLimitBirthday: $XP(renderData, 'isVipBirthdayMonth', '0') == 0 ? '' : '仅限本月生日的会员参与',
-					customerRange: '顾客范围',
-					startTimeLabel: start = (IX.isEmpty(start) || start == 0) ? '任意时间' : IX.Date.getDateByFormat(formatDateTimeValue(start), 'yyyy/MM/dd HH:mm')
-                },
-                tpl = self.get('layoutTpl'),
-                htm = tpl(IX.inherit({
-                    smsAlert: '短信活动一旦开始不得停止',
-                    card: {label: '短信群发', clz: 'disable'}
-                }, classAttr, hiddenClass, customerRange, renderData));
-            self.container.html(htm);
-        },
-        submit: function() {
-            var self = this;
-            var eventID = self.model.get('eventID');
-            self.model.emit('switchEvent', {
-                post : {
-                    eventID : eventID,
-                    isActive : 1
-                },
-                faildFn : function () {
-                    self.faildFn.call(self);
-                },
-                successFn : function () {
-                    self.successFn.call(self);
-                    var resultController = self.parentView.parentView.$container.data('resultController');
-                    if (resultController) {
-                        resultController.emit('load');
-                    }
-
-                    self.parentView.modal.hide();
-                }
-            });
-
-        },
-        delete : function (successFn, faildFn) {
-            var self = this;
-            self.model.emit('deleteItem', {
-                itemID : self.model.get('eventID'),
-                successFn : function (res) {
-                    successFn(res);
-                },
-                faildFn : function (res) {
-                    faildFn(res);
-                }
-            });
-        },
-        refresh: function () {
-            var self = this;
-            self.container.empty();
-            self.renderForm();
-        }
-    });
-    HMCM.SMSOpenPreview = SMSOpenPreview;
-    /*
-    * 创建短信群发活动
-    * 初始短信设置预览
-    * */
-    HMCM.initSMSOpenPreview = function ($cnt, cntID, wizardMode) {
-        var wizardView = this,
-            stepView = new HMCM.SMSOpenPreview({
-                mode: wizardMode,
-                container: $cnt,
-                parentView: wizardView,
-                model: wizardView.model,
-                successFn: function () {
-                    var self = this;
-                    self.parentView.switchWizardCtrlStatus('reset');
-                },
-                faildFn: function() {
-                    var self = this;
-                    self.parentView.switchWizardCtrlStatus('reset');
-                }
-            });
-        wizardView.registerStepView(cntID, stepView);
-    };
-
-
 })(jQuery, window);

@@ -24,6 +24,9 @@
 			if (!this.container || !this.view || !this.model ) {
 				throw("Promotion Controller init faild!!");
 			}
+			this.container.data({
+				resultController : this
+			})
 			this.isReady = false;
 			this.bindEvent();
 			this.init();

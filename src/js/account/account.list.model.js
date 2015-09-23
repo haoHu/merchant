@@ -260,9 +260,31 @@
 							successFn();
 						}
 					});
-				}
+				},
+                //充值》生成订单
+                "createOrder" : function(cfg) {
+                    var self = this,
+                        callServer = Hualala.Global.rechargeCreateOrder,
+                        successFn = $XF(cfg, 'successFn'),
+                        failFn = $XF(cfg, 'failFn'),
+                        params = $XP(cfg, 'params'),
+                        sessionSite = Hualala.getSessionSite();
+                    callServer(IX.inherit(params, sessionSite), function(rsp) {
+                        if(rsp.resultcode != '000') {
+                            Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                            failFn();
+                        } else {
+                            successFn(_.omit(rsp.data, 'page'));
+                        }
+                    });
+                }
 			});
-		}
+		},
+        getOrderModel: function(orderID) {
+            var self = this,
+                orderHT = self.get('ds_order');
+            return orderHT.get(orderID);
+        }
 	});
 
 	Hualala.Account.BaseAccountModel = BaseAccountModel;
@@ -497,7 +519,7 @@
 		},
 		resetDataStore : function () {
 			var self = this,
-				datesHT = self.get('ds_trans'),
+				datesHT = self.get('ds_dates'),
 				pageHT = self.get('ds_page');
 			datesHT.clear();
 			pageHT.clear();
@@ -535,5 +557,144 @@
 	});
 
 	Hualala.Account.AccountDailyReportModel = AccountDailyReportModel;
+
+    var SettleOrderModel = Stapes.subclass({
+        constructor: function(cfg) {
+            this.settleUnitID = $XP(cfg, 'settleUnitID', '');
+            this.init();
+            this.bindEvent();
+        }
+    });
+    SettleOrderModel.proto({
+        init: function() {
+            this.set({settleUnitID: this.settleUnitID});
+        },
+        bindEvent: function() {
+            var self = this;
+            this.on({
+                'updateOrder': function(orderInfo) {
+                    self.set(orderInfo);
+                },
+                //充值》查询订单状态
+                "checkOrderStatus" : function(cfg) {
+                    var callServer = Hualala.Global.queryAccountOrder,
+                        params = {settleOrderID: self.get('settleOrderID')},
+                        failFn = $XF(cfg, 'failFn'),
+                        successFn = $XF(cfg, 'successFn');
+                    callServer(params, function(rsp) {
+                        if(rsp.resultcode != '000') {
+                            toptip({msg: rsp.resultmsg, type: 'danger'});
+                        } else {
+                            var orderDetail = $XP(rsp.data, 'records', [])[0];
+                            self.set(_.pick(orderDetail, 'orderStatus'));
+                            if(_.contains(['20', '40'], orderDetail.orderStatus)){
+                                successFn();
+                            } else {
+                                failFn();
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    });
+    Hualala.Account.SettleOrderModel = SettleOrderModel;
+
+    //充值查询
+    var RechargeOrderModel = Stapes.subclass({
+		constructor : function () {
+			//报表调用服务
+			this.callServer = Hualala.Global.queryAccountOrder;
+		}
+	});
+	RechargeOrderModel.proto({
+		init : function (params) {
+			var now = new Date(),
+				curDateStamp = IX.Date.getDateByFormat(new Hualala.Date(now.getTime() / 1000).toText(), 'yyyyMMdd'),
+				lastMonth = new Date(now.getFullYear(),now.getMonth()-1,now.getDate()),
+				lastMonthDateStamp =IX.Date.getDateByFormat(new Hualala.Date(lastMonth.getTime() / 1000).toText(), 'yyyyMMdd');
+			this.set({
+				pageCount : 0,
+				totalSize : 0,
+				pageNo : $XP(params, 'pageNo', 1),
+				pageSize : $XP(params, 'pageSize', 15),
+				transCreateBeginTime : $XP(params, 'orderTimeStart',lastMonthDateStamp ),
+				transCreateEndTime : $XP(params, 'orderTimeEnd', curDateStamp),
+				groupID : $XP(params, 'groupID', ''),
+				settleUnitID : $XP(params, 'settleUnitID', ''),
+				ds_Order : new IX.IListManager(),
+				ds_page : new IX.IListManager()
+			});
+		},
+		updatePagerParams : function (params) {
+			var self = this;
+			var pagerParamkeys = 'pageCount,totalSize,pageNo,pageSize,orderTimeStart,orderTimeEnd,settleOrderID,settleUnitID';
+			_.each(params, function (v, k, l) {
+				if (pagerParamkeys.indexOf(k) > -1) {
+					self.set(k, v);
+				}
+			});
+		},
+		getPagerParams : function () {
+			return {
+				pageNo : this.get('pageNo'),
+				pageSize : this.get('pageSize'),
+				settleUnitID : this.get('settleUnitID'),
+				groupID : this.get('groupID'),
+				settleOrderID :this.get('settleOrderID'),
+				orderTimeStart : this.get('orderTimeStart'),
+				orderTimeEnd : this.get('orderTimeEnd')
+				
+			};
+		},
+		load : function (params, cbFn) {
+			var self = this;
+			self.updatePagerParams(params);
+            var queryParams =self.getPagerParams();
+			self.callServer(queryParams, function (res) {
+				if (res.resultcode == '000') {
+					self.updateDataStore($XP(res, 'data', []), $XP(res, 'data.page.pageNo'));
+					self.updatePagerParams(IX.inherit($XP(res, 'data', {}), $XP(res, 'data.page', {})));
+				} else {
+					toptip({
+						msg : $XP(res, 'resultmsg', ''),
+						type : 'danger'
+					});
+				}
+				cbFn(self);
+			});
+		},
+		updateDataStore : function (data, pageNo) {
+			var self = this,
+				OrderHT = self.get('ds_Order'),
+				pageHT = self.get('ds_page');
+			var datesIDs = _.map(data.records, function (Order, i, l) {
+				var datesID = $XP(Order, 'settleOrderID'),
+					mTrans = new BaseTransactionModel(Order);
+				OrderHT.register(datesID, mTrans);
+				return datesID;
+			});
+			pageHT.register(pageNo, datesIDs);
+		},
+		resetDataStore : function () {
+			var self = this,
+				OrderHT = self.get('ds_Order'),
+				pageHT = self.get('ds_page');
+			OrderHT.clear();
+			pageHT.clear();
+		},
+		getDataByPageNo : function (pageNo) {
+			var self = this,
+				OrderHT = self.get('ds_Order'),
+				pageHT = self.get('ds_page');
+			var ret = _.map(OrderHT.getByKeys(pageHT.get(pageNo)), function (mTrans) {
+				return mTrans.getAll();
+			});
+			IX.Debug.info("DEBUG: Account RechargeOrder  Model PageData :");
+			IX.Debug.info(ret);
+			return ret;
+		}
+	});
+	Hualala.Account.RechargeOrderModel = RechargeOrderModel;
 
 })(jQuery, window);

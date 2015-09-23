@@ -59,10 +59,31 @@
 				}
 			}
 		},
+        EGiftSingleCount: {
+            type: 'text',
+            label: '礼品总数',
+            defaultVal: '0',
+            surfix: '个',
+            validCfg: {
+                validators: {
+                    notEmpty : {
+                        message : "礼品总数"
+                    },
+                    numeric : {
+                        message : "礼品总数必须为数字"
+                    },
+                    greaterThan : {
+                        inclusive : false,
+                        value : 0,
+                        message : "礼品总数必须大于0"
+                    }
+                }
+            }
+        },
 		EGfitValidUntilDayCount : {
 			type : "text",
 			label : "有效天数",
-			defaultVal : "30",
+			defaultVal : "60",
 			// prefix : '￥',
 			surfix : '天',
 			validCfg : {
@@ -245,7 +266,7 @@
 						value : v,
 						hidden : hiddenFlag ? "hidden" : ""
 					});
-				} else if (k == 'EGiftTotalCount') {
+				} else if (k == 'EGiftTotalCount' || k == 'EGiftSingleCount') {
 					return IX.inherit(elCfg, {
 						value : self.model.get(key) || $XP(elCfg, 'defaultVal'),
 						label : eventWay == 20 ? $XP(elCfg, 'label') : '礼品总数'
@@ -322,7 +343,16 @@
 			});
 		},
 		initBaseCfg : function () {
-			this.formKeys = EventGiftSetFormKeys;
+            var self = this,
+                eventWay = self.model.get('eventWay');
+            if(eventWay == 51) {
+                //生日赠送 礼品数是单次领取的次数
+                EventGiftSetFormKeys[3] = 'EGiftSingleCount';
+            } else {
+                //其它活动 礼品数是总共发出的数量
+                EventGiftSetFormKeys[3] = 'EGiftTotalCount';
+            }
+			self.formKeys = EventGiftSetFormKeys;
 		},
 		initUIComponents : function () {
 			var self = this;
@@ -380,14 +410,15 @@
 					name = $txt.attr('name'),
 					val = $txt.val();
 				var $els = $txt.parents('.mcm-evtgift-form').find('[name^=EGfitValidUntilDayCount], [name^=EGiftEffectTimeHours]'),
-					$fmgrps = $els.parents('.form-group');
-				if (val == 10) {
-					$els.attr('disabled', false);
-					$fmgrps.removeClass('hidden');
+					$fmgrps = $els.parents('.form-group'),
+                    noValidDateGiftType = ['40', '42'];//除了会员充值和会员积分不需要设置有效期，其它的都需要
+				if (_.contains(noValidDateGiftType, val + '')) {
+                    $els.attr('disabled', true);
+                    $fmgrps.addClass('hidden');
+                    $txt.parents('.mcm-evtgift-form').find('[name^=EGfitValidUntilDayCount]').val(0);
 				} else {
-					$els.attr('disabled', true);
-					$fmgrps.addClass('hidden');
-					$txt.parents('.mcm-evtgift-form').find('[name^=EGfitValidUntilDayCount]').val(0);
+                    $els.attr('disabled', false);
+                    $fmgrps.removeClass('hidden');
 				}
 			});
 
@@ -423,11 +454,12 @@
 						break;
 					case "EGiftEffectTimeHours":
 					case "EGiftTotalCount":
+					case "EGiftSingleCount":
 					case "EGiftOdds":
 						$el.val(0);
 						break;
 					case "EGfitValidUntilDayCount":
-						$el.val(30);
+						$el.val(60);
 						break;
 				}
 			});

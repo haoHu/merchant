@@ -203,7 +203,7 @@
         .date-lbl input { width: 110px; }
         [name=keyword] { width: 125px }
         [name=transType] { width: 100px }
-        [name=transShopID] { max-width: 125px }
+        [name=transShopID] { width: 125px }
     }
     
     thead th:nth-child(11) { width: 160px; }
@@ -248,10 +248,12 @@
 }
 
 #crm_preferential {
+    .col-md-4[data-type="dateCycle"],
     .col-md-4[data-type="month"],
     .col-md-4[data-type="day"],
     .col-md-4[data-type="week"] {
         padding: 0;
+        margin-top: 0;
     }
 }
 
@@ -266,4 +268,58 @@
             display: inline-block;
         }
     }
+}
+.feedbackList{
+    padding: 0;
+}
+.feedbackCard{
+     height: 100%;
+    .panel-heading{
+        background: #eee;
+        ul{
+            li{
+                float: left;
+                width: 25%;
+                text-align: left;
+            }
+            li.feedbackType{
+                width: 5%;
+                
+            }
+            li.responseStatus{
+                width: 15%;
+            }
+            li.versionNo{
+                font-size: 16px;
+                color:#FF0000;
+                width: 50%;
+            }
+        }
+        
+    }
+    .panel-body,.panel-footer{
+        .feedbackContent{
+            padding: 5px 0;
+            span{
+                 font-size: 14px;
+                 font-weight: bold;
+            }
+        }
+        .feedTime{
+            margin-left: 20px;
+            span{
+                margin-right: 15px;
+            }
+        }
+        .updateRemark{
+            padding: 10px 15px;
+            font-size: 14px;
+        }
+    }
+}
+.version_card{
+    .panel-heading{
+        background: #fff;
+    }
+    box-shadow: 1px 2px 2px #eee;
 }

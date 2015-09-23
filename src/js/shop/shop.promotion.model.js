@@ -2,7 +2,8 @@
 	IX.ns("Hualala.Shop");
 	var popoverMsg = Hualala.UI.PopoverMsgTip,
 		toptip = Hualala.UI.TopTip,
-		LoadingModal = Hualala.UI.LoadingModal;
+		LoadingModal = Hualala.UI.LoadingModal,
+		G = Hualala.Global;
     function encodeTextareaItem(data, textareaName) {
         if (data[textareaName]) {
             data[textareaName] = Hualala.Common.encodeTextEnter(data[textareaName]);
@@ -16,34 +17,42 @@
 				throw("callServer is empty!");
 				return;
 			}
+			//没有分页
+			this.hasPager = $XP(cfg, 'hasPager', false);
 			this.recordModel = $XP(cfg, 'recordModel', BasePromotionModel);
 		}
 	});
 	PromotionModel.proto({
 		init : function (params) {
-			this.set({
+			this.set(IX.inherit({
 				shopID : $XP(params, 'shopID', ''),
-				ds_promotion : new IX.IListManager()
-			});
+				ds_promotion : new IX.IListManager(),
+				ds_page : new IX.IListManager()
+			}, this.hasPager ? {
+				pageCount : 0,
+				totalSize : 0,
+				pageNo : $XP(params, 'pageNo', 1),
+				pageSize : $XP(params, 'pageSize', 15)
+			} : {}));
 		},
 		load : function (params, cbFn) {
 			var self = this;
 			self.callServer(params, function (res) {
 				if (res.resultcode == '000') {
 					promotions = res.data;
-                    if(promotions!=undefined){                   	
+                    if(promotions!=undefined&&promotions.records){                   	
                 		self.updateDataStore($XP(res, 'data.records', {}), $XP(res, 'data.page.pageNo')); 
                     }
                     else{
-                    	existRefPromotionDec = res.data.refPromotionRulesDesc
-                    	if(existRefPromotionDec!=undefined){
-							self.updateRefDateStore($XP(res, 'data', {})); 
+                    	var existrefPromotShopID = res.data.refPromotShopID;
+                    	if(existrefPromotShopID!=0){
+                    		var applyPromotionData = $XP(res, 'data', {});
+                    		self.set(applyPromotionData);
                 		}
                 		else{
-                    		self.updateDataStore($XP(res, 'data.records', {})); 
+                    		self.updateDataStore($XP(res, 'data.records', {}), $XP(res, 'data.page.pageNo'));
                     	}
                     }  
-					self.updateDataStore($XP(res, 'data.records', {}));
 				} else {
 					toptip({
 						msg : $XP(res, 'resultmsg', ''),
@@ -55,13 +64,45 @@
 		},
 		updateDataStore : function (data,pageNo) {
 			var self = this,
+				promotionHT = self.get('ds_promotion'),
+				pageHT = self.get('ds_page');
+			pageNo = self.hasPager ? pageNo : 1;
+			var recordIDs = _.map(data, function (r, i, l) {
+				var itemID = $XP(r, 'itemID'),
+					mRecord = new self.recordModel(IX.inherit(r, {
+						'itemID' : itemID
+					}));
+				promotionHT.register(itemID, mRecord);
+				return itemID;
+			});
+			pageHT.register(pageNo, recordIDs);
+			/*var self = this,
 				promotionHT = self.get('ds_promotion');
 			var recordIDs = _.map(data, function (r, i, l) {
 				var itemID = $XP(r, 'itemID'),
 					mPromotion = new self.recordModel(r);
 				promotionHT.register(itemID, mPromotion);
 				return itemID;
+			});*/
+		},
+		getPagerParams : function () {
+			var self = this;
+			var ret = {};
+			_.each(self.getAll(), function (k) {
+				ret[k] = self.get(k);
 			});
+			return ret;
+		},
+		getRecordsByPageNo : function (pageNo) {
+			var self = this,
+				promotionHT = self.get('ds_promotion'),
+				pageHT = self.get('ds_page');
+			pageNo = !self.hasPager ? 1 : pageNo;
+			var ret = _.map(promotionHT.getByKeys(pageHT.get(pageNo)), function (mRecord, i, l) {
+				return mRecord.getAll();
+			});
+			IX.Debug.info(ret);
+			return ret;
 		},
 		getRecordModelByID : function (id) {
 			var self = this,
@@ -71,11 +112,10 @@
 		updateRefBind : function (items) {
 			var self =this;
 			var post ={promotShopID:items,shopID:shopID};
-			Hualala.Global.updatePromotShop(post, function (res) {
+			G.updatePromotShop(post, function (res) {
 				if ($XP(res, 'resultcode') == '000') {
 					self.set({
 						action : $XP(post, 'action')
-						
 					});
 					IX.Debug.info("套用的店铺");
 					// successFn(res);
@@ -105,7 +145,7 @@
 						shopID = $XP(params, 'shopID');
 					var successFn = $XF(params, 'successFn'),
 						faildFn = $XF(params, 'faildFn');
-					Hualala.Global.deleteShopPromotion({
+					G.deleteShopPromotion({
 						itemID : itemID,
 						shopID :shopID
 					}, function (res) {
@@ -116,6 +156,21 @@
 						}
 					});
 				},
+				createPromotion : function (params) {
+					var post = $XP(params, 'params', {}),
+						successFn = $XF(params, 'successFn'),
+						failFn = $XF(params, 'failFn');
+					self.set(post);
+					IX.Debug.info(self.getAll());
+                    var postData = IX.inherit({}, self.getAll());
+					G.createShopPromotion(encodeTextareaItem(postData, 'remark'), function (res) {
+						if ($XP(res, 'resultcode') == '000') {
+							successFn(res.data);
+						} else {
+							failFn(res);
+						}
+					});
+				},
 				editPromotion : function (params) {
 					var post = $XP(params, 'params', {}),
 						successFn = $XF(params, 'successFn'),
@@ -123,8 +178,37 @@
 					self.set(post);
 					IX.Debug.info(self.getAll());
                     var postData = IX.inherit({}, self.getAll());
-					Hualala.Global.updateShopPromotion(encodeTextareaItem(postData, 'remark'), function (res) {
+					G.updateShopPromotion(encodeTextareaItem(postData, 'remark'), function (res) {
 						if ($XP(res, 'resultcode') == '000') {
+							successFn(res);
+						} else {
+							failFn(res);
+						}
+					});
+				},
+				promotionTimeCheck : function (params) {
+					var post = $XP(params, 'params', {}),
+						successFn = $XF(params, 'successFn'),
+						failFn = $XF(params, 'failFn');
+					self.set(post);
+					IX.Debug.info(self.getAll());
+                    var postData = IX.inherit({}, self.getAll());
+					G.promotionTimeCheck(encodeTextareaItem(postData, 'remark'), function (res) {
+						if ($XP(res, 'resultcode') == '000') {
+							successFn(res.data);
+						} else {
+							failFn(res);
+						}
+					});
+				},
+				promotionRulesToString : function (params) {
+					var post = $XP(params, 'params', {}),
+						successFn = $XF(params, 'successFn'),
+						failFn = $XF(params, 'failFn');
+					G.promotionRulesToString(post, function (res) {
+						if ($XP(res, 'resultcode') == '000') {
+							var promotionDesc =res.data.records[0];
+							self.set(promotionDesc);
 							successFn(res);
 						} else {
 							failFn(res);
@@ -135,7 +219,7 @@
 					var post = $XP(params, 'post', {}),
 						successFn = $XF(params, 'successFn'),
 						faildFn = $XF(params, 'faildFn');
-					Hualala.Global.switchShopPromotion(post, function (res) {
+					G.switchShopPromotion(post, function (res) {
 						if ($XP(res, 'resultcode') == '000') {
 							self.set({
 								action : $XP(post, 'action')

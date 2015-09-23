@@ -168,13 +168,20 @@
             });
             return {
                 tblClz: tblClz,
-                noRef : records && records.refPromotionRulesDesc? false :true,
                 isEmpty: !records || records.length == 0 ? true : false,
                 colCount: tblHeaders.length,
                 thead: tblHeaders,
                 rows: rows
             };
 
+        },
+        //
+        mapQueryData :function(records){
+        	return {
+        		//isCheckedPromotShopID 0表示没有被其他店铺套用，1已被套用。
+        		beused :records.isCheckedPromotShopID==1?true:false,
+        		noRef : true
+        	}
         },
         mapRenderRefData : function (records) {
         	return {
@@ -185,12 +192,16 @@
         },
 		render : function () {
 			var self = this,
-				model = self.model;
-				var resultTpl = self.get('resultTpl'),
-					RefRulesTpl = self.get('RefRulesTpl');
-					promotionTpl = self.get('promotionTpl');
-				self.$result.removeClass("row");
-				self.$container.find('.promotion_operate').remove();
+				model = self.model,
+				hasPager = model.hasPager,
+				pagerParams = model.getPagerParams(),
+				pageNo = $XP(pagerParams, 'pageNo', 1);
+			var records = model.getRecordsByPageNo(pageNo);
+			var resultTpl = self.get('resultTpl'),
+				RefRulesTpl = self.get('RefRulesTpl');
+				promotionTpl = self.get('promotionTpl');
+			self.$result.removeClass("row");
+			self.$container.find('.promotion_operate').remove();
 			//套用状态下显示的数据
 			if(promotions.refShopName){
 				self.$resultBox.before($(promotionTpl(self.mapRenderRefData(promotions))));
@@ -201,8 +212,8 @@
 			}
 			//非套用状态下显示的数据
 			else{
-				self.$resultBox.before($(promotionTpl(self.mapRenderData(promotions.records))));
-				var renderData = self.mapRenderData(promotions.records);
+				self.$resultBox.before($(promotionTpl(self.mapQueryData(promotions))));
+				var renderData = self.mapRenderData(records);
 				var	htm = resultTpl(renderData);
 				self.$result.empty();
 				self.$result.html(htm);
@@ -282,7 +293,7 @@
 							failFn : function () {
 							},
 							model : promotionModel,
-							modalClz : 'shop-promotion-modal',
+							modalClz : 'shop-promotion-modal mcm-event-modal',
 							wizardClz : 'mcm-event-wizard',
 							modalTitle :'编辑促销规则',
 							onWizardInit : function ($cnt, cntID, wizardMode) {
@@ -305,7 +316,7 @@
 					case 'addPromotion':
 						// TODO edit promotion set
 					var BasePromotionModel = new Hualala.Shop.BasePromotionModel();
-						BasePromotionModel.set({shopID: shopID, itemID: itemID});
+						BasePromotionModel.set({shopID: shopID, itemID:"0"});
 					var wizardPanel = new Hualala.Shop.PromotionWizardModal({
 							wizardType :'create',
 							parentView : self,
@@ -315,7 +326,7 @@
 							failFn : function () {
 							},
 							model : BasePromotionModel,
-							modalClz : 'shop-promotion-modal',
+							modalClz : 'shop-promotion-modal mcm-event-modal',
 							wizardClz : 'mcm-event-wizard',
 							modalTitle :'添加促销规则',
 							onWizardInit : function ($cnt, cntID, wizardMode) {

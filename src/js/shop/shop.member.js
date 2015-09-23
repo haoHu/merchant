@@ -18,6 +18,7 @@
             rights = null,
             selRoleIDs = [],
             selRightIDs = [],
+            notRightIDs = [],
             imgHost = Hualala.Global.IMAGE_RESOURCE_DOMAIN + '/',
             imgRoot = Hualala.Global.IMAGE_ROOT + '/';
 
@@ -338,7 +339,7 @@
             };
 
             //给角色和权限的选择绑定事件
-            modalDialog._.body.on('change', '.role-right .roles input[type="checkbox"]', function () {
+            modalDialog._.body.on('change', '.role-right .roles input', function () {
                 var $el = $(this),
                     key = $el.data('key') + '';
 
@@ -346,6 +347,7 @@
                 $el.is(':checked') ? selRoleIDs.push(key) : (selRoleIDs = _.reject(selRoleIDs, function(id) {return id == key}));
                 if (selRoleIDs.length == 0) {
                     selRightIDs = [];
+                    rights = [];
                     reRenderRights();
                     return;
                 }
@@ -355,10 +357,21 @@
                         return;
                     }
                     var records = rsp.data.records;
+                    rights = records || [];
                     selRightIDs = records ? _.pluck(records, 'rightID') : [];
                     reRenderRights();
                 });
 
+            }).on('change', '.rights input', function(e) {
+                var $this = $(this),
+                    currentRightID = $this.data('key'),
+                    isChecked = $this.prop('checked');
+                if(isChecked) {
+                    selRightIDs.push(currentRightID + '');
+                    selRightIDs = _.uniq(_.compact(selRightIDs));
+                } else {
+                    selRightIDs = _.uniq(_.compact(_.reject(selRightIDs, function(id){return id == currentRightID})));
+                }
             });
             //给保存绑定事件
             modalDialog._.footer.on('click', '.btn.btn-ok', function () {
@@ -369,8 +382,8 @@
                         shopID: shopID,
                         empKey: empKey,
                         roleIDLst: selRoleIDs.join(','),
-                        rightIDLst: selRightIDs.join(','),
-                        notRightList: notRightLst.join(','),
+                        rightIDLst: _.pluck(rights, 'rightID').join(','),
+                        notRightLst: notRightLst.join(','),
                         roleNameLst: roleNameLst.join(',')
                     };
                 Hualala.Global.setRoleRight(setParams, function (rsp) {
@@ -379,7 +392,7 @@
                         return;
                     }
                     member.roleIDLst = setParams.roleIDLst;
-                    member.rightIDLst = setParams.rightIDLst;
+                    member.notRightLst = setParams.notRightLst;
                     Hualala.UI.TopTip({msg: '设置成功', type: 'success'});
                     $member.find('td.role p').text(roleNameLst.join(' '));
                     modalDialog.hide();
@@ -392,7 +405,7 @@
             rights = null;
             var member = _.findWhere(members, {empKey: empKey});
             selRoleIDs = _.compact(_.uniq(member.roleIDLst.split(',')));
-            selRightIDs = _.compact(_.uniq(member.rightIDLst.split(',')));
+            notRightIDs = _.compact(_.uniq(member.notRightLst.split(',')));
 
             //渲染角色
             var renderRoleSet = function() {
@@ -417,18 +430,15 @@
 
             //渲染权限
             var renderRights = function() {
-                if(rights) {
+                Hualala.Global.queryRights({roleID: member.roleIDLst}, function (rsp) {
+                    if (rsp.resultcode != '000') {
+                        Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                        return;
+                    }
+                    rights = rsp.data.records || [];
+                    selRightIDs = _.reject(_.pluck(rights, 'rightID'), function(id) {return _.contains(notRightIDs, id);});
                     renderRoleSet();
-                } else {
-                    Hualala.Global.queryRights({roleID: ''}, function (rsp) {
-                        if (rsp.resultcode != '000') {
-                            Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
-                            return;
-                        }
-                        rights = rsp.data.records || [];
-                        renderRoleSet();
-                    });
-                }
+                });
             };
             if (roles) {
                 renderRights();

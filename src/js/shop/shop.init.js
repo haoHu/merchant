@@ -141,29 +141,39 @@
     };
     
     // 店铺详情页功能导航
-    Hualala.Shop.createShopFuncNav = function (currentPageName, shopID, container, isSaasOpen)
-    {
+    Hualala.Shop.createShopFuncNav = function (currentPageName, shopID, container, isSaasOpen){  
+        //线上屏蔽掉促销
+        var is3W = window.location.host == 'dianpu.hualala.com';
         //var shopFuncs = ['shopInfo', 'shopCategory', 'shopMenu', 'shopTable', 'shopMember','shopPromotion','shopPrinterSetting','shopPrinterAreaSetting']
-        var shopFuncs = ['shopInfo', 'shopMenu','shopPromotion'];
+        var shopFuncs = ['shopInfo', 'shopCategory','shopMenu','ShopTimeManage' ],
+            promotion =['shopPromotion'];
+            shopFuncs = is3W ? shopFuncs: shopFuncs.concat(promotion);
+        if(!is3W){
+                var promotion=shopFuncs[4];
+                shopFuncs[4] = shopFuncs[3];
+                shopFuncs[3] = promotion;
+        }
         //针对店铺打通方式设置导航
         if (isSaasOpen) {
-            var saasNavs = ['shopCategory', 'ShopTimeManage', 'shopDiscountManage','shopTable', 'shopMember', 'shopPrinterAreaSetting','shopRemarks', 'shopSaasParams'];
+            var saasNavs = ['shopDiscountManage','shopTable', 'shopMember', 'shopPrinterAreaSetting','shopRemarks', 'shopSaasParams'];
             shopFuncs = shopFuncs.concat(saasNavs);
+           /*打通第三方餐饮软件，菜品分类，，促销，时段都有
             //导航顺序：菜品分类在菜谱关联之前
-            var menu = shopFuncs[1];
+            var menu = shopFuncs[2];
             shopFuncs[1] = shopFuncs[2];
             shopFuncs[2] = menu;
             //促销在菜谱后
-            var promotion=shopFuncs[1];
-            shopFuncs[1] = shopFuncs[3];
-            shopFuncs[3] = promotion;
+            if(!is3W){
+                var promotion=shopFuncs[1];
+                shopFuncs[1] = shopFuncs[3];
+                shopFuncs[3] = promotion;
+            }*/
         }
         var R = Hualala.PageRoute,
             $ul = $('<ul class="nav navbar-nav"></ul>'),
             $container = container || $('#ix_wrapper > .ix-body > .container');
         
-        for(i = 0, l = shopFuncs.length; i < l; i++)
-        {
+        for(i = 0, l = shopFuncs.length; i < l; i++){
             var shopFunc = shopFuncs[i],
                 isActive = shopFunc == currentPageName,
                 path = isActive ? 'javascript:;' : R.createPath(shopFunc, [shopID]),
@@ -171,7 +181,6 @@
             
             $('<li></li>').toggleClass('active', isActive).append($('<a></a>').attr('href', path).text(label)).appendTo($ul);
         }
-        
         return $('<div class="navbar navbar-default shop-func-nav"></div>').append($ul).appendTo($container);
     };
     
@@ -253,7 +262,7 @@
                             var $fields = validator.$form.find(':text[name^=openingHoursStart]');
                             var value = $fields.val();
                             if (value === '') {
-                                return true;
+                                return false;
                             }
                             //正则验证时间是否合法
                             //\uff1a 为中文冒号的unicode码
@@ -331,10 +340,11 @@
             nodes: Hualala.PageRoute.getParentNamesByPath()
         });
         checkSaasOpen(params, function (data) {
+            var isSaasOpen = data.can == 1;
             Hualala.Shop.createShopInfoHead(params, $body, data);
-            Hualala.Shop.createShopFuncNav(pageType, params, $body, data.can == 1);
+            Hualala.Shop.createShopFuncNav(pageType, params, $body, isSaasOpen);
             $body.append('<div class="page-body clearfix"></div>');
-            Hualala.Saas.Category.initCategory($body.find('.page-body'), params);
+            Hualala.Saas.Category.initCategory($body.find('.page-body'), params,isSaasOpen);
         });
     };
     Hualala.Shop.CategoryInit = initFoodCategory;

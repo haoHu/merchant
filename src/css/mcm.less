@@ -146,7 +146,7 @@
 	@luck-joy : #f60; @free-get : rgb(102, 153, 0); 
 	@apply-evt : rgb(102, 51, 102); @credit-exchange : #099; 
 	@marketing-redenvelope : #c00; @consume-redenvelop : #900;
-	@mass-texting : #099;
+	@mass-texting : #099; @birthday-gift : #0033CC;
 	
 	&.disable {
 		.mcm-card-box > .event-card(@cardw, @cardh, @cardBG);
@@ -175,6 +175,9 @@
 		// .mcm-card-box > .event-card(@cardw, @cardh, rgb(0, 153, 204));
 		.mcm-card-box > .event-card(@cardw, @cardh, @mass-texting);
 	}
+    &.birthday-gift {
+        .mcm-card-box > .event-card(@cardw, @cardh, @birthday-gift);
+    }
 }
 
 .mcm-grid {
@@ -393,4 +396,10 @@
 	  strong {color: #000;}
 	}
   }
+}
+
+#apply-event-sms {
+    textarea {
+        height: 200px;
+    }
 }

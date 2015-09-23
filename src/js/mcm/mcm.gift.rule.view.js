@@ -59,9 +59,12 @@
 	});
 	GiftRuleStepView.proto({
 		initBaseCfg : function () {
-			if (this.model.get('giftType') == 10) {
+            var giftType = this.model.get('giftType');
+			if (giftType == 10) {
 				this.formKeys = GiftRuleFormKeys;
-			} else {
+			} else if(giftType == 20) {
+                this.formKeys = _.without(GiftRuleFormKeys, 'foodScope');
+            } else {
 				this.formKeys = [];
 			}
 			this.on({
@@ -96,7 +99,7 @@
 						$alertWarning = $('<p class="alert alert-warning alert-gift-rule"></p>');
 						self.container.append($alertWarning);
 					}
-					if (giftType == 10) {
+					if (giftType == 10 || giftType == 20) {
 						$alertWarning.html(alertMsg).hide();
 						$form.show();
 					} else {
@@ -111,17 +114,57 @@
 				moneyLimitType = self.model.get('moneyLimitType') || 0,
 				$moenyLimitValue = $(':text[name=moenyLimitValue]'),
 				$inputGrp = $moenyLimitValue.parents('.form-group');
-			var shopNames = self.model.get('shopNames') || '',
-				shopIDs = self.model.get('shopIDs') || '';
-			$inputGrp[moneyLimitType == 0 ? 'addClass' : 'removeClass']('hidden');
-			self.chooseShop = new HMCM.ChooseShopModal({
-				parentView : self,
-				trigger : self.container.find('div[name=shopNames]'),
-				modalTitle : "选择店铺",
-				modalClz : "choose-shop-modal",
-				chosenShopNames : shopNames || '不限店铺',
-				chosenShopIDs : IX.isEmpty(shopIDs) ? null : shopIDs.split(';')
-			});
+				$inputGrp[moneyLimitType == 0 ? 'addClass' : 'removeClass']('hidden');
+			var v = self.model.get("giftItemID"),
+				ret = {},
+				giftType = self.model.get('giftType');
+			if(self.mode=="edit"&&(giftType == 10||giftType == 20)){
+				Hualala.Global.getMCMGiftShopUsed({giftItemID:v}, function(rsp){
+	                if(rsp.resultcode != '000'){
+	                    rsp.resultmsg && toptip({msg: rsp.resultmsg, type: 'danger'});
+	                    return;
+	                } else {
+                		var shopNames = _.map(rsp.data.records, function (shop) {
+	                        	return shop.shopName;
+	                    	}).join(';');
+	                    var	shopIDs = _.map(rsp.data.records, function (shop) {
+	                        	return shop.shopID;
+	                    	}).join(';');
+	                    	ret.shopIDs =shopIDs;
+							ret.shopNames =shopNames;
+							//缓存shopIDs，不管是否选择适用店铺
+							self.model.emit('saveCache', {
+								params : ret,
+								failFn : function () {
+									self.failFn.call(self);
+								},
+								successFn : function () {
+									self.successFn.call(self);
+								}
+							})
+	                    	/*	var shopNames = self.model.get('shopNames') || '',
+							shopIDs = self.model.get('shopIDs') || '';*/
+				        self.chooseShop = new HMCM.ChooseShopModal({
+							parentView : self,
+							trigger : self.container.find('div[name=shopNames]'),
+							modalTitle : "选择店铺",
+							modalClz : "choose-shop-modal",
+							chosenShopNames : shopNames || '不限店铺',
+							chosenShopIDs : IX.isEmpty(shopIDs) ? null : shopIDs.split(';')
+						});
+                	}
+	            });
+			} else{
+				self.chooseShop = new HMCM.ChooseShopModal({
+					parentView : self,
+					trigger : self.container.find('div[name=shopNames]'),
+					modalTitle : "选择店铺",
+					modalClz : "choose-shop-modal",
+					chosenShopNames :'不限店铺',
+					chosenShopIDs : null
+				});
+			}
+
 		},
 		renderForm : function () {
 			var self = this,

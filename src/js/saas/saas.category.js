@@ -1,7 +1,10 @@
 $( function ($, window) {
     IX.ns('Hualala.Saas.Category');
     var G = Hualala.Global,
+        U = Hualala.UI,
         C = Hualala.Common,
+        topTip = U.TopTip,
+        parseForm = C.parseForm,
     /** staticData 表格需要显示的数据
         *categories 从后台查询的分类信息
         *categoryTableHead 表格的表头
@@ -14,14 +17,97 @@ $( function ($, window) {
             departments:null,
             subjects: null
         },
-        topTip = Hualala.UI.TopTip,
         $tbody, $container,
         categoryTableTpl = Handlebars.compile(Hualala.TplLib.get('tpl_category')),
         categoryTrTpl = Handlebars.compile(Hualala.TplLib.get('tpl_category_tr')),
         noDataTipTpl = Handlebars.compile(Hualala.TplLib.get(('tpl_no_records'))),
         selectTpl = Handlebars.compile(Hualala.TplLib.get(('tpl_select'))),
         shopID = '';
-
+    function initCategory($category, routeParam,isSaasOpen) {
+        if(routeParam) shopID = routeParam;
+        var btn = '<div class="t-r"><button class="btn btn-warning add-category">新增分类</button></div>';
+        if(isSaasOpen){
+            $category.before($(btn));
+        }
+        //初始化表格
+        initCategoryTable(isSaasOpen);
+        //从后台请求分类信息
+        queryCategories(isSaasOpen);
+        //绑定对分类数据的操作的事件
+        bindCategoryOperate(isSaasOpen);
+    };
+    //查询分类信息
+    function queryCategories(isSaasOpen) {
+        var params = {shopID: shopID};
+        G.getSaasCategories(extendGroupIDTo(params), function(rsp)
+        {
+            //用extend方法深度拷貝一份records
+            staticData.categories = IX.clone(rsp.data.records);
+            renderCategories(isSaasOpen);
+        });
+    }
+    //查询部门信息
+    function queryDepartments(modal, selectedItemVal) {
+        var params = {departmentType: '1,3'};
+        C.loadData('getSaasDepartments', params, staticData.departments).done(function (records) {
+            if(!records || records.length == 0) {
+                topTip({msg: '请先添加部门', type: 'danger'});
+                return;
+            }
+            staticData.departments = records;
+            renderSelect(modal._.body.find('.department-select'), 'departmentKey', records, 'departmentKey', 'departmentName', selectedItemVal);
+        });
+    }
+    //查询科目信息
+    function querySubjects(modal, selectedItemVal) {
+        var params = {sellSubject: '1'};
+        C.loadData('querySaasSubject', params, staticData.subjects).done(function (records) {
+            if(!records || records.length == 0) {
+                topTip({msg: '请先添加科目', type: 'danger'});
+                return;
+            }
+            staticData.subjects = records;
+            renderSelect(modal._.body.find('.subject-select'), 'foodSubjectKey', staticData.subjects, 'subjectKey', 'subjectName', selectedItemVal);
+        });
+    }
+    //表头的填充
+    function initCategoryTable(isSaasOpen) {
+        $container = $('.page-body');
+        var staticDataClone;
+        if(!isSaasOpen){
+            var isSaasOpenHeads = [' 分类名称 ', '菜品数量', '分类说明', ' 出品部门 ', '收入科目', '排序 '];
+            staticDataClone = IX.clone(staticData)
+            staticDataClone.tableHeads = isSaasOpenHeads;
+            $(categoryTableTpl(staticDataClone)).appendTo($container);
+        }
+        else{
+            $(categoryTableTpl(staticData)).appendTo($container);
+        }
+        $tbody = $container.find('tbody');
+    }
+    //列表的填充
+    function renderCategories(isSaasOpen) {
+        if (staticData.categories && staticData.categories.length > 0) {
+            if($container.find('.saas-category-table').length == 0){
+                $container.empty();
+                initCategoryTable(isSaasOpen);
+            }
+            $tbody.empty();
+            $(categoryTrTpl(staticData)).appendTo($tbody);
+            if(!isSaasOpen){
+                $tbody.find('td.operator').addClass('hidden');
+            }
+            else{
+                $tbody.find('td.operator').removeClass('hidden');
+            }
+            //生成一个bootstrap的开关
+            createSwitch($tbody.find('input.status'));
+        } else {
+            $container.empty();
+            $(noDataTipTpl({title: '分类'})).appendTo($container);
+        }
+    }
+    //select列表的填充
     function renderSelect($select, selectName, data, key, name, selectedItemVal) {
         var selectData = _.map(IX.clone(data), function (record) {
             var selected;
@@ -30,77 +116,8 @@ $( function ($, window) {
         });
         $select.append(selectTpl({options: selectData, name: selectName}));
     }
-
-    function initCategory($category, routeParam) {
-        if(routeParam) shopID = routeParam;
-        var btn = '<div class="t-r"><button class="btn btn-warning add-category">新增分类</button></div>';
-        $category.before($(btn));
-        //初始化表格
-        initCategoryTable();
-        //从后台请求分类信息
-        queryCategories();
-        //绑定对分类数据的操作的事件
-        bindCategoryOperate();
-    };
-
-    function initCategoryTable() {
-        $container = $('.page-body');
-        $(categoryTableTpl(staticData)).appendTo($container);
-        $tbody = $container.find('tbody');
-    }
-
-    function renderCategories() {
-        if (staticData.categories && staticData.categories.length > 0) {
-            if($container.find('.saas-category-table').length == 0){
-                $container.empty();
-                initCategoryTable();
-            }
-            $tbody.empty();
-            $(categoryTrTpl(staticData)).appendTo($tbody);
-            //生成一个bootstrap的开关
-            createSwitch($tbody.find('input.status'));
-        } else {
-            $container.empty();
-            $(noDataTipTpl({title: '分类'})).appendTo($container);
-        }
-    }
-
-    function queryCategories() {
-        var params = {shopID: shopID};
-        G.getSaasCategories(extendGroupIDTo(params), function(rsp)
-        {
-            //用extend方法深度拷貝一份records
-            staticData.categories = IX.clone(rsp.data.records);
-            renderCategories();
-        });
-    }
-
-    function queryDepartments(modal, selectedItemVal) {
-        var params = {departmentType: '1,3'};
-        C.loadData('getSaasDepartments', params, staticData.departments).done(function (records) {
-            if(!records || records.length == 0) {
-                Hualala.UI.TopTip({msg: '请先添加部门', type: 'danger'});
-                return;
-            }
-            staticData.departments = records;
-            renderSelect(modal._.body.find('.department-select'), 'departmentKey', records, 'departmentKey', 'departmentName', selectedItemVal);
-        });
-    }
-
-    function querySubjects(modal, selectedItemVal) {
-        var params = {sellSubject: '1'};
-        C.loadData('querySaasSubject', params, staticData.subjects).done(function (records) {
-            if(!records || records.length == 0) {
-                Hualala.UI.TopTip({msg: '请先添加科目', type: 'danger'});
-                return;
-            }
-            staticData.subjects = records;
-            renderSelect(modal._.body.find('.subject-select'), 'foodSubjectKey', staticData.subjects, 'subjectKey', 'subjectName', selectedItemVal);
-        });
-    }
-
-    function createSwitch($checkbox)
-    {
+    //开关
+    function createSwitch($checkbox){
         _.each($checkbox, function (el) {
             var $el = $(el);
             $el.bootstrapSwitch({
@@ -116,7 +133,7 @@ $( function ($, window) {
                 stateText = state ? '开启' : '关闭';
             var categoryId = $this.parents('tr').data('foodid');
             var params = {foodCategoryID: categoryId, isActive: state ? 1 : 0};
-            Hualala.UI.Confirm({
+            U.Confirm({
                 title : stateText + "分类",
                 msg : "你确定要" + stateText + "此分类吗？",
                 okFn : function () {
@@ -157,13 +174,26 @@ $( function ($, window) {
         return _.indexOf(categoryIds, categoryID + '');
     }
 
-    function bindDeleteCategory() {
+    function bindCategoryOperate(isSaasOpen) {
+        //editModalTpl为添加或修改分类信息弹出的模态框
+        var editModalTpl = Handlebars.compile(Hualala.TplLib.get('tpl_category_modal'));
+        //绑定删除一条分类的事件
+        bindDeleteCategory(isSaasOpen);
+        //绑顶分类数据的排序事件
+        bindCategorySort(isSaasOpen);
+        //绑顶添加分类的事件
+        bindAddCategory(editModalTpl,isSaasOpen);
+        //绑顶修改分类的事件
+        bindUpdateCategory(editModalTpl,isSaasOpen);
+    }
+    //删除事件的处理
+    function bindDeleteCategory(isSaasOpen) {
         $container.on('click', 'tbody tr td a.delete-category', function () {
             var $this = $(this);
             var foodCategoryID = $this.parents('tr').data('foodid');
             var params = {foodCategoryID: foodCategoryID};
             params = extendGroupIDTo(params, foodCategoryID);
-            Hualala.UI.Confirm({
+            U.Confirm({
                 title: '刪除分类',
                 msg: '删除后该菜品分类信息以及该菜品分类下的菜品都将被清空，无法再进行任何操作!!!<br/>你确定要删除此分类吗？',
                 okFn: function () {
@@ -171,17 +201,17 @@ $( function ($, window) {
                         var successMsg = {msg: '刪除成功', type: 'success'};
                         responseResult(rsp, function (data) {
                             staticData.categories.splice(findCategoryIndex(foodCategoryID), 1);
-                            renderCategories();
+                            renderCategories(isSaasOpen);
                         },successMsg);
                     });
                 }
             });
         });
     }
-
-    function bindAddCategory(categoryModal) {
+    //新增事件的处理
+    function bindAddCategory(categoryModal,isSaasOpen) {
         $container.parents('.container').on('click', '.add-category', function () {
-            var updateModal = new Hualala.UI.ModalDialog({
+            var updateModal = new U.ModalDialog({
                 title: '新增分类',
                 id: 'categoryInfoModal',
                 html: $(categoryModal()),
@@ -195,11 +225,11 @@ $( function ($, window) {
             //使用bootstrapValidator监听表单输入的数据是否符合要求
             formValidateRegister();
             //绑定添加或修改分类信息的提交表单事件
-            bindSubmit(updateModal);
+            bindSubmit(updateModal,isSaasOpen);
         });
     }
-
-    function bindUpdateCategory(categoryModal) {
+    //修改事件的处理
+    function bindUpdateCategory(categoryModal,isSaasOpen) {
         $container.on('click', 'tbody tr td a.update-category', function () {
             var $current_tr = $(this).parents('tr'),
                 current_category = findCategoryBy($current_tr.data('foodid'));
@@ -207,9 +237,9 @@ $( function ($, window) {
             var categoryInfo = {
                 foodCategoryID: current_category.foodCategoryID,
                 foodCategoryName: current_category.foodCategoryName,
-                description: Hualala.Common.decodeTextEnter(current_category.description)
+                description: C.decodeTextEnter(current_category.description)
             };
-            var updateModal = new Hualala.UI.ModalDialog({
+            var updateModal = new U.ModalDialog({
                 title: '修改分类',
                 id: 'categoryInfoModal',
                 html: $(categoryModal(categoryInfo)),
@@ -220,96 +250,10 @@ $( function ($, window) {
             updateModal._.footer.find('.btn-ok').text('提交');
             updateModal._.footer.find('.btn-close').text('关闭');
             formValidateRegister();
-            bindSubmit(updateModal);
+            bindSubmit(updateModal,isSaasOpen);
         });
     }
-
-    function bindSubmit(modalDialog) {
-        modalDialog._.footer.on('click', '.btn-ok', function () {
-            var $form = $(this).parents('.modal-footer').siblings('.modal-body').find('form');
-            $form.data('bootstrapValidator').validate();
-            if (!$form.data('bootstrapValidator').validate().isValid()) return;
-            var data = Hualala.Common.parseForm($form);
-            data.description = Hualala.Common.encodeTextEnter(data.description);
-            var $foodCategoryID = $form.find('[name="foodCategoryID"]');
-            var isAdd = $foodCategoryID.length == 0,
-                foodCategoryID = '', groupID = Hualala.getSessionSite().groupID;
-            var selectedDepartment = {departmentName: $XP(_.findWhere(staticData.departments, {departmentKey: data.departmentKey}), 'departmentName', '')},
-                selectedSubject = {foodSubjectName: $XP(_.findWhere(staticData.subjects, {subjectKey: data.foodSubjectKey}), 'subjectName', '')};
-            if (!isAdd) {
-                foodCategoryID = $foodCategoryID.val();
-                groupID = findCategoryBy(foodCategoryID).groupID;
-            }
-            _.extend(data, {foodCategoryID: foodCategoryID, groupID: groupID, shopID: shopID});
-            G[isAdd ? 'createSaasCategory' : 'updateSaasCategory'](data, function (rsp) {
-                var successMsg = {msg: (isAdd ? '添加' : '修改') + '成功！', type: 'success'};
-                responseResult(rsp, function (result) {
-                    if (isAdd) {
-                        var category = result.data.records[0];
-                        staticData.categories = staticData.categories || [];
-                        staticData.categories.push(IX.inherit({}, category,
-                            {subjectKey: data.foodSubjectKey},
-                            {departmentKey: data.departmentKey},
-                            selectedDepartment, selectedSubject));
-                    } else {
-                        staticData.categories[findCategoryIndex(foodCategoryID)] = IX.inherit(staticData.categories[findCategoryIndex(foodCategoryID)],
-                            data, selectedDepartment, selectedSubject);
-                    }
-                    renderCategories();
-                }, successMsg, modalDialog);
-            });
-        });
-    }
-
-    function bindCategorySort() {
-        //绑定“移到顶部”事件
-        $container.on('click', 'tbody tr td a.sort-top', function () {
-            var foodid = $(this).parents('tr').data('foodid');
-            if (!findLastCategoryBy(foodid)) return;
-            var params = {foodCategoryID: foodid};
-            G.sortSaasCategoryTop(extendGroupIDTo(params, foodid), function (rsp) {
-                responseResult(rsp, queryCategories);
-            });
-        });
-
-        //绑定“向上/向下移动”事件
-        $container.on('click', 'tbody tr td a.sort-up, tbody tr td a.sort-down', function () {
-            var foodid = $(this).parents('tr').data('foodid');
-            var isMoveUp = $(this).hasClass('sort-up');
-            var currentCategory = findCategoryBy(foodid),
-                otherCategory = isMoveUp ? findLastCategoryBy(foodid) : findNextCategoryBy(foodid);
-            if (!otherCategory) return;
-            var params = {foodCategoryID: foodid, sortIndex: currentCategory.sortIndex,
-                foodCategoryID2: otherCategory.foodCategoryID, sortIndex2: otherCategory.sortIndex};
-            G.sortSaasCategoryUpOrDown(extendGroupIDTo(params, foodid), function (rsp) {
-                responseResult(rsp, queryCategories)
-            });
-        });
-
-        //绑定“移到底部”事件
-        $container.on('click', 'tbody tr td a.sort-bottom', function () {
-            var foodid = $(this).parents('tr').data('foodid');
-            if (!findNextCategoryBy(foodid)) return;
-            var params = {foodCategoryID: foodid};
-            G.sortSaasCategoryBottom(extendGroupIDTo(params, foodid), function (rsp) {
-                responseResult(rsp, queryCategories)
-            });
-        });
-    }
-
-    function bindCategoryOperate() {
-        //editModalTpl为添加或修改分类信息弹出的模态框
-        var editModalTpl = Handlebars.compile(Hualala.TplLib.get('tpl_category_modal'));
-        //绑定删除一条分类的事件
-        bindDeleteCategory();
-        //绑顶分类数据的排序事件
-        bindCategorySort();
-        //绑顶添加分类的事件
-        bindAddCategory(editModalTpl);
-        //绑顶修改分类的事件
-        bindUpdateCategory(editModalTpl);
-    }
-
+    //表单验证
     function formValidateRegister() {
         var $form = $('.modal-body').find('form');
         var foodCategoryID = $form.find('input[name="foodCategoryID"]').val();
@@ -322,14 +266,6 @@ $( function ($, window) {
                             min: 1,
                             max: 80,
                             message: '分类名称必须在1-80个字符之间'
-                        },
-                        ajaxValid : {
-                            api : "checkSaasCategoryNameExist",
-                            data : {
-                                shopID: shopID,
-                                groupID: $XP(Hualala.getSessionSite(), 'groupID', ''),
-                                foodCategoryID: foodCategoryID ? foodCategoryID : ''
-                            }
                         }
                     }
                 },
@@ -341,7 +277,118 @@ $( function ($, window) {
             }
         });
     }
-
+    //新增和修改的提交
+    function bindSubmit(modalDialog,isSaasOpen) {
+        modalDialog._.footer.on('click', '.btn-ok', function () {
+            var $form = $(this).parents('.modal-footer').siblings('.modal-body').find('form');
+            $form.data('bootstrapValidator').validate();
+            if (!$form.data('bootstrapValidator').validate().isValid()) return;
+            var data = parseForm($form);
+            data.description = C.encodeTextEnter(data.description);
+            var $foodCategoryID = $form.find('[name="foodCategoryID"]');
+            var isAdd = $foodCategoryID.length == 0,
+                foodCategoryID = '', groupID = Hualala.getSessionSite().groupID;
+            var selectedDepartment = {departmentName: $XP(_.findWhere(staticData.departments, {departmentKey: data.departmentKey}), 'departmentName', '')},
+                selectedSubject = {foodSubjectName: $XP(_.findWhere(staticData.subjects, {subjectKey: data.foodSubjectKey}), 'subjectName', '')};
+            if (!isAdd) {
+                foodCategoryID = $foodCategoryID.val();
+                groupID = findCategoryBy(foodCategoryID).groupID;
+            }
+            _.extend(data, {foodCategoryID: foodCategoryID, groupID: groupID, shopID: shopID});
+            data.foodCategoryName = $.trim(data.foodCategoryName);
+            var nameCheckData = {shopID:shopID, foodCategoryName:data.foodCategoryName,foodCategoryID: data.foodCategoryID, groupID: groupID};
+            function callbackFn(res) {
+                topTip({msg: (isAdd ? '添加' : '修改') + '成功！', type: 'success'});
+                modalDialog.hide();
+                if (isAdd) {
+                    var category = res.data.records[0];
+                    staticData.categories = staticData.categories || [];
+                    staticData.categories.push(IX.inherit({}, category,
+                        {subjectKey: data.foodSubjectKey},
+                        {departmentKey: data.departmentKey},
+                        selectedDepartment, selectedSubject));
+                } else {
+                    staticData.categories[findCategoryIndex(foodCategoryID)] = IX.inherit(staticData.categories[findCategoryIndex(foodCategoryID)],
+                        data, selectedDepartment, selectedSubject);
+                }
+                renderCategories(isSaasOpen);
+            }
+            if(isAdd){
+                C.NestedAjaxCall("checkSaasCategoryNameExist","createSaasCategory",nameCheckData,data,callbackFn);
+            }else{
+                C.NestedAjaxCall("checkSaasCategoryNameExist","updateSaasCategory",nameCheckData,data,callbackFn);  
+            }
+            // G[isAdd ? 'createSaasCategory' : 'updateSaasCategory'](data, function (rsp) {
+            //     var successMsg = {msg: (isAdd ? '添加' : '修改') + '成功！', type: 'success'};
+            //     responseResult(rsp, function (result) {
+            //         if (isAdd) {
+            //             var category = result.data.records[0];
+            //             staticData.categories = staticData.categories || [];
+            //             staticData.categories.push(IX.inherit({}, category,
+            //                 {subjectKey: data.foodSubjectKey},
+            //                 {departmentKey: data.departmentKey},
+            //                 selectedDepartment, selectedSubject));
+            //         } else {
+            //             staticData.categories[findCategoryIndex(foodCategoryID)] = IX.inherit(staticData.categories[findCategoryIndex(foodCategoryID)],
+            //                 data, selectedDepartment, selectedSubject);
+            //         }
+            //         renderCategories(isSaasOpen);
+            //     }, successMsg, modalDialog);
+            // });
+        });
+    }
+    //排序事件的处理（置顶，置底，往上，往下）
+    function bindCategorySort(isSaasOpen) {
+        //绑定“移到顶部”事件
+        $container.on('click', 'tbody tr td a.sort-top', function () {
+            var foodid = $(this).parents('tr').data('foodid');
+            if (!findLastCategoryBy(foodid)) return;
+            var params = {foodCategoryID: foodid};
+            G.sortSaasCategoryTop(extendGroupIDTo(params, foodid), function (rsp) {
+                if (rsp.resultcode != '000') {
+                   topTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                else{
+                    queryCategories(isSaasOpen); 
+                }
+            });
+        });
+        //绑定“向上/向下移动”事件
+        $container.on('click', 'tbody tr td a.sort-up, tbody tr td a.sort-down', function () {
+            var foodid = $(this).parents('tr').data('foodid');
+            var isMoveUp = $(this).hasClass('sort-up');
+            var currentCategory = findCategoryBy(foodid),
+                otherCategory = isMoveUp ? findLastCategoryBy(foodid) : findNextCategoryBy(foodid);
+            if (!otherCategory) return;
+            var params = {foodCategoryID: foodid, sortIndex: currentCategory.sortIndex,
+                foodCategoryID2: otherCategory.foodCategoryID, sortIndex2: otherCategory.sortIndex};
+            G.sortSaasCategoryUpOrDown(extendGroupIDTo(params, foodid), function (rsp) {
+                if (rsp.resultcode != '000') {
+                   topTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                else{
+                    queryCategories(isSaasOpen); 
+                }
+            });
+        });
+        //绑定“移到底部”事件
+        $container.on('click', 'tbody tr td a.sort-bottom', function () {
+            var foodid = $(this).parents('tr').data('foodid');
+            if (!findNextCategoryBy(foodid)) return;
+            var params = {foodCategoryID: foodid};
+            G.sortSaasCategoryBottom(extendGroupIDTo(params, foodid), function (rsp) {
+                if (rsp.resultcode != '000') {
+                   topTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                else{
+                    queryCategories(isSaasOpen); 
+                }
+            });
+        });
+    }
     //请求后台数据的success回调
     function responseResult(rsp, successCbFn, successMsg, modal) {
         if (rsp.resultcode != '000') {
@@ -352,7 +399,5 @@ $( function ($, window) {
         if(IX.isFn(successCbFn)) successCbFn(rsp);
         if(!!successMsg) topTip(successMsg);
     }
-
     Hualala.Saas.Category.initCategory = initCategory;
-
 }(jQuery , window ));

@@ -1,5 +1,18 @@
 (function ($, window) {
 	IX.ns("Hualala.Account");
+    IX.ns('Hualala.MCM');
+    Hualala.Account.SettleRechageSteps = [
+        { id: 'create_order', label: '创建订单' },
+        { id: 'scan_pay', label: '扫码支付' },
+        { id: 'order_detail', label: '支付详情' }
+    ];
+    Hualala.Account.SettleRechargeCtrls = [
+        {clz : 'btn-default btn-prev hidden', name : 'prev', label : '返回', loadingText : '请稍候...'},
+        {clz : 'btn-default btn-cancel m-l', name : 'cancel', label : '取消', loadingText : '取消', dismiss: 'modal'},
+        {clz : 'btn-warning btn-next m-l', name : 'next', label : '立即充值', loadingText : '请稍候...'},
+        {clz : 'btn-default btn-finish', name : 'finish', label : '关闭', loadingText : '提交中...'}
+    ];
+
 	var popoverMsg = Hualala.UI.PopoverMsgTip;
 	var toptip = Hualala.UI.TopTip;
 	var CMath = Hualala.Common.Math;
@@ -51,7 +64,13 @@
 					model : self.model.getAccountModelByID(settleAccountID),
 					parentView : self
 				});
-			});
+			}).on('click', '.btn.settle-account', function(e) {
+                //充值操作
+                var $btn = $(this),
+                    settleUnitID = $btn.parents('.bank-card').attr('data-id'),
+                    settleOrderModel = new Hualala.Account.SettleOrderModel({settleUnitID: settleUnitID});
+                var wizardPanel = Hualala.Account.RechargeWizardView.call(self, settleOrderModel, self.model.getAccountModelByID(settleUnitID));
+            });
 			// @NOTE: 新需求STORY #1074，任何权限的用户都不允许添加结算账户，所以屏蔽掉添加结算账户的片段
 			// self.$list.on('click', '.create-account', function (e) {
 			// 	var $btn = $(this);
@@ -104,6 +123,7 @@
 					hasDefault : hasDefault,
 					settleUnitName : $XP(account, 'settleUnitName', ''),
 					disableWithdraw : settleBalance <= 0 ? 'disabled' : '',
+                    hiddenSettleAccount: $XP(account, 'isOutcomeAcount') == 1 ? '' : 'hidden',
 					settleBalance : settleBalanceStr,
 					bankIcon : $XP(bankInfo, 'icon_16', ''),
 					bankComName : $XP(bankInfo, 'name', ''),
@@ -783,25 +803,31 @@
 					// case 'transPoundage':
 					//交易后余额
 					case 'transAfterBalance':
+						var transStatus = $XP(row, 'transStatus', '')==2;
 						r = self.mapCashData($XP(row, k));
+						r.text = transStatus ? "---" : r.text;
 						break;
 					//交易费用
 					case 'transactionCost':
+						var transStatus = $XP(row, 'transStatus', '')==2;
 						var transSalesCommission = $XP(row, 'transSalesCommission', 0), transPoundage = $XP(row, 'transPoundage', 0);
 						var transactionCost = CMath.add(transSalesCommission, transPoundage);
 						r = self.mapCashData(transactionCost);
+						r.text = transStatus?"---" : r.text;
 						break;
 					//余额变动
 					case 'transChanged':
+						var transStatus = $XP(row, 'transStatus', '')==2;
 						r = self.mapTransChanged(row);
+						r.text = transStatus ? "---" : r.text;
 						break;
 					case 'rowControl':
 						var transType = $XP(row, 'transType', ''),
 							transStatus = $XP(row, 'transStatus', '');
-						var hideBtnTransType = "104,105,199,202,203,204,205,206,208,299";
+						var hideBtnTransType = "102,104,105,199,202,203,204,205,206,208,299";
 						r = {
 							type : 'button',
-							btnClz : (hideBtnTransType.indexOf(transType) >= 0 || ((transType == "203" && transStatus < 1)||(transType == "105" && transStatus < 1)))? 'hidden' : '',
+							btnClz : (hideBtnTransType.indexOf(transType) >= 0 || (transType == "203" && transStatus < 1)||(transType == "511" && transStatus==2)||(transType == "201" && transStatus==2)) ? 'hidden' : '',
 							label : '查看',
 							SUATransItemID : $XP(row, 'SUATransItemID', ''),
 							transType : transType,
@@ -985,7 +1011,9 @@
 				{clz : '', label : '日期', colspan : '', rowspan : '2'},
 				{clz : '', label : '网上自助订餐', colspan : '5', rowspan : ''},
 				{clz : '', label : '会员在线储值', colspan : '4', rowspan : ''},
-				{clz : '', label : '提现总额', colspan : '', rowspan : '2'}
+				{clz : '', label : '充值', colspan : '1', rowspan : ''},
+				{clz : '', label :'其他费用', colspan : '1', rowspan : ''},
+				{clz : '', label : '提现总额', colspan : '', rowspan : '2'}	
 			]
 		},
  		{
@@ -1000,6 +1028,9 @@
 				{clz : '', label : '交易金额', colspan : '', rowspan : ''},
 				{clz : '', label : '交易费用', colspan : '', rowspan : ''},
 				{clz : '', label : '结算金额', colspan : '', rowspan : ''},
+				{clz : '', label : '交易金额', colspan : '', rowspan : ''},
+				{clz : '', label : '短信扣款', colspan : '', rowspan : ''}
+			
 			]
 		}
 	];
@@ -1171,7 +1202,7 @@
 		},
 		mapColsRenderData : function (row) {
 			var self = this,
-				colKeys = "dt,orderCnt,orderAmt,orderCancelAmt,orderSettleAmt,orderSettleAmtFinal,saveMoneyCnt,saveMoneyAmt,saveMoneyComAmt,saveMoneySettleAmt,cashAmt",
+				colKeys = "dt,orderCnt,orderAmt,orderCancelAmt,orderSettleAmt,orderSettleAmtFinal,saveMoneyCnt,saveMoneyAmt,saveMoneyComAmt,saveMoneySettleAmt,rechargeAmt,smsAmt,cashAmt",
 				col = {clz : '', type : 'text'};
 				
 			var cols = _.map(colKeys.split(','), function (k, i) {
@@ -1191,6 +1222,8 @@
 					case 'saveMoneyAmt':
 					case 'saveMoneyComAmt':
 					case 'saveMoneySettleAmt':
+					case 'rechargeAmt':
+					case 'smsAmt':
 					case 'cashAmt':
 						r = self.mapCashData($XP(row, k));
 						break;
@@ -1201,7 +1234,7 @@
 		},
 		mapColsTotalData : function (row) {
 			var self = this,
-				colKeys ="orderCntSum,orderAmtSum,orderCancelAmtSum,orderSettleAmtSum,orderSettleAmtFinalSum,saveMoneyCntSum,saveMoneyAmtSum,saveMoneyComAmtSum,saveMoneySettleAmtSum,cashAmtSum",
+				colKeys ="orderCntSum,orderAmtSum,orderCancelAmtSum,orderSettleAmtSum,orderSettleAmtFinalSum,saveMoneyCntSum,saveMoneyAmtSum,saveMoneyComAmtSum,saveMoneySettleAmtSum,rechargeAmtSum,smsAmtSum,cashAmtSum",
 				col = {clz : '', type : 'text'};				
 			var cols = _.map(colKeys.split(','), function (k, i) {
 				var r = null;
@@ -1217,6 +1250,8 @@
 					case 'saveMoneyAmtSum':
 					case 'saveMoneyComAmtSum':
 					case 'saveMoneySettleAmtSum':
+					case 'rechargeAmtSum':
+					case 'smsAmtSum':
 					case 'cashAmtSum':
 						r = self.mapCashData($XP(row, k));
 						break;
@@ -1281,5 +1316,369 @@
 		}
 	});
 	Hualala.Account.AccountDailyReportView = AccountDailyReportView;
+	
+	//订单查询表
+	var QueryRechargeOrderFormElsCfg = {
+		orderTime : {
+			type : 'section',
+			label : '日期',
+			min : {
+				type : 'datetimepicker',
+				surfix : '<span class="glyphicon glyphicon-calendar"></span>',
+				defaultVal : '',
+				validCfg : {
+					group : '.min-input',
+					validators : {}
+				}
+			},
+			max : {
+				type : 'datetimepicker',
+				surfix : '<span class="glyphicon glyphicon-calendar"></span>',
+				defaultVal : '',
+				validCfg : {
+					group : '.max-input',
+					validators : {}
+				}
+			}
+		},
+		settleOrderID : {
+			type : 'text',
+			label : '订单号',
+			defaultVal : '',
+			validCfg : {
+				validators : {
+					numeric : {
+						message: "订单号必须为数字"
+					}
+				}
+			}
+		},
+		button : {
+			type : 'button',
+			clz : 'btn btn-block btn-warning',
+			label : '查询'
+		}
+	};
+	var QueryRechargeOrderFormElsHT = new IX.IListManager();
+	_.each(QueryRechargeOrderFormElsCfg, function (el, k) {
+		var type = $XP(el, 'type');
+		var labelClz = 'col-xs-2 col-sm-2 col-md-2 control-label';
+		if (type == 'section') {
+			var id = minID = k + '_min_' + IX.id(), maxID = k + '_max_' + IX.id(),
+				minName = k == 'orderTime' ? 'orderTimeStart' : '',
+				maxName = k == 'orderTime' ? 'orderTimeEnd' : '',
+				min = IX.inherit($XP(el, 'min', {}), {
+					id : minID, name : minName, clz : 'col-xs-5 col-sm-5 col-md-5',
+				}), max = IX.inherit($XP(el, 'max', {}), {
+					id : maxID, name : maxName, clz : 'col-xs-5 col-sm-5 col-md-5',
+				});
+			QueryRechargeOrderFormElsHT.register(k, IX.inherit(el, {
+				id : id,
+				labelClz : labelClz,
+				min : min,
+				max : max
+			}));
+		} else {
+			QueryRechargeOrderFormElsHT.register(k, IX.inherit(el, {
+				id : k + '_' + IX.id(),
+				name : k,
+				labelClz : labelClz,
+			}, $XP(el, 'type') !== 'button' ? {clz : 'col-xs-5 col-sm-8 col-md-5'} : null));
+		}
+	});
+	//结算充值查询表头
+	var RechargeOrderCols = [
+		{
+			clz : '',
+			cols : [
+				{clz : '', label : '充值时间',colspan : '', rowspan : ''},
+				{clz : '', label : '订单号',colspan : '', rowspan : ''},
+				{clz : '', label : '充值金额',colspan : '', rowspan : ''},
+				{clz : '', label : '状态',colspan : '', rowspan : ''}
+				// {clz : '', label : '交易备注',colspan : '', rowspan : ''},
+				// {clz : '', label : '操作',colspan : '', rowspan : ''}
+			]
+		}
+	];
+	var RechargeOrderView = CardListView.subclass({
+		constructor : function () {
+			// View层容器
+			this.$container = null;
+			// 查询表单
+			this.$queryForm = null;
+			// 结果容器
+			this.$resultBox = null;
+			// 分页容器
+			this.$pager = null;
+			this.loadTemplates();
+		}
+	});
+	RechargeOrderView.proto({
+		loadTemplates : function () {
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_account_detail')),
+				tableTpl = Handlebars.compile(Hualala.TplLib.get('tpl_transaQuery_result'));
+			Handlebars.registerPartial("transaQueryForm", Hualala.TplLib.get('tpl_transaQuery_form'));
+			Handlebars.registerPartial("transaQueryResult", Hualala.TplLib.get('tpl_transaQuery_result'));
+			Handlebars.registerHelper('checkFormElementType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			Handlebars.registerHelper('chkColType', function (conditional, options) {
+				return (conditional == options.hash.type) ? options.fn(this) : options.inverse(this);
+			});
+			this.set({
+				layoutTpl : layoutTpl,
+				tableTpl : tableTpl
+			});
+		},
+		initLayout : function () {
+			var layoutTpl = this.get('layoutTpl');
+			var result = [],
+				tblClz = 'table-bordered table-striped table-hover ix-data-report',
+				tblHeaders = RechargeOrderCols,
+				query = {cols : [
+					{
+						colClz : 'col-sm-5',
+						items : QueryRechargeOrderFormElsHT.getByKeys(['orderTime'])
+					},
+					{
+						colClz : 'col-sm-4',
+						items : QueryRechargeOrderFormElsHT.getByKeys(['settleOrderID'])
+					},
+					{
+						colClz : 'col-md-offset-1 col-sm-2',
+						items : QueryRechargeOrderFormElsHT.getByKeys(['button'])
+					}
+				]};
+			var htm = layoutTpl({
+				query : query,
+				result : {
+					clz : tblClz,
+					thead : tblHeaders,
+					rows : result
+				}
+			});
+			this.$container.html(htm);
+			this.$queryForm = this.$container.find('.query-form');
+			this.$queryForm.addClass("RechargeOrder");
+			this.$resultBox = this.$container.find('.query-result');
+			this.$pager = this.$container.find('.page-selection');
+			this.initQueryEls();
+			this.render();
+			this.bindEvent();
+			this.bindQueryEvent();
+		},
+		initQueryEls : function () {
+			var self = this;
+			self.$queryForm.find('[data-type=datetimepicker]').datetimepicker({
+				format : 'yyyy/mm/dd',
+				startDate : '2010/01/01',
+				autoclose : true,
+				minView : 'month',
+				todayBtn : true,
+				todayHighlight : true,
+				language : 'zh-CN'
+			});
+			self.$queryForm.on('click', '.input-group-addon', function (e) {
+				var $this = $(this),
+					$picker = $this.prev(':text[data-type=datetimepicker]');
+				if ($picker.length > 0) {
+					$picker.datetimepicker('show');
+				}
+			});
+			var els = Hualala.Common.parseForm(self.$queryForm.find('form'));
+			var now = new Date(),
+				curDateStamp = IX.Date.getDateByFormat(new Hualala.Date(now.getTime() / 1000).toText(), 'yyyy/MM/dd'),
+				lastMonth = new Date(now.getFullYear(),now.getMonth()-1,now.getDate()),
+				lastMonthDateStamp =IX.Date.getDateByFormat(new Hualala.Date(lastMonth.getTime() / 1000).toText(), 'yyyy/MM/dd');
+			_.each(els, function (v, k) {
+				if (k == 'orderTimeStart') {
+					v = IX.isEmpty(v) ? lastMonthDateStamp: IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd');
+				}
+				if(k=='orderTimeEnd'){
+					v = IX.isEmpty(v) ? curDateStamp : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(v), 'yyyy/MM/dd');
+				}
+				self.$queryForm.find('[name=' + k + ']').val(v);
+			});
+		},
+		bindEvent : function () {
+			var self = this;
+			self.$resultBox.tooltip({
+				selector : '[title]'
+			});
+			self.$resultBox.on('click', '.btn[data-href]', function (e) {
+				var $btn = $(this),
+					path = $btn.attr('data-href');
+				if (!IX.isEmpty(path)) {
+					document.location.href = path;
+				}
+			});
+			self.$pager.on('page', function (e, pageNo) {
+				var params = self.model.getPagerParams();
+				params['pageNo'] = pageNo;
+				self.model.emit('load', IX.inherit(params, {
+					pageNo : $XP(params, 'pageNo', 1),
+					pageSize : $XP(params, 'pageSize', 15)
+				}));
+			});
+		},
+		bindQueryEvent : function () {
+			var self = this;
+			self.$queryForm.on('click', '.btn', function (e) {
+				// TODO  render query result
+				var params = self.getQueryFormParams();
+				self.model.emit('load', IX.inherit(params, {
+					pageNo : $XP(params, 'pageNo', 1),
+					pageSize : $XP(params, 'pageSize', 15)
+				}));
+			});
+		},
+		getQueryFormParams : function () {
+			var self = this;
+			var params = self.$queryForm.find('>form').serializeArray();
+			var ret = {};
+			_.each(params, function (el, i) {
+				var k = $XP(el, 'name'), v = $XP(el, 'value', '');
+				switch(k) {
+					case 'orderTimeStart':
+					case 'orderTimeEnd':
+						if (IX.isEmpty(v)) {
+							v = '';
+						} else {
+							v = IX.Date.getDateByFormat(v, 'yyyyMMdd');
+						}
+						break;
+					default :
+						v = IX.isEmpty(v) ? '' : v;
+						break;
+				}
+				ret[k] = v;
+			});
+			IX.Debug.info("DEBUG: RechargeOrder View Query Form Params : ");
+			IX.Debug.info(ret);
+			return ret;
+		},
+		mapTimeData : function (s) {
+			var r = {value : '', text : '', clz : 'date'};
+			var s1 = '';
+			if (IX.isString(s) && s.length > 0) {
+				s1 = s.replace(/([\d]{4})([\d]{2})([\d]{2})([\d]{2})([\d]{2})([\d]{2})/g, '$1/$2/$3 $4:$5:$6');
+				s1 = IX.Date.getDateByFormat(s1, 'yyyy/MM/dd HH:mm');
+				r = IX.inherit({value : s, text : s1,clz : 'status'});
+			}
+			return r;
+		},
+		mapOrderStatus : function (s) {
+			s = (s + "") || '';
+			var status = Hualala.TypeDef.FSMOrderStatus;
+			var m = _.filter(status, function (el) {
+				return $XP(el, 'value', '') == s;
+			});
+			if (s.length == 0 || m.length == 0) {
+				return {text : '', value : ''};
+			}
+			return {text : $XP(m[0], 'label', ''), value : $XP(m[0], 'value', ''), clz : 'status'};
+		},
+		mapCashData : function (s) {
+			return {text : CMath.prettyNumeric(CMath.standardPrice(s)), value : s, clz : 'status'};
+		},
+		mapColsRenderData : function (row) {
+			var self = this,
+				colKeys = "orderTime,settleOrderID,orderTotal,orderStatus",
+				col = {clz : '', type : 'text'};
+				
+			var cols = _.map(colKeys.split(','), function (k, i) {
+				var r = null;
+				switch(k) {
+					case 'settleOrderID':
+						r = {value : $XP(row, k, ''), text : $XP(row, k, ''), clz : 'status'};
+						break;
+					case 'orderTime':
+						r = self.mapTimeData($XP(row, k, ''));
+						break;
+					case 'orderStatus':
+					    r = self.mapOrderStatus($XP(row, k, ''));
+					    break;
+					case 'orderTotal':
+						r = self.mapCashData($XP(row, k));
+						break;
+				}
+				return IX.inherit(col, r);
+			});
+			return cols;
+		},
+		mapRenderData : function (rechargeOrder) {
+			var self = this,
+				tblClz = 'table-bordered table-striped table-hover ix-data-report',
+				tblHeaders = RechargeOrderCols,
+				tdSum = 0;	
+			for(i=0;i<tblHeaders.length;i++){
+					tdSum = tdSum+tblHeaders[i].cols.length;
+				};
+			var rows = _.map(rechargeOrder, function (row) {
+				return {
+					clz : '',
+					cols : self.mapColsRenderData(row)
+				};
+			});
+			return {
+				clz : tblClz,
+				isEmpty : rechargeOrder.length == 0 ? true : false,
+				colCount : tdSum,
+				thead : tblHeaders,
+				rows : rows
+			};
+		},
+		render : function () {
+			var self = this,
+				model = self.model,
+				pagerParams = model.getPagerParams(),
+				pageNo = $XP(pagerParams, 'pageNo');
+			var results = model.getDataByPageNo(pageNo);
+			var renderData = self.mapRenderData(results);
+			var tableTpl = self.get('tableTpl');
+			var html = tableTpl(renderData);
+			self.$resultBox.empty();
+			self.$resultBox.html(html);
+			self.initPager({
+				total : model.get('pageCount'),
+				page : model.get('pageNo'),
+				href : 'javascript:void(0);'
+			});
+		}
+	});
+	Hualala.Account.RechargeOrderView = RechargeOrderView;
+
+    var rechargeWizardView = function(orderModel, model) {
+        var self = this;
+        var wizardPanel = new Hualala.MCM.MCMWizardModal({
+            wizardType: 'create',
+            mode: 'create',
+            hideCloseBtn: false,
+            parentView: self,
+            successFn: function(){},
+            failFn: function() {},
+            model: model,
+            orderModel: orderModel,
+            modalClz: '',
+            wizardClz: 'mcm-gift-wizard',
+            modalTitle: '结算账户充值',
+            onWizardInit: function($cnt, cntID) {
+                Hualala.Account.settleRechargeOrderStep.call(this, $cnt, cntID);
+            },
+            onStepCommit: function(cntID) {
+                Hualala.Account.settleRechargeCommit.call(this, cntID);
+            },
+            onStepChange: function($curNav, $navBar, cIdx, nIdx) {
+                Hualala.Account.settleRechargeStepChange.call(this, $curNav, $navBar, cIdx, nIdx);
+            },
+            bundleWizardEvent: function() {
+                Hualala.Account.bundleWizardEvent.call(this);
+            },
+            wizardStepsCfg: Hualala.Account.SettleRechageSteps,
+            wizardCtrls: Hualala.Account.SettleRechargeCtrls
+        });
+        return wizardPanel;
+    };
+    Hualala.Account.RechargeWizardView = rechargeWizardView;
 
 })(jQuery, window);

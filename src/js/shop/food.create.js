@@ -15,8 +15,8 @@
         imgHost = G.IMAGE_RESOURCE_DOMAIN + '/',
             imgRoot = G.IMAGE_ROOT + '/';
 
-        var categories = null, //菜品分类
-            departments = null, //部门
+        var categories = Hualala.Shop.getCategories(), //菜品分类
+            departments = Hualala.Shop.getDepartments(), //部门
             subjects = null, //科目
             foodParams = {},//添加菜品后用于向服务器发送的数据
             delUnitItemIDs = [],
@@ -118,7 +118,7 @@
                 loadParams = {shopID: shopID},
                 selectCategory = [];
             //加载菜品分类
-            C.loadData('queryCategories', loadParams, categories).done(function (records) {
+            C.loadData('getSaasCategories', loadParams, categories).done(function (records) {
                 if (!records || records.length == 0) {
                     topTip({msg: '请先添加菜品分类！', type: 'danger'});
                     return;
@@ -144,21 +144,27 @@
                 }
             });
 
-            //添加菜品暂时先不设置部门
+            //加载部门，基本信息和详细信息都有部门设置
             C.loadData('getSaasDepartments', IX.inherit({departmentType: '1,3'}, loadParams), departments).done(function (records) {
                 if(!records || records.length == 0) records = [];
                 departments = records;
-                var selectData = {
-                    defaultOption: {name: '商品分类的部门', value: ''},
-                    options: _.map(IX.clone(records), function (d) {
-                        return {
-                            name: d.departmentName, value: d.departmentKey,
-                            selected: (food && food.departmentKey == d.departmentKey) ? 'selected' : ''
-                        };
-                    }), name: 'departmentKey'
-                };
-                var $select = createFoodModal._.body.find('form.form-food').find('div[name="departmentsSelect"]');
-                $select.append($(customSelect(selectData)));
+                var selectDepartmentKeys = food ? (food.departmentKeyLst || '').split(',') : [],
+                    options = _.map(IX.clone(records), function (d) {
+                        return {name: d.departmentName, value: d.departmentKey};
+                    }),
+                    options1 = IX.clone(options),
+                    options2 = IX.clone(options),
+                    defaultOptions = [
+                        {defaultOption: {name: '商品分类的部门', value: ''}},
+                        {defaultOption: {name: '不设置', value: ''}}
+                    ],
+                    selectNames = [{name: 'departmentKey'}, {name: 'departmentKey2'}],
+                    $select = createFoodModal._.body.find('form.form-food').find('div[name="departmentsSelect"]'),
+                    $select2 = createFoodModal._.body.find('form.form-food-detail').find('div[name="departmentsSelect2"]');
+                (_.findWhere(options1, {value: selectDepartmentKeys[0] || ''}) || defaultOptions[0]).selected = 'selected';
+                (_.findWhere(options2, {value: selectDepartmentKeys[1] || ''}) || defaultOptions[1]).selected = 'selected';
+                $select.append($(customSelect(IX.inherit(defaultOptions[0], {options: options1}, selectNames[0]))));
+                $select2.append($(customSelect(IX.inherit(defaultOptions[1], {options: options2}, selectNames[1]))));
             });
             //加载科目
             C.loadData('querySaasSubject', {sellSubject:1}, subjects).done(function (records) {
@@ -509,7 +515,7 @@
                 var foodID = $(this).data('id'),
                     itemID = $(this).data('key'),
                     food = _.findWhere(searchFoods, {foodID: foodID + '', itemID: itemID + ''}),
-                    tplData = IX.inherit(food, {number: 1, price: C.Math.prettyPrice(food.price), unitKey: itemID}),
+                    tplData = IX.inherit(food, {number: 1, price: C.Math.prettyPrice(food.price), unitKey: itemID, foodEstimatePrice: food.foodEstimateCost}),
                     $nextCategory = $selCategory.nextAll('.category').first(),
                     foodTr = foodTrTpl(tplData);
                 //在套餐指定的分类里添加一条商品
@@ -739,6 +745,7 @@
                     bindTabEvent(modalDialog);
                     U.clearEditors();
                     food.foodDescEditor = U.createEditor('goodDescEditor');
+                    modalBody.find('#goodBasicInfo .food-type input').eq(0).prop('checked', true).trigger('change');
                 });
             }).on('click', 'button[name="save-close"]', function () {
                 if (!isFoodBasicInfoValid(modalDialog)) return;
@@ -748,7 +755,8 @@
                 if (btnText == '保存') {
                     var isAllInfoValid = isFoodBasicInfoValid(modalDialog)
                         && isFoodDetailInfoValid(modalDialog)
-                        && isFoodTasteInfoValid(modalDialog);
+                        && isFoodTasteInfoValid(modalDialog)
+                        && !isDepartmentRepeat(modalDialog);
                     if (!isAllInfoValid) return;
                     saveFood(modalDialog, function (records) {
                         var $goodUnit = modalBody.find('.good-unit table tbody');
@@ -796,35 +804,47 @@
             var categoryTrs = $table.find('tr.category'),
                 foodTrs = $table.find('tr.food'),
                 isValid = true;
-            _.each(categoryTrs, function (tr) {
+            _.each(categoryTrs, function(tr) {
                 var chooseCount = parseInt($(tr).find('td input[name="chooseCount"]').val()),
                     allCount = parseInt($(tr).find('td span.categoryNum').text());
                 if (!$(tr).find('td input[name="categoryName"]').val()) {
                     isValid = false;
-                    Hualala.UI.TopTip({msg: '分类名称不能为空', type: 'danger'});
+                    Hualala.UI.TopTip({
+                        msg: '分类名称不能为空',
+                        type: 'danger'
+                    });
                     return;
                 }
             });
-            if(isValid) {
-                var itemIDS = _.map(foodTrs, function (tr) {
+            if (isValid) {
+                var itemIDS = _.map(foodTrs, function(tr) {
                     return $(tr).data('unitkey');
                 });
                 isValid = _.uniq(itemIDS).length == itemIDS.length;
-                if(!isValid) Hualala.UI.TopTip({msg: '菜品不能重复添加', type: 'danger'});
-                var   type="^[1-9][0-9]*$"; 
-                var   re   =   new   RegExp(type); 
-                var ss =$table.find('td input[name="number"]')
-                if(ss.val().match(re)==null) 
-                        { 
-                         Hualala.UI.TopTip({msg: '请输入正整数', type: 'danger'})
+                if (!isValid) {
+                    Hualala.UI.TopTip({
+                        msg: '菜品不能重复添加',
+                        type: 'danger'
+                    });
+                    return;
+                }
+
+                _.each(foodTrs, function(tr) {
+                    var choosefoodCount = parseInt($(tr).find('td input[name="number"]').val()),
+                        allCount = parseInt($(tr).find('td span.categoryNum').text());
+                        var type = "^[1-9][0-9]*$";
+                        var re = new RegExp(type);
+                    if ($(tr).find('td input[name="number"]').val().match(re)==null) {
+                        isValid = false;
+                        Hualala.UI.TopTip({
+                            msg: '套餐数量请输入整数',
+                            type: 'danger'
+                        });
                         return;
-                        } 
+                    }
+                });
             }
-            
-
-
-
-        return isValid;
+            return isValid;
         }
 
         function parseSetFoodDetail($setFoodTable) {
@@ -841,7 +861,7 @@
                             foodName: $(food).find('td.foodName').text(),
                             price: priceUnit[0],
                             unit: priceUnit[1],
-                            foodEstimateCost: $(food).data('foodEstimateCost') || '0',
+                            foodEstimateCost: $(food).data('estimatecost') || '0',
                             number: $(food).find('td input[name="number"]').val() || '0',
                             addPrice: $(food).find('td input[name="addPrice"]').val() || '0',
                             selected: +$(food).find('td input[name="selected"]').prop('checked')
@@ -867,7 +887,8 @@
             //处理奇葩的单选按钮和复选框
             //允许菜品数量设置小数，小数是0.1 否则 1
             foodParams.incrementUnit = $formFood.find('input[name="incrementUnit"]:checkbox').prop('checked') ? '0.1' : '1';
-            var tempOrSetFood = parseInt(foodParams.foodTye).toString(2).split('');
+            var binaryTempSetFood = parseInt($formFood.find('input[name="foodType"]:checked').val()).toString(2),
+                tempOrSetFood = (binaryTempSetFood.length < 2 ? ('0' + binaryTempSetFood) : binaryTempSetFood).split('');
             foodParams.isTempFood = tempOrSetFood[0] || '0';
             foodParams.isSetFood = tempOrSetFood[1] || '0';
             foodParams = _.omit(foodParams, 'foodType');
@@ -886,6 +907,9 @@
                 });
                 foodParams = _.omit(foodParams, 'foodIco');
             }
+            //合并菜品的两个部门
+            foodParams.departmentKey = (foodParams.departmentKey || '') + ',' + (foodParams.departmentKey2 || '');
+            foodParams = _.omit(foodParams, 'departmentKey2');
         }
 
         function displayError($input) {
@@ -906,36 +930,52 @@
         //保存菜品信息
         function saveFood(modalDialog, cbFn) {
             parseFoodParams(modalDialog);
-            var checkFoodNameParams = {shopID: shopID, groupID: groupID, foodName: foodParams.foodName},
-                $foodNameInput = $('input[name="foodName"]');
-            if(foodParams.foodID) checkFoodNameParams = IX.inherit({}, checkFoodNameParams, {foodID: foodParams.foodID});
-            G.checkFoodNameExist(checkFoodNameParams, function (rsp) {
-                if(rsp.resultcode != '000') {
-                    Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
-                    displayError($foodNameInput);
+            foodParams.shopID = shopID;
+            foodParams.groupID = groupID;
+            foodParams.takeoutPackagingFee = foodParams.takeoutPackagingFee || 0;
+            foodParams.minOrderCount = foodParams.minOrderCount || 1;
+            foodParams.clickAlertMess = C.encodeTextEnter(foodParams.clickAlertMess);
+            var api = foodParams.foodID ? 'updateFood' : 'createSaasGood';
+            G[api](foodParams, function (rsp) {
+                if (rsp.resultcode != '000') {
+                    topTip({msg: rsp.resultmsg, type: 'danger'});
                     return;
                 }
-                var $foodNameMsg = $foodNameInput.siblings('small[name="foodNameExist"]');
-                if($foodNameMsg.length != 0 && $foodNameMsg.css('display') == 'block') $foodNameMsg.css('display', 'none');
-                foodParams.shopID = shopID;
-                foodParams.groupID = groupID;
-                foodParams.takeoutPackagingFee = foodParams.takeoutPackagingFee || 0;
-                foodParams.minOrderCount = foodParams.minOrderCount || 1;
-                foodParams.description = C.encodeTextEnter(foodParams.description);
-                var api = foodParams.foodID ? 'updateFood' : 'createSaasGood';
-                G[api](foodParams, function (rsp) {
-                    if (rsp.resultcode != '000') {
-                        topTip({msg: rsp.resultmsg, type: 'danger'});
-                        return;
-                    }
-                    foodParams.foodID = foodParams.foodID || rsp.data.records[0].foodID;
-                    topTip({msg : '保存成功', type: 'success'});
-                    foodParams = clearUnits();
-                    delUnitItemIDs = [];
-                    if(IX.isFn(cbFn)) cbFn(rsp.data.records);
-                    Hualala.Shop.LoadFoods(true);
-                });
+                foodParams.foodID = foodParams.foodID || rsp.data.records[0].foodID;
+                topTip({msg : '保存成功', type: 'success'});
+                foodParams = clearUnits();
+                delUnitItemIDs = [];
+                if(IX.isFn(cbFn)) cbFn(rsp.data.records);
+                Hualala.Shop.LoadFoods(true);
             });
+            //暂时屏蔽掉检查菜品名称重复
+            //G.checkFoodNameExist(checkFoodNameParams, function (rsp) {
+            //    if(rsp.resultcode != '000') {
+            //        Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+            //        displayError($foodNameInput);
+            //        return;
+            //    }
+            //    var $foodNameMsg = $foodNameInput.siblings('small[name="foodNameExist"]');
+            //    if($foodNameMsg.length != 0 && $foodNameMsg.css('display') == 'block') $foodNameMsg.css('display', 'none');
+            //    foodParams.shopID = shopID;
+            //    foodParams.groupID = groupID;
+            //    foodParams.takeoutPackagingFee = foodParams.takeoutPackagingFee || 0;
+            //    foodParams.minOrderCount = foodParams.minOrderCount || 1;
+            //    foodParams.description = C.encodeTextEnter(foodParams.description);
+            //    var api = foodParams.foodID ? 'updateFood' : 'createSaasGood';
+            //    G[api](foodParams, function (rsp) {
+            //        if (rsp.resultcode != '000') {
+            //            topTip({msg: rsp.resultmsg, type: 'danger'});
+            //            return;
+            //        }
+            //        foodParams.foodID = foodParams.foodID || rsp.data.records[0].foodID;
+            //        topTip({msg : '保存成功', type: 'success'});
+            //        foodParams = clearUnits();
+            //        delUnitItemIDs = [];
+            //        if(IX.isFn(cbFn)) cbFn(rsp.data.records);
+            //        Hualala.Shop.LoadFoods(true);
+            //    });
+            //});
         }
 
 
@@ -1003,6 +1043,16 @@
             return isFormBootstrapValid(modal._.body.find('form.form-taste'));
         }
 
+        //检查详细信息里的出品部门和基本信息的出品部门是佛相同
+        function isDepartmentRepeat(modal) {
+            var foodCategoryID = modal._.body.find('select[name="foodCategoryID"]').val(),
+                departmentKey1 = modal._.body.find('form.form-food select[name="departmentKey"]').val() ||
+                    $XP(_.findWhere(categories, {foodCategoryID: foodCategoryID + ''}), 'departmentKey', ''),
+                departmentKey2 = modal._.body.find('form.form-food-detail select[name="departmentKey2"]').val(),
+                isDepartmentValid = departmentKey2 && departmentKey2 == departmentKey1;
+            if(isDepartmentValid) topTip({type: 'danger', msg: '第二部门和默认部门设置重复'});
+            return isDepartmentValid;
+        }
 
         //添加规格的html
         function displayUnits($goodUnits) {

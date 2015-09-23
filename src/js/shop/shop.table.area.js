@@ -1,10 +1,16 @@
 (function(window, $) {
+    var G = Hualala.Global,
+        U = Hualala.UI,
+        C = Hualala.Common,
+        topTip = U.TopTip,
+        parseForm = C.parseForm;
     Hualala.Shop.initTableAreaMgr = function ($container, shopID) {
         var tableHeaderCfg = [
                 {key : "areaName", clz : "text", label : "名称"},
                 {key : "areaNote", clz : "text col-md-3", label : "说明"},
                 {key : "num", clz : "text", label : "桌台数"},
                 {key : "isActive", clz : "text", label : "启用状态"},
+                {key : "rowOrder", clz : "", label : "排序"},
                 {key : "rowControl", clz : "", label : "操作"},
             ],
             queryBoxTpl, aBtnTpl, resultTpl, editModalTpl, setCategoryTpl;
@@ -35,14 +41,14 @@
 
         function renderTable(postParams) {
             var queryParams = postParams || {shopID: shopID};
-            Hualala.Global.getTableArea(queryParams, function(rsp) {
+            G.getTableArea(queryParams, function(rsp) {
                 if (rsp.resultcode == '000') {
                     areas = _.reject(rsp.data.records, function(record) { return !record.areaID;});
                     $container.find('.table-responsive').remove();
                     $container.append($(resultTpl(mapRenderData(areas))));
                     initEventSwitcher($container.find('table tr td input[type="checkbox"]'));
                 } else {
-                    Hualala.UI.TopTip({type: 'danger', msg: rsp.resultmsg})
+                    topTip({type: 'danger', msg: rsp.resultmsg})
                 }
             });
         }
@@ -50,7 +56,7 @@
         function initEventSwitcher($checkbox) {
             $checkbox.each(function () {
                 var $el = $(this),
-                    areaID = $el.data('id'),
+                    areaID = $el.attr('data-id'),
                     params = {shopID: shopID, areaID: areaID};
                 $el.bootstrapSwitch({
                     state: !!$el.data('status'),
@@ -61,17 +67,17 @@
                     offText: '未启用'
                 }).on('switchChange.bootstrapSwitch', function (e, state) {
                     var tip = state ? '开启' : '关闭';
-                    Hualala.UI.Confirm({
+                    U.Confirm({
                         title: tip + '区域',
                         msg: '你确定要' + tip +'该区域吗？',
                         okFn: function () {
-                            Hualala.Global.switchTableArea(IX.inherit({isActive: +state}, params), function (rsp) {
+                            G.switchTableArea(IX.inherit({isActive: +state}, params), function (rsp) {
                                 if (rsp.resultcode != '000') {
-                                    Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                                    topTip({msg: rsp.resultmsg, type: 'danger'});
                                     $el.bootstrapSwitch('toggleState', true);
                                     return;
                                 }
-                                Hualala.UI.TopTip({msg: '操作成功', type: 'success'});
+                                topTip({msg: '操作成功', type: 'success'});
                             });
                         },
                         cancelFn: function () {
@@ -85,6 +91,41 @@
         function mapColItemRenderData(row, rowIdx, colKey) {
             var r = {value : "", text : ""}, v = $XP(row, colKey, '');
             switch(colKey) {
+                case "rowOrder":
+                    r = {
+                        type : 'button',
+                        btns : [
+                            {
+                                link : 'javascript:void(0);',
+                                clz : 'ml-6 glyphicon glyphicon-arrow-up sort-top',
+                                id: $XP(row, 'areaID'),
+                                key : $XP(row, 'sortindex'),
+                                type : 'sortTop'
+                            },
+                            {
+                                link : 'javascript:void(0);',
+                                clz: 'ml-6 glyphicon glyphicon-arrow-up sort-up',
+                                id: $XP(row, 'areaID'),
+                                key : $XP(row, 'sortindex'),
+                                type : 'sortUpOrDown'
+                            },
+                            {
+                                link : 'javascript:void(0);',
+                                clz : 'ml-6 glyphicon glyphicon-arrow-down sort-down',
+                                id: $XP(row, 'areaID'),
+                                key : $XP(row, 'sortindex', ''),
+                                type : 'sortUpOrDown'
+                            },
+                            {
+                                link : 'javascript:void(0);',
+                                clz : 'ml-6 glyphicon glyphicon-arrow-down sort-bottom',
+                                id: $XP(row, 'areaID'),
+                                key : $XP(row, 'sortindex', ''),
+                                type : 'sortBottom'
+                            }
+                        ]
+                    };
+                    break;
                 case "rowControl" :
                     r = {
                         type : 'button',
@@ -92,21 +133,21 @@
                             {
                                 label : '可选菜品分类',
                                 link : 'javascript:void(0);',
-                                key : $XP(row, 'areaID', ''),
+                                id : $XP(row, 'areaID', ''),
                                 type : 'setCategory'
                             },
                             {
                                 label : '修改',
                                 link : 'javascript:void(0);',
                                 clz: 'm-l',
-                                key : $XP(row, 'areaID', ''),
+                                id : $XP(row, 'areaID', ''),
                                 type : 'editTableArea'
                             },
                             {
                                 label : '删除',
                                 link : 'javascript:void(0);',
                                 clz : 'm-l',
-                                key : $XP(row, 'areaID', ''),
+                                id : $XP(row, 'areaID', ''),
                                 type : 'delTableArea'
                             }
                         ]
@@ -161,7 +202,10 @@
                 addTableArea: editTableArea,
                 editTableArea: editTableArea,
                 delTableArea: delTableArea,
-                setCategory: setCategory
+                setCategory: setCategory,
+                sortTop: sortArea,
+                sortUpOrDown: sortArea,
+                sortBottom: sortArea
             };
             $container.on('click', '.btn.add-table-area', function (e) {
                 e.preventDefault();
@@ -172,19 +216,20 @@
                 //修改, 删除, 设置
                 var $el = $(this),
                     eventName = $el.data('type');
-                clickEventMap[eventName]($el.data('key'));
+                clickEventMap[eventName]($el);
             });
         }
 
-        function editTableArea(areaID) {
-            //添加或修改人员信息
-            var areaInfo = {};
+        function editTableArea($el) {
+            //添加或修改区域信息
+            var areaInfo = {},
+                areaID = $el ? $el.attr('data-id') : '';
             if (areaID) {
                 areaInfo = _.findWhere(areas, {areaID: areaID + ''});
-                if(areaInfo) areaInfo.areaNote = Hualala.Common.decodeTextEnter(areaInfo.areaNote);
+                if(areaInfo) areaInfo.areaNote = C.decodeTextEnter(areaInfo.areaNote);
             }
             var status = areaID ? '修改' : '添加',
-                modalDialog = Hualala.UI.ModalDialog({
+                modalDialog = U.ModalDialog({
                     id: 'editTableArea',
                     title: status + '区域',
                     hideCloseBtn: 'false',
@@ -201,11 +246,7 @@
                 fields: {
                     areaName: {
                         validators: {
-                            notEmpty: {message: '区域名称不能为空'},
-                            ajaxValid: {
-                                api: 'checkAreaNameExist',
-                                data: {shopID: shopID, areaID: areaID}
-                            }
+                            notEmpty: {message: '区域名称不能为空'}
                         }
                     }
                 }
@@ -216,45 +257,50 @@
             modalDialog._.footer.on('click', '.btn.btn-ok', function (e) {
                 var $form = modalDialog._.body.find('.form-area');
                 if(!$form.data('bootstrapValidator').validate().isValid()) return;
-                var data = Hualala.Common.parseForm($form),
+                var data = parseForm($form),
                     postParams = IX.inherit({shopID: shopID, areaID: areaID}, data);
-                postParams.areaNote = Hualala.Common.encodeTextEnter(postParams.areaNote);
-                Hualala.Global[areaID ? 'updateTableArea' : 'addTableArea'](postParams, function (rsp) {
-                    if (rsp.resultcode != '000') {
-                        Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
-                        return;
-                    }
-                    Hualala.UI.TopTip({msg: '保存成功', type: 'success'});
+                postParams.areaNote = C.encodeTextEnter(postParams.areaNote);
+                postParams.areaName = $.trim(postParams.areaName);
+                var nameCheckData = {shopID:shopID, areaName:postParams.areaName, areaID: areaID};
+                function callbackFn(res){
+                    topTip({msg: (!areaID ? '添加' : '修改') + '成功！', type: 'success'});
                     modalDialog.hide();
                     renderTable();
-                });
+                }
+                if(!areaID){
+                    C.NestedAjaxCall("checkAreaNameExist","addTableArea",nameCheckData,postParams,callbackFn);
+                }else{
+                    C.NestedAjaxCall("checkAreaNameExist","updateTableArea",nameCheckData,postParams,callbackFn);  
+                }
             });
         }
 
-        function delTableArea(areaID) {
-            var areaTableCount = $XP(_.findWhere(areas, {areaID: areaID + ''}), 'num', 0);
+        function delTableArea($el) {
+            var areaID = $el.attr('data-id'),
+                areaTableCount = $XP(_.findWhere(areas, {areaID: areaID + ''}), 'num', 0);
             if (areaTableCount == 0) {
-                Hualala.UI.Confirm({
+                U.Confirm({
                     title: '删除区域',
                     msg: '你确定要删除该区域吗？',
                     okFn: function () {
-                        Hualala.Global.deleteTableArea({shopID: shopID, areaID: areaID}, function (rsp) {
+                        G.deleteTableArea({shopID: shopID, areaID: areaID}, function (rsp) {
                             if(rsp.resultcode != '000') {
-                                Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                                topTip({msg: rsp.resultmsg, type: 'danger'});
                                 return;
                             }
-                            Hualala.UI.TopTip({msg: '删除成功', type: 'success'});
+                            topTip({msg: '删除成功', type: 'success'});
                             renderTable();
                         });
                     }
                 });
             } else {
-                Hualala.UI.TopTip({msg: '该区域下还有桌台，不能删除', type: 'danger'});
+                topTip({msg: '该区域下还有桌台，不能删除', type: 'danger'});
             }
         }
 
-        function setCategory(areaID) {
-            var area = _.findWhere(areas, {areaID: areaID + ''}),
+        function setCategory($el) {
+            var areaID = $el.attr('data-id'),
+                area = _.findWhere(areas, {areaID: areaID + ''}),
                 selCategoryCodes = area.foodCategoryCodeLst.split(',');
             var renderCategory = function () {
                 var isCustomSelCategory = area.foodCategoryCodeLst && selCategoryCodes.length != 0,
@@ -271,7 +317,7 @@
                             };
                         })
                     },
-                    modalDialog = Hualala.UI.ModalDialog({
+                    modalDialog = U.ModalDialog({
                         id: 'setCategory',
                         title: '可选菜品分类',
                         html: setCategoryTpl(checkboxes),
@@ -283,15 +329,69 @@
             if (categories) {
                 renderCategory();
             } else {
-                Hualala.Global.queryCategories({shopID: shopID}, function (rsp) {
+                G.queryCategories({shopID: shopID}, function (rsp) {
                     if (rsp.resultcode != '000') {
-                        Hualala.UI.TopTip({msg: rsp.resultcode, type: 'danger'});
+                        topTip({msg: rsp.resultcode, type: 'danger'});
                         return;
                     }
                     categories = rsp.data.records || [];
                     renderCategory();
                 });
             }
+        }
+
+        function sortArea($el) {
+            var isFirst = $el.parents('tr').prev().length == 0,
+                isUpOrTop = $el.hasClass('glyphicon-arrow-up'),
+                isLast = $el.parents('tr').next().length == 0,
+                isDownOrBottom = $el.hasClass('glyphicon-arrow-down');
+            if((isFirst && isUpOrTop) || (isLast && isDownOrBottom)) return;
+            var areaID = $el.attr('data-id'),
+                sortType = $el.attr('data-type'),
+                $currentTr = $el.parents('tr'),
+                params = {shopID: shopID, areaID: areaID},
+                sortOperatorMap = {
+                    sortTop: {callServer: G.tableAreaSortTop, swapDom: $currentTr.parents('tbody').find('tr:first')},
+                    sortUpOrDown: {callServer: G.tableAreaSortUpOrDown, swapDom: $el.hasClass('sort-up') ? $currentTr.prev() : $currentTr.next()},
+                    sortBottom: {callServer: G.tableAreaSortBottom, swapDom: $currentTr.parents('tbody').find('tr:last')}
+                },
+                $swapStoreData = sortOperatorMap[sortType].swapDom.find('.sort-up'),
+                sortIndex2 = sortType == 'sortUpOrDown' ?
+                {
+                    sortIndex: $el.attr('data-key'),
+                    areaID2: $swapStoreData.attr('data-id'),
+                    sortIndex2: $swapStoreData.attr('data-key')
+                } : {};
+            sortOperatorMap[sortType].callServer(IX.inherit(params, sortIndex2), function (rsp) {
+                if (rsp.resultcode != '000') {
+                    topTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                var trSortIndex = $el.attr('data-key'),
+                    swapSortIndex = $swapStoreData.attr('data-key');
+                if(sortType == 'sortTop' || sortType == 'sortBottom') {
+                    var $newTr = $('<tr>'),
+                        newSortIndex = $XP($XP(rsp.data, 'records', [])[0], 'sortIndex', '0'),
+                        insertDomFn = sortType == 'sortTop' ? 'before' : 'after';
+                    _.each($currentTr.find('.glyphicon-arrow-up,.glyphicon-arrow-down'), function(el){
+                        $(el).attr('data-key', newSortIndex);
+                    });
+                    $newTr.append($currentTr.children());
+                    sortOperatorMap[sortType].swapDom[insertDomFn]($newTr);
+                    $currentTr.remove();
+                } else {
+                    swapDomSortIndex($currentTr, sortOperatorMap[sortType].swapDom, trSortIndex, swapSortIndex);
+                    C.SwapDom($currentTr, sortOperatorMap[sortType].swapDom);
+                }
+            });
+        }
+        function swapDomSortIndex($dom1, $dom2, sortIndex1, sortIndex2) {
+            _.each($dom1.find('.glyphicon-arrow-up,.glyphicon-arrow-down'), function(el){
+                $(el).attr('data-key', sortIndex2);
+            });
+            _.each($dom2.find('.glyphicon-arrow-up,.glyphicon-arrow-down'), function(el) {
+                $(el).attr('data-key', sortIndex1);
+            });
         }
 
         function bindUpdateAreaCategory(modalDialog, areaID) {
@@ -308,14 +408,14 @@
             });
             modalDialog._.footer.on('click', '.btn.btn-ok', function () {
                 var foodCategoryCodeLst = _.map(modalBody.find('input[name="category"]:checked'), function (input) {
-                        return $(input).data('key');
+                        return $(input).attr('data-key');
                     }).join(',');
-                Hualala.Global.setAreaCategory({areaID: areaID,shopID: shopID, foodCategoryCodeLst: foodCategoryCodeLst}, function (rsp) {
+                G.setAreaCategory({areaID: areaID,shopID: shopID, foodCategoryCodeLst: foodCategoryCodeLst}, function (rsp) {
                     if (rsp.resultcode != '000') {
-                        Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                        topTip({msg: rsp.resultmsg, type: 'danger'});
                         return;
                     }
-                    Hualala.UI.TopTip({msg: '操作成功', type: 'success'});
+                    topTip({msg: '操作成功', type: 'success'});
                     var area = _.findWhere(areas, {areaID: areaID + ''});
                     area.foodCategoryCodeLst = foodCategoryCodeLst;
                     modalDialog.hide();

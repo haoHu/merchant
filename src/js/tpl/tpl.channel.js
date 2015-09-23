@@ -33,6 +33,7 @@
         '</tbody>',
     '</table>'].join('');
     TplLib.register('tpl_channnel_sets', tpl_channnel_sets);
+    
     var tpl_channel_add_update = [
     '<form class="form-horizontal form-feedback-out">',
         '<div class="form-group hidden">',
@@ -56,8 +57,6 @@
   
     '</form>'].join('');
     TplLib.register('tpl_channel_add_update', tpl_channel_add_update);
-
-
 
     var tpl_department_sets = [
     '<div class="well well-sm t-r">',
@@ -110,52 +109,12 @@
                 '</select>',
             '</div>',
         '</div>',
-        '{{#if dTypes.isDisplay}}',
-        '<div class="form-group">',
-            '<label class="col-sm-offset-1 col-sm-3 control-label">打印方式</label>',
-            '<div class="col-sm-5">',
-                '<select name="printType" class="form-control">',
-                    '<option value=""></option>',
-                    '{{#each printTypes}}',
-                    '<option value="{{this.value}}" {{this.selected}}>{{this.label}}</option>',
-                    '{{/each}}',
-                '</select>',
-            '</div>',
-        '</div>',
-        '<div class="form-group">',
-            '<label class="col-sm-offset-1 col-sm-3 control-label">打印份数</label>',
-            '<div class="col-sm-5">',
-                '<select id="printCopies" name="printCopies" class="form-control">',
-                    '<option value=""></option>',
-                    '<option value="1" {{this.selected}}>1</option>',
-                    '<option value="1" {{this.selected}}>2</option>',
-                    '<option value="1" {{this.selected}}>3</option>',
-                    '<option value="1" {{this.selected}}>4</option>',
-                    '<option value="1" {{this.selected}}>5</option>',
-                '</select>',
-            '</div>',
-        '</div>',
-        '<div class="form-group">',
-            '<label class="col-sm-offset-1 col-sm-3 control-label">打印机</label>',
-            '<div class="col-sm-5">',
-                '<select id="printerName" name="printerName" class="form-control">',
-                '</select>',
-            '</div>',
-        '</div>',
-        '<div class="form-group">',
-            '<label class="col-sm-offset-1 col-sm-3 control-label">打印总单</label>',
-            '<div class="col-sm-5">',
-                '<input type="checkbox" name="isPrintTotal"  value="1" checked="" />',
-            '</div>',
-        '</div>',
-        '{{/if}}',
         '<div class="form-group">',
             '<label class="col-sm-offset-1 col-sm-3 control-label">部门描述</label>',
             '<div class="col-sm-5">',
                     '<textarea id="{{id}}" name="departmentRemark" class="form-control" placeholder="{{placeholder}}" value="{{department.departmentRemark}}">{{department.departmentRemark}}</textarea>',
             '</div>',
         '</div>',
-  
     '</form>'].join('');
     TplLib.register('tpl_department_add_update', tpl_department_add_update);
 
@@ -263,7 +222,7 @@
                     '<div class="form-group col-md-8">',
                         '<label class="col-xs-2 col-sm-2 col-md-2 control-label">字典类型</label>',
                         '<div class="col-md-4">',
-                            '<select name="notesType" id="notesTypeTag"  class="form-control">',
+                            '<select name="notesTypeSearch" id="notesTypeTag"  class="form-control">',
                                 '<option value="">全部</option>',
                                 '{{#each nTypes}}',
                                 '<option value="{{this.value}}" {{selected}}>{{this.label}}</option>',
@@ -342,17 +301,5 @@
 
     ].join('');
     TplLib.register('tpl_remark_modal',tpl_remark_modal);
-
     
 })(jQuery, window);
-
-
-
-
-
-
-
-
-
-
-

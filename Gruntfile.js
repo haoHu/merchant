@@ -185,6 +185,9 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/shop/shop.promotion.controller.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.mgrWizard.view.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.promotion.way.view.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.promotion.rule.view.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.promotion.time.view.js",
+					"<%= pkg.srcPath.jsPath %>/shop/shop.promotion.open.view.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.refshop.bind.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.refshop.model.js",
 					"<%= pkg.srcPath.jsPath %>/shop/shop.refshop.view.js",
@@ -197,6 +200,7 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/setting/setting.init.js",
 
 					// Account Moudle
+					"<%= pkg.srcPath.jsPath %>/account/account.settle.view.js",
 					"<%= pkg.srcPath.jsPath %>/account/account.list.model.js",
 					"<%= pkg.srcPath.jsPath %>/account/account.list.view.js",
 					"<%= pkg.srcPath.jsPath %>/account/account.list.controler.js",
@@ -237,6 +241,8 @@ module.exports = function (grunt) {
 					"<%= pkg.srcPath.jsPath %>/crm/crm.detail.js",
                     "<%= pkg.srcPath.jsPath %>/crm/crm.preferential.js",
                     "<%= pkg.srcPath.jsPath %>/crm/crm.report.js",
+                    "<%= pkg.srcPath.jsPath %>/crm/crm.feedback.js",
+                    "<%= pkg.srcPath.jsPath %>/crm/crm.assessment.js",
 
 					"<%= pkg.srcPath.jsPath %>/crm/crm.init.js",
                     
@@ -293,6 +299,9 @@ module.exports = function (grunt) {
                     "<%= pkg.srcPath.jsPath %>/saas/saas.subject.js",
                     "<%= pkg.srcPath.jsPath %>/saas/saas.remarks.js",
                     "<%= pkg.srcPath.jsPath %>/saas/saas.init.js",
+
+                    // version Moudle
+                    "<%= pkg.srcPath.jsPath %>/version/versionupdate.js",
 
 					// Merchant init
 					"<%= pkg.srcPath.jsPath %>/common/merchant.layout.js",

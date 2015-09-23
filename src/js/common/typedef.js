@@ -22,7 +22,8 @@
 			subnavs : [
 				{name : "crmMemberSchema", label : "会员概况", type : "link", src : "CRMMemberSubNavType"},
 				{name : "crmDealSummary", label : "交易报表", type : "link", src : "CRMDealSubNavType"},
-				{name : "crmParameter", label : "参数设置", type : "link", src : "CRMParamsSubNavType"}
+				{name : "crmParameter", label : "参数设置", type : "link", src : "CRMParamsSubNavType"},
+				{name : "FeedBack", label : "顾客反馈", type : "link", src : "CustomerFeedbackSubNavType"}
 			]
 		},
 		{name : 'mcm', label : '营销', type : "subnav",
@@ -42,7 +43,8 @@
 				//saas
 				{name : 'saas', label : '云餐厅管理', type:"link"},
 				{name : "agent", label : "代理程序", type : "link"},
-				{name : "user", label : "权限", type : "link"}
+				{name : "user", label : "权限", type : "link"},
+				{name : "versionInfo", label : "版本更新", type : "link"}
 			]
 		}
         
@@ -78,7 +80,10 @@
 		{name : "crmRechargePackageBusiness", label : "充值套餐", pkeys : []},
 		{name : "crmShopSpecialPrice", label : "店铺特惠", pkeys : []}
 	];
-    
+	Hualala.TypeDef.CustomerFeedbackSubNavType = [
+		{name : "FeedBack", label : "反馈管理", pkeys : []},
+        {name : "Assessment", label : "点评管理", pkeys : []}
+	];
     
 
 	Hualala.TypeDef.OrderSubNavType = [
@@ -239,7 +244,7 @@
 		{value : '', label : "全部"},
 		{value :511,label : "用户自助订餐/结帐", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
 		//{value : 101, label : "网上订餐", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
-		//{value : 102, label : "账户充值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
+		{value : 102, label : "账户充值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
 		//{value : 103, label : "网上订餐用券", tpl : "tpl_orderpay_detail", queryCall : "Hualala.Global.queryAccountOrderPayDetail", queryKeys : "orderKey,orderID"},
 		//{value : 104, label : "到店消费验券", tpl : "tpl_chktick_detail", queryCall : null, queryKeys : null},
 		{value : 105, label : "会员在线储值", tpl : "tpl_fsmcustomer_detail", queryCall : "Hualala.Global.queryAccountFsmCustomerDetail", queryKeys : "SUA_TransItemID,transType"},
@@ -265,6 +270,18 @@
 		{value : 0, label : "等待交易完成"},
 		{value : 1, label : "交易成功"},
 		{value : 2, label : "交易关闭"}
+	];
+	/**
+	 *充值订单交易状态
+	 *交易状态：10-待付款，20-已付款,30-已退款,40-已完成,50-结算失败,
+	 */
+	Hualala.TypeDef.FSMOrderStatus = [
+		{value : '', label : "全部"},
+		{value : 10, label : "待付款"},
+		{value : 20, label : "已付款"},
+		{value : 30, label : "已退款"},
+		{value : 40, label : "已完成"},
+		{value : 50, label : "结算失败"}
 	];
 	/**
 	 * 支付类型
@@ -325,6 +342,16 @@
 			{value : "3", label : "驱动"},
 			{value : "4", label : "USB"},
 			{value : "5", label : "蓝牙"}
+		],
+		/*打印机品牌类型 新北洋、爱普生、佳博、滢普通、中崎、公达、其它*/
+		printerBrandTypes :[
+			{value : "新北洋"},
+			{value : "爱普生"},
+			{value : "佳博"},
+			{value : "滢普通"},
+			{value : "中崎"},
+			{value : "公达"},
+			{value : "其它"}
 		],
 		//打印机纸张宽度 80,58
 		printerPaperSizeTypes :[
@@ -696,9 +723,9 @@
 				 navs : [
 				 	{label : "发送数", value : "tab_send"},
 				 	{label : "使用数", value : "tab_used"},
-				 	{label : "赠送", value : "tab_give"},
-				 	{label : "支付", value : "tab_pay"},
-				 	{label : "网上出售", value : "tab_onlinesale"}
+				 	{label : "赠送", value : "tab_give"}
+				 	//{label : "支付", value : "tab_pay"},Todo 电子代金券屏蔽掉支付和网上出售的入口
+				 	//{label : "网上出售", value : "tab_onlinesale"}
 				 ]
 			},
 			// {value : 20, label : "菜品优惠券"},
@@ -727,6 +754,7 @@
 			{value : "40", label : "积分兑换", include : true},
 			{value : "50", label : "订单摇奖"},
 			{value : "60", label : "免费领取", include : true},
+			{value : "61", label : "消费红包"},
 			{value : "70", label : "商家赠送", include : true},
 			{value : "80", label : "商家支付", include : true},
 			{value : "90", label : "商家卖出", include : true},
@@ -804,7 +832,8 @@
 			{value : "30", label : "积分兑换", type : "credit-exchange", bgColor : "rgb(0, 153, 204)"},
 			{value : "40", label : "营销红包", type : "marketing-redenvelope", bgColor : "rgb(156, 111, 109)"},
 			{value : "41", label : "消费红包", type : "consume-redenvelope", bgColor : "rgb(199, 148, 148)"},
-			{value : "50", label : "群发短信", type : "mass-texting", bgColor : "rgb(0, 153, 204)"}
+			{value : "50", label : "群发短信", type : "mass-texting", bgColor : "rgb(0, 153, 204)"},
+			{value : "51", label : "生日赠送", type : "birthday-gift", bgColor : "rgb(51, 0, 204)"}
 		],
 		/*群发短信状态定义*0，定义中，1，待开始，2，进行中，3，发送完毕，4，失败*/
 		SmsSendStatus :[
@@ -872,7 +901,12 @@
 			{value : '', label : "不限"},
 			{value : '0', label : "未入围"},
 			{value : '1', label : "已入围"}
-		]
+		],
+        TransTimeFilter: [
+            { name: '不限', value: '0'},
+            { name: '早于', value: '5'},
+            { name: '晚于', value: '3'}
+        ]
 
 	};
 
@@ -920,7 +954,11 @@
             '21': '领取', 
             '22': '报名', 
             '24': '有奖竞答', 
-            '30': '积分兑换'
+            '30': '积分兑换',
+            '40': '营销红包',
+            '41': '消费红包',
+            '50': '群发短信',
+            '51': '生日赠送',
         },
         //会员优惠券获取方式
         getWay: {
@@ -959,7 +997,8 @@
             '42': '补办实体卡', 
             '50': '转让', 
             '60': '升级', 
-            '61': '降级'
+            '61': '降级',
+            '100':'线下开卡'
         }
     };
     /**
@@ -995,7 +1034,7 @@
 	/**
 	 *saas备注类型
 	 *10：点单备注 20：作法 30：口味 40：退菜原因 50：赠菜原因
-	 *60：改价原因 70：改单原因  80：预订退订原因  90：外卖退单原因
+	 *60：改价原因 70：改单原因  80：预订退订原因  90：外卖退单原因,100退款原因 110：账单作废原因
 	 */
 	Hualala.TypeDef.SaasNotesType =[
 		{value : "10",  label: "点单备注" },
@@ -1007,7 +1046,9 @@
 		{value : "70",  label: "改单原因" },
 		{value : "80",  label: "预订退订原因" },
 		{value : "90",  label: "外卖退单原因" },
-		{value : "100",  label: "退款原因" }
+		{value : "100",  label: "退款原因" },
+		{value : "110", label :"账单作废原因" }
+
 	];
 	/**
 	 *saas备注加价方式
@@ -1100,6 +1141,53 @@
 			{ value: '0', label: '快餐'},
 			{ value: '1', label: '正餐'},
 			{ value: '9', label: '零售'}
+		],
+		//厨房小票桌台号使用字体0：常规字体 1：大字体 （默认为0：常规字体）
+		KitchenTableNameBigFontTypes:[
+			{ value: '0', label: '常规字体'},
+			{ value: '1', label: '大字体'}
+		],
+		//副屏广告轮播图片播放间隔[2-8秒]
+		PCScreen2AdImageIntervalTimeTypes:[
+			{value: '3', label: '默认3秒'},
+			{value: '4', label: '4秒'},
+			{value: '5', label: '5秒'},
+			{value: '6', label: '6秒'},
+			{value: '7', label: '7秒'},
+			{value: '8', label: '8秒'}
+		]
+
+	};
+	/*顾客反馈*/
+	Hualala.TypeDef.FeedbackDataSet = {
+		/* 反馈类型 0：默认，未知 10：投诉 20：建议  30：表扬  40：询问  50：纠错*/
+		feedbackTypeData : [
+			{value : 0, label : "全部",  color:"color:black"},
+			{value : 10, label : "投诉", color:"color:#9900ff"},
+			{value : 20, label : "建议", color:"color:#009933"},
+			{value : 30, label : "表扬", color:"color:#ff0000"},
+			{value : 40, label : "询问", color:"color:#ff9900"},
+			{value : 50, label : "纠错", color:"color:#0033ff"},
+		],
+		/*客户端类型 0：PC_WEB 5：触屏  10：userIPhone，用户iPhone客户端 
+			20：userAndroid，用户安卓客户端 30：userWinPhone，用户WinPhone客户端 
+			40：userIPad，用户iPad客户端 50：shopPC，商家PC客户端 90：shopPOS，POS设备客户端*/
+		clientTypeData : [
+			{value : "0", label : "PC_WEB端"},
+			{value : "5", label : "触屏端"},
+			{value : "10", label : "iPhone客户端"},
+			{value : "20", label : "android客户端"},
+			{value : "30", label : "WinPhone客户端"},
+			{value : "40", label : "iPad客户端"},
+			{value : "50", label : "商家PC客户端"},
+			{value : "90", label : "POS设备客户端"}
+		],
+		/*"responseStatus":反馈响应状态 0：待处理 1：处理中 2：处理完成*/
+		responseStatusData :[
+			{value: "10", label:"全部"},
+			{value: "0", label:"待处理"},
+			{value: "1", label:"处理中"},
+			{value: "2", label:"处理完成"}
 		]
 	};
 

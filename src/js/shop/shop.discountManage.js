@@ -2,8 +2,9 @@
 	IX.ns("Hualala.Shop");
     var G = Hualala.Global,
 		U = Hualala.UI,
+		C = Hualala.Common,
 		topTip = U.TopTip,
-		parseForm = Hualala.Common.parseForm,
+		parseForm = C.parseForm,
 		isActiveData = Hualala.TypeDef.ShopDiscountDataSet.DiscountIsActive,
 		isVipPriceData = Hualala.TypeDef.ShopDiscountDataSet.DiscountIsVipPrice,
 		discountRangeData = Hualala.TypeDef.ShopDiscountDataSet.DiscountRangeTypes;
@@ -40,7 +41,7 @@
         function renderTable() {
             var initParams = {shopID: shopID};
             var Refflag = false;
-            Hualala.Global.queryDiscount(initParams, function(rsp) {
+            G.queryDiscount(initParams, function(rsp) {
                 if (rsp.resultcode == '000') {
                     discounts = rsp.data.records;              	
                 	renderRecords(discounts); 
@@ -75,7 +76,7 @@
                 }).on('switchChange.bootstrapSwitch', function (e, state) {
                     var itemID = $el.attr('data-id');
                     var actStr = (state == 1 ? "开启" : "关闭");
-                    Hualala.UI.Confirm({
+                    U.Confirm({
                         title : actStr + "折扣方案",
                         msg : "您确定要" + actStr + "该折扣方案吗？",
                         okFn : function () {
@@ -91,12 +92,12 @@
         }
          //开启或关闭促销规则
         function switchDiscount(itemID, state) {  
-            Hualala.Global.switchDiscount({shopID: shopID, itemID: itemID, isActive: state}, function (rsp) {
+            G.switchDiscount({shopID: shopID, itemID: itemID, isActive: state}, function (rsp) {
                 if (rsp.resultcode != '000') {
-                    Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                    topTip({msg: rsp.resultmsg, type: 'danger'});
                     return;
                 }
-                Hualala.UI.TopTip({msg: '操作成功！', type: 'success'});
+                topTip({msg: '操作成功！', type: 'success'});
                 renderTable();
             });
         }
@@ -134,7 +135,7 @@
 						r.text =label;
 					break;
 				case "discountWayRemark" :
-					var label = Hualala.Common.decodeTextEnter(v)|| "";
+					var label = C.decodeTextEnter(v)|| "";
 						r.value = label;
 						r.text = label;
 					break;
@@ -210,11 +211,11 @@
 						break;
 					//删除
 					case "delete":
-						Hualala.UI.Confirm({
-			                title: '删除店内促销',
-			                msg: '您确定删除此条店内促销方案么',
+						U.Confirm({
+			                title: '删除店内折扣',
+			                msg: '您确定删除此条店内折扣方案么',
 			                okFn: function () {
-			                    Hualala.Global.deleteDiscount({shopID: shopID, itemID: itemID}, function (rsp) {
+			                    G.deleteDiscount({shopID: shopID, itemID: itemID}, function (rsp) {
 			                        if (rsp.resultcode != '000') {
 			                            topTip({msg: rsp.resultmsg, type: 'danger'});
 			                            return;
@@ -229,12 +230,11 @@
 			});
 
         }
-
         function renderDailog(itemID,shopID){
         	var discountData ={};
          	    discountData=_.findWhere(discounts, {itemID: itemID});
             if(discountData){
-            	discountData.discountWayRemark = Hualala.Common.decodeTextEnter(discountData.discountWayRemark);
+            	discountData.discountWayRemark = C.decodeTextEnter(discountData.discountWayRemark);
 		        discountRangeData=_.map(discountRangeData,function (discountRangeData){
 		            return _.extend(discountRangeData,{selected:discountRangeData.value==discountData.discountRange ? 'selected' : ''});
 		        });
@@ -265,10 +265,38 @@
 		            title: dTitle,
 		            backdrop : 'static',
 		            html: $editSet
-		        }).show(); 
+		        }).show();
+		        createisVipPriceSwitch(modalDialog,discountData) 
+		        createisActiveSwitch(modalDialog,discountData);
 		        DiscountFormValidate($editSet);
 		        bindModalDiscount(modalDialog,$editSet,itemID,shopID);
         }
+        function createisActiveSwitch(modal,discountData) {
+            var $switchCheckbox = modal._.body.find('.discount-form input.isActive');
+            _.each($switchCheckbox, function (input) {
+                $(input).bootstrapSwitch({
+                    state: !!$(input).data('status'),
+                    size : 'normal',
+                    onColor : 'success',
+                    offColor : 'default',
+                    onText : '启用',
+                    offText : '不启用'
+                });
+            });
+	    }
+	    function createisVipPriceSwitch(modal,discountData) {
+            var $switchCheckbox = modal._.body.find('.discount-form input.isVipPrice');
+            _.each($switchCheckbox, function (input) {
+                $(input).bootstrapSwitch({
+                    state: !!$(input).data('status'),
+                    size : 'normal',
+                    onColor : 'success',
+                    offColor : 'default',
+                    onText : '享受',
+                    offText : '不享受'
+                });
+            });
+	    }
         function DiscountFormValidate($form){
         	$form.bootstrapValidator({
 	            fields: {
@@ -278,13 +306,7 @@
 	                        stringLength : {
 	                            min : 1,
 	                            max : 50,
-	                            message : "折扣名称长度在1-50个字符之间"},
-	                        ajaxValid :{
-	                            api: "checkDiscountNameExist",
-	                            data:{
-	                                shopID: shopID,
-	                                itemID: itemID ? itemID : ''
-	                            }
+	                            message : "折扣名称长度在1-50个字符之间"
 	                        }
 	                    }
 	                },
@@ -300,11 +322,11 @@
 	                        notEmpty: { message: '折扣范围必须选择' }
 	                    }
 	                },
-	               	isVipPrice: {
-	                    validators: {
-	                        notEmpty: { message: '是否享受会员价必须选择' }
-	                    }
-	                },
+	               	// isVipPrice: {
+	                //     validators: {
+	                //         notEmpty: { message: '是否享受会员价必须选择' }
+	                //     }
+	                // },
 	                discountWayRemark: {
 	                    validators : {
 	                        stringLength : {
@@ -321,16 +343,22 @@
                 var data = parseForm($form),
                     postParams = IX.inherit({shopID: shopID, itemID: itemID},data);
                     IX.Debug.info(postParams);
-                postParams.discountWayRemark = Hualala.Common.encodeTextEnter(postParams.discountWayRemark);
-                Hualala.Global[itemID ? 'editDiscount' : 'addDiscount'](postParams, function (rsp) {
-                    if (rsp.resultcode != '000') {
-                       topTip({msg: rsp.resultmsg, type: 'danger'});
-                        return;
-                    }
-                    topTip({msg: '保存成功', type: 'success'});
-                    modalDialog.hide();
-                    renderTable();
-                });
+                postParams.isVipPrice = $(".discount-form :checkbox[name='isVipPrice']").parent().parent().hasClass("bootstrap-switch-on")?1:0;
+                postParams.isActive = $(".discount-form :checkbox[name='isActive']").parent().parent().hasClass("bootstrap-switch-on")?1:0;
+                postParams.discountWayRemark = C.encodeTextEnter(postParams.discountWayRemark);
+	            postParams.discountWayName = $.trim(postParams.discountWayName);
+	            var nameCheckData = {shopID:shopID, discountWayName:postParams.discountWayName, itemID: itemID};
+	            function callbackFn(res){
+	            	topTip({msg: (!itemID ? '添加' : '修改') + '成功！', type: 'success'});
+	                //topTip({msg: '保存成功', type: 'success'});
+	                modalDialog.hide();
+	                renderTable();
+	            }
+	            if(!itemID){
+	                C.NestedAjaxCall("checkDiscountNameExist","addDiscount",nameCheckData,postParams,callbackFn);
+	            }else{
+	                C.NestedAjaxCall("checkDiscountNameExist","editDiscount",nameCheckData,postParams,callbackFn);  
+	            }            
             });
         }
 	}

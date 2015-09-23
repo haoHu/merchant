@@ -95,35 +95,26 @@
             };
             $basicInfo.on('click', 'a[name="edit_basic_info"]', function (e) {
                 Handlebars.registerPartial('tplRadio', tplLib.get('tpl_radio'));
-                Handlebars.registerPartial('tplSelect', tplLib.get('tpl_select'));
-                var getDigitalSelectData = function(name, label, start, count) {
-                    var optionValues = _.times(count, function(i){return i + start;}),
-                        options = _.map(optionValues, function(val) {
-                            return {value: val < 10 ? '0' + val : val + '', name: val + label};
-                        });
-                    return {name: name, options: options};
-                };
                 var radioData = {
                         name: 'customerSex',
                         label: '性别',
                         inputs: [{value: '1', text: '男'}, {value: '0', text: '女'}, {value: '2', text: '未知'}]
                     },
-                    yearSelect = getDigitalSelectData('year', '年', 1949, (new Date()).getFullYear() - 1949 + 1),
-                    monthSelect = getDigitalSelectData('month', '月', 1, 12),
-                    daySelect = getDigitalSelectData('day', '日', 1, 31),
                     customerBirthday = ($XP(customerDetail, 'customerBirthday', '') || '1990-01-01').split('-');
-                _.findWhere(yearSelect.options, {value: customerBirthday[0]}).selected = 'selected';
-                _.findWhere(monthSelect.options, {value: customerBirthday[1]}).selected = 'selected';
-                _.findWhere(daySelect.options, {value: customerBirthday[2]}).selected = 'selected';
                 _.findWhere(radioData.inputs, {value: customerDetail.customerSex || '2'}).checked = 'checked';
                 var editBasicInfoTpl = Handlebars.compile(tplLib.get('tpl_crm_basic_info')),
                     modalDialog = new Hualala.UI.ModalDialog({
                         title: '修改会员基本信息',
                         hideCloseButton: false,
-                        html: $(editBasicInfoTpl(IX.inherit(customerDetail, {years: yearSelect, months: monthSelect, days: daySelect, sexRadio: radioData}))),
+                        html: $(editBasicInfoTpl(IX.inherit(customerDetail, {sexRadio: radioData}))),
                         backdrop: 'static'
                     }).show(),
                     modalBody = modalDialog._.body;
+                var $birthdayComponent = modalBody.find('.birthday-component');
+                C.createDateSelect($birthdayComponent, 1949, (new Date()).getFullYear());
+                $birthdayComponent.find('select[name="year"]').val(customerBirthday[0]);
+                $birthdayComponent.find('select[name="day"]').val(customerBirthday[2]);
+                $birthdayComponent.find('select[name="month"]').val(customerBirthday[1]).trigger('change');
                 registerBasicInfoValidator(modalBody.find('form'));
                 bindSaveBasicInfo(modalDialog);
             });
@@ -227,6 +218,8 @@
                         val = formatDateStr(val, 12);
                     else if(key == 'eventNews')
                         val = getEventNews(item.eventWay, item.winFlag);
+                    else if(key == 'eventWay')
+                        val = eventWay[val];
                     
                     $('<td>').text(val).appendTo($tr);
                 }

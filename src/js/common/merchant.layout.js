@@ -13,7 +13,7 @@
 		{name : 'mcm', title : '营销', label : '礼品•营销活动', brickClz : 'home-brick-md-2', itemClz : 'brick-item', icon : 'icon-mcm'},
         
         {brickClz : 'home-brick-md-2'},
-        {name : 'saas', title : '云餐饮管理系统', label : '商品', brickClz : 'home-brick-md-2', itemClz : 'brick-item brick-item-low'},
+        {name : 'saas', title : '云餐饮管理系统', label : '科目•部门•渠道', brickClz : 'home-brick-md-2', itemClz : 'brick-item brick-item-low',icon : 'icon-saas'},
         {name : 'boss', title : '老板通', label : '下载', brickClz : 'home-brick-md-2', itemClz : 'brick-item brick-item-low', icon : 'icon-boss'}
     ];
 	function isSupportedBrowser () {
@@ -339,6 +339,7 @@
 			bannerImg : Hualala.Global.getDefaultImage('loginBanner')
 		}));
 		var $body = $('#ix_wrapper > .ix-body > .container');
+        Hualala.Common.removeModal();
 		$body.html($loginBox);
 		var loginPanel = new Hualala.Entry.initLogin({
 			$container : $loginBox
@@ -393,7 +394,7 @@
 	Hualala.Common.ContactInit = initContactPage;
 	Hualala.Common.PCClientDownloadInit = initPCClientDownloadPage;
     Hualala.Common.BossClientDownloadInit = initBossClientDownloadPage;
-	
+
 
 	Hualala.Common.IndexInit = function () {
 		document.location.href = Hualala.PageRoute.createPath("main");

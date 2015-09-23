@@ -12,7 +12,7 @@
 			{key : "timeName", clz : "timeName", label : "餐段名称"},
 			{key : "startTime", clz : "startTime", label : "开始时间"},
 			{key : "endTime", clz : "endTime", label : "结束时间"},
-			{key : "isActive", clz : "status", label : "是否启用"},
+			//{key : "isActive", clz : "status", label : "是否启用"},
 			{key : "rowControl", clz : "rowControl", label : "操作"}
 		],
 		TimeAddTpl,layoutTpl,resultTpl,editModalTpl,queryTpl,filterTpl,listTpl,itemTpl,timePeriods=null,refShop=null,
@@ -103,9 +103,16 @@
 	           		$result.html($(resultTpl(mapRenderData(records.records))));
 	        	}
 	            $result.find("table tr td .rowControl a").addClass("hidden");
-	            $result.find("table tr td input[name=isActive]").prop("disabled",true);
+	            //$result.find("table tr td input[name=isActive]").prop("disabled",true);
 
             }
+            //被套用时段商店验证
+			G.getRefTimeShops({shopID: shopID}, function(rsp) {
+				if (rsp.resultcode != '000') {
+					 $('.container').find('.controls').html(rsp.resultmsg)
+				}
+				return; 
+			});
 		}
 		//开关渲染
         function initPromationSwitcher($checkbox) {
@@ -149,17 +156,15 @@
             });
         }
 		function mapColItemRenderData(row, rowIdx, colKey) {
-			var self = this;
-			var ctx = Hualala.PageRoute.getPageContextByPath(), pageName = $XP(ctx, 'name'),
-				r = {value : "", text : ""}, v = $XP(row, colKey, '');
-			var formatDateTimeValue = Hualala.Common.formatDateTimeValue;
+			var r = {value : "", text : ""}, v = $XP(row, colKey, '');
 			switch(colKey) {
 				// 各列参数
 				case "startTime":
 				case "endTime":
+					var isActive = $XP(row, 'isActive', '');
 					var label=decodeTimeStr(v);
 						r.value = v;
-						r.text = label;
+						r.text = isActive==1?label:"--";
 					break;
 				case "isActive":
 				    r.value = v;
@@ -193,6 +198,7 @@
 		function encodeTimeStr(t) {
 			return t.replace(/\:/g, '');
 		}
+
 		//组装表格
         function mapRenderData(records) {
             var self = this;
@@ -215,19 +221,10 @@
                     cols: mapColsRenderData(row, idx)
                 };
             });
-            var reftimeshop = G.cancleRefShopTime({shopID: shopID}, function (rsp) {
-	                        if (rsp.resultcode != '000') {
-	                            return true;
-	                        }else{
-	                        	return false;	
-	                        }
-		           		});
             if(records.refTimeShopName){
-
             	return {
 	                tblClz: tblClz,
 	                noRef : false,
-	                reftimeshop: reftimeshop,
                		refTimeShopName:records.refTimeShopName,
 	                isEmpty: !records || records.length == 0 ? true : false,
 	                colCount: tblHeaders.length,
@@ -239,7 +236,6 @@
 	        else{
 	        	return {
 	                tblClz: tblClz,
-	                reftimeshop: reftimeshop,
 	                noRef : records && records.refTimeShopName? false :true,
 	                isEmpty: !records || records.length == 0 ? true : false,
 	                colCount: tblHeaders.length,
@@ -249,7 +245,7 @@
 	        }
 
         }
-        //促销页面绑定事件的处理
+        //时段页面绑定事件的处理
         function bindEvent(){
 			$container.on('click', '.operate', function (e) {
 				var act = $(this).attr('data-type');
@@ -280,6 +276,7 @@
 			});
 
         }
+        //修改时段模态框数据渲染
         function renderDailog(timeID,shopID){
          	var timeData = {};
          	    timeData=_.findWhere(timePeriods, {timeID: timeID});
@@ -296,15 +293,32 @@
 	        var dTitle ='修改时段',
 	        	modalVals = {timeData:timeData,isActiveData:isActiveData},
 		        $editSet = $(editModalTpl(modalVals));
+		    var endTime = $editSet.find(':text[name="endTime"]').val();
+		    	$editSet.find(':text[name="endTime"]').val(decodeTimeStr(endTime));
 		        modalDialog = new U.ModalDialog({
 		            title: dTitle,
 		            html: $editSet
 		        }).show(); 
 		    var minuteStep=timeData.timeUnit;
 		        initTimePicker(modalDialog,'[data-type=timepicker]',minuteStep);
+		        createSwitch(modalDialog,timeData);
 		        TimeFormValidate($editSet);
 		        submitModalTime(modalDialog,$editSet,timeID,shopID);
         }
+        //模态框启用和不启用的开关
+        function createSwitch(modal,timeData) {
+            var $switchCheckbox = modal._.body.find('.discount-form input.status');
+            _.each($switchCheckbox, function (input) {
+                $(input).bootstrapSwitch({
+                    state: !!$(input).data('status'),
+                    size : 'normal',
+                    onColor : 'success',
+                    offColor : 'default',
+                    onText : '启用',
+                    offText : '不启用'
+                });
+            });
+	    }
         function initTimePicker(modalDialog,selector,minuteStep) {
 			modalDialog._.body.find(selector).timepicker({
 				minuteStep : parseInt(minuteStep),
@@ -331,12 +345,7 @@
 	                    validators: {
 	                        notEmpty: { message: '开始时间不能为空' }
 	                    }
-	                },
-	                endTime:{
-	                	validators: {
-	                        notEmpty: { message: '结束时间不能为空' }
-	                    }
-	                }  
+	                }
 	            }
 	        });
         }
@@ -345,8 +354,9 @@
                 if(!$form.data('bootstrapValidator').validate().isValid()) return;
                 var data = parseForm($form),
                     postParams = IX.inherit({shopID: shopID, timeID: timeID},data);
-                    postParams.startTime= encodeTimeStr(postParams.startTime);
-                    postParams.endTime =encodeTimeStr(postParams.endTime);
+                    postParams.startTime = encodeTimeStr(postParams.startTime);
+                    postParams.endTime = encodeTimeStr(postParams.endTime);
+                    postParams.isActive = $(":checkbox[name='isActive']").parent().parent().hasClass("bootstrap-switch-on")?1:0;
                 G.updateShopTime(postParams, function (rsp) {
                     if (rsp.resultcode != '000') {
                        topTip({msg: rsp.resultmsg, type: 'danger'});

@@ -1,5 +1,5 @@
 var Test = Test || {};
-Test.ShopTimeData =/*{
+Test.ShopTimeData ={
     "data": {
         "records": [
             {
@@ -68,9 +68,9 @@ Test.ShopTimeData =/*{
     "processTime": "20141215110913672",
     "resultcode": "000",
     "resultmsg": ""
-}*/
+}
 //------------引用其他店铺时段------------------
-{
+/*{
     "data": {
         "records": [
             {
@@ -80,7 +80,7 @@ Test.ShopTimeData =/*{
                 "endTime": "1100",
                 "isActive": "0",
                 "shopID": "759926",
-                "startTime": "600",
+                "startTime": "0600",
                 "timeID": "1",
                 "timeName": "早餐",
                 "timeUnit": "30"
@@ -125,7 +125,7 @@ Test.ShopTimeData =/*{
                 "action": "0",
                 "actionTime": "20130329153404",
                 "createTime": "20130329153404",
-                "endTime": "600",
+                "endTime": "0600",
                 "isActive": "0",
                 "shopID": "759926",
                 "startTime": "2200",
@@ -140,7 +140,7 @@ Test.ShopTimeData =/*{
     "processTime": "20141215112008929",
     "resultcode": "000",
     "resultmsg": ""
-};
+};*/
 Test.refTimeShoData = {
     "data": {
         "datasets": {
@@ -786,4 +786,57 @@ Test.smsCardShops = {
     },
     "resultcode": "000",
     "resultmsg": ""
+};
+
+
+Test.getversionInfo = {
+    "processTime": "20150902095545935",
+    "data": {
+        "pageCount": 1,
+        "pageNo": 1,
+        "pageSize": 20,
+        "records": [
+            {
+                "createTime": "20140630100806",
+                "isMustUpdate": "0",
+                "updateRemark": "PC客户端升级说明：\n1、增加了验券功能\n2、增加了CRM的办卡、储值、刷卡、挂失等功能\n3、增加了收到订单通知消息后的声音提醒功能\n4、完善了“管理网上菜单”功能",
+                "itemID": "46",
+                "remark": "",
+                "imagePathLst": "",
+                "downloadUrl": "http://res.hualala.com/group1/M00/00/EB/wKgCIVOwxnXigEuhACl2AH-ibdA620.exe",
+                "QCodeImagePath": "",
+                "actionTime": "20140630100806",
+                "adaptOSRemark": "",
+                "groupID": "5",
+                "releaseDate": "20140612",
+                "clientName": "商户系统版本更新",
+                "action": "0",
+                "versionNo": "V3.0(20140612)",
+                "clientType": "410",
+                "adaptScreenSizeLst": "all"
+            },
+            {
+                "createTime": "20140630100806",
+                "isMustUpdate": "0",
+                "updateRemark": "PC客户端升级说明：\n1、增加了验券功能\n2、增加了CRM的办卡、储值、刷卡、挂失等功能\n3、增加了收到订单通知消息后的声音提醒功能\n4、完善了“管理网上菜单”功能",
+                "itemID": "46",
+                "remark": "",
+                "imagePathLst": "",
+                "downloadUrl": "http://res.hualala.com/group1/M00/00/EB/wKgCIVOwxnXigEuhACl2AH-ibdA620.exe",
+                "QCodeImagePath": "",
+                "actionTime": "20140630100806",
+                "adaptOSRemark": "",
+                "groupID": "5",
+                "releaseDate": "20140612",
+                "clientName": "商户系统版本更新",
+                "action": "0",
+                "versionNo": "V3.0(20140612)",
+                "clientType": "410",
+                "adaptScreenSizeLst": "all"
+            }
+        ],
+        "totalSize": 1
+    },
+    "resultmsg": "",
+    "resultcode": "000"
 };

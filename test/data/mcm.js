@@ -413,5 +413,91 @@
 		"processTime": "20150114174800759",
 		"resultcode": "000",
 		"resultmsg": ""
-	}
+	};
+	Test.GiftUsedShopData = {
+	    "data": {
+	        "page": {
+	            "pageCount": 0,
+	            "pageNo": 0,
+	            "pageSize": 0,
+	            "totalSize": 8
+	        },
+	        "records": [
+	            {
+	                "action": "0",
+	                "actionTime": "20150818102145",
+	                "createTime": "20150818102145",
+	                "giftItemID": "263",
+	                "itemID": "899",
+	                "shopID": "77875",
+	                "shopName": "豆捞坊(西单店)1"
+	            },
+	            {
+	                "action": "0",
+	                "actionTime": "20150818102145",
+	                "createTime": "20150818102145",
+	                "giftItemID": "263",
+	                "itemID": "900",
+	                "shopID": "77876",
+	                "shopName": "豆捞坊(崇文门店)"
+	            },
+	            {
+	                "action": "0",
+	                "actionTime": "20150818102145",
+	                "createTime": "20150818102145",
+	                "giftItemID": "263",
+	                "itemID": "901",
+	                "shopID": "77877",
+	                "shopName": "豆捞坊(东直门店)"
+	            },
+	            {
+	                "action": "0",
+	                "actionTime": "20150818102145",
+	                "createTime": "20150818102145",
+	                "giftItemID": "263",
+	                "itemID": "897",
+	                "shopID": "77878",
+	                "shopName": "豆捞坊(中关村店)"
+	            },
+	            {
+	                "action": "0",
+	                "actionTime": "20150818102145",
+	                "createTime": "20150818102145",
+	                "giftItemID": "263",
+	                "itemID": "898",
+	                "shopID": "77880",
+	                "shopName": "豆捞坊(君太店)"
+	            },
+	            {
+	                "action": "0",
+	                "actionTime": "20150818102145",
+	                "createTime": "20150818102145",
+	                "giftItemID": "263",
+	                "itemID": "902",
+	                "shopID": "759210",
+	                "shopName": "豆捞坊(人民广场店)"
+	            },
+	            {
+	                "action": "0",
+	                "actionTime": "20150818102145",
+	                "createTime": "20150818102145",
+	                "giftItemID": "263",
+	                "itemID": "895",
+	                "shopID": "759827",
+	                "shopName": "豆捞坊(百联西郊店)"
+	            },
+	            {
+	                "action": "0",
+	                "actionTime": "20150818102145",
+	                "createTime": "20150818102145",
+	                "giftItemID": "263",
+	                "itemID": "896",
+	                "shopID": "76022735",
+	                "shopName": "城市猎人"
+	            }
+	        ]
+	    },
+	    "resultcode": "000",
+	    "resultmsg": ""
+	};
 })();

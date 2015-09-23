@@ -2,8 +2,9 @@ $( function ($, window) {
     IX.ns('Hualala.Saas.remarks');
     var G = Hualala.Global,
         U = Hualala.UI,
+        C = Hualala.Common,
         topTip = U.TopTip,
-        parseForm = Hualala.Common.parseForm,
+        parseForm = C.parseForm,
         nTypes = Hualala.TypeDef.SaasNotesType,
         addPriceTypes = Hualala.TypeDef.SaasaddPriceType;
     Hualala.Saas.remarks.initRemark = function($remark,shopID){
@@ -19,7 +20,7 @@ $( function ($, window) {
             RemarkQueryForm = Handlebars.compile(Hualala.TplLib.get('tpl_remark_query'));
             RemarklistTpl = Handlebars.compile(Hualala.TplLib.get('tpl_remark_card'));
             editRemarkTpl = Handlebars.compile(Hualala.TplLib.get('tpl_remark_modal'));
-            $(RemarkQueryForm({nTypes:nTypes})).appendTo($remark);
+            $(RemarkQueryForm({nTypes:IX.clone(nTypes)})).appendTo($remark);
             $remarklist=$remark.find('.remark-list');
         }
         function renderCards(params){
@@ -113,23 +114,24 @@ $( function ($, window) {
         function renderDialog(itemID,shopID,GroupName){
             var remarkData = {};
                 remarkData = _.findWhere(remarks, {itemID: itemID});
-                nTypes=_.map(nTypes,function (nTypes){
+            var  nTypesData=_.map(IX.clone(nTypes),function (nTypes){
                     return _.extend(nTypes,{selected:nTypes.value==GroupName ? 'selected' : ''});
                 })
+            var addPriceTypesData;
             if(remarkData){
                 //select下拉框的内容填充，扩充数据
-                addPriceTypes=_.map(addPriceTypes,function (addPriceTypes) {
+                addPriceTypesData=_.map(IX.clone(addPriceTypes),function (addPriceTypes) {
                     return _.extend(addPriceTypes,{selected:addPriceTypes.value==remarkData.addPriceType ? 'selected' :''});
                 });
             }
             else{
-                addPriceTypes=_.map(addPriceTypes,function (addPriceTypes) {
+                addPriceTypesData=_.map(IX.clone(addPriceTypes),function (addPriceTypes) {
                     return _.extend(addPriceTypes,{selected:''});
                 });  
             }
             isAdd = itemID === undefined;
             var dTitle = (isAdd ? '添加' : '修改') + '字典';
-            var modalVals = {remarkData: remarkData, nTypes: nTypes,addPriceTypes:addPriceTypes};
+            var modalVals = {remarkData: remarkData, nTypes: nTypesData,addPriceTypes:addPriceTypesData};
             $editSet = $(editRemarkTpl(modalVals));
             if(GroupName!=20){
                 $editSet.find("select[name=addPriceType]").parent().parent().addClass('hidden');
@@ -143,7 +145,12 @@ $( function ($, window) {
                 backdrop : 'static',
                 html: $editSet
             }).show();
-            $editSet.bootstrapValidator({
+            RemarkFormValidate($editSet);
+            bv = $editSet.data('bootstrapValidator');
+            bindModalevent(itemID,shopID);
+        }
+        function RemarkFormValidate($form){
+            $form.bootstrapValidator({
                 fields: {
                     notesType: {
                         validators: {
@@ -153,19 +160,14 @@ $( function ($, window) {
                     notesName: {
                         validators: {
                             notEmpty: { message: '字典名不能为空' },
+                            regexp: {
+                                regexp: /^[a-zA-Z0-9\u4e00-\u9fa5 ]{1,20}$/,
+                                message: '请不要输入特殊字符'
+                            },
                             stringLength : {
                                 min : 1,
                                 max : 50,
                                 message : "字典名称长度在1-50个字符之间"
-                            },
-                            ajaxValid :{
-                                api: "checckRemarkNameIsExist",
-                                name:'notesName',
-                                data:{
-                                    shopID : shopID,
-                                    notesType: GroupName,
-                                    itemID: itemID ? itemID : ''
-                                }
                             }
                         }
                     },
@@ -186,9 +188,6 @@ $( function ($, window) {
                     }
                 }
             });
-            bv = $editSet.data('bootstrapValidator');
-            bindModalevent(itemID,shopID)
-            //modal._.footer.find('.btn-ok').on('click', submitSet);
         }
         //添加和更新列表
         function bindModalevent(itemID,shopID){
@@ -200,25 +199,26 @@ $( function ($, window) {
                     $inputGrp[val == 0 ? 'addClass' : 'removeClass']('hidden');
             });
             modal._.footer.find('.btn-ok').on('click',function (e){
-            if(!bv.validate().isValid()) return;
-            var data = parseForm($editSet);
-            $.extend(data,{ shopID:shopID,groupID:groupID,itemID:itemID});
-            //parseForm对于无效的表单元素是不能序列化的。
-            data.notesType =$editSet.find('[name=notesType] option:selected').val()||0;
-            data.addPriceType= data.addPriceType || 0;
-            data.addPriceValue= data.addPriceValue || 0;
-            G[isAdd ? 'addSaasRemark' : 'editSaasRemark'](data, function(rsp)
-            {
-                if(rsp.resultcode != '000')
-                {
-                    rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
-                    return;
+                if(!bv.validate().isValid()) return;
+                var data = parseForm($editSet);
+                $.extend(data,{ shopID:shopID,groupID:groupID,itemID:itemID});
+                //parseForm对于无效的表单元素是不能序列化的。
+                data.notesType = $editSet.find('[name=notesType] option:selected').val()||0;
+                data.notesName = $.trim(data.notesName);
+                data.addPriceType= data.addPriceType || 0;
+                data.addPriceValue= data.addPriceValue || 0;
+                var nameCheckData = {shopID:shopID,notesName:data.notesName,notesType:data.notesType,itemID: itemID}
+                function callbackFn(res){
+                    topTip({msg: (isAdd ? '添加' : '修改') + '成功！', type: 'success'});
+                    searchRemark();
+                    modal.hide();
                 }
-                topTip({msg: (isAdd ? '添加' : '修改') + '成功！', type: 'success'});
-                searchRemark();
-                modal.hide();
-            }); 
-            })
+                if(isAdd){
+                    C.NestedAjaxCall("checckRemarkNameIsExist","addSaasRemark",nameCheckData,data,callbackFn);
+                }else{
+                    C.NestedAjaxCall("checckRemarkNameIsExist","editSaasRemark",nameCheckData,data,callbackFn);  
+                }
+            });
         }
     }
 }(jQuery , window ));

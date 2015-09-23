@@ -5,6 +5,7 @@
     {
         var W = Hualala.Weixin,
             C = Hualala.Common,
+            G = Hualala.Global,
             tplLib = Hualala.TplLib,
             U = Hualala.UI,
             topTip = Hualala.UI.TopTip;
@@ -20,15 +21,21 @@
             $adTitle = $adCont.find('.ad-title'),
             $input = $adCont.find('.ad-title-input'),
             $adSubTitle = $adCont.find('.ad-sub-title'),
-            $adPreview = $adCont.find('.ad-preview');
+            $adPreview = $adCont.find('.ad-preview'),
+            $subTitleinput = $adCont.find('.ad-secondTitle-input'),
+            $adsecondTitle = $adCont.find('.ad-secondTitle-title'),
+            $adtitleImg = $adCont.find('.ad-titleImg'),
+            $pretitleImg = $adCont.find('.pre-titleImg'),
+            $adimgoperate = $adCont.find('.adimg-operate');
 
         var adEditor = U.createEditor('adEditor');
-        Hualala.UI.EditorList.push(adEditor);
+            U.EditorList.push(adEditor);
 
         var adTpl = Handlebars.compile([
         '{{#each records}}',
         '<li data-id="{{itemID}}">',
             '<h3>{{title}}</h3>',
+            '<p class="list-img clearfix"><img width="40" heigth="40" src="{{imgSrc}}"/><span>{{subTitle}}</span></p>',
             '<h6>{{time}}  {{groupName}}</h6>',
         '</li>',
         '{{/each}}'].join(''));
@@ -57,6 +64,23 @@
             ad = _.findWhere(ads, {itemID: $this.data('id')+''});
             $adTitle.text(ad.title);
             $input.val(ad.title);
+            //副标题和图片
+            $adsecondTitle.text(ad.subTitle);
+            $subTitleinput.val(ad.subTitle);
+            var ImgUrl = ad.titleImg ?G.IMAGE_RESOURCE_DOMAIN + '/' + ad.titleImg : "";
+            $adtitleImg.attr('src', ImgUrl);
+            $adtitleImg.attr('orignsrc',ad.titleImg);
+            ad.titleImg.length==0?$adtitleImg.addClass("hidden"):$adtitleImg.removeClass("hidden");
+            var $pretitleImg = $adCont.find('.pre-titleImg');
+            if(ad.titleImg.length==0){
+                var imgSrc = G.IMAGE_ROOT + '/' + 'wechat.png';
+                $pretitleImg.attr('src', imgSrc);
+                $pretitleImg.attr('orignsrc',ad.titleImg);    
+            }else{
+                $pretitleImg.attr('src', ImgUrl);
+                $pretitleImg.attr('orignsrc',ad.titleImg);  
+            }
+
             $adSubTitle.text(ad.time + '  ' + ad.groupName);
             $adPreview.html(ad.body);
             adEditor.setContent(ad.body);
@@ -64,15 +88,60 @@
             $headBtn.removeClass('dn');
             $(window).scrollTop(0);
         });
-        
+
         $pageCont.on('click', '.btn', function()
         {
             var $this = $(this),
                 methodName = $this.data('action');
             if(methodName && methods[methodName])
                 methods[methodName]($this);
+            bindFileUpload();
         });
-        
+        //上传图片
+        function bindFileUpload(){
+            $adCont.on('click', '.btn-link',function(){
+                var $titleImg = $adCont.find('.second-title'),
+                    $ImgDiv = $titleImg.find('adimg-operate'),
+                    $uploadLabel = $titleImg.find('.btn-link'),
+                    $pretitleImg = $titleImg.find('.pre-titleImg'),
+                    $img = $adCont.find('.ad-titleImg'),
+                    preImgSrc = $pretitleImg.attr('src'),
+                    imgSrc = $img.attr('src');
+                U.fileUpload($uploadLabel, function(rsp) {
+                    var path = rsp.url;
+                        logoImgUrl = G.IMAGE_RESOURCE_DOMAIN + '/' + path;
+                        $img.attr('src', logoImgUrl);
+                        $img.attr('orignsrc',path);
+                        $pretitleImg.attr('src',logoImgUrl);
+                        $pretitleImg.attr('orignsrc',path);
+                    },
+                    {
+                        onBefore: function ($elem, $file) {
+                            imgSrc = $img.attr('src');
+                            $ImgDiv.addClass('loading');
+                             if(window.FileReader) previewImg($file[0], $img);
+                        },
+                        onFail: function () {
+                            if (window.FileReader) $img.attr('src', imgSrc);
+                        },
+                        onAlways: function () {
+                            $ImgDiv.removeClass('loading');
+                        },
+                        accept: 'image/png,image/jpeg,image/jpg'
+                    }
+                );            
+            });
+        }
+        function previewImg(fileInput, $img) {
+            if (fileInput.files && fileInput.files[0])
+            {
+                var reader = new FileReader();
+                reader.onload = function(e){
+                    $img.attr('src', e.target.result);
+                }
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
         $pager.on('page', function(e, pageNo)
         {
             params.pageNo = pageNo;
@@ -100,6 +169,16 @@
         
         function renderAds(data)
         {
+            _.map(data.records,function (record){
+                if(record.titleImg.length==0){
+                    var imgSrc = G.IMAGE_ROOT + '/' + 'wechat.png';
+                    record.imgSrc =  imgSrc;
+                }else{
+                    var ImgUrl = G.IMAGE_RESOURCE_DOMAIN + '/' + record.titleImg;
+                    record.imgSrc =  ImgUrl;
+                }
+
+            });
             $ul.show().html(adTpl(data));
             var page = data.page;
             $pager.IXPager({total : page.pageCount, page: page.pageNo, maxVisible: 10, href : 'javascript:;'});
@@ -107,6 +186,7 @@
             $article.toggleClass('dn', !ads.length);
             $alert.toggleClass('dn', !!ads.length);
             if(ads.length) $ul.find('li').eq(0).click();
+
             
         }
         
@@ -120,6 +200,11 @@
             $ul.find('.current').removeClass('current');
             ad = null;
             $input.val('');
+            $subTitleinput.val('');
+            $adtitleImg.attr("src","");
+            $adtitleImg.attr("orignsrc","");
+            $pretitleImg.attr("src","");
+            $pretitleImg.attr("orignsrc","");
             $adSubTitle.text(sGroupName);
             adEditor.setContent('');
             $adCont.addClass('editing');
@@ -130,6 +215,7 @@
         function editAd()
         {
             $adCont.addClass('editing');
+           
             $headBtn.attr('disabled', 'disabled');
         }
         
@@ -159,7 +245,8 @@
         
         function saveAd($btn)
         {
-            var title = $.trim($input.val());
+            var title = $.trim($input.val()),
+                subTitle = $.trim($subTitleinput.val());
             if(!title)
             {
                 topTip({msg: '请输入软文标题！', type: 'warning'});
@@ -170,7 +257,9 @@
             var body = adEditor.getContent(),
                 groupName = ad ? ad.groupName : groupName,
                 saveAction = ad ? updateAd : createAd;
-            saveAction($btn, {title: title, body: body, groupName: sGroupName});
+                titleImg = $adtitleImg.attr('orignsrc');
+            saveAction($btn, {title: title,subTitle: subTitle,titleImg:titleImg,body: body, groupName: sGroupName});
+
         }
 
         function updateAd($btn, _ad)
@@ -205,6 +294,16 @@
                 $adCont.removeClass('editing');
                 $alert.addClass('dn');
                 $(adTpl({records: records})).prependTo($ul.show()).click();
+                if(ad.titleImg.length==0){
+                    var imgSrc = G.IMAGE_ROOT + '/' + 'wechat.png',
+                        $addimg = $($pageCont.find('.list-img img')[0]);
+                        $addimg.attr('src',imgSrc);
+                        
+                }else{
+                    var ImgUrl = G.IMAGE_RESOURCE_DOMAIN + '/' + ad.titleImg,
+                        $addimg = $pageCont.find('.list-img img')[0];
+                        $addimg.attr('src',ImgUrl);
+                }
                 topTip({msg: '保存成功!', type: 'success'});
             })
             .always(function(){ resetBtn($btn) });
@@ -227,6 +326,10 @@
             }
             $headBtn.removeAttr('disabled');
             $input.val(ad.title);
+            $subTitleinput.val(ad.subTitle);
+            ad.titleImg.length==0?$adtitleImg.addClass("hidden"):$adtitleImg.removeClass("hidden");
+            var ImgUrl = ad.titleImg ?G.IMAGE_RESOURCE_DOMAIN + '/' + ad.titleImg : "";
+            $adtitleImg.attr('src', ImgUrl);
             adEditor.setContent(ad.body);
             $(window).scrollTop(0);
         }
@@ -247,17 +350,5 @@
             }, 300)
         }
         
-    }
-    
+    } 
 })(jQuery, window);
-
-
-
-
-
-
-
-
-
-
-

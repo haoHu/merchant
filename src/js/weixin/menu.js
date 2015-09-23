@@ -1,8 +1,7 @@
 (function ($, window) {
 	IX.ns("Hualala.Weixin");
     
-    Hualala.Weixin.initMenu = function($pageBody, mpID)
-    {
+    Hualala.Weixin.initMenu = function($pageBody, mpID){
         if(!mpID) return;
         var W = Hualala.Weixin,
             G = Hualala.Global,
@@ -30,7 +29,6 @@
             
             $selectWrap = $actions.find('.link-select-wrap'),
             $contentWrap = $actions.find('.link-content-wrap'),
-            
             $save = $pageBody.find('#saveBtn');
             
         var menus = [], selectedMenu = null,
@@ -125,8 +123,7 @@
                 methods[methodName]($target);
         });
         
-        function addMenu()
-        {
+        function addMenu(){
             var menuCount = menus.length;
             if(menuCount >= 3){
                 U.Alert({msg: '微信一级菜单最多只能创建3个！'});
@@ -136,19 +133,20 @@
             var $form = $(editMenuTpl({menuType: '一', max: 5})),
                 $input = $form.find('input'),
                 modal = new U.ModalDialog({title: '添加一级菜单', html: $form}).show();
-            modal._.footer.find('.btn-ok').text('确定').on('click', function()
-            {
+                menuFormValidate($form);
+            modal._.footer.find('.btn-ok').text('确定').on('click', function(){
                 var val = $.trim($input.val());
-                if(!val) { topTip({msg: '请输入菜单名称！'}); return; }
-                var menu = selectedMenu = { name: val};
-                menus.push(menu);
-                renderMenu();
-                modal.hide();
+                if(!$form.data('bootstrapValidator').validate().isValid()) return;
+                else{
+                    var menu = selectedMenu = { name: val};
+                    menus.push(menu);
+                    renderMenu();
+                    modal.hide();
+                }
             });
         }
         
-        function importMenu($target)
-        {
+        function importMenu($target){
             $target.button('importing');
             $buttons.attr('disabled', 'disabled');
             loadData('importWinxinMenu', {mpID: mpID})
@@ -161,8 +159,7 @@
             .always(function(){ resetButtons($target) });
         }
         
-        function saveMenu($target)
-        {
+        function saveMenu($target){
             var params = procPostMenuData();
             if(!params) return;
             if($target)
@@ -178,8 +175,7 @@
             .always(function(){ resetButtons($target) });
         }
         
-        function publishMenu($target)
-        {
+        function publishMenu($target){
             var params = procPostMenuData();
             if(!params) return;
             //saveMenu(null, params);
@@ -193,8 +189,7 @@
             .always(function(){ resetButtons($target) });
         }
         
-        function resetButtons($target)
-        {
+        function resetButtons($target){
             if(!$target) return;
             setTimeout(function()
             {
@@ -203,8 +198,7 @@
             }, 300)
         }
         
-        function procPostMenuData()
-        {
+        function procPostMenuData(){
             if(!menus.length)
             {
                 topTip({msg: '还没有添加菜单！'});
@@ -239,8 +233,7 @@
             };
         }
         
-        function resovleMenuClick(e)
-        {
+        function resovleMenuClick(e){
             var $this = $(this),
                 id = $this.attr('id'),
                 $target = $(e.target),
@@ -271,8 +264,7 @@
                 toAction(null, 'scanCode');
         }
         
-        function getMenuInfo(id)
-        {
+        function getMenuInfo(id){
             for(var i = 0, menu; menu = menus[i]; i++)
             {
                 if(id == menu.id)
@@ -284,8 +276,7 @@
             }
         }
         
-        function toAction(from, to, msg)
-        {
+        function toAction(from, to, msg){
             var actionName = to || from.data('target'),
                 method = methods[actionName];
             $actions.hide().filter('#' + actionName).fadeIn();
@@ -294,14 +285,12 @@
         
         function showTip(msg) { $showTip.text(msg); }
         
-        function chooseAction() 
-        {
+        function chooseAction() {
             for(p in selectedMenu)
                 if(!/name|id/.test(p)) delete selectedMenu[p];
         }
         
-        function sendMsg()
-        {
+        function sendMsg(){
             var key = selectedMenu.key || '',
                 match = key.match(/\d+/),
                 resID = (match && match[0]) || '',
@@ -311,8 +300,7 @@
             .done(function(res){ resources = res; });
         }
         
-        function saveMsg()
-        {
+        function saveMsg(){
             var val = $resWrap.find('select').val();
             if(!val)
             {
@@ -335,13 +323,11 @@
             });
         }
         
-        function toPage()
-        {
+        function toPage(){
             W.createLinkSelector($selectWrap, $contentWrap, dataHolder, selectedMenu.softType, selectedMenu.softWenChoose);
         }
         
-        function saveLink()
-        {
+        function saveLink(){
             var val = $selectWrap.find('select').val();
             if(!val)
             {
@@ -366,15 +352,13 @@
             topTip({msg: '菜单设置成功！（保存菜单后生效）', type: 'success'});
         }
         
-        function scanCode()
-        {
+        function scanCode(){
             selectedMenu.type = 'scancode_push';
             selectedMenu.key = 'scanMenu';
             //topTip({msg: '菜单设置成功！（保存菜单后生效）', type: 'success'});
         }
         
-        function addSubMenu($menu, menuInfo)
-        {
+        function addSubMenu($menu, menuInfo){
             var menu = menuInfo.menu,
                 id = menu.id,
                 subMenus = menu.sub_button || [],
@@ -391,38 +375,58 @@
             var $form = $(editMenuTpl({menuType: '二', max: 13})),
                 $input = $form.find('input'),
                 modal = new U.ModalDialog({title: '添加二级菜单', html: $form}).show();
+                menuFormValidate($form);
             modal._.footer.find('.btn-ok').text('确定').on('click', function()
             {
                 var val = $.trim($input.val());
-                if(!val) { topTip({msg: '请输入菜单名称！'}); return; }
-                var subMenu = selectedMenu = { name: val };
-                subMenus.push(subMenu);
-                menu.sub_button = subMenus;
-                renderMenu();
-                modal.hide();
+                if(!$form.data('bootstrapValidator').validate().isValid()) return;
+                else{
+                    var subMenu = selectedMenu = { name: val };
+                        subMenus.push(subMenu);
+                        menu.sub_button = subMenus;
+                        renderMenu();
+                        modal.hide();
+                }
+            });
+        }
+        //验证。不能输入特殊字符
+        function menuFormValidate($form){
+            $form.bootstrapValidator({
+                fields: {
+                    weixinMenu: {
+                        validators: {
+                            notEmpty: { message: '菜单名称不能为空' },
+                            regexp: {
+                                regexp : /^[^\\\\"'\[\]{}]*$/,
+                                message : '请不要输入反斜杠、单引号、双引号、大括号、中括号等特殊字符'
+                            }
+                        }
+                    }
+                }
             });
         }
         
-        function editMenu($menu, menuInfo)
-        {
+        function editMenu($menu, menuInfo){
             var menu = menuInfo.menu,
                 menuType = menu.id.length == 1 ? '一' : '二',
                 max = menu.id.length == 1 ? '5' : '13',
                 $form = $(editMenuTpl({name: menu.name, menuType: menuType, max: max})),
                 $input = $form.find('input'),
                 modal = new U.ModalDialog({title: '编辑菜单名称', html: $form}).show();
+                menuFormValidate($form);
             modal._.footer.find('.btn-ok').text('确定').on('click', function()
             {
                 var val = $.trim($input.val());
-                if(!val) { topTip({msg: '请输入菜单名称！'}); return; }
-                menu.name = val;
-                $menu.find('b').text(val);
-                modal.hide();
+                if(!$form.data('bootstrapValidator').validate().isValid()) return;
+                else{
+                    menu.name = val;
+                    $menu.find('b').text(val);
+                    modal.hide();
+                }
             });
         }
         
-        function deleteMenu($menu, menuInfo)
-        {
+        function deleteMenu($menu, menuInfo){
             U.Confirm({msg: '确定删除？', okFn: function()
             { 
                 menuInfo.menus.splice(menuInfo.index, 1);
@@ -432,8 +436,7 @@
             }});
         }
         
-        function moveMenuUp($menu, menuInfo)
-        {
+        function moveMenuUp($menu, menuInfo){
             if(menuInfo.index == 0) return;
             var index = menuInfo.index,
                 menu = menuInfo.menu,
@@ -445,8 +448,7 @@
             renderMenu();
         }
         
-        function moveMenuDown($menu, menuInfo)
-        {
+        function moveMenuDown($menu, menuInfo){
             var index = menuInfo.index,
                 menu = menuInfo.menu,
                 menus = menuInfo.menus,
@@ -459,9 +461,7 @@
             renderMenu();
         }
         
-    }
-    
-    
+    } 
 })(jQuery, window);
 
 

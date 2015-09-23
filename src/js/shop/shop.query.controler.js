@@ -11,7 +11,7 @@
 		 *            @param {Boolean} cfg.needShopCreate 是否开启创建店铺功能
 		 *            @param {JQueryObj} container 容器
 		 *            @param {Object} resultController 结果输出控制器
-		 * @return {Object}     
+		 * @return {Object}
 		 */
 		constructor : function (cfg) {
 			this.set({

@@ -4,10 +4,13 @@
 	var popoverMsg = Hualala.UI.PopoverMsgTip,
 		toptip = Hualala.UI.TopTip;
 
-	var PromotionRulesSetHT = new IX.IListManager();
-	var PromotionRulesSetFormKeys = "discountScope,discountScale,discountRange,remark,chkFreeAmount,freeAmount,chkPresentInfo,presentInfo,chkVoucher,voucherItemID,voucherValue,voucherDesc,voucherNum,validityDays,voucherType".split(',');
-	var PromotionLevelCount = 3;
-	var PromotionLevelNames = ["", "档次一","档次二","档次三"];
+	var PromotionRulesSetHT = new IX.IListManager(),
+		PromotionRulesOtherHT = new IX.IListManager();
+	var PromotionRulesFirsFormKeys = "discountScope,discountScale,discountRange,remark,chkPresentInfo,presentInfo,chkVoucher,voucherItemID,voucherValue,voucherDesc,voucherNum,validUntilDate,voucherType".split(',');
+	var PromotionRulesLastFormKeys = "minAmount,discountScope,discountScale,discountRange,remark,chkFreeAmount,freeAmount,chkPresentInfo,presentInfo,chkVoucher,voucherItemID,voucherValue,voucherDesc,voucherNum,validUntilDate,voucherType".split(',');
+	var PromotionRulesSecondFormKeys = "discountScope,discountScale,discountRange,remark,stageAmount,chkFreeAmount,freeAmount,chkPresentInfo,presentInfo,chkVoucher,voucherItemID,voucherValue,voucherDesc,voucherNum,validUntilDate,voucherType".split(',');
+	var PromotionLevelCount = 3,
+		PromotionLevelNames = ["", "档次一","档次二","档次三"];
 	HSP.PromotionLevelNames = PromotionLevelNames;
 	var PromotionRulesSetFormElsCfg = {
 		//是否打折
@@ -26,13 +29,16 @@
 		discountScale:{
 			type : "text",
 			label : "折扣率",
-			defaultVal : "0",
-			surfix : '折',
-			help : "如：9折为九折、8.8折为八八折",
+			defaultVal : "",
+			help : "如：0.9为九折、0.88为八八折",
 			validCfg : {
 				validators : {
 					notEmpty : {
 						message : "请输入折扣率"
+					},
+					regexp: {
+						regexp: /^[0](\.(?:0[1-9]|[1-9][0-9]?))$/, 
+						message: '输入数字为0到1之间的小数且小数点后最多为两位'
 					}
 				}
 			}
@@ -41,7 +47,7 @@
 		discountRange : {
 			type : 'radiogrp',
 			label : '折扣范围',
-			defaultVal : '0',
+			defaultVal : '1',
 			options : [{value:"1",label:"全单"},{value:"0",label:"部分"},],
 			validCfg : {}
 		},
@@ -53,6 +59,35 @@
 				validators : {
 				}
 			}
+		},
+		stageAmount :{
+			type : "text",
+			label : "(折后)每满",
+			prefix : '￥',
+  			surfix : '元',
+			defaultVal : "",
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "金额不能为空"
+					}
+				}
+			}
+		},
+		minAmount :{
+			type : "text",
+			label : "消费满",
+			prefix : '￥',
+  			surfix : '元（含）以上',
+			defaultVal : "",
+			validCfg : {
+				validators : {
+					notEmpty : {
+						message : "金额不能为空"
+					}
+				}
+			}
+
 		},
 		//减免freeAmount
 		chkFreeAmount :{
@@ -131,7 +166,7 @@
 		voucherNum  : {
 			type : "text",
 			label : "赠券张数",
-			defaultVal : "1",
+			defaultVal : "",
 			surfix : '张',
 			validCfg : {
 				validators : {
@@ -142,7 +177,7 @@
                     between: {
                     	min: 1, 
                     	max: 10,
-                    	message: '必须是1-10的值'
+                    	message: '必须是1-10之间的整数'
                     }
 				}
 			}
@@ -186,6 +221,7 @@
 			type : 'combo',
 			label : "返券规则",
 			defaultVal : "0",
+			help : "返券规则适用于所有的促销档次，设置一个均可。取最后一个为准",
 			options : Hualala.TypeDef.ShopPromotionDataSet.returnVoucherTypes,
 			validCfg : {
 				validators : {
@@ -199,7 +235,7 @@
 		presentInfo :{
 			type : "text",
 			label : "赠送备注",
-			defaultVal : "0",
+			defaultVal : "",
 			validCfg : {
 				validators : {
 					notEmpty : {
@@ -219,28 +255,63 @@
 				var ops = _.map($XP(el, 'options'), function (op) {
 					return IX.inherit(op, {
 						id : key,
-						name : k,
+						name : key,
+						origname: k,
 						clz : (type == 'radiogrp' ? ' radio-inline' : ' checkbox-inline')
 					});
 				});
 				PromotionRulesSetHT.register(key, IX.inherit(el, {
 					id : key,
-					name : k,
+					name : key,
+					origname: k,
 					options : ops,
 					labelClz : labelClz,
 					clz : 'col-sm-7'
 				}));
-			}
-			else{ 
+			} else { 
 				PromotionRulesSetHT.register(key, IX.inherit(el, {
 					id : key,
-					name : k,
+					name : key,
+					origname: k,
 					labelClz : labelClz,
 					clz : 'col-sm-6'
 				}));
 			}
 		});
 	}
+
+	var labelClz = 'col-sm-offset-1 col-sm-3 control-label';
+	_.each(PromotionRulesSetFormElsCfg, function (el, k) {
+		var type = $XP(el, 'type');
+		if (type == 'radiogrp' || type == 'checkboxgrp') {
+			var ops = _.map($XP(el, 'options'), function (op) {
+				return IX.inherit(op, {
+					id : k,
+					name : k,
+					origname: k,
+					clz : (type == 'radiogrp' ? ' radio-inline' : ' checkbox-inline')
+				});
+			});
+			PromotionRulesOtherHT.register(k, IX.inherit(el, {
+				id : k,
+				name : k,
+				origname: k,
+				options : ops,
+				labelClz : labelClz,
+				clz : 'col-sm-7'
+			}));
+		}
+		else{ 
+			PromotionRulesOtherHT.register(k, IX.inherit(el, {
+				id : k,
+				name : k,
+				origname: k,
+				labelClz : labelClz,
+				clz : 'col-sm-6'
+			}));
+		}
+	});
+	
 	/**
 	 * 整理促销规则表单渲染数据
 	 * @return {[type]} [description]
@@ -261,9 +332,14 @@
 				var promotionLevelName = promotionLevelNames[i],
 					panelClz = 'mcm-evtgift-panel ';
 				var stage = rulesJson.stage;
-				if ((stage != undefined && !IX.isEmpty(stage)) || i == 1) {
-					panelClz += ' isActive ';
+				if(stage!=undefined){
+					panelClz += (stage[i-1] != undefined && !IX.isEmpty(stage[i-1])) || i == 1?' isActive ':'';
+				}else{
+					panelClz += i == 1?' isActive ':'';
 				}
+				// if ((stage[i-1] != undefined && !IX.isEmpty(stage[i-1])) || i == 1) {
+				// 	panelClz += ' isActive ';
+				// }
 				var addbtn = {clz : 'btn-warning btn-add', name : 'addGift', label : '添加新档'},
 					delbtn = {clz : 'btn-default btn-del', name : 'deleteGift', label : '删除' + promotionLevelName};
 				var giftSet = {
@@ -275,13 +351,19 @@
 					var key = k + '_' + i,
 						elCfg = PromotionRulesSetHT.get(key),
 						type = $XP(elCfg, 'type');
-					var v = null;
 					if (type == 'checkboxgrp') {
 						switch(k) {
 							//折扣勾选项
 	                        case "discountScope":
-	                        	var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1][k]:0,
-	                        		options = _.map($XP(elCfg, 'options'), function (op) {
+	                        	var v;
+	                      		if(stage!=undefined){
+		                        	if(rulesJson.stage[i-1]!=undefined){
+		                        		if(rulesJson.stage[i-1][k]){
+		                        			v = rulesJson.stage[i-1][k];
+		                        		}
+		                        	}
+	                        	}
+	                        	var	options = _.map($XP(elCfg, 'options'), function (op) {
 									return IX.inherit(op, {
 										checked : v > 0 ? 'checked' : ''
 									});
@@ -292,8 +374,15 @@
 	                            break;
 	                        //减免金额勾选项
 	                        case "chkFreeAmount" :
-	                        	var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1].freeAmount:0,
-								options = _.map($XP(elCfg, 'options'), function (op) {
+	                        	var v;
+	                        	if(stage!=undefined){
+		                        	if(rulesJson.stage[i-1]!=undefined){
+		                        		if(rulesJson.stage[i-1].freeAmount){
+		                        			v = 1;
+		                        		}
+		                        	}
+		                        }
+								var options = _.map($XP(elCfg, 'options'), function (op) {
 									return IX.inherit(op, {
 										checked : v > 0 ? 'checked' : ''
 									});
@@ -304,7 +393,14 @@
 	                            break;
 	                        //赠送备注勾选
 	                        case "chkPresentInfo":
-	                        	var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1].presentInfo:0,
+	                        	var v;
+	                        	if(stage!=undefined){
+		                        	if(rulesJson.stage[i-1]!=undefined){
+		                        		if(rulesJson.stage[i-1].presentInfo){
+		                        			v = 1;
+		                        		}
+		                        	}
+		                        }
 								options = _.map($XP(elCfg, 'options'), function (op) {
 									return IX.inherit(op, {
 										checked : v > 0 ? 'checked' : ''
@@ -316,8 +412,15 @@
 	                            break;
 	                        //返券勾选
 	                        case "chkVoucher" :
-	                        	var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1].voucherDesc:0,
-								options = _.map($XP(elCfg, 'options'), function (op) {
+	                        	var v
+	                        	if(stage!=undefined){
+		                        	if(rulesJson.stage[i-1]!=undefined){
+		                        		if(rulesJson.stage[i-1].voucherDesc){
+		                        			v = 1;
+		                        		}
+		                        	}
+		                        }
+								var options = _.map($XP(elCfg, 'options'), function (op) {
 									return IX.inherit(op, {
 										checked : v > 0 ? 'checked' : ''
 									});
@@ -327,46 +430,138 @@
 								});
 	                            break;
                     	}
-					} else if(type == 'textarea') {
-						var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1].remark:0;
-						return IX.inherit(elCfg, {
-			                value : Hualala.Common.decodeTextEnter(v || '') || $XP(elCfg, 'dafaultVal')
-			            });
-					} else if(type=='radiogrp') {
-						if(k=='discountRange'){
-							var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1].remark:0,
-								options = _.map($XP(elCfg, 'options'), function (op) {
+					} else if(type=='combo'){
+						if(k=='voucherType'){
+							var v = 0;
+							if(stage!=undefined){
+		                    	if(rulesJson!=undefined){
+		                    		if(rulesJson[k]){
+		                    			v = rulesJson[k];
+		                    		}
+		                    	}
+		                    }
+							var	options = _.map($XP(elCfg, 'options'), function (op) {
 									return IX.inherit(op, {
-										checked : v > 0 ?'' :'checked'
+										selected : $XP(op, 'value') == v ? 'selected' : ''
 									});
 								});
 							return IX.inherit(elCfg, {
+								value : v,
+								hidden: v==0 ? "hidden" : "",
 								options : options
+							});
+						}
+					} else if(type == 'textarea') {
+					    var v;
+					    if(stage!=undefined){
+	                    	if(rulesJson.stage[i-1]!=undefined){
+	                    		if(rulesJson.stage[i-1].remark){
+	                    			v = 1;
+	                    		}
+	                    	}
+	                    }
+						return IX.inherit(elCfg, {
+			                value : equalFlag ? Hualala.Common.decodeTextEnter(v || ''):$XP(elCfg, 'dafaultVal'),
+			                hidden: v==undefined ? "hidden": ""
+			            });
+					} else if(type=='radiogrp') {
+						if(k=='discountRange'){
+							var v,operate;
+							if(stage!=undefined){
+		                    	if(rulesJson.stage[i-1]!=undefined){
+		                    		if(rulesJson.stage[i-1].remark){
+		                    			v = 1;
+		                    		}
+		                    		if(rulesJson.stage[i-1].discountScope){
+                    					operate = rulesJson.stage[i-1].discountScope==1?1:0;
+                    				}
+		                    	}
+		                    }
+							var	options = _.map($XP(elCfg, 'options'), function (op) {
+								var flag =((v==1)&&(op.value==0))||((v!=1)&&(op.value==1));
+									return IX.inherit(op, {
+										checked :flag?'checked':'',
+										disabled : operate==1?'':'disabled'
+									});
+								});
+							return IX.inherit(elCfg, {
+								options : options,
 							});
 						}
 					} else if(type=='text'){
 						switch(k) {
 	                        case "discountScale":
-	                       	var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1][k]:0,
-	                       		label = parseFloat(v.toString().movePoint(1)).toString();
+		                        var v,label;
+		                        if(stage!=undefined){
+			                    	if(rulesJson.stage[i-1]!=undefined){
+			                    		if(rulesJson.stage[i-1][k]){
+			                    			v = rulesJson.stage[i-1][k];
+			                    			//label = parseFloat(v.toString().movePoint(1)).toString()
+			                    		}
+			                    	}
+			                    }
 	                        	return IX.inherit(elCfg, {
-									value : label || $XP(elCfg, 'defaultVal'),
-									hidden: v==0 ? "hidden": ""
+									value : equalFlag ? v : $XP(elCfg, 'defaultVal'),
+									hidden: v==undefined ? "hidden": ""
 								});
 	                            break;
 	                        case "freeAmount" :
 	                        case "presentInfo":
 	                        case "voucherNum" :
 	                        case "voucherDesc" :
-	                        	var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1][k]:0;
+	                        case "validUntilDate":
+		                        var v;
+		                        if(stage!=undefined){
+			                    	if(rulesJson.stage[i-1]!=undefined){
+			                    		if(rulesJson.stage[i-1][k]){
+			                    			v = rulesJson.stage[i-1][k];
+			                    		}
+			                    	}
+			                    }
 	                        	return IX.inherit(elCfg, {
-									value : v || $XP(elCfg, 'defaultVal'),
-									hidden: v==0 ? "hidden": ""
+									value : equalFlag ? v: $XP(elCfg, 'defaultVal'),
+									hidden: v==undefined ? "hidden": ""
+								});
+	                            break;
+	                        case "minAmount":
+	                        	var v;
+	                        	if(stage!=undefined){
+			                    	if(rulesJson.stage[i-1]!=undefined){
+			                    		if(rulesJson.stage[i-1][k]){
+			                    			v = rulesJson.stage[i-1][k];
+			                    		}
+			                    	}
+			                    }
+	                        	return IX.inherit(elCfg, {
+									value : equalFlag ? v: $XP(elCfg, 'defaultVal')
 								});
 	                            break;
                     	}
-					} else {
-						var v = (rulesJson.stage!=undefined)?rulesJson.stage[i-1][k]:0;
+					} else if(type=='pickgift'){
+						if(k=='voucherDesc'){
+                        	var v;
+                        	if(stage!=undefined){
+	                        	if(rulesJson.stage[i-1]!=undefined){
+	                        		if(rulesJson.stage[i-1].voucherDesc){
+	                        			v = rulesJson.stage[i-1].voucherDesc;
+	                        		}
+	                        	}
+	                        }
+                        	return IX.inherit(elCfg, {
+								value : v || $XP(elCfg, 'defaultVal'),
+								hidden: v==undefined ? "hidden": ""
+							});
+						}
+					}
+					else {
+						var v;
+						if(stage!=undefined){
+	                    	if(rulesJson.stage[i-1]!=undefined){
+	                    		if(rulesJson.stage[i-1][k]){
+	                    			v = rulesJson.stage[i-1][k];
+	                    		}
+	                    	}
+	                    }
 						return IX.inherit(elCfg, {
 							value : v || $XP(elCfg, 'defaultVal')
 						});
@@ -378,19 +573,189 @@
 					items : form
 				}));
 			}
-			return {
-				hideTip :'hidden',
-				giftSetTitle :stageType == 2 ? '档次设置' :'促销规则设置',
-				hidden : "",
-				gifts : ret
-			};	
 		}
 		//当只有stageType为0和1的时候。没有档次选择
 		else{
-			if (stageType == 0 || stageType == 1) {
-				panelClz += ' singlegift ';
-			}
+			var stageTypeformKeys = stageType==0? PromotionRulesFirsFormKeys:PromotionRulesSecondFormKeys,
+				panelClz = 'mcm-evtgift-panel isActive',
+				giftSet = {
+				clz : panelClz,
+			};
+			var form = _.map(stageTypeformKeys, function (k) {
+				var elCfg = PromotionRulesOtherHT.get(k),
+					type = $XP(elCfg, 'type');
+				if (type == 'checkboxgrp') {
+					switch(k) {
+						//折扣勾选项
+                        case "discountScope":
+                        	var v;
+                        		if(rulesJson[k]){
+                        			v = rulesJson[k];
+                        		}
+                        	var	options = _.map($XP(elCfg, 'options'), function (op) {
+								return IX.inherit(op, {
+									checked : (equalFlag&&(v > 0)) ? 'checked' : ''
+								});
+							});
+							return IX.inherit(elCfg, {
+								options : options
+							});
+                            break;
+                        //减免金额勾选项
+                        case "chkFreeAmount" :
+                            var v;
+	                    		if(rulesJson.freeAmount){
+	                    			v = 1;
+	                    		}
+							var options = _.map($XP(elCfg, 'options'), function (op) {
+								return IX.inherit(op, {
+									checked : (equalFlag&&(v > 0)) > 0 ? 'checked' : ''
+								});
+							});
+							return IX.inherit(elCfg, {
+								options : options
+							});
+                            break;
+                        //赠送备注勾选
+                        case "chkPresentInfo":
+                        	var v;
+	                    		if(rulesJson.presentInfo){
+	                    			v = 1;
+	                    		}
+							var options = _.map($XP(elCfg, 'options'), function (op) {
+								return IX.inherit(op, {
+									checked : (equalFlag&&(v > 0)) > 0 ? 'checked' : ''
+								});
+							});
+							return IX.inherit(elCfg, {
+								options : options
+							});
+                            break;
+                        //返券勾选
+                        case "chkVoucher" :
+                            var v;
+	                    		if(rulesJson.voucherDesc){
+	                    			v = 1;
+	                    		}
+							var options = _.map($XP(elCfg, 'options'), function (op) {
+								return IX.inherit(op, {
+									checked : (equalFlag&&(v > 0))? 'checked' : ''
+								});
+							});
+							return IX.inherit(elCfg, {
+								options : options
+							});
+                            break;
+                	}
+				}  else if(type=='radiogrp') {
+					if(k=='discountRange'){
+						var v,operate;
+                    	if(rulesJson.remark){
+                    		v = 1;
+                    	}
+                    	if(rulesJson.discountScope){
+                    		operate = rulesJson.discountScope==1?1:0;
+                    	}
+						var	options = _.map($XP(elCfg, 'options'), function (op) {
+							var flag = ((v==1)&&(op.value==0))||((v!=1)&&(op.value==1));
+								return IX.inherit(op, {
+									checked : flag?'checked':'',
+									disabled : operate==1?'':'disabled'
+								});
+							});
+						return IX.inherit(elCfg, {
+							options : options
+						});
+					}
+				} else if(type=='text'){
+					switch(k) {
+                        case "discountScale":
+                        	var v,label;
+	                    	if(rulesJson[k]){
+	                    		v = rulesJson[k];
+	                    		//label = parseFloat(v.toString().movePoint(1)).toString()	
+	                    	}
+                        	return IX.inherit(elCfg, {
+								value : equalFlag ? v : $XP(elCfg, 'defaultVal'),
+								hidden: v==undefined ? "hidden": ""
+							});
+                            break;
+                        case "freeAmount" :
+                        case "presentInfo":
+                        case "voucherNum" :
+                        case "voucherDesc" :
+                        case "validUntilDate":
+                            var v;
+	                    	if(rulesJson[k]){
+	                    		v = rulesJson[k];
+	                    	}
+                        	return IX.inherit(elCfg, {
+								value : equalFlag? v : $XP(elCfg, 'defaultVal'),
+								hidden: v==undefined ? "hidden": ""
+							});
+                            break;
+                        case "stageAmount" :
+                            var v;
+	                    	if(rulesJson[k]){
+	                    		v = rulesJson[k];
+	                    	}
+                        	return IX.inherit(elCfg, {
+								value : equalFlag ? v :$XP(elCfg, 'defaultVal'),
+							});
+                            break;
+                	}
+				} else if(type == 'textarea') {
+					if(k=='remark'){
+						var v;
+	                	if(rulesJson[k]){
+	                		v = rulesJson[k];
+	                	}
+						return IX.inherit(elCfg, {
+			                value : equalFlag ? Hualala.Common.decodeTextEnter(v || ''):$XP(elCfg, 'dafaultVal'),
+			                hidden: v==undefined ? "hidden": ""
+			            });
+					}
+				} else if(type == 'combo') {
+					if(k=='voucherType'){
+						var v;
+		                	if(rulesJson[k]){
+		                		v = rulesJson[k];
+		                	}
+                		var	options = _.map($XP(elCfg, 'options'), function (op) {
+							return IX.inherit(op, {
+								selected : $XP(op, 'value') == v ? 'selected' : ''
+							});
+						});
+						return IX.inherit(elCfg, {
+							value : v,
+							options : options,
+							hidden : v==undefined? "hidden" :"",
+							hiddenHelp : stageType!=2?"hidden":""
+						});
+					}
+				}else {
+					var v;
+                	if(rulesJson[k]){
+                		v = rulesJson[k];
+                	}
+					return IX.inherit(elCfg, {
+						value : equalFlag ? v : $XP(elCfg, 'defaultVal'),
+						hidden : v==undefined? "hidden" :""
+					});
+				}
+			});
+			ret.push(IX.inherit(giftSet, {
+				isDivForm : true,
+				formClz : 'mcm-evtgift-form',
+				items : form
+			}));
 		}
+		return {
+			hideTip :'hidden',
+			giftSetTitle :stageType == 2 ? '档次设置' :'促销规则设置',
+			hidden : "",
+			gifts : ret
+		};	
 
 	};
 	var PromotionRuleStepView = Stapes.subclass({
@@ -403,7 +768,7 @@
 			this.failFn = $XF(cfg, 'failFn');
 			this.mapFormElsData = $XF(cfg, 'mapFormElsData');
 			if (!this.model || !this.parentView) {
-				throw("Gift Base Info View init faild!");
+				throw("promition Base Info View init faild!");
 			}
 			this.loadTemplates();
 			this.initBaseCfg();
@@ -415,7 +780,7 @@
 	});
 	PromotionRuleStepView.proto({
 		loadTemplates : function () {
-			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_mcm_event_giftset')),
+			var layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_promotion_levelset')),
 				formTpl = Handlebars.compile(Hualala.TplLib.get('tpl_promotion_base_form')),
 				btnTpl = Handlebars.compile(Hualala.TplLib.get('tpl_shop_modal_btns'));
 			Handlebars.registerPartial("baseform", Hualala.TplLib.get('tpl_promotion_base_form'));
@@ -434,11 +799,13 @@
 			});
 		},
 		initBaseCfg : function () {
-			this.formKeys = PromotionRulesSetFormKeys;
+			this.formKeys = PromotionRulesLastFormKeys;
 		},
 		initUIComponents : function () {
 			var self = this;
 			self.container.find('.isActive:last').addClass('isCurrent');
+			var rulesJson = self.model.get('rules');
+				rulesJson = !rulesJson ? {} : JSON.parse(rulesJson);
 			self.setSwitcherLayout(self.container.find(':input[name^=discountScope]'));
 		},
 		setSwitcherLayout : function ($chk) {
@@ -447,6 +814,7 @@
 			$nextFormGroup[checked ? 'removeClass' : 'addClass']('hidden');
 			$nextFormGroup.find(':text').attr('disabled', checked ? false : true);
 		},
+		//促销规则绑定事件。包括根据不同的规则元素的显示和隐藏。
 		bindEvent : function () {
 			var self = this,
 				fvOpts = self.initValidFieldOpts();
@@ -461,43 +829,35 @@
 					self.resetGiftSet($btn.parents('.mcm-evtgift-panel'));
 				}
 			});
-			self.container.find('form').bootstrapValidator({
-				trigger : 'blur',
-				fields : fvOpts
-			}).on('error.field.bv', function (e, data) {
-				var $form = $(e.target),
-					bv = $form.data('bootstrapValidator');
-				self.failFn(self.model);
-			}).on('success.form.bv', function (e, data) {
-				e.preventDefault();
-				var $form = $(e.target),
-					bv = $form.data('bootstrapValidator');
-				var act = self.mode + 'Event';
-				var formParams = self.serializeForm();
-				IX.Debug.info("DEBUG: 促销规则 Form Params:");
-				IX.Debug.info(formParams);
-				
-				self.model.emit('saveCache', {
-					params : formParams,
-					failFn : function () {
-						self.failFn.call(self);
-					},
-					successFn : function () {
-						self.successFn.call(self);
-
-					}
-				})
-			});
-			self.container.on('change', ':text[name^=EGiftName]', function (e) {
+			self.container.on('change', ':text[name^=voucherDesc]', function (e) {
 				var $txt = $(this),
 					name = $txt.attr('name');
 				self.container.find('form').bootstrapValidator('revalidateField', name);
 			});
-			self.container.on('change', 'input[name^=discountScope]', function (e) {
+			self.container.on('change', ':checkbox[name^=discountScope]', function (e) {
 				var $txt = $(this),
 					name = $txt.attr('name'),
 					checkedFlag = $txt.is(':checked');
 				var $els = $txt.parents('.mcm-evtgift-form').find('[name^=discountScale]'),
+					$fmgrps = $els.parents('.form-group'),
+					$discountRange = $txt.parents('.mcm-evtgift-form').find('[name^=discountRange]');
+				if (checkedFlag) {
+					$els.attr('disabled', false);
+					$els.removeClass('hidden');
+					$fmgrps.removeClass('hidden');
+					$discountRange.prop("disabled",false);
+				} else {
+					$els.attr('disabled', true);
+					$els.removeClass('hidden');
+					$fmgrps.addClass('hidden');
+					$discountRange.prop("disabled",true);
+				}
+			});
+			self.container.on('change',':checkbox[name^=chkFreeAmount]', function (e) {
+				var $txt = $(this),
+					name = $txt.attr('name'),
+					checkedFlag = $txt.is(':checked');
+				var $els = $txt.parents('.mcm-evtgift-form').find('[name^=freeAmount]'),
 					$fmgrps = $els.parents('.form-group');
 				if (checkedFlag) {
 					$els.attr('disabled', false);
@@ -507,7 +867,7 @@
 					$fmgrps.addClass('hidden');
 				}
 			});
-			self.container.on('change', 'input[name^=chkPresentInfo]', function (e) {
+			self.container.on('change', ':checkbox[name^=chkPresentInfo]', function (e) {
 				var $txt = $(this),
 					name = $txt.attr('name'),
 					checkedFlag = $txt.is(':checked');
@@ -515,9 +875,55 @@
 					$fmgrps = $els.parents('.form-group');
 				if (checkedFlag) {
 					$els.attr('disabled', false);
+					$els.removeClass('hidden');
 					$fmgrps.removeClass('hidden');
 				} else {
 					$els.attr('disabled', true);
+					$els.addClass('hidden');
+					$fmgrps.addClass('hidden');
+				}
+			});
+			self.container.on('change', ':checkbox[name^=chkVoucher]', function (e) {
+				var $txt = $(this),
+					name = $txt.attr('name'),
+					checkedFlag = $txt.is(':checked');
+				var $els = $txt.parents('.mcm-evtgift-form').find('[name^=voucherDesc]'),
+					$voucherNum = $txt.parents('.mcm-evtgift-form').find('[name^=voucherNum]'),
+					$voucherType = $txt.parents('.mcm-evtgift-form').find('[name^=voucherType]'),
+					$validUntilDate = $txt.parents('.mcm-evtgift-form').find('[name^=validUntilDate]'), 
+					$fmgrps = $els.parents('.form-group'),
+					$voucherNumgrps = $voucherNum.parents('.form-group');
+					$voucherTypegrps =$voucherType.parents('.form-group');
+					$validUntilDategrps = $validUntilDate.parents('.form-group');
+				if (checkedFlag) {
+					$els.attr('disabled', false);
+					$els.removeClass('hidden');
+					$fmgrps.removeClass('hidden');
+					$voucherNumgrps.removeClass('hidden');
+					$validUntilDategrps.removeClass('hidden');
+					$voucherTypegrps.removeClass('hidden');
+				} else {
+					$els.attr('disabled', true);
+					$els.addClass('hidden');
+					$fmgrps.addClass('hidden');
+					$voucherNumgrps.addClass('hidden');
+					$validUntilDategrps.addClass('hidden');
+					$voucherTypegrps.addClass('hidden');
+				}
+			});
+			self.container.on('change',':radio[origname="discountRange"]',function (e) {
+				var $txt = $(this),
+					name = $txt.attr('name'),
+					checkedFlag = $txt.is(':checked');
+				var $els = $txt.parents('.mcm-evtgift-form').find('[name^=remark]'),
+					$fmgrps = $els.parents('.form-group');
+				if ($txt.val()==0) {
+					$els.attr('disabled', false);
+					$els.removeClass('hidden');
+					$fmgrps.removeClass('hidden');
+				} else {
+					$els.attr('disabled', true);
+					$els.addClass('hidden');
 					$fmgrps.addClass('hidden');
 				}
 			});
@@ -536,22 +942,84 @@
 				}
 			});
 			self.container.on('click', '.btn[name=pickgift]', function (e) {
-				var $btn = $(this);
+				var $btn = $(this),
+					ticketType = 10;//电子代金券对应的giftType的值
 				var modal = new Hualala.MCM.PickGiftModal({
 					trigger : $btn,
 					selectedFn : function (gift, $triggerEl) {
 						var giftID = $XP(gift, 'giftItemID', ''),
 							giftName = $XP(gift, 'giftName', ''),
+							giftValue = $XP(gift, 'giftValue', ''),
+							
 							giftType = "10";
 						var panel = $triggerEl.parents('.mcm-evtgift-panel'),
-							idx = parseInt(panel.attr('data-index')) + 1;
-						$('#voucherItemID_' + idx, panel).val(giftID);
-						$('#voucherDesc_' + idx, panel).val(giftName).trigger('change');
-						//$('[name=EGiftType_' + idx + ']', panel).val(giftType).trigger('change');
-					}
+							indexNum = self.container.find(".mcm-evtgift-panel");
+							if(indexNum.length>1){
+								idx = parseInt(panel.attr('data-index')) + 1;
+								$('#voucherItemID_' + idx, panel).val(giftID);
+								$('#voucherValue_' + idx, panel).val(giftValue);
+								$('#voucherDesc_' + idx, panel).val(giftName).trigger('change');
+						       
+							}
+							else{
+								$('#voucherItemID', panel).val(giftID);
+								$('#voucherValue', panel).val(giftValue);
+								$('#voucherDesc', panel).val(giftName).trigger('change');
+							}
+					},
+					selectGiftType: [ticketType]
 				});
 			});
+			//表单的验证
+			self.container.find('form').bootstrapValidator({
+				trigger : 'blur',
+				fields : fvOpts
+			}).on('error.field.bv', function (e, data) {
+				var $form = $(e.target),
+					bv = $form.data('bootstrapValidator');
+				self.failFn(self.model);
+			}).on('success.form.bv', function (e, data) {
+				//验证成功的时候，判断是否勾选促销方式。
+					formCount = self.container.find(".mcm-gift-set .mcm-evtgift-panel"),
+					formContainer = self.container.find(".mcm-gift-set .mcm-evtgift-panel.isActive");
+				if(formCount.length>1){
+					for (var i = 1; i <= formContainer.length; i++) {
+						var checkedNum =$(formContainer[i-1]).find("input[type='checkbox']:checked")
+						if(checkedNum.length==0){
+							var promotionLevelName = HSP.PromotionLevelNames[i];
+							self.parentView.switchWizardCtrlStatus('reset');
+							toptip({msg: promotionLevelName+'必须勾选一种促销方式', type: 'danger'});
+							return;
+						}
+					}
+				} else{
+					var	checkedNum=self.container.find(".mcm-gift-set .mcm-evtgift-panel input[type='checkbox']:checked");
+					if(checkedNum.length==0){
+						self.parentView.switchWizardCtrlStatus('reset');
+						toptip({msg: '必须勾选一种促销方式', type: 'danger'});
+						return;
+					}	
+				}
+				e.preventDefault();
+				var formParams = self.serializeForm();
+				var $form = $(e.target),
+					bv = $form.data('bootstrapValidator');
+				IX.Debug.info("DEBUG: 促销规则 Form Params:");
+				IX.Debug.info(formParams);
+				//把数据存到缓存中
+				self.model.emit('saveCache', {
+					params : formParams,
+					failFn : function () {
+						self.failFn.call(self);
+					},
+					successFn : function () {
+						self.successFn.call(self);
+					}
+				})
+			});
+
 		},
+		//添加新档的时候，表单元素的初始化。
 		resetGiftSet : function ($panel) {
 			var self = this;
 			var idx = parseInt($panel.attr('data-index')) + 1;
@@ -560,6 +1028,10 @@
 				var id = k + '_' + idx,
 					$el = $('#' + id + '', $panel);
 				switch (k) {
+					case "minAmount":
+					case "discountScale":
+					case "freeAmount" :
+					case "presentInfo":
 					case "voucherItemID":
 					case "voucherDesc":
 					case "voucherValue":
@@ -569,7 +1041,7 @@
 						$el.val(1);
 						break;
 					case "validUntilDate":
-						$el.val(30);
+						$el.val(60);
 						break;
 				}
 			});
@@ -581,36 +1053,152 @@
 				htm = tpl(renderData);
 			self.container.html(htm);
 		},
+		//表单元素的验证
 		initValidFieldOpts : function () {
 			var self = this,
-				formKeys = _.reject(self.formKeys, function (k) {return k == 'voucherItemID' || k == 'EGiftType'}),
+				stageType = self.model.get("stageType"),
+				FirsFormKeys = "discountScope,discountScale,remark,presentInfo,voucherDesc,voucherNum,validUntilDate,voucherType".split(','),
+				SecondFormKeys = "discountScope,discountScale,remark,stageAmount,freeAmount,presentInfo,voucherDesc,voucherNum,validUntilDate,voucherType".split(',');
+                LastFormKeys = "minAmount,discountScope,discountScale,discountRange,remark,freeAmount,presentInfo,voucherDesc,voucherNum,validUntilDate,voucherType".split(',');
+			var ValidformKeys = stageType==0 ? FirsFormKeys:SecondFormKeys,
 				ret = {};
-			for (var i = 1; i <= PromotionLevelCount; i++) {
-				_.each(formKeys, function (k) {
-					var key = k,
-						elCfg = PromotionRulesSetHT.get(key),
-						type = $XP(elCfg, 'type');
-					ret[key] = $XP(elCfg, 'validCfg', {});
-				});
-			}
-			return ret;
-			
+			switch(stageType){
+				case "0":
+				case "1":
+					_.each(ValidformKeys, function (key) {
+						var elCfg = PromotionRulesOtherHT.get(key),
+							type = $XP(elCfg, 'type');
+						ret[key] = $XP(elCfg, 'validCfg', {});
+					});
+					return ret;
+				break;
+				case "2":
+					for (var i = 1; i <= PromotionLevelCount; i++) {
+						_.each(LastFormKeys, function (k) {
+							var key = k+"_"+i,
+								elCfg = PromotionRulesSetHT.get(key),
+								type = $XP(elCfg, 'type');
+							ret[key] = $XP(elCfg, 'validCfg', {});
+						});
+					}
+					return ret;
+				break;
+			}	
 		},
+		//序列化表单元素。整理促销规则
 		serializeForm : function () {
-			var self = this,
-				formKeys = self.formKeys,
+			var self = this,formKeys;
 				ret = {};
-			for (var i = 1; i <= PromotionLevelCount; i++) {
+			var stageType=self.model.get('stageType'),
+				rules={};
+			if(stageType==2) {
+				formKeys = "stageType,minAmount,discountScope,discountScale,remark,freeAmount,presentInfo,voucherItemID,voucherValue,voucherDesc,voucherNum,validUntilDate,voucherType".split(',');
+				rules.stage = [];
+				var formContainer = self.container.find(".mcm-gift-set .mcm-evtgift-panel.isActive");
+				for (var i = 1; i <= formContainer.length; i++) {
+					rules.stage[i-1] ={};
+					_.each(formKeys, function (k) {
+						switch(k){
+							case "stageType" :
+								rules[k]=self.model.get(k);
+								break;
+							case "discountScope":
+								if($('[origname="discountScale"]', formContainer[i-1]).val()){
+									rules.stage[i-1][k]=$('[origname=' + k + ']', formContainer[i-1]).val();
+								}
+								break;
+							case "remark" :
+								if($('[origname=' + k + ']',formContainer[i-1]).val()){
+									rules.stage[i-1][k]=Hualala.Common.encodeTextEnter($('[origname=' + k + ']', formContainer[i-1]).val());
+								}
+								ret["remark"] = Hualala.Common.encodeTextEnter($('[origname=' + k + ']', self.container).val());
+								break;
+							case "voucherType":
+								if($('[origname=' + k + ']',formContainer[i-1]).val()){
+									if(!$('[origname=' + k + ']',formContainer[i-1]).parent().parent().hasClass("hidden")){
+										rules["voucherType"] =  $('[origname=' + k + ']',formContainer[i-1]).val();
+									}
+								}
+								break;
+							case "validUntilDate":
+							case "presentInfo" :
+							case "voucherDesc" :
+							case "voucherNum" :
+							case "freeAmount":
+								if($('[origname=' + k + ']',formContainer[i-1]).val()){
+									if(!$('[origname=' + k + ']',formContainer[i-1]).parent().parent().parent().hasClass("hidden")){
+										rules.stage[i-1][k] =  $('[origname=' + k + ']',formContainer[i-1]).val();
+									}
+								}
+								break;
+							case "voucherItemID":
+							case "voucherValue" :
+								if($('[origname="chkVoucher"]',formContainer[i-1]).is(':checked')){
+									rules.stage[i-1][k]=$('[origname=' + k + ']',formContainer[i-1]).val()
+								}
+								break;
+							default:
+								if($('[origname=' + k + ']',formContainer[i-1]).val()){
+									rules.stage[i-1][k]=$('[origname=' + k + ']',formContainer[i-1]).val()
+								}
+						}
+						ret["rules"]=JSON.stringify(rules);
+					});
+				}
+				return ret;
+			} else{
+				var formFirstKeys ="stageType,discountScope,discountScale,remark,presentInfo,voucherItemID,voucherValue,voucherNum,voucherDesc,validUntilDate,voucherType".split(','),
+				    formSecondKeys = "stageType,discountScope,discountScale,remark,presentInfo,freeAmount,stageAmount,voucherItemID,voucherValue,voucherNum,voucherDesc,validUntilDate,voucherType".split(',');
+					formKeys =stageType==0 ?formFirstKeys:formSecondKeys;
 				_.each(formKeys, function (k) {
-					var key = k + '_' + i;
-					ret[key] = $('[name=' + key + ']', self.container).val();
+					switch(k){
+						case "stageType":
+							rules[k]=self.model.get(k);
+							break;
+						case  "discountScope":
+							if($('[name="discountScale"]', self.container).val()){
+								rules[k]=$('[name=' + k + ']', self.container).val();
+							}
+							break;
+						case "remark":
+							if($('[origname=' + k + ']', self.container).val()){
+								rules[k]=Hualala.Common.encodeTextEnter($('[origname=' + k + ']', self.container).val());
+							}
+							ret["remark"] = Hualala.Common.encodeTextEnter($('[origname=' + k + ']', self.container).val());
+							break;
+						case "voucherType":
+						case "validUntilDate":
+						case "presentInfo" :
+						case "voucherDesc" :
+						case "voucherNum" :
+						case "freeAmount":
+							if($('[origname=' + k + ']',self.container).val()){
+								if(!$('[origname=' + k + ']',self.container).parent().parent().hasClass("hidden")){
+									rules[k] =  $('[origname=' + k + ']',self.container).val();
+								}
+							}
+							break;
+						case "voucherItemID":
+						case "voucherValue" :
+							if($('[origname="chkVoucher"]',self.container).is(':checked')){
+								rules[k]=$('[origname=' + k + ']',self.container).val()
+							}
+							break;
+						default:
+							if($('[origname=' + k + ']',self.container).val()){
+								rules[k]=$('[name=' + k + ']', self.container).val();
+							}
+					}
+					ret["rules"]=JSON.stringify(rules);
 				});
+				return ret;
 			}
-			return ret;
 		},
 		refresh : function () {
 			var self = this;
 			self.renderForm();
+			self.initUIComponents();
+			self.bindEvent();
 			/*this.formParams = this.model.getAll();
 			self.initUIComponents();*/
 		},
@@ -627,11 +1215,10 @@
 			})
 		}
 	});
-
 	HSP.PromotionRuleStepView = PromotionRuleStepView;
 
 	/**
-	 * 创建向导中活动奖品步骤
+	 * 创建向导中促销规则设置步骤
 	 * @param  {[type]} $cnt       [description]
 	 * @param  {[type]} cntID      [description]
 	 * @param  {[type]} wizardMode [description]
@@ -657,6 +1244,4 @@
 			});
 		wizardModalView.registerStepView(cntID, stepView);
 	};
-
-
 })(jQuery, window);

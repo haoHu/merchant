@@ -51,7 +51,7 @@
 				}
 			}
 		},
-		isHolidaysUsing : {
+		holidayFlag : {
 			type : "radiogrp",
 			label : "节假日限制",
 			defaultVal : "0",
@@ -73,7 +73,7 @@
 		supportOrderType  : {
 			type : 'radiogrp',
 			label : '促销的适用业务类型',
-			defaultVal : "0",
+			defaultVal : "2",
 			options : Hualala.TypeDef.ShopPromotionDataSet.supportOrderTypes,
 			validCfg : {
 				validators : {
@@ -379,7 +379,6 @@
 						else{
 							ret[key] = $('[name=' + key + ']').val()
 						}
-					
 				});
 			return ret;
 		},
@@ -488,34 +487,19 @@
 			var itemID = wizardModalView.model.get('itemID');
 			if (!itemID && curIdx == 0) {
 				wizardModalView.modal.hide();
-			} else if (itemID && wizardType == 'create') {
+			} else if (itemID==0 && wizardType == 'create') {
 				Hualala.UI.Confirm({
 					title : '取消添加促销规则',
 					msg : '是否取消添加促销规则的操作？<br/>所有操作步骤都不保存！',
 					okLabel : '确定',
 					okFn : function () {
-						stepView.delete(function (res) {
-							var pContainer = wizardModalView.parentView.$container;
-							var pResultController = pContainer.data('resultController'),
-								pResultView = null;
-							if (!pResultController) {
-								wizardModalView.parentView.model.emit('load');
-							} else {
-								pResultView = pResultController.model.emit('load');
-							}
-							wizardModalView.modal.hide();
-						}, function (res) {
-							toptip({
-								msg : $XP(res, 'resultmsg', ''),
-								type : 'danger'
-							});
-						});
+						wizardModalView.modal.hide();
 					}
 				});
 			} else {
 				Hualala.UI.Confirm({
 					title : '取消编辑促销规则',
-					msg : '是否取消当前步骤的操作？<br/>当前步骤的修改将不保存！',
+					msg : '是否取消当前步骤的操作？<br/>当前步骤之前的修改将不保存！',
 					okLabel : '确定',
 					okFn : function () {
 						var pContainer = wizardModalView.parentView.$container;

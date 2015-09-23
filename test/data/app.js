@@ -80,7 +80,8 @@
         {name : 'agent', url : '/#agent'},
         {name : 'boss', url : '/#boss'},
         {name : 'weixin', url : '/#weixin'},
-        {name : 'saas', url : '/#saas'}
+        {name : 'saas', url : '/#saas'},
+        {name : 'versionInfo', url : '/#versionupdate'}
 	];
 	Test.PCClient = {
 		downloadClientAddress : '/pcclient/download/1.0.1-release.zip',

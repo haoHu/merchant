@@ -43,17 +43,24 @@
 	 * 		onfail : function(data, failFn, params) // default null;
 	 *  }
 	 */
-	function createEntries(routes, isCaller){
+	function createEntries(routes, isCaller, postParamsFn){
 		return ajaxEngine[isCaller?"createCaller": "createRouter"](IX.map(routes, function(routeDef){
 			var isRef = IX.isString(routeDef);
 			return IX.inherit(ajaxStore.get(isRef?routeDef:routeDef.name), isRef?{}:routeDef);
 		}), function (res) {
-			if($XP(res, 'resultcode', '') == 'FP10005') {
+            var resultcode = $XP(res, 'resultcode', '');
+			if(resultcode == 'FP10005') {
 				document.location.href = Hualala.PageRoute.createPath('login');
 				return false;
 			}
+            if(resultcode == 'RELOGIN001') {
+                setTimeout(function() {
+                    document.location.href = '/';
+                }, 1000);
+                return false;
+            }
 			return true;
-		});
+		}, postParamsFn);
 	}
 	function initEngine (cfg){
 		urlEngine.init(cfg);
@@ -73,13 +80,18 @@
 		genUrls : function(names){return IX.map(names, _urlGenerator);},
 		genUrl : function(name, params){return _urlGenerator(name, params);}
 	};
+    Hualala.getGroupID = function() {
+        var getSessionFn = Hualala.getSessionSite,
+            groupID = IX.isFn(getSessionFn) ? $XP(getSessionFn(), 'groupID', '') : '';
+        return groupID ? {_groupID: groupID} : {};
+    };
 	Hualala.ajaxEngine = {
 		init : initEngine,
 		reset :initEngine,
 		/**  urlList : [ [name, url, urlType, type], ...]  */
 		mappingUrls : ajaxStore.map, //function(urlList)
-		
-		createCaller :  function(routes){return createEntries(routes, true);},
+
+		createCaller :  function(routes){return createEntries(routes, true, Hualala.getGroupID);},
 		createRoute : createEntries
 	};
 })();
@@ -327,6 +339,14 @@
 				return j ? str.slice(0, k) + Hualala.Common.substrByte(s3, j) : str.slice(0, k);
 		}
 	};
+
+    /*
+    * 把input框里输入的中文逗号用替换成英文逗号
+    * */
+    Hualala.Common.replaceZhComma = function(str) {
+        return (str || '').replace(/，/g, ',');
+    };
+
 
 	/**
 	 * 获取浏览器品牌及版本号信息
@@ -758,6 +778,108 @@
     }
     Hualala.Common.decodeTextEnter = decodeTextEnter;
 
+    Hualala.Common.removeModal = function() {
+        var modal = $('.modal');
+        if(modal) modal.remove();
+        Hualala.UI.clearEditors();
+    };
+
+    function createDateSelect($container, startYear, endYear) {
+        var getDigitalSelectData = function(name, label, start, count) {
+            var optionValues = _.times(count, function(i){return i + start;}),
+                options = _.map(optionValues, function(val) {
+                    return {value: val < 10 ? '0' + val : val + '', name: val + label};
+                });
+            return {name: name, options: name == 'year' ? options.reverse() : options};
+        };
+        var selectTpl = Handlebars.compile(Hualala.TplLib.get('tpl_select')),
+            yearStart = startYear ? startYear : 0,
+            yearEnd = endYear ? endYear : 0,
+            yearCount = yearEnd - yearStart + 1,
+            yearData = getDigitalSelectData('year', '年', startYear, yearCount > 0 ? yearCount : 0),
+            monthData = getDigitalSelectData('month', '月', 1, 12),
+            dayData = getDigitalSelectData('day', '日', 1, 31),
+            $yearSelect = $XP(yearData, 'options', []).length > 0 ? selectTpl(yearData) : '',
+            $monthSelect = selectTpl(monthData),
+            $daySelect = selectTpl(dayData);
+        _.each([$yearSelect, $monthSelect, $daySelect], function ($select) {
+            $container.append($select);
+        });
+        $container.on('change', 'select', function () {
+            var $this = $(this),
+                thisName = $this.attr('name'),
+                year = '', month = '', day = '',
+                newDayData = [],
+                dayLength = 31;
+            switch (thisName) {
+                case 'year':
+                    day = $this.siblings('select[name="day"]').val();
+                    month = $this.siblings('[name="month"]').val();
+                    year = $this.val();
+                    break;
+                case 'month':
+                    day = $this.siblings('select[name="day"]').val();
+                    month = $this.val();
+                    year = $this.siblings('[name="year"]').val();
+                    break;
+                case 'day':
+                    day = $this.val();
+                    month = $this.siblings('select[name="month"]').val();
+                    year = $this.siblings('[name="year"]').val();
+                    break;
+            }
+            if(month == 2) {
+                dayLength = (year && (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))) ? 29 : 28;
+                day = parseInt(day) > dayLength ? '01' : day + '';
+            } else if ((month < 8 && month % 2 != 0) || (month >= 8 && month % 2 == 0)) {
+                dayLength = 31;
+            } else {
+                dayLength = 30;
+                day = day == 31 ? '01' : day + '';
+            }
+            var $parent = $this.parent();
+            if(thisName != 'day') {
+                newDayData = getDigitalSelectData('day', '日', 1, dayLength);
+                _.findWhere(newDayData.options, {value: day}).selected = 'selected';
+                $this.siblings('[name="day"]').remove();
+                $parent.append(selectTpl(newDayData));
+            }
+        });
+        return $container;
+    }
+    Hualala.Common.createDateSelect = createDateSelect;
+
+    //只适交换了dom元素的子元素
+    var swapDom = function($dom1, $dom2) {
+        var $dom1Children = $dom1.children(),
+            $dom2Children = $dom2.children();
+        $dom1.empty().append($dom2Children);
+        $dom2.empty().append($dom1Children);
+    };
+    Hualala.Common.SwapDom = swapDom;
+    //验证名称重复提交的双ajax请求
+    //参数：ajax1和ajax2为发送请求的名称，
+    //		data1和data2分别为发送请求所需的参数  callbackFn回调的函数
+    var nestedAjaxCall = function(ajax1,ajax2,data1,data2,callbackFn){
+    	var G = Hualala.Global,
+        	topTip = Hualala.UI.TopTip;
+        G[ajax1](data1, function (rsp) {
+        	if(rsp.resultcode=='000'){
+            	G[ajax2](data2, function(res){
+                    if (res.resultcode == "000") {
+                        callbackFn(res);
+                    } else {
+		                res.resultmsg && topTip({msg: res.resultmsg, type: 'danger'});
+			            return;
+                    }
+                });
+        	} else{
+	            rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
+	            return;
+	        }           
+    	});
+    };
+    Hualala.Common.NestedAjaxCall = nestedAjaxCall;
 })(jQuery);
 
 

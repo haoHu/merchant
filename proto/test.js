@@ -14,6 +14,7 @@
         Test.TestRoot + "/foods.js",
         Test.TestRoot + "/user.js",
         Test.TestRoot + "/crm.js",
+        Test.TestRoot + "/crm_vip_levels.js",
         Test.TestRoot + "/crm_member_daily.js",
         Test.TestRoot + "/mcm.js",
         Test.TestRoot + "/saas/saas_categories.js",
@@ -32,7 +33,9 @@
         Test.TestRoot + "/saas/subject.js",
         Test.TestRoot + "/saas/subjectTree.js",
         Test.TestRoot + "/saas/remarks.js",
-        Test.TestRoot + "/saas/saas_printtype.js"
+        Test.TestRoot + "/saas/saas_printtype.js",
+
+        Test.TestRoot + "/weixin/accounts.js"
 
 
 

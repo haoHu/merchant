@@ -47,15 +47,38 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
         modalEditFood = null, 
         bv = null; //表单验证器
     var foodDescEditor = null;
+    var departments = null,
+        categories = null;
 
+    Hualala.Shop.getDepartments = function() {
+        return departments;
+    };
+    Hualala.Shop.getCategories = function () {
+        return categories;
+    };
     //渲染菜品
     function renderFoods(start) {
         foods = filterFoods();
         $foodCount.text(foods.length);
         if(current == 0 || start) $foods.empty();
-        $foods.append(foodTpl({foods: foods.slice(start ? 0 : current, current + size), isSaasOpen: isSaasOpen}));
-        $container.find('.loading').remove();
+        var displayFoods = foods.slice(start ? 0 : current, current + size);
+        extendDepartmentForFood(displayFoods);
+        $foods.append(foodTpl({foods: displayFoods, isSaasOpen: isSaasOpen}));
+        $container.find('.loading-menu').remove();
         current += size;
+    }
+
+    function extendDepartmentForFood(foods) {
+        _.each(foods, function(food) {
+            var foodCid = $XP(food, 'foodCategoryID'),
+                foodDid = $XP(food, 'departmentKeyLst', '').split(',');
+            foodDid[0] = foodDid[0] || $XP(_.findWhere(Hualala.Shop.getCategories(), {foodCategoryID: foodCid}), 'departmentKey', '');
+            var departmentNames = _.compact(_.map(foodDid, function (departmentKey) {
+                var department = _.findWhere(Hualala.Shop.getDepartments(), {departmentKey: departmentKey});
+                return $XP(department, 'departmentName', '');
+            }));
+            food.foodDepartmentNames = departmentNames;
+        });
     }
 
     //初始化“添加菜品”按钮
@@ -63,46 +86,52 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
 
     //调用服务，根据 shopID 获取所有分类和菜品信息
     var loadFoods = function(start) {
-        C.loadData('getShopMenu', {shopID : shopID}).done(function(records)
-        {
-            allFoods = [];
-            if(!records || records.length == 0)
-            {
-                var $alert = $('<div class="alert alert-warning t-c">此店铺暂无菜品，您可以通过下载<a target="_blank">哗啦啦代理程序</a>上传菜品数据。</div>');
-                $alert.find('a').attr('href', Hualala.PageRoute.createPath('pcclient'));
-                $alert.appendTo($container);
-                return;
-            }
-            var $alertDom = $container.find('.alert.alert-warning');
-            if($alertDom.length != 0) $alertDom.remove();
-            classifiedFoods = classifyFoods(records);
-            for(var foodCategoryID in classifiedFoods)
-                allFoods.push.apply(allFoods, classifiedFoods[foodCategoryID].foods);
-            renderFoods(start); //渲染所有菜品
-            //渲染菜品分类
-            var $allFoodsSpan = $('<span></span>');
-            if (!start) $allFoodsSpan.addClass('current-food-class');
-            var $foodClassBox = $menu.find('#foodClassBox').empty().append($allFoodsSpan.text('全部菜品 (' + allFoods.length + ')'));
+        C.loadData('getSaasCategories', {shopID: shopID}, categories).done(function(categorieData) {
+            categories = categorieData;
+            C.loadData('getSaasDepartments', {}, departments).done(function(departmentData) {
+                departments = departmentData;
+                C.loadData('getShopMenu', {shopID : shopID}).done(function(records)
+                {
+                    allFoods = [];
+                    if(!records || records.length == 0)
+                    {
+                        var $alert = $('<div class="alert alert-warning t-c">此店铺暂无菜品，您可以通过下载<a target="_blank">哗啦啦代理程序</a>上传菜品数据。</div>');
+                        $alert.find('a').attr('href', Hualala.PageRoute.createPath('pcclient'));
+                        $alert.appendTo($container);
+                        return;
+                    }
+                    var $alertDom = $container.find('.alert.alert-warning');
+                    if($alertDom.length != 0) $alertDom.remove();
+                    classifiedFoods = classifyFoods(records);
+                    for(var foodCategoryID in classifiedFoods)
+                        allFoods.push.apply(allFoods, classifiedFoods[foodCategoryID].foods);
+                    renderFoods(start); //渲染所有菜品
+                    //渲染菜品分类
+                    var $allFoodsSpan = $('<span></span>');
+                    if (!start) $allFoodsSpan.addClass('current-food-class');
+                    var $foodClassBox = $menu.find('#foodClassBox').empty().append($allFoodsSpan.text('全部菜品 (' + allFoods.length + ')'));
 
-            for(var id in classifiedFoods)
-            {
-                var category = classifiedFoods[id],
-                    $span = $('<span></span>');
-                if (start && foodClass == id) $span.addClass('current-food-class');
-                $span.data('id', id).text(category.foodCategoryName + ' (' + category.foods.length + ')').appendTo($foodClassBox);
-            }
-            $foodClass = $foodClassBox.find('span');
+                    for(var id in classifiedFoods)
+                    {
+                        var category = classifiedFoods[id],
+                            $span = $('<span></span>');
+                        if (start && foodClass == id.replace(/_/, '')) $span.addClass('current-food-class');
+                        $span.data('id', id.replace(/_/, '')).text(category.foodCategoryName + ' (' + category.foods.length + ')').appendTo($foodClassBox);
+                    }
+                    $foodClass = $foodClassBox.find('span');
 
-            var foodNameTpl = Handlebars.compile(Hualala.TplLib.get('tpl_food_name'));
-            $foodName.html(foodNameTpl({classifiedFoods: classifiedFoods}));
-            if($foodName.data('chosen')){ $foodName.chosen('destroy'); }
-            U.createChosen($foodName, allFoods, 'foodID', 'foodName', {
-                noFill: true, noCurrent: true, width : '200px',
-                placeholder_text : "选择或输入菜品名称",
-                no_results_text : "抱歉，没有相关菜品！"
-            }, false);
+                    var foodNameTpl = Handlebars.compile(Hualala.TplLib.get('tpl_food_name'));
+                    $foodName.html(foodNameTpl({classifiedFoods: classifiedFoods}));
+                    if($foodName.data('chosen')){ $foodName.chosen('destroy'); }
+                    U.createChosen($foodName, allFoods, 'foodID', 'foodName', {
+                        noFill: true, noCurrent: true, width : '200px',
+                        placeholder_text : "选择或输入菜品名称",
+                        no_results_text : "抱歉，没有相关菜品！"
+                    }, false);
 
-            $menu.appendTo($container);
+                    $menu.appendTo($container);
+                });
+            });
         });
     };
 
@@ -162,7 +191,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
                 var price = (unit.prePrice == -1 || unit.price == unit.prePrice) ? unit.price : unit.prePrice,//price是售价
                     vipPrice = (unit.vipPrice == -1 || parseFloat(unit.vipPrice) >= parseFloat(price)) ? '' : unit.vipPrice,
                     prePrice = (unit.prePrice == -1 || unit.price == unit.prePrice) ? '' : unit.price,//prePrice原价
-                    estimatePrice = !unit.foodEstimateCost ? '' : unit.foodEstimateCost,//prePrice原价
+                    estimatePrice = (!unit.foodEstimateCost || unit.foodEstimateCost == 0) ? '' : unit.foodEstimateCost,//prePrice原价
                     tr = ['<tr data-itemid="'+(unit.itemID || '')+'">',
                         '<td><span>规格'+ (index + 1) + (index == 0 ? '*' : '') + '</span></td>',
                         '<td><input type="text" placeholder="'+(index == 0 ? '例：份、锅' : '')+'" name="unit" value="'+unit.unit+'"/></td>',
@@ -238,6 +267,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
                             _.each(category.items, function (item) {
                                 item.checked = item.selected == 1 ? 'checked' : '';
                                 item.price = C.Math.prettyPrice(item.price);
+                                item.foodEstimateCost = C.Math.prettyPrice(item.foodEstimateCost);
                             });
                         });
 
@@ -248,7 +278,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
                                 var price = (unit.prePrice == -1 || unit.prePrice == unit.price) ? unit.price : unit.prePrice,//price是售价
                                     vipPrice = (unit.vipPrice == -1 || parseFloat(unit.vipPrice) >= parseFloat(price)) ? '' : unit.vipPrice,
                                     prePrice = (unit.prePrice == -1 || unit.prePrice == unit.price) ? '' : unit.price,//prePrice原价
-                                    foodEstimateCost = unit.foodEstimateCost;
+                                    foodEstimateCost = (!unit.foodEstimateCost || unit.foodEstimateCost == 0) ? '' : unit.foodEstimateCost;//预估成本价
 
                                 return IX.inherit(unit, {
                                     index: (index + 1) + (index == 0 ? '*' : '' ),
@@ -438,31 +468,119 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
             });
         }
     }).on('click', 'tr td a', function () {
-        //调用服务排完序后重新请求数据
-        var $this = $(this);
-        if($this.hasClass('disable')) return;
+        //调用服务排完序交换dom元素的位置
+        var $this = $(this),
+            isFirst = $this.parents('tr').hasClass('first'),
+            isClickUpOrTop = $this.hasClass('glyphicon-arrow-up'),
+            isLast = $this.parents('tr').hasClass('last'),
+            isClickDownOrBottom = $this.hasClass('glyphicon-arrow-down');
+        if((isFirst && isClickUpOrTop) || (isLast && isClickDownOrBottom)) return;
         var $tr = $this.parents('tr'),
-            foodID = $tr.data('id'),
-            foodCategoryID = $tr.data('cid'),
-            sortIndex = $tr.data('sortindex'),
+            foodID = $tr.attr('data-id'),
+            foodCategoryID = $tr.attr('data-cid'),
+            sortIndex = $tr.attr('data-sortindex'),
             sortParams = {shopID: shopID, foodID: foodID, sortIndex: sortIndex, foodCategoryID: foodCategoryID},
             name = $this.hasClass('sort-top') ? 'sortTop' : $this.hasClass('sort-bottom') ? 'sortBottom' : 'sortPrevOrNext',
             isUp = $this.hasClass('sort-up'),
             isDown = $this.hasClass('sort-down'),
-            foodID2 = isUp ? $tr.prev().data('id') : isDown ? $tr.next().data('id') : '',
-            sortIndex2 = isUp ? $tr.prev().data('sortindex') : isDown ? $tr.next().data('sortindex') : '',
+            foodID2 = isUp ? $tr.prev().attr('data-id') : isDown ? $tr.next().attr('data-id') : '',
+            sortIndex2 = isUp ? $tr.prev().attr('data-sortindex') : isDown ? $tr.next().attr('data-sortindex') : '',
             prevOrNextParams = name == 'sortPrevOrNext' ? {sortIndex2: sortIndex2, foodID2: foodID2} : {},
             serverMap = {
                 sortTop: {server: 'sortFoodTop', params: sortParams},
                 sortPrevOrNext: {server: 'sortFoodPrevOrNext', params: IX.inherit(prevOrNextParams, sortParams)},
                 sortBottom: {server: 'sortFoodBottom', params: sortParams}
-            };
+            },
+            $swapDom = $('.empty');
+        if(isUp) {
+            $swapDom = $tr.prev();
+        } else if(isDown) {
+            $swapDom = $tr.next();
+        } else if(name == 'sortTop') {
+            $swapDom = $tr.prevAll('.first:first');
+        } else if(name == 'sortBottom') {
+            $swapDom = $tr.nextAll('.last:first');
+        }
         G[serverMap[name].server](serverMap[name].params, function (rsp) {
             if (rsp.resultcode != '000') {
                 Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
                 return;
             }
-            loadFoods(true);
+            if($swapDom.length != 0) {
+                var trID = $tr.attr('data-id'),
+                    trCID = $tr.attr('data-cid'),
+                    swapID = $swapDom.attr('data-id'),
+                    swapCid = $swapDom.attr('data-cid'),
+                    currentCidFoods = classifiedFoods['_' + trCID].foods,
+                    trIndex = _.indexOf(currentCidFoods, _.findWhere(currentCidFoods, {foodID: trID})),
+                    swapIndex = _.indexOf(currentCidFoods, _.findWhere(currentCidFoods, {foodID: swapID})),
+                    trData = currentCidFoods[trIndex],
+                    swapData = currentCidFoods[swapIndex];
+                if(name == 'sortTop' || name == 'sortBottom') {
+                    //只改变当前的tr的位置和相关数据
+                    var trNewSortIndex = $XP($XP(rsp.data, 'records', [])[0], 'sortIndex', '0'),
+                        $newTr = $('<tr>');
+                    $newTr.attr('data-sortindex', trNewSortIndex);
+                    $newTr.attr('data-id', trID);
+                    $newTr.attr('data-cid', trCID);
+                    $newTr.append($tr.children());
+                    trData.foodSortIndex = trNewSortIndex;
+                    currentCidFoods.splice(trIndex, 1);
+                    if(name == 'sortTop') {
+                        if($tr.hasClass('last')) {
+                            $tr.prev().addClass('last');
+                            currentCidFoods[trIndex - 1].last = {BottomBorder: 'last'};
+                            trData = _.omit(trData, 'last');
+                        }
+                        currentCidFoods[0]  = _.omit(currentCidFoods[0], 'first');
+                        trData.first = {topBorder: 'first'};
+                        $newTr.addClass('first');
+                        $swapDom.removeClass('first');
+                        $swapDom.before($newTr);
+                        currentCidFoods.unshift(trData);
+                    } else {
+                        if($tr.hasClass('first')) {
+                            $tr.next().addClass('first');
+                            currentCidFoods[0].first = {topBorder: 'first'};
+                            trData = _.omit(trData, 'first');
+                        }
+                        currentCidFoods[currentCidFoods.length - 1] = _.omit(currentCidFoods[currentCidFoods.length - 1], 'last');
+                        trData.last = {BottomBorder: 'last'};
+                        $newTr.addClass('last');
+                        $swapDom.removeClass('last');
+                        $swapDom.after($newTr);
+                        currentCidFoods.push(trData);
+                    }
+                    $tr.remove();
+                } else {
+                    if(isUp) {
+                        if($tr.hasClass('last')){
+                            trData = _.omit(trData, 'last');
+                            swapData.last = {BottomBorder: 'last'};
+                        } else if($swapDom.hasClass('first')) {
+                            swapData = _.omit(swapData, 'first');
+                            trData.first = {topBorder: 'first'};
+                        }
+                    } else if(isDown) {
+                        if($tr.hasClass('first')){
+                            trData = _.omit(trData, 'first');
+                            swapData.first = {topBorder: 'first'};
+                        } else if($swapDom.hasClass('last')) {
+                            swapData = _.omit(swapData, 'last');
+                            trData.last = {BottomBorder: 'last'};
+                        }
+                    }
+                    $tr.attr('data-id', swapID);
+                    $tr.attr('data-cid', swapCid);
+                    $swapDom.attr('data-id', trID);
+                    $swapDom.attr('data-cid', trCID);
+                    trData.foodSortIndex = sortIndex2;
+                    swapData.foodSortIndex = sortIndex;
+                    currentCidFoods[trIndex] = swapData;
+                    currentCidFoods[swapIndex] = trData;
+                    Hualala.Common.SwapDom($tr, $swapDom);
+                }
+            }
         });
     });
 
@@ -573,7 +691,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
     //在某个菜品分类下根据foodID查找某个菜品
     function findFood(cid, id)
     {
-        var cfs = classifiedFoods[cid].foods; 
+        var cfs = classifiedFoods['_' + cid].foods;
         for(var i = cfs.length; i--;)
         {
             if(cfs[i].foodID == id) return cfs[i];
@@ -588,15 +706,15 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
             for(var foodCategoryID in classifiedFoods) {
                 var cFoods = classifiedFoods[foodCategoryID].foods,
                     cFoodsCount = cFoods.length;
-                cFoods[0] = IX.inherit({first: {topBorder: 'first', upDisabled: 'disable'}}, cFoods[0]);
-                cFoods[cFoodsCount - 1] = IX.inherit({last: {BottomBorder: 'last', downDisabled: 'disable'}}, cFoods[cFoodsCount - 1]);
+                cFoods[0] = IX.inherit({first: {topBorder: 'first'}}, cFoods[0]);
+                cFoods[cFoodsCount - 1] = IX.inherit({last: {BottomBorder: 'last'}}, cFoods[cFoodsCount - 1]);
                 result.push.apply(result, classifiedFoods[foodCategoryID].foods);
             }
         } else{
-            var cFoods = classifiedFoods[foodClass].foods,
+            var cFoods = classifiedFoods['_' + foodClass].foods,
                 cFoodsCount = cFoods.length;
-            cFoods[0] = IX.inherit({first: {topBorder: 'first', upDisabled: 'disable'}}, cFoods[0]);
-            cFoods[cFoodsCount - 1] = IX.inherit({last: {BottomBorder: 'last', downDisabled: 'disable'}}, cFoods[cFoodsCount - 1]);
+            cFoods[0] = IX.inherit({first: {topBorder: 'first'}}, cFoods[0]);
+            cFoods[cFoodsCount - 1] = IX.inherit({last: {BottomBorder: 'last'}}, cFoods[cFoodsCount - 1]);
             result = cFoods;
         }
 
@@ -618,7 +736,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
         {
             var food = foodsData[i], cid = food.foodCategoryID;
             //根据foodCategoryID分类
-            result[cid] = result[cid] || {foods: [], foodCategoryName: food.foodCategoryName};
+            result['_'+ cid] = result['_' + cid] || {foods: [], foodCategoryName: food.foodCategoryName};
             //某个菜品可能无foodID
             if(!food.foodID) continue;
             
@@ -638,7 +756,7 @@ Hualala.Shop.initMenu = function ($container, pageType, params, isSaasOpen)
             food.prePrice = food.prePrice || '';
             food.vipPrice = food.vipPrice || '';
             
-            var cfs = result[cid].foods,
+            var cfs = result['_' + cid].foods,
                 idx = C.inArray(cfs, food, 'foodID'),
                 unit = {
                     unit: food.unit ? food.unit + ':' : '',

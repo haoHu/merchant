@@ -12,6 +12,16 @@
 	].join('');
 	TplLib.register('tpl_account_list_layout', tpl_account_list_layout);
 
+    var tpl_pay_qrcode = [
+        '<div class="qr-img">',
+            '<label class="col-sm-offset-3 control-label">请用{{transwayLabel}}扫描下面二维码完成支付</label>',
+            '<div class="m-t">',
+                '<img src={{qrcodeImg}}>',
+            '</div>',
+        '</div>',
+    ].join('');
+    TplLib.register('tpl_pay_qrcode', tpl_pay_qrcode);
+
 	var tpl_account_card = [
 		'<div class="panel panel-default ix-card bank-card {{clz}}" data-id="{{settleUnitID}}">',
 			'<div class="panel-heading ix-card-header">',
@@ -21,6 +31,7 @@
 					'{{/if}}',
 					'<span class="account-name" title="{{settleUnitName}}">{{settleUnitName}}</span>',
 				'</h4>',
+				'<a href="javascript:void(0);" class="btn btn-primary settle-account {{hiddenSettleAccount}}">充值</a>',
 				'<a href="javascript:void(0);" class="btn btn-success withdraw {{disableWithdraw}}">提现</a>',
 			'</div>',
 			'<div class="panel-body ix-card-body">',
@@ -234,6 +245,17 @@
 											'</div>',
 										'</div>',
 									'{{/with}}',
+								'</div>',
+							'{{/checkFormElementType}}',
+							'{{#checkFormElementType type type="text"}}',
+								'<div class="form-group  {{hidden}}">',
+									'<label for="{{id}}" class="{{labelClz}}">{{{label}}}</label>',
+									'<div class="{{clz}}">',
+										'<input type="text" id="{{id}}" name="{{name}}" class="form-control {{hidden}}" placeholder="{{placeholder}}" value="{{value}}" data-type="{{type}}" {{disabled}} {{readonly}} {{mode}}/>',
+										'{{#if help}}',
+											'<span class="help-block">{{{help}}}</span>',
+										'{{/if}}',
+									'</div>',
 								'</div>',
 							'{{/checkFormElementType}}',
 							'{{#checkFormElementType type type="button"}}',

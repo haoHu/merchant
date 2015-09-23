@@ -1,9 +1,11 @@
 (function ($, window) {
 	IX.ns("Hualala.Shop");
     var G = Hualala.Global,
+    	C = Hualala.Common,
 		U = Hualala.UI,
 		topTip = U.TopTip,
-		parseForm = Hualala.Common.parseForm,
+		parseForm = C.parseForm,
+		printerBrandData = Hualala.TypeDef.ShopPrinterDataSet.printerBrandTypes,
 		PaperSizesData = Hualala.TypeDef.ShopPrinterDataSet.printerPaperSizeTypes,
 		printerPortData = Hualala.TypeDef.ShopPrinterDataSet.printerPortTypes,
 		PrinterStatusData = Hualala.TypeDef.ShopPrinterDataSet.currPrinterStatusData;
@@ -39,7 +41,7 @@
         function renderTable() {
             var initParams = {shopID: shopID};
             var Refflag = false;
-            Hualala.Global.getShopPrinter(initParams, function(rsp) {
+            G.getShopPrinter(initParams, function(rsp) {
                 if (rsp.resultcode == '000') {
                     printers = rsp.data.records;              	
                 	renderRecords(printers); 
@@ -86,7 +88,7 @@
 						r.text =label;
 					break;
 				case "printerRemark" :
-					var label = Hualala.Common.decodeTextEnter(v)|| "";
+					var label = C.decodeTextEnter(v)|| "";
 						r.value = label;
 						r.text = label;
 					break;
@@ -167,7 +169,7 @@
 			                title: '删除打印机',
 			                msg: '您确定删除此打印机么',
 			                okFn: function () {
-			                    Hualala.Global.deleteShopPrinter({shopID: shopID, itemID: itemID}, function (rsp) {
+			                    G.deleteShopPrinter({shopID: shopID, itemID: itemID}, function (rsp) {
 			                        if (rsp.resultcode != '000') {
 			                            topTip({msg: rsp.resultmsg, type: 'danger'});
 			                            return;
@@ -187,7 +189,7 @@
          	var printerData = {};
          	    printerData=_.findWhere(printers, {itemID: itemID});
             if(printerData){
-            	printerData.printerRemark = Hualala.Common.decodeTextEnter(printerData.printerRemark);
+            	printerData.printerRemark = C.decodeTextEnter(printerData.printerRemark);
 		        printerPortData=_.map(printerPortData,function (printerPortData){
 		            return _.extend(printerPortData,{selected:printerPortData.value==printerData.printerPortType ? 'selected' : ''});
 		        });
@@ -196,6 +198,9 @@
 		        });
 		        PaperSizesData =_.map(PaperSizesData,function (PaperSizesData) {
 		            return _.extend(PaperSizesData,{selected:PaperSizesData.value==printerData.printerPaperSize ? 'selected' :''});
+		        });
+		        printerBrandData = _.map(printerBrandData,function (printerBrandData) {
+		            return _.extend(printerBrandData,{selected:printerBrandData.value==printerData.printerBrand ? 'selected' :''});
 		        });
 	        }
 	        else{
@@ -208,11 +213,14 @@
 		        PaperSizesData =_.map(PaperSizesData,function (PaperSizesData) {
 		            return _.extend(PaperSizesData,{selected:''});
 		        });
+		        printerBrandData =_.map(printerBrandData,function (printerBrandData) {
+		            return _.extend(printerBrandData,{selected:''});
+		        });
 	        }
 	     	var isAdd = itemID === undefined;
 	        var dTitle = (isAdd ? '添加' : '修改') + '打印机',
 	        	// modalVals = IX.inherit({}, printerData,{printerPortData},{PrinterStatusData},{PaperSizesData}),
-	        	modalVals = {printerData:printerData,printerPortData:printerPortData,PrinterStatusData:PrinterStatusData,PaperSizesData:PaperSizesData},
+	        	modalVals = {printerData:printerData,printerPortData:printerPortData,PrinterStatusData:PrinterStatusData,PaperSizesData:PaperSizesData,printerBrandData:printerBrandData},
 		        $editSet = $(printerModalTpl(modalVals));
 		        modalDialog = new U.ModalDialog({
 		            title: dTitle,
@@ -231,13 +239,7 @@
 	                        stringLength : {
 	                            min : 1,
 	                            max : 50,
-	                            message : "打印机名称长度在1-50个字符之间"},
-	                        ajaxValid :{
-	                            api: "checkPrinterNameExist",
-	                            data:{
-	                                shopID: shopID,
-	                                itemID: itemID ? itemID : ''
-	                            }
+	                            message : "打印机名称长度在1-50个字符之间"
 	                        }
 	                    }
 	                },
@@ -262,6 +264,13 @@
 	                        notEmpty: { message: '打印机端口类型必须选择' }
 	                    }
 	                },
+	                printOffsetX :{
+	                	validators: {
+	                        notEmpty: { message: '水平方向打印缩进不能为空' },
+	                        integer: {message: '必须是正整数'},
+	                        between: {message: '必须是0-100的值', min: 0, max: 100}
+	                    }
+	                },
 	                printerRemark: {
 	                    validators : {
 	                        stringLength : {
@@ -277,17 +286,21 @@
                 if(!$form.data('bootstrapValidator').validate().isValid()) return;
                 var data = parseForm($form),
                     postParams = IX.inherit({shopID: shopID, itemID: itemID},data);
-                postParams.printerRemark = Hualala.Common.encodeTextEnter(postParams.printerRemark);
+                postParams.printerRemark = C.encodeTextEnter(postParams.printerRemark);
                 postParams.printerPaperSize = postParams.printerPaperSize==""?0:postParams.printerPaperSize;
-                Hualala.Global[itemID ? 'updateShopPrinter' : 'addShopPrinter'](postParams, function (rsp) {
-                    if (rsp.resultcode != '000') {
-                       topTip({msg: rsp.resultmsg, type: 'danger'});
-                        return;
-                    }
-                    topTip({msg: '保存成功', type: 'success'});
-                    modalDialog.hide();
-                    renderTable();
-                });
+	           	postParams.printerName = $.trim(postParams.printerName);
+	            var nameCheckData = {shopID:shopID, printerName:postParams.printerName, itemID: itemID};
+	            function callbackFn(res){
+	            	topTip({msg: (!itemID ? '添加' : '修改') + '成功！', type: 'success'});
+	                //topTip({msg: '保存成功', type: 'success'});
+	                modalDialog.hide();
+	                renderTable();
+	            }
+	            if(!itemID){
+	                C.NestedAjaxCall("checkPrinterNameExist","addShopPrinter",nameCheckData,postParams,callbackFn);
+	            }else{
+	                C.NestedAjaxCall("checkPrinterNameExist","updateShopPrinter",nameCheckData,postParams,callbackFn);  
+	            }
             });
         }
 	}

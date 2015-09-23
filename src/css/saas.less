@@ -11,6 +11,40 @@
   text-align: @align;
 }
 
+.table-sort-col() {
+    margin-top: 15px;
+    tr {
+        td {
+            &:nth-child(2) {
+                max-width: 200px;
+            }
+            &:nth-child(4) {
+                min-width: 86px;
+            }
+            .break-word();
+            a.glyphicon {color: #333333;}
+        }
+
+        &:first-child,
+        &.area-first-record,
+        &.first {
+            a.sort-top,
+            a.sort-up {
+                .disable-arrow();
+            }
+        }
+
+        &:last-child,
+        &.area-last-record,
+        &.last {
+            a.sort-down,
+            a.sort-bottom {
+                .disable-arrow();
+            }
+        }
+    }
+}
+
 a.glyphicon-arrow-up:hover,
 a.glyphicon-arrow-down:hover {
   .text-decoration(none)
@@ -25,35 +59,22 @@ a.glyphicon-arrow-down.sort-bottom {
 }
 
 .saas-category-table {
-  margin-top: 15px;
-  tr {
-    td {
-      &:nth-child(2) {
-        max-width: 200px;
-      }
-      &:nth-child(4) {
-        min-width: 86px;
-      }
-      .break-word();
-      a.glyphicon {color: #333333;}
-    }
-
-    &:first-child {
-      a.sort-top,
-      a.sort-up {
-        .disable-arrow();
-      }
-    }
-
-    &:last-child {
-      a.sort-down,
-      a.sort-bottom {
-        .disable-arrow();
-      }
-    }
-  }
+    .table-sort-col();
 }
 
+.shop-menu {
+    .tbl-foods {
+        tbody {
+            .table-sort-col();
+        }
+    }
+}
+.shop-table,
+.table-area {
+    table {
+        .table-sort-col();
+    }
+}
 .saas-goods-table {
   margin-top: 15px;
   &.table {

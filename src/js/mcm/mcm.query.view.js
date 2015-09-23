@@ -181,7 +181,13 @@
 			validCfg : {
 				validators : {}
 			}
-		}
+		},
+        sendSMS: {
+            type: 'button',
+            label: '发送短信',
+            clz: 'btn-warning'
+
+        }
 	};
 	var QueryFormElsHT = new IX.IListManager();
 	_.each(Hualala.MCM.QueryFormElsCfg, function (el, k) {
@@ -250,10 +256,87 @@
 				});
 			} else if (act == 'search') {
 				self.emit('query', self.getQueryParams());
-			}
-		});
-
+			} else if(act == 'sendSMS') {
+                Handlebars.registerPartial('customSelect', Hualala.TplLib.get('tpl_select'));
+                var modalBodyTpl = Handlebars.compile(Hualala.TplLib.get('tpl_sms_template')),
+                    smsCustomerOptNames = ['不限', '未入围', '已入围'],
+                    smsBaseAttr = [{label: '会员姓名'}, {label: '先生/女士'}, {label: '卡名称'}, {label: '卡号后四位'}],
+                    modal = new Hualala.UI.ModalDialog({
+                        id: 'apply-event-sms',
+                        title: '群发短信',
+                        backdrop: 'static',
+                        hideCloseBtn: false,
+                        html: $(modalBodyTpl({
+                            hideSMSTip: 'hidden',
+                            smsCustomer: true,
+                            selectData: {
+                                name: 'winFlag',
+                                options: _.map(Hualala.TypeDef.MCMDataSet.JoinTypes, function(type, idx) {
+                                    return IX.inherit(type, {name: smsCustomerOptNames[idx]});
+                                })
+                            },
+                            smsAttr: smsBaseAttr,
+                            smsTextCount: 0
+                        }))
+                    }).show();
+                ;
+                bindApplySendSMSEvent(modal);
+            }
+        });
 	};
+    function bindApplySendSMSEvent(modal){
+        modal._.body.find('form').bootstrapValidator({
+            fields: {
+                smsTemplate: {
+                    validators: {
+                        notEmpty: { message: '短信内容不能为空' }
+                    }
+                }
+            }
+        });
+        modal._.footer.find('.btn-ok').text('发送');
+        modal._.footer.on('click', '.btn-ok', function (e) {
+            var $form = $(e.target).parents('.modal').find('.modal-body form'),
+                eventID = Hualala.PageRoute.getCurrentPath().match(/\d/g).join(''),
+                params = IX.inherit(Hualala.Common.parseForm($form), {eventID: eventID});
+            params.smsTemplate = Hualala.Common.encodeTextEnter(params.smsTemplate);
+            if(!$form.data('bootstrapValidator').validate().isValid()) return;
+            Hualala.Global.applyEventSendSMS(params, function(rsp) {
+                if(rsp.resultcode != '000'){
+                    Hualala.UI.TopTip({msg: rsp.resultmsg, type: 'danger'});
+                    return;
+                }
+                Hualala.UI.TopTip({msg: '已经开始发送短信', type: 'success'});
+                modal.hide();
+            });
+        });
+        modal._.body.on('click', 'a[name="preview"]', function (e) {
+            var smsDefaultAttr = {
+                    receiverName: 'XXX', receiverSex: '先生', cardName: '金卡', cardLastFourNumber: '8888',
+                },
+                $this = $(this),
+                $preview = $this.next('p'),
+                $textarea = $this.parents('.form-group').find('textarea'),
+                textareaVal = $textarea.val(),
+                previewText = textareaVal.replace(/[\[【]会员姓名[\]】]/g, smsDefaultAttr.receiverName)
+                    .replace(/[\[【]先生\/女士[\]】]/g, smsDefaultAttr.receiverSex)
+                    .replace(/[\[【]卡名称[\]】]/g, smsDefaultAttr.cardName)
+                    .replace(/[\[【]卡号后四位[\]】]/g, smsDefaultAttr.cardLastFourNumber)
+                    .replace(/[\[【]奖品名称\d*[\]】]/g, smsDefaultAttr.giftName)
+                    .replace(/[\[【]奖品数量\d*[\]】]/g, smsDefaultAttr.cardCount)
+                    .replace(/[\[【]有效期\d*[\]】]/g, smsDefaultAttr.cardValidDate);
+            $preview.text(previewText);
+            $textarea.trigger('keydown');
+        }).on('click', '[name="smsAttr"] a', function() {
+            var $textArea = $(this).parents('form').find('.form-group textarea[name="smsTemplate"]');
+            $textArea.insertAtCaret('[' + $(this).text() + ']');
+            $textArea.trigger('keydown');
+        }).on('keydown', 'textarea', function (e) {
+            var $this = $(e.target),
+                $smsTextCount = $this.parents('form').find('.form-group span[name="estimateSMSCount"]');
+            $smsTextCount.text($this.val().length);
+        });
+    }
 
 	Hualala.MCM.bundleEventsQueryEvent = function () {
 		var self = this;
@@ -307,52 +390,71 @@
 			});
             bindmodalEvent(modalContainer, queryController);
         }
+
+        function createEvent(container, eventWay, queryController) {
+            var eventType= _.find(Hualala.TypeDef.MCMDataSet.EventTypes, function (el) {
+                    return $XP(el, 'value')== eventWay;
+                }),
+                isSendEvent = eventWay == 50 || eventWay == 51,
+                wizardStepChangeMap = {
+                    '50': Hualala.MCM.SMSOnStepChange,
+                    '51': Hualala.MCM.BirthdayEventStepChange
+                },
+                stepChange = wizardStepChangeMap[eventWay + ''] || Hualala.MCM.onEventWizardStepChange,
+                stepCfg = Hualala.MCM.EventWizardCfgBy(eventWay);
+            var baseEventModel = new Hualala.MCM.BaseEventModel(),
+                sessionUser = Hualala.getSessionUser(),
+                createRoleType = $XP(sessionUser, 'role', ['']).join(','),
+                loginName = $XP(sessionUser, 'loginName', '');
+            baseEventModel.set({eventWay: eventWay, createRoleType: createRoleType, loginName: loginName, smsGate: isSendEvent ? '1' : '0'});
+            container.hide();
+            var wizardPanel = new Hualala.MCM.MCMWizardModal({
+                wizardType : 'create',
+                parentView : queryController,
+                mode : 'create',
+                successFn : function () {
+
+                },
+                failFn : function () {
+
+                },
+                model : baseEventModel,
+                modalClz : 'mcm-event-modal',
+                wizardClz : 'mcm-event-wizard',
+                modalTitle : '创建' + $XP(eventType, 'label', '') + '活动',
+                onWizardInit : function ($cnt, cntID, wizardMode) {
+                    Hualala.MCM.initEventBaseInfo.call(this, $cnt, cntID, wizardMode);
+                },
+                onStepCommit : function (curID) {
+                    Hualala.MCM.onEventWizardStepCommit.call(this, curID);
+                },
+                onStepChange : function ($curNav, $navBar, cIdx, nIdx) {
+                    stepChange.call(this, $curNav, $navBar, cIdx, nIdx);
+                },
+                bundleWizardEvent : function () {
+                    Hualala.MCM.bundleEventWizardEvent.call(this);
+                },
+                wizardStepsCfg : stepCfg,
+                wizardCtrls : Hualala.MCM.WizardCtrls
+
+            });
+        }
         function bindmodalEvent(container, queryController){
 			container._.body.find('.choice-eventWay').on('click', function (e) {
-				var eventWay = $(this).attr('data-value');
-				var eventType= _.find(Hualala.TypeDef.MCMDataSet.EventTypes, function (el) {
-						return $XP(el, 'value')== eventWay;
-					}),
-					isSMSEvent = eventWay == 50,
-					stepCfg = isSMSEvent ? Hualala.MCM.EventSmsWizardCfg : Hualala.MCM.EventWizardCfg,
-					stepChange = isSMSEvent ? Hualala.MCM.SMSOnStepChange : Hualala.MCM.onEventWizardStepChange;
-                var baseEventModel = new Hualala.MCM.BaseEventModel(),
-					sessionUser = Hualala.getSessionUser(),
-					createRoleType = $XP(sessionUser, 'role', ['']).join(','),
-					loginName = $XP(sessionUser, 'loginName', '');
-				baseEventModel.set({eventWay: eventWay, createRoleType: createRoleType, loginName: loginName, smsGate: isSMSEvent ? '1' : '0'});
-				container.hide();
-				var wizardPanel = new Hualala.MCM.MCMWizardModal({
-					wizardType : 'create',
-					parentView : queryController,
-					mode : 'create',
-					successFn : function () {
-
-					},
-					failFn : function () {
-
-					},
-					model : baseEventModel,
-					modalClz : 'mcm-event-modal',
-					wizardClz : 'mcm-event-wizard',
-					modalTitle : '创建' + $XP(eventType, 'label', '') + '活动',
-					onWizardInit : function ($cnt, cntID, wizardMode) {
-						Hualala.MCM.initEventBaseInfo.call(this, $cnt, cntID, wizardMode);
-					},
-					onStepCommit : function (curID) {
-						Hualala.MCM.onEventWizardStepCommit.call(this, curID);
-					},
-					onStepChange : function ($curNav, $navBar, cIdx, nIdx) {
-						stepChange.call(this, $curNav, $navBar, cIdx, nIdx);
-					},
-					bundleWizardEvent : function () {
-						Hualala.MCM.bundleEventWizardEvent.call(this);
-					},
-					wizardStepsCfg : stepCfg,
-					wizardCtrls : Hualala.MCM.WizardCtrls
-
-				});
-			});
+                var eventWay = $(this).attr('data-value');
+                if(eventWay == '51') {
+                    Hualala.Global.checkBirthdayEventExist({}, function(rsp) {
+                        if(rsp.resultcode != '000' || rsp.data.birthdayGiftFlag == 1) {
+                            var msg = rsp.resultcode != '000' ? rsp.resultmsg : '你已添加过生日赠送活动，不能重复添加！'
+                            Hualala.UI.TopTip({msg: msg, type: 'danger'});
+                            return;
+                        }
+                        createEvent(container, eventWay, queryController);
+                    });
+                } else {
+                    createEvent(container, eventWay, queryController);
+                }
+            });
         }
 	};
 	/**
@@ -512,26 +614,20 @@
 			]
 		};
 		if (eventWay == '20' || eventWay == '22') {
-			query = {
-				cols : [
-					{
-						colClz : 'col-md-4',
-						items : QueryFormElsHT.getByKeys(['keyword'])
-					},
-					{
-						colClz : 'col-md-3',
-						items : QueryFormElsHT.getByKeys(['cardLevelID'])
-					},
-					{
-						colClz : 'col-md-3',
-						items : QueryFormElsHT.getByKeys(['winFlag'])
-					},
-					{
-						colClz : 'col-md-2',
-						items : searchBtnCol
-					}
-				]
-			}
+            var winFlagItem = {
+                    colClz: 'col-md-2',
+                    items: QueryFormElsHT.getByKeys(['winFlag'])
+                },
+                sendSMSItem = {
+                    colClz: 'col-md-1',
+                    items: QueryFormElsHT.getByKeys(['sendSMS'])
+                };
+            query.cols.splice(2, 0, winFlagItem);
+            if(eventWay == 22) {
+                query.cols.push(sendSMSItem);
+                query.cols[0].colClz = 'col-md-3';
+                query.cols[4].colClz = 'col-md-1';
+            }
 		}
 		return {
 			query : query
@@ -689,7 +785,7 @@
 		// 加载礼品类型下拉列表选项
 		initGiftTypeComboOpts : function (curGiftType, selectedGiftTypes) {
 			var self = this,
-                allGiftTypes = _.reject(Hualala.TypeDef.MCMDataSet.GiftTypes, function(giftType) {return giftType.value == 20;}),//去掉菜品优惠券
+                allGiftTypes = Hualala.TypeDef.MCMDataSet.GiftTypes,//去掉菜品优惠券
 				giftTypes = selectedGiftTypes ? _.select(allGiftTypes, function (giftType) {return _.contains(selectedGiftTypes, giftType.value);}) : allGiftTypes;
 			if (IX.isEmpty(giftTypes)) return;
 			giftTypes = _.map(giftTypes, function (item) {

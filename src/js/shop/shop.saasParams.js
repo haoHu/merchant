@@ -13,7 +13,9 @@
             saasDeviceTpl = Handlebars.compile(tplLib.get('tpl_cmpx_datagrid')),
             saasDeviceEditTpl = Handlebars.compile(tplLib.get('tpl_saas_device_form')),
             customSelectTpl = Handlebars.compile(tplLib.get('tpl_select')),
-            checkboxListTpl = Handlebars.compile(tplLib.get('tpl_checkbox_list'));
+            checkboxListTpl = Handlebars.compile(tplLib.get('tpl_checkbox_list')),
+            screenImageUrls = [],
+            logoImgUrl = '';
         Handlebars.registerPartial('customSelect', tplLib.get('tpl_select'));
         Handlebars.registerPartial('colBtns', tplLib.get('tpl_base_grid_colbtns'));
         Handlebars.registerHelper('chkColType', function (conditional, options) {
@@ -64,11 +66,24 @@
                     return;
                 }
                 shopParams = rsp.data;
+                logoImgUrl = shopParams.CheckoutBillPrnLogoPath;
+                var PCScreenImageUrls = _.compact((shopParams.PCScreeen2ADImageLst || '').split(','));
+                shopParams.PCScreenImageLst = _.map(PCScreenImageUrls, function(url) {
+                    var path = url.substr(G.IMAGE_RESOURCE_DOMAIN.length + 1),//只需要图片的相对路径
+                        imgHWP = 0.75,//规定web端显示图片的宽高尺寸比例为4:3
+                        width = 120,//规定web端显示的图片宽度为120px
+                        height = parseInt(width*imgHWP);
+                    return C.getSourceImage(path, {width: width, height: height});
+                });
+                screenImageUrls = IX.clone(PCScreenImageUrls);
+                shopParams.hidden = shopParams.PCScreenImageLst.length >= 5 ? 'hidden' : '';
                 $shopForm = $(shopParamsTpl(mapShopParamsData(IX.clone(shopParams))));
                 $shopParams.append($shopForm);
                 renderPrinters($shopParams.find('div[name="printers"]'), $XP(shopParams, 'PrinterKey', ''), 'PrinterKey');
                 createSwitch();
                 registerShopParams();
+                bindLogoUpload();
+                bindScreenUpload();
             });
             G.getSaasDeviceParams({shopID: shopID}, function (rsp) {
                 if(rsp.resultcode != '000') {
@@ -123,6 +138,74 @@
                 }
             });
         }
+
+        function bindLogoUpload() {
+            var $fileUpload = $shopForm.find('.shop-params-logo'),
+                $uploadLogo = $fileUpload.find('label.btn-link'),
+                $logoImg = $fileUpload.find('img'),
+                imgSrc = $logoImg.attr('src');
+            U.fileUpload($uploadLogo,
+                function(rsp){
+                    var path = rsp.url;
+                    logoImgUrl = G.IMAGE_RESOURCE_DOMAIN + '/' + path;
+                    $logoImg.attr('src', logoImgUrl);
+                },
+                {
+                    container: '.shop-params-logo',
+                    accept: 'image/bmp',
+                    onBefore: function($elem, $file) {
+                        imgSrc = $logoImg.attr('src');
+                        var fileSize = $file[0].files[0].size / 1024; //files里保存的图片单位是字节
+                        if(fileSize > 8) {
+                            topTip({msg: '图片不能超过8K', type: 'danger'});
+                            return false;
+                        }
+                        $fileUpload.addClass('loading');
+                    },
+                    onFail: function() {
+                        if(window.FileReader) $logoImg.attr('src', imgSrc);
+                    },
+                    onAlways: function() {
+                        $fileUpload.removeClass('loading');
+                    }
+                }
+            );
+        }
+
+        function bindScreenUpload() {
+            var $fileUpload = $shopForm.find('.shop-params-images'),
+                $uploadImage = $fileUpload.find('label.btn-link'),
+                $uploadRes = $uploadImage.parents('.add-sub-res');
+            U.fileUpload($uploadImage,
+                function (rsp) {
+                    var path = rsp.url,
+                        imgUrl = G.IMAGE_RESOURCE_DOMAIN + '/' + path,
+                        src = path ? C.getSourceImage(path, {width: 120, height: parseInt(120*0.75)}) : '',//图片显示的宽高比例为4:3
+                        $imgDiv = $('<div class="col-md-2 image-list">'+
+                            '<img src="' + src+ '" alt=""  width="120px"/>'+
+                            '<button class="glyphicon glyphicon-remove"></button>'+
+                            '</div>');
+                    if(path) {
+                        screenImageUrls.push(imgUrl);
+                        $uploadRes.before($imgDiv);
+                    }
+                    if(screenImageUrls.length >= 5) $uploadRes.addClass('hidden');
+                },
+                {
+                    container: '.shop-params-images',
+                    accept: 'image/jpeg,image/png,image/jpg',
+                    onBefore: function ($elem, $file) {
+                        $fileUpload.addClass('loading');
+                    },
+                    onFail: function () {
+                    },
+                    onAlways: function () {
+                        $fileUpload.removeClass('loading');
+                    }
+                }
+            );
+        }
+
         function registerDeviceForm() {
             $deviceForm.bootstrapValidator({
                 fields: {
@@ -136,6 +219,7 @@
             });
             deviceFormBv = $deviceForm.data('bootstrapValidator');
         }
+
         function bindParamsSet() {
             var bindDeviceModal = function(deviceData, $editDevice) {
                 deviceEditModal._.footer.on('click', 'button.btn-ok', function () {
@@ -189,6 +273,8 @@
                     }
                     postParams.CheckoutBillBottomAddStr = C.encodeTextEnter(postParams.CheckoutBillBottomAddStr);
                     postParams.CheckoutBillTopAddStr = C.encodeTextEnter(postParams.CheckoutBillTopAddStr);
+                    postParams.CheckoutBillPrnLogoPath = logoImgUrl;
+                    postParams.PCScreeen2ADImageLst = screenImageUrls.join(',');
                     G.updateSaasShopParams(postParams, function (rsp) {
                         if(rsp.resultcode != '000'){
                             topTip({msg: rsp.resultmsg, type: 'danger'});
@@ -224,7 +310,8 @@
                                     var unitMap = {
                                         FoodMakeManageQueueCount: '单',
                                         FoodMakeWarningTimeout: '秒',
-                                        FoodMakeDangerTimeout: '秒'
+                                        FoodMakeDangerTimeout: '秒',
+                                        FoodCallTakeTVTitle: ''
                                     };
                                     staticText = $editP.val() + $XP(unitMap, $editP.attr('name'), '');
                                     break;
@@ -242,6 +329,23 @@
                     $shopForm.removeClass('read-mode').addClass('edit-mode');
                     $switches.bootstrapSwitch('toggleDisabled', false);
                 }
+            }).on('click', '.shop-params-images .image-list .glyphicon-remove', function() {
+                //绑定删除副屏广告轮播图事件
+                var $this = $(this),
+                    $img = $this.prev('img'),
+                    $imgDiv = $img.parents('.image-list');
+                U.Confirm({
+                    title: '删除副屏广告轮播图',
+                    msg: '你确定要删除该图片吗？',
+                    okFn: function() {
+                        screenImageUrls = _.reject(screenImageUrls, function (url) {
+                            var path = url.substr(G.IMAGE_RESOURCE_DOMAIN.length + 1);
+                            return $img.attr('src').indexOf(path.substr(0, path.length - 4)) > -1;
+                        });
+                        if(screenImageUrls.length < 5) $imgDiv.next().removeClass('hidden');
+                        $imgDiv.remove();
+                    }
+                });
             });
             $deviceParams.on('click', 'table tr td a[data-type="editShopParams"]', function () {
                 var $this = $(this),
@@ -281,7 +385,7 @@
                 //验证设备参数的form表单
                 registerDeviceForm();
 
-                //绑定模态框德尔保存事件
+                //绑定模态框的保存事件
                 bindDeviceModal(deviceData, $editDevice);
             });
         }
@@ -404,7 +508,7 @@
         function mapShopParamsData(record) {
             var checkedNames = $XP(record, 'KitchenPrintBillTypeLst', '').split('|');
             return IX.inherit(record, {
-                moneyWipeZeroTypeData: renderSelect(paramsTypeDef.moneyWipeZeroTypes, 'moneyWipeZeroType', $XP(record, 'moneyWipeZeroType', '')),
+                moneyWipeZeroTypeData: renderSelect(paramsTypeDef.moneyWipeZeroTypes, 'moneyWipeZeroType', $XP(record, 'moneyWipeZeroType', '0')),
                 moneyWipeZeroTypeVal: $XP(_.findWhere(paramsTypeDef.moneyWipeZeroTypes, {value: $XP(record, 'moneyWipeZeroType', '') + ''}), 'label'),
                 checkoutBillPrintCopiesData: renderSelect(paramsTypeDef.checkoutBillPrintCopies, 'CheckoutBillPrintCopies', $XP(record, 'CheckoutBillPrintCopies', '1')),
                 checkoutBillPrintCopiesVal: $XP(_.findWhere(paramsTypeDef.checkoutBillPrintCopies, {value: $XP(record, 'CheckoutBillPrintCopies', '1') + ''}), 'label'),
@@ -412,6 +516,10 @@
                 checkoutBillDetailPrintWayVal: $XP(_.findWhere(paramsTypeDef.checkoutBillDetailPrintWays, {value: $XP(record, 'CheckoutBillDetailPrintWay', '2') + ''}), 'label'),
                 checkoutBillDetailAmountTypeData: renderSelect(paramsTypeDef.checkoutBillDetailAmountTypes, 'CheckoutBillDetailAmountType', $XP(record, 'CheckoutBillDetailAmountType', '')),
                 checkoutBillDetailAmountTypeVal: $XP(_.findWhere(paramsTypeDef.checkoutBillDetailAmountTypes, {value: $XP(record, 'CheckoutBillDetailAmountType', '') + ''}), 'label', ''),
+                KitchenTableNameBigFontData : renderSelect(paramsTypeDef.KitchenTableNameBigFontTypes, 'KitchenTableNameBigFont', $XP(record, 'KitchenTableNameBigFont', '')),
+                KitchenTableNameBigFontVal : $XP(_.findWhere(paramsTypeDef.KitchenTableNameBigFontTypes, {value: $XP(record, 'KitchenTableNameBigFont', '') + ''}), 'label'),
+                PCScreen2AdImageIntervalTimeData : renderSelect(paramsTypeDef.PCScreen2AdImageIntervalTimeTypes,'PCScreen2AdImageIntervalTime',$XP(record,'PCScreen2AdImageIntervalTime')),
+                PCScreen2AdImageIntervalTimeVal :$XP(_.findWhere(paramsTypeDef.PCScreen2AdImageIntervalTimeTypes, {value: $XP(record, 'PCScreen2AdImageIntervalTime', '') + ''}), 'label'),
                 revOrderAfterPlayVoiceTypeData: renderSelect(paramsTypeDef.revOrderAfterPlayVoiceTypes, 'RevOrderAfterPlayVoiceType', $XP(record, 'RevOrderAfterPlayVoiceType', '')),
                 revOrderAfterPlayVoiceTypeVal: $XP(_.findWhere(paramsTypeDef.revOrderAfterPlayVoiceTypes, {value: $XP(record, 'RevOrderAfterPlayVoiceType', '') + ''}), 'label', '0'),
                 //TTSVoiceSpeedData: renderSelect(paramsTypeDef.TTSVoiceSpeedTypes, 'TTSVoiceSpeed', $XP(record, 'TTSVoiceSpeed', '2')),
@@ -431,7 +539,8 @@
         function createSwitch() {
             var labelMap = {
                 printer: {onText: '打印', offText: '不打印'},
-                push: {onText: '推送', offText: '不推送'}
+                push: {onText: '推送', offText: '不推送'},
+                merge: {onText: '合并', offText: '不合并'}
             };
             $switches = $shopParams.find('input.status[type="checkbox"]');
             _.each($switches, function(input) {

@@ -22,34 +22,58 @@
 				}
 			}
 		},
-        SMSStartTime: {
-            type: 'text',
-            label: '',
-            deaultfVal: '',
-            validCfg: {
-                validators : {
-                    notEmpty : {
-                        message : "发送时间不能为空"
+        SMSSendDate: {
+            type: 'section',
+            label: '短信发送时间',
+            min: {
+                type: 'datetimepicker',
+                defaultVal: '',
+                name: 'SMSStartDate',
+                validCfg: {
+                    validators : {
+                        notEmpty : {
+                            message: "发送日期不能为空"
+                        },
+                        date: {
+                            format: 'YYYY/MM/DD',
+                            message: '日期格式不正确'
+                        }
+                    }
+                }
+            },
+            max: {
+                type: 'timepicker',
+                defaultVal: '',
+                name: 'SMSStartTime',
+                surfix : '<span class="glyphicon glyphicon-time"></span>',
+                validCfg: {
+                    validators : {
+                        notEmpty : {
+                            message : "发送时间不能为空"
+                        }
                     }
                 }
             }
         },
-		SMSStartDate: {
-			type: 'text',
-			label: '',
-			deaultfVal: '',
-			validCfg: {
-				validators : {
-					notEmpty : {
-						message: "发送日期不能为空"
-					},
-					date: {
-						format: 'YYYY/MM/DD',
-						message: '日期格式不正确'
-					}
-				}
-			}
-		},
+        smsGate: {
+            type: 'checkbox',
+            label: '是否发送短信',
+            defaultVal: '',
+            validCfg: {}
+        },
+        giftAdvanceDays: {
+            type: 'text',
+            label: '提前赠送天数',
+            defaultVal: '',
+            surfix: '天',
+            validCfg: {
+                validators: {
+                    notEmpty: {message: '提前赠送天数'},
+                    integer: {message: '提前赠送天数天数必须是整数'},
+                    greaterThan: {value: 0, message: '提前赠送天数不能小于0'}
+                }
+            }
+        },
 		cardLevelID : {
 			type : 'combo',
 			label : "顾客范围",
@@ -228,6 +252,22 @@
 				}
 			}
 		},
+        lastTransTime: {
+            label: '最后消费时间',
+            type : 'datetimepicker',
+            defaultVal : '',
+            validCfg : {
+                validators : {
+                    notEmpty : {
+                        message : "请输最后消费时间"
+                    },
+                    date: {
+                        format: 'YYYY/MM/DD',
+                        message: '时间格式不正确'
+                    }
+                }
+            }
+        },
 		isVipBirthdayMonth : {
 			type : "radiogrp",
 			label : "仅本月会员生日可参与",
@@ -273,8 +313,8 @@
 		var labelClz = 'col-sm-offset-1 col-sm-3 control-label';
 		if (type == 'section') {
 			var id = minID = k + '_min_' + IX.id(), maxID = k + '_max_' + IX.id(),
-				minName = 'eventStartDate',
-				maxName = 'eventEndDate',
+				minName = $XP(el, 'min.name', 'eventStartDate'),
+				maxName = $XP(el, 'max.name', 'eventEndDate'),
 				min = IX.inherit($XP(el, 'min', {}), {
 					id : minID, name : minName, clz : 'col-xs-3 col-sm-3 col-md-3',
 				}),
@@ -340,9 +380,17 @@
 
 	HMCM.EventSetFormElsHT = EventSetFormElsHT;
 
-	var EventBaseInfoFormKeys = 'eventName,cardLevelID,eventWay,eventRemark'.split(','),
-        EventBaseInfoFormKeysNew = 'eventName,dateRange,SMSStartDate,SMSStartTime,eventRemark'.split(','),
-        SMSEventBaseInfoFormKeys = 'eventName,SMSStartDate,SMSStartTime,eventRemark'.split(',');
+    HMCM.EventBaseFormKeysMap = {
+        '20': 'eventName,dateRange,eventRemark'.split(','),
+        '21': 'eventName,dateRange,eventRemark'.split(','),
+        '22': 'eventName,dateRange,eventRemark'.split(','),
+        '30': 'eventName,dateRange,eventRemark'.split(','),
+        '40': 'eventName,dateRange,eventRemark'.split(','),
+        '41': 'eventName,dateRange,eventRemark'.split(','),
+        '50': 'eventName,SMSSendDate,eventRemark'.split(','),
+        '51': 'eventName,giftAdvanceDays,eventRemark'.split(',')
+    };
+	var EventBaseInfoFormKeys = 'eventName,cardLevelID,eventWay,eventRemark'.split(',');
 
 
 	/**
@@ -391,9 +439,32 @@
                 return IX.inherit(elCfg, {
                     value : Hualala.Common.decodeTextEnter(self.model.get(key) || '') || $XP(elCfg, 'dafaultVal')
                 });
-            }else {
+            } else if (type == 'section') {
+                var isSMS = key == 'SMSSendDate',
+                    eventStartDate = self.model.get('eventStartDate') || '',
+                    eventEndDate = self.model.get('eventEndDate') || '',
+                    smsStartDate = (self.model.get('startTime') || '').substr(0, 8),
+                    smsStartTimeStr = (self.model.get('startTime') || '').substr(8),
+                    smsStartTime = smsStartTimeStr ? (smsStartTimeStr.substr(0,2) + ':' + smsStartTimeStr.substr(2)) : '';
+                eventStartDate = (IX.isEmpty(eventStartDate) || eventStartDate == 0) ? '' : eventStartDate;
+                eventEndDate = (IX.isEmpty(eventEndDate) || eventEndDate == 0) ? '' : eventEndDate;
+                smsStartDate = (IX.isEmpty(smsStartDate) || smsStartDate == 0) ? '' : smsStartDate;
+                return IX.inherit(elCfg, {
+                    min : IX.inherit($XP(elCfg, 'min'), {
+                        value : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(smsStartDate || eventStartDate), 'yyyy/MM/dd')
+                    }),
+                    max : IX.inherit($XP(elCfg, 'max'), {
+                        value : isSMS ? smsStartTime : IX.Date.getDateByFormat(Hualala.Common.formatDateTimeValue(eventEndDate), 'yyyy/MM/dd'),
+                        hiddenBetween: isSMS ? 'hidden' : ''
+                    })
+                });
+            } else {
+                var eventWay = self.model.get('eventWay'),
+                    isBirthdayEvent = key == 'eventName' && eventWay == 51,
+                    value = isBirthdayEvent ? '生日赠送' : (self.model.get(key) || $XP(elCfg, 'dafaultVal'));
 				return IX.inherit(elCfg, {
-					value : self.model.get(key) || $XP(elCfg, 'dafaultVal')
+					value : value,
+                    type: isBirthdayEvent ? 'static' : type
 				});
 			}
 		});
@@ -544,7 +615,7 @@
 	});
 	HMCM.EventBaseInfoStepView = EventBaseInfoStepView;
 
-    var StepEventBaseInfoView = Stapes.subclass({
+    var StepEventBaseInfoView = HMCM.GiftBaseInfoStepView.subclass({
         constructor: function(cfg) {
             var self = this;
             this.mode = $XP(cfg, 'mode', '');
@@ -553,10 +624,11 @@
             this.model = $XP(cfg, 'model');
             this.successFn = $XF(cfg, 'successFn');
             this.faildFn = $XF(cfg, 'faildFn');
+            this.mapFormElsData = $XF(cfg, 'mapFormElsData');
             if(!this.model || !this.parentView) {
                 throw('Event Base Info View init failed!');
             }
-            this.loadTemplate();
+            this.loadTemplates();
             this.initBaseCfg();
             this.formParams = self.model.getAll();
             this.renderForm(function() {
@@ -566,15 +638,10 @@
         }
     });
     StepEventBaseInfoView.proto({
-        loadTemplate: function () {
-            var self = this,
-                layoutTpl = Handlebars.compile(Hualala.TplLib.get('tpl_event_base_info'));
-            self.set({layoutTpl: layoutTpl});
-        },
         initBaseCfg: function() {
 			var self = this,
-				isSMSEvent = self.model.get('eventWay') == 50;
-            this.formKeys = isSMSEvent ? SMSEventBaseInfoFormKeys : EventBaseInfoFormKeysNew;
+				eventWay = self.model.get('eventWay');
+            this.formKeys = HMCM.EventBaseFormKeysMap[eventWay];
         },
 		initUIComponents: function() {
 			var self = this,
@@ -609,19 +676,14 @@
 		},
         renderForm: function(cbFn) {
             var self = this,
-				renderData = IX.clone(self.model.getAll()),
+                renderData = self.mapFormElsData.call(self),
                 tpl = self.get('layoutTpl'),
-                startDate = Hualala.Common.formatDateStr($XP(renderData, 'startTime', '').substr(0, 8)),
-                startTimeStr = $XP(renderData, 'startTime', '').substr(8),
-                startTime = startTimeStr.substr(0,2) + ':' + startTimeStr.substr(2),
-				isSMSEvent = self.model.get('eventWay') == 50,
-				extendAttr = {isSMSEvent: isSMSEvent};
-            renderData.SMSStartDate = startDate;
-            renderData.SMSStartTime = startTime;
-			renderData.eventStartDate = Hualala.Common.formatDateStr($XP(renderData, 'eventStartDate', ''));
-			renderData.eventEndDate = Hualala.Common.formatDateStr($XP(renderData, 'eventEndDate', ''));
-			renderData.eventRemark = Hualala.Common.decodeTextEnter(renderData.eventRemark);
-            self.container.html(tpl(IX.inherit(extendAttr, renderData)));
+                btnTpl = self.get('btnTpl'),
+                htm = tpl({
+                    formClz : 'wizard-step-form form-feedback-out',
+                    items : renderData
+                });
+            self.container.html(htm);
             cbFn();
         },
         bindEvent: function() {
@@ -638,7 +700,7 @@
 				self.faildFn(self);
 			}).on('success.form.bv', function(e) {
 				var formParams = self.serializeForm(),
-					isEventDateValid = eventWay != 50 && parseInt(formParams.eventStartDate) > parseInt(formParams.eventEndDate);
+					isEventDateValid = parseInt(formParams.eventStartDate || 0) > parseInt(formParams.eventEndDate || 0);
 				if(isEventDateValid) {
 					self.parentView.switchWizardCtrlStatus('reset');
 					toptip({msg: '活动结束日期不能小于开始日期', type: 'danger'});
@@ -672,13 +734,16 @@
             var self = this,
                 formKeys = _.reject(self.formKeys, function (key) { return key == 'eventID'; }),
                 ret = {};
-            _.each(_.uniq(formKeys.concat('SMSStartDate', 'SMSStartTime')), function (key) {
+            _.each(_.uniq(formKeys), function (key) {
                 var elCfg = EventSetFormElsHT.get(key),
                     type = $XP(elCfg, 'type');
 				if (key == 'dateRange') {
 					ret['eventStartDate'] = _.pick($XP(elCfg, 'min.validCfg', {}), 'validators');
 					ret['eventEndDate'] = _.pick($XP(elCfg, 'max.validCfg', {}), 'validators');
-				} else {
+				} else if(key == 'SMSSendDate'){
+                    ret['SMSStartDate'] = _.pick($XP(elCfg, 'min.validCfg', {}), 'validators');
+                    ret['SMSStartTime'] = _.pick($XP(elCfg, 'max.validCfg', {}), 'validators');
+                } else {
 					ret[key] = $XP(elCfg, 'validCfg', {});
 				}
             });
@@ -694,15 +759,16 @@
 				if(key == 'dateRange') {
 					ret.eventStartDate = IX.Date.getDateByFormat($('[name="eventStartDate"]', self.container).val(), 'yyyyMMdd');
 					ret.eventEndDate = IX.Date.getDateByFormat($('[name="eventEndDate"]', self.container).val(), 'yyyyMMdd');
-				} else if(key == 'smsGate'){
+				} else if(key == 'SMSSendDate'){
+                    ret.startTime = IX.Date.getDateByFormat($('[name="SMSStartDate"]', self.container).val(), 'yyyyMMdd')
+                        + ($('[name="SMSStartTime"]', self.container).val()).replace(/\:/, '');
+                } else if(key == 'smsGate'){
 					ret[key] = $('[name="' + key + '"]', self.container).bootstrapSwitch('state') ? '1' : '0';
 				}else {
 					ret[key] = $('[name="' + key + '"]', self.container).val() || '';
 				}
 			});
-			ret.SMSStartDate = IX.Date.getDateByFormat(ret.SMSStartDate, 'yyyyMMdd');
-			ret.startTime = ret.SMSStartDate + (ret.SMSStartTime || '').replace(/\:/, '');
-			return _.omit(ret, 'SMSStartDate', 'SMSStartTime');
+			return self.model.get('eventWay') == 51 ? IX.inherit(ret, {eventName: '生日赠送'}) : ret;
         },
         delete : function (successFn, faildFn) {
             var self = this;
@@ -772,7 +838,8 @@
                 faildFn: function() {
                     var self = this;
                     self.parentView.switchWizardCtrlStatus('reset');
-                }
+                },
+                mapFormElsData: mapEventBaseInfoFormElsData
             });
         wizardView.registerStepView(cntID, stepView);
 	}
@@ -794,7 +861,7 @@
             'initEventBaseInfo',
             'initSMSCustomerRange',
             'initSMSTemplate',
-            'initSMSOpenPreview'
+            'initEventOpenStep'
         ];
         if(cIdx == -1 || nIdx == 0) return true;
         if(!nextView) {
@@ -807,6 +874,26 @@
 
 	HMCM.SMSOnStepChange = SMSStepChange;
 
+    var birthdayEventStepChange = function($curNav, $navBar, cIdx, nIdx) {
+        var wizardViewModal = this,
+            nextID = wizardViewModal.getTabContentIDByIndex($navBar, nIdx),
+            $nextCnt = $('#' + nextID, wizardViewModal.$wizard),
+            nextView = wizardViewModal.getStepView(nextID),
+            stepsFns = [
+                'initEventBaseInfo',
+                'initEventGiftSetStep',
+                'initSMSTemplate',
+                'initEventOpenStep'
+            ];
+        if(cIdx == -1 || nIdx == 0) return true;
+        if(!nextView) {
+            HMCM[stepsFns[nIdx]].call(wizardViewModal, $nextCnt, nextID, wizardViewModal.mode);
+        } else {
+            nIdx == 3 && nextView.refresh();
+        }
+        return;
+    };
+    Hualala.MCM.BirthdayEventStepChange = birthdayEventStepChange;
 
 	/**
 	 * 当活动向导步骤变化时触发的事件

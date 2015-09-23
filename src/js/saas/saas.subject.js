@@ -2,15 +2,15 @@ $( function ($, window) {
     IX.ns('Hualala.Saas.Subject');
     var G = Hualala.Global,
         U = Hualala.UI,
+        C = Hualala.Common,
         topTip = U.TopTip,
-        parseForm = Hualala.Common.parseForm;
+        parseForm = C.parseForm;
 
     subjectsTableAttr = {
         tableClass: 'saas-subjects-table',
         tableHeads: ["科目名称", "内置科目", "手续费率（%）", /*"是否用于结账",*/"科目说明","创建人", "启用状态", "操作"],
         displayAttr: ["subjectName", "isGlobal", "subjectRate", /*"isPay",*/ "payRemark","createBy", "isActive","rowControl"]
     };
-
    var $alert = $('<td colspan="7"> <p class="alert t-c">暂无任何收款科目信息。</p></td>'),
         SubjectTab = Handlebars.compile(Hualala.TplLib.get('tpl_subject_tab')),
         SubjectQueryForm =Handlebars.compile(Hualala.TplLib.get('tpl_subject_query')),
@@ -221,8 +221,12 @@ $( function ($, window) {
             $editSet.find('input[name="subjectRate"]').parentsUntil("form").removeClass("hidden");
             $editSet.find('input[name="isMoneyWipeZero"]').parentsUntil("form").removeClass("hidden");
         }
-
-        $editSet.bootstrapValidator({
+        formValid($editSet);
+        bv = $editSet.data('bootstrapValidator');
+        submitSet(itemID);
+    }
+    function formValid($form){ 
+        $form.bootstrapValidator({
             fields: {
                 subjectName: {
                     validators: {
@@ -230,30 +234,12 @@ $( function ($, window) {
                         stringLength : {
                             min : 1,
                             max : 50,
-                            message : "科目名称长度在1-50个字符之间"},
-                        ajaxValid : {
-                            api : "checkSubjectlName",
-                            name : 'subjectName',
-                            data : {
-                                groupID: $XP(Hualala.getSessionSite(),'groupID',''),
-                                itemID: id ?itemID : ''
-                            }
+                            message : "科目名称长度在1-50个字符之间"
                         }
                     }
                 },
                 subjectRate:{
                     validators: {
-                        /*numeric : {message : "手续费率必须为数字"},
-                        greaterThan : {
-                            inclusive : true,
-                            value : 0,
-                            message : "手续费率必须大于或等于0"
-                        },
-                        between : {
-                            min : 0,
-                            max : 100,
-                            message : "手续费率百分比值在0~100之间"
-                        }*/
                         callback:{
                             message : '',
                             callback : function (value, validator, $field) {
@@ -279,8 +265,38 @@ $( function ($, window) {
                 }   */
             }
         });
-        bv = $editSet.data('bootstrapValidator');
-        modal._.footer.find('.btn-ok').on('click', submitSet);
+    }
+
+    //添加和更新列表
+    function submitSet(itemID){
+        modal._.footer.find('.btn-ok').on('click', function (e){
+            if(!bv.validate().isValid()) return;
+            var data = parseForm($editSet);
+            data.subjectGroupName = subject.subjectGroupName || 0;
+            data.isPay = ($('.subject-tabs li.active a')[0].text=="收入科目")? 0:1;
+            data.isMoneyWipeZero = data.isMoneyWipeZero||0;
+            data.subjectRate = (data.subjectRate).trim() || 0;
+            data.payRemark = C.encodeTextEnter(data.payRemark) || 0;
+            var user = $XP(Hualala.getSessionData(),'user',''),
+                loginName = $XP(user,'loginName',''),
+                groupID = $XP(user,'groupID',''),
+                groupLoginName = $XP(user,'groupLoginName','');
+            var createBy=groupLoginName+'_'+loginName;
+                _.extend(data,{createBy:createBy});
+            data.subjectName = $.trim(data.subjectName);
+            var nameCheckData = {subjectName:data.subjectName,groupID: groupID,itemID: itemID};
+            function callbackFn(res){
+                topTip({msg: (isAdd ? '添加' : '修改') + '成功！', type: 'success'});
+                searchSubject();
+                modal.hide();
+            }
+            if(isAdd){
+                C.NestedAjaxCall("checkSubjectlName","addSaasSubject",nameCheckData,data,callbackFn);
+            }else{
+                data.itemID = setId;
+                C.NestedAjaxCall("checkSubjectlName","updateSaasSubject",nameCheckData,data,callbackFn);  
+            }
+        });
     }
     //删除
     function deleteSubject(e){
@@ -305,34 +321,4 @@ $( function ($, window) {
             }
         });
     }
-    //添加和更新列表
-    function submitSet(){
-        if(!bv.validate().isValid()) return;
-        var data = parseForm($editSet);
-        data.subjectGroupName = subject.subjectGroupName || 0;
-        data.isPay = ($('.subject-tabs li.active a')[0].text=="收入科目")? 0:1;
-        data.isMoneyWipeZero = data.isMoneyWipeZero||0;
-        data.subjectRate = (data.subjectRate).trim() || 0;
-        data.payRemark = Hualala.Common.encodeTextEnter(data.payRemark) || 0;
-        var user = $XP(Hualala.getSessionData(),'user',''),
-            loginName = $XP(user,'loginName',''),
-            groupLoginName = $XP(user,'groupLoginName','');
-        var createBy=groupLoginName+'_'+loginName;
-        _.extend(data,{createBy:createBy});
-
-        if(!isAdd) data.itemID = setId;
-        G[isAdd ? 'addSaasSubject' : 'updateSaasSubject'](data, function(rsp)
-        {
-            if(rsp.resultcode != '000')
-            {
-                rsp.resultmsg && topTip({msg: rsp.resultmsg, type: 'danger'});
-                return;
-            }
-            topTip({msg: (isAdd ? '添加' : '修改') + '成功！', type: 'success'});
-            searchSubject();
-            modal.hide();
-        });
-        
-    }
-
 }(jQuery , window ));

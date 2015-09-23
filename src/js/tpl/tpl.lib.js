@@ -677,7 +677,7 @@
 	TemplateList.register('tpl_boss_download', tpl_boss_download);
 
     var tpl_loading = [
-        '<div class="loading-tip"></div>'
+        '<div class="loading-menu"></div>'
     ].join('');
     TemplateList.register('tpl_loading', tpl_loading);
 
